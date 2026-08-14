@@ -106,6 +106,7 @@ DOCK_NAME     = "AIAssistantSidebarDock_Integrated_v1"
 HTML_FILENAME = "chat_ui.html"
 OLLAMA_EP_DEFAULT = "http://localhost:11434"
 LLAMA_EP_DEFAULT  = "http://localhost:8080"
+OLLAMA_PULL_SOCKET_TIMEOUT = 30
 
 PREFERRED_FRONT = ["Vorderseite","Front","Question","Text","Frage","Prompt","Front Side"]
 PREFERRED_BACK  = ["Rückseite","Back","Answer","Antwort","Back Side"]
@@ -1356,8 +1357,25 @@ if _qt_ok and QDialog is not object:
             self._ep = _cfg_get(CK_OLLAMA_EP, OLLAMA_EP_DEFAULT)
             self._installed_models: List[str] = []
             self._pull_thread: Optional[threading.Thread] = None
+            self._pull_cancel = threading.Event()
+            self._pull_response = None
+            self._pull_response_lock = threading.Lock()
+            self._wizard_closed = False
             self._build_ui()
+            self.finished.connect(self._on_wizard_finished)
             self._check_ollama()
+
+        def _on_wizard_finished(self, _result: int) -> None:
+            """Cancel an active model pull when the wizard is closed."""
+            self._wizard_closed = True
+            self._pull_cancel.set()
+            with self._pull_response_lock:
+                response = self._pull_response
+            if response is not None:
+                try:
+                    response.close()
+                except Exception:
+                    pass
 
         def _build_ui(self) -> None:
             root = QVBoxLayout(self)
@@ -1474,6 +1492,8 @@ if _qt_ok and QDialog is not object:
             fires (same reason the streaming path uses _JsDispatcher).
             """
             def _run():
+                if self._wizard_closed:
+                    return
                 try:
                     fn()
                 except RuntimeError:
@@ -1510,16 +1530,26 @@ if _qt_ok and QDialog is not object:
 
         def _pull_model(self, name: str) -> None:
             if self._pull_thread and self._pull_thread.is_alive(): return
+            self._pull_cancel.clear()
             self._progress_bar.setValue(0); self._progress_bar.setVisible(True)
             self._progress_lbl.setText(_("Pulling {}…").format(name))
             def worker():
+                resp = None
                 try:
                     url  = f"{self._ep}/api/pull"
                     body = json.dumps({"name": name, "stream": True}).encode()
                     req  = urllib.request.Request(url, data=body, headers={"Content-Type": "application/json"})
-                    resp = urllib.request.urlopen(req, timeout=None)
+                    resp = urllib.request.urlopen(
+                        req, timeout=OLLAMA_PULL_SOCKET_TIMEOUT
+                    )
+                    with self._pull_response_lock:
+                        self._pull_response = resp
+                    if self._pull_cancel.is_set():
+                        return
                     total = completed = 0
                     for raw in resp:
+                        if self._pull_cancel.is_set():
+                            return
                         line = raw.decode("utf-8", errors="replace").strip()
                         if not line: continue
                         try: ev = json.loads(line)
@@ -1532,11 +1562,23 @@ if _qt_ok and QDialog is not object:
                             pct = int(completed / total * 100)
                             self._post_to_main(lambda p=pct: self._progress_bar.setValue(p))
                         if ev.get("status") == "success": break
-                    self._post_to_main(lambda: self._on_pull_done(name))
+                    if not self._pull_cancel.is_set():
+                        self._post_to_main(lambda: self._on_pull_done(name))
                 except Exception as exc:
+                    if self._pull_cancel.is_set():
+                        return
                     err = str(exc)
                     print(f"AI Assistant Wizard: pull error: {err}")
                     self._post_to_main(lambda e=err: self._on_pull_error(e))
+                finally:
+                    if resp is not None:
+                        try:
+                            resp.close()
+                        except Exception:
+                            pass
+                    with self._pull_response_lock:
+                        if self._pull_response is resp:
+                            self._pull_response = None
             self._pull_thread = threading.Thread(target=worker, daemon=True)
             self._pull_thread.start()
 

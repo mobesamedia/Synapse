@@ -85,6 +85,78 @@
   .row.mode-locked .slider::before{transform:none!important;}
   .dashboard-lock-note{display:none;margin:10px 4px 0;color:var(--muted);font-size:12px;line-height:1.45;}
   .dashboard-lock-note.visible{display:block;}
+  .row.setting-locked{opacity:.48;pointer-events:none;}
+  .custom-bg-panel{display:none;}
+  .custom-bg-panel.open{display:block;}
+  .custom-bg-preview{position:relative;width:100%;height:150px;border-radius:10px;overflow:hidden;
+    --preview-blur:0px;--preview-overlay:0;background:var(--field-bg);border:1px solid var(--group-border);display:flex;align-items:center;justify-content:center;}
+  .custom-bg-preview img{width:100%;height:100%;object-fit:cover;display:none;filter:blur(var(--preview-blur));transform:scale(1.08);}
+  .custom-bg-preview.has-image::after{content:"";position:absolute;inset:0;background:rgba(0,0,0,var(--preview-overlay));pointer-events:none;}
+  .custom-bg-preview.has-image img{display:block;}
+  .custom-bg-empty{color:var(--muted);font-size:12px;text-align:center;padding:20px;}
+  .custom-bg-preview.has-image .custom-bg-empty{display:none;}
+  .custom-bg-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+  .wallpaper-modal{position:fixed;inset:0;z-index:10020;display:none;align-items:center;justify-content:center;
+    padding:24px;background:rgba(15,18,24,.38);}
+  .wallpaper-modal.open{display:flex;}
+  .wallpaper-dialog{width:min(720px,100%);max-height:min(620px,calc(100vh - 40px));overflow:auto;
+    border-radius:14px;background:var(--content-bg);border:1px solid var(--group-border);box-shadow:0 24px 70px rgba(0,0,0,.28);}
+  .wallpaper-dialog-head{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;
+    gap:14px;padding:16px 18px;background:var(--content-bg);border-bottom:1px solid var(--hairline);}
+  .wallpaper-dialog-head h2{margin:0;font-size:17px;letter-spacing:-.01em;}
+  .wallpaper-close{appearance:none;border:0;width:30px;height:30px;border-radius:50%;background:var(--field-bg);
+    color:var(--text);font-size:18px;line-height:1;cursor:pointer;}
+  .wallpaper-close:hover{background:var(--chip-hover);}
+  .wallpaper-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;padding:18px;}
+  .wallpaper-card{min-width:0;border:1px solid var(--group-border);border-radius:11px;overflow:hidden;background:var(--group-bg);}
+  .wallpaper-thumb{aspect-ratio:16/9;background:var(--field-bg);overflow:hidden;display:flex;align-items:center;justify-content:center;}
+  .wallpaper-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+  .wallpaper-missing{padding:14px;text-align:center;color:var(--muted);font-size:11px;line-height:1.35;}
+  .wallpaper-copy{padding:11px 12px 12px;}
+  .wallpaper-copy b{display:block;font-size:13px;margin-bottom:3px;}
+  .wallpaper-copy p{min-height:34px;margin:0 0 10px;color:var(--muted);font-size:11.5px;line-height:1.4;}
+  .wallpaper-copy .btn{width:100%;padding:7px 10px;}
+  .wallpaper-copy .btn:disabled{opacity:.45;cursor:not-allowed;}
+  html.dark .wallpaper-modal,body.dark .wallpaper-modal{background:rgba(0,0,0,.58);}
+  .range-control{display:flex;align-items:center;gap:10px;min-width:220px;}
+  .range-control input{accent-color:var(--accent);width:170px;}
+  .range-value{width:38px;text-align:right;color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums;}
+  .custom-bg-note{margin:10px 4px 0;color:var(--muted);font-size:11.5px;line-height:1.45;}
+  .custom-bg-warning{display:none;margin:9px 4px 0;padding:9px 11px;border-radius:8px;
+    color:#8a5a00;background:rgba(245,178,46,.14);border:1px solid rgba(214,145,16,.28);font-size:11.5px;line-height:1.45;}
+  .custom-bg-warning.visible{display:block;}
+  html.dark .custom-bg-warning{color:#ffd27a;background:rgba(245,178,46,.10);border-color:rgba(245,178,46,.25);}
+  .counter-color-panel{display:none;}
+  .counter-color-panel.open{display:block;}
+  .counter-preview-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+  .counter-preview{padding:12px 14px;border-radius:10px;border:1px solid var(--group-border);}
+  .counter-preview.light{background:#fff;color:#1d1d1f;}
+  .counter-preview.dark{background:#2c2c2e;color:#f5f5f7;border-color:rgba(255,255,255,.10);}
+  .counter-preview-title{font-size:11px;font-weight:650;opacity:.62;margin-bottom:9px;}
+  .counter-preview-values{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;}
+  .counter-preview-values b{display:block;font-size:13px;color:inherit;margin-bottom:3px;}
+  .counter-preview-values span{font-size:18px;font-weight:650;font-variant-numeric:tabular-nums;}
+  .counter-mode-title{font-size:13px;font-weight:650;margin-bottom:11px;}
+  .counter-color-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;}
+  .counter-color-control{min-width:0;}
+  .counter-color-control>label{display:block;font-size:12px;font-weight:600;margin-bottom:6px;}
+  .counter-color-inputs{display:flex;align-items:center;gap:7px;}
+  .counter-color-picker{appearance:none;-webkit-appearance:none;width:34px;height:31px;flex:none;padding:2px;
+    border:1px solid var(--group-border);border-radius:8px;background:var(--field-bg);cursor:pointer;}
+  .counter-color-picker::-webkit-color-swatch-wrapper{padding:1px;}
+  .counter-color-picker::-webkit-color-swatch{border:0;border-radius:5px;}
+  .counter-hex{width:100%;min-width:0;height:31px;padding:5px 8px;border:1px solid transparent;border-radius:8px;
+    background:var(--field-bg);color:var(--text);font:12px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;text-transform:uppercase;outline:none;}
+  .counter-hex:focus{border-color:var(--accent);}
+  .counter-hex.invalid{border-color:#d93b4a;color:#d93b4a;}
+  .counter-color-actions{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .counter-color-note{color:var(--muted);font-size:11.5px;line-height:1.45;}
+  @media(max-width:720px){
+    .counter-color-grid{grid-template-columns:1fr;}
+    .counter-preview-grid{grid-template-columns:1fr;}
+    .counter-color-actions{align-items:flex-start;flex-direction:column;}
+    .wallpaper-grid{grid-template-columns:1fr;}
+  }
   .side-controls{display:flex;align-items:center;gap:10px;}
   .shortcut-btn{appearance:none;-webkit-appearance:none;min-width:112px;max-width:170px;
     overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background:var(--field-bg);color:var(--muted);
@@ -160,6 +232,15 @@
     opacity:0;transition:opacity .35s ease;}
   .banner.banner-visible{opacity:1;}
   .banner-wrap.clickable{cursor:pointer;}
+  .conflict-card{margin-top:14px;padding:15px 17px;border-radius:12px;
+    background:rgba(255,149,0,.09);border:1px solid rgba(214,126,0,.28);}
+  .conflict-head{display:flex;align-items:center;gap:9px;margin-bottom:7px;color:#a45d00;}
+  .conflict-head svg{width:18px;height:18px;flex:none;}
+  .conflict-head b{font-size:14px;font-weight:680;}
+  .conflict-card p{margin:5px 0;color:var(--muted);font-size:12px;line-height:1.5;}
+  .conflict-addon{margin:9px 0!important;color:var(--text)!important;font-weight:650;}
+  html.dark .conflict-card,body.dark .conflict-card{background:rgba(255,159,10,.10);border-color:rgba(255,159,10,.28);}
+  html.dark .conflict-head,body.dark .conflict-head{color:#ffb340;}
   .cta .ct{flex:1;}
   .cta .ct b{font-size:14px;font-weight:650;}
   .cta .ct p{margin:3px 0 0;font-size:12px;color:var(--muted);line-height:1.4;}
@@ -290,6 +371,12 @@
           <h1 class="page-title">News</h1>
           <p class="page-sub">Announcements, tips and updates from SynapsePro.</p>
           <a class="banner-wrap" id="bannerWrap"><img id="homeBanner" class="banner" alt=""></a>
+          <div class="conflict-card">
+            <div class="conflict-head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 3.7 2.4 17.4A2 2 0 0 0 4.1 20h15.8a2 2 0 0 0 1.7-2.6L13.7 3.7a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg><b>Known Add-on Conflict</b></div>
+            <p>The following add-on is known to potentially cause UI-related issues when used together with SynapsePro:</p>
+            <p class="conflict-addon">Progress Bar for Anki - Visualize the Reviewed Cards (Fixed by Shigeඞ)</p>
+            <p>This may include unusual colours, layout problems or other visual glitches. If you experience these issues, please try temporarily disabling this add-on. If you need help or notice conflicts with other add-ons, contact me at help.synapse.pro@gmail.com.</p>
+          </div>
         </section>
 
         <!-- GENERAL -->
@@ -359,10 +446,61 @@
             </div>
           </div>
           <div class="group-label">Background</div>
-          <div class="group">
-            <div class="row">
+          <div class="group" id="backgroundStyleGroup">
+            <div class="row" id="backgroundStyleRow">
               <div class="rl"><div class="rt">Background Style</div><div class="rd">Overall background of the add-on screens.</div></div>
               <div class="rc"><select class="field" id="background_style"></select></div>
+            </div>
+          </div>
+          <div class="group-label">Custom Background</div>
+          <div class="group">
+            <div class="row">
+              <div class="rl"><div class="rt">Enable Custom Background</div><div class="rd">Show one optimized image across the dashboard and toolbars.</div></div>
+              <div class="rc"><label class="switch"><input type="checkbox" id="custom_background_enabled"><span class="slider"></span></label></div>
+            </div>
+            <div class="custom-bg-panel" id="customBackgroundPanel">
+              <div class="row" style="display:block;">
+                <div class="custom-bg-preview" id="customBackgroundPreview"><img id="customBackgroundImage" alt=""><div class="custom-bg-empty">No background image selected.</div></div>
+                <div class="custom-bg-actions"><button class="btn btn-grey" onclick="bridge('selectBackground')">Choose Image</button><button class="btn btn-grey" onclick="openExampleWallpapers()">Choose Example Wallpaper</button><button class="btn btn-grey" id="removeBackgroundButton" onclick="bridge('removeBackground')">Remove</button><button type="button" class="btn btn-grey" onclick="resetCustomBackgroundDefaults()">Restore Defaults</button></div>
+                <div class="custom-bg-note">PNG, JPEG or WebP · maximum 20 MB and 40 megapixels. Large valid images are optimized automatically.</div>
+                <div class="custom-bg-warning" id="customBackgroundQualityWarning">This image must be enlarged considerably to fill the current window and may appear soft.</div>
+              </div>
+              <div class="row"><div class="rl"><div class="rt">Blur</div><div class="rd">Applied once and cached for smooth performance.</div></div><div class="rc range-control"><input type="range" id="custom_background_blur" min="0" max="30" step="1"><span class="range-value" id="customBackgroundBlurValue">0 px</span></div></div>
+              <div class="row"><div class="rl"><div class="rt">Dark Overlay</div><div class="rd">Darkens the image to improve readability.</div></div><div class="rc range-control"><input type="range" id="custom_background_overlay" min="0" max="70" step="1"><span class="range-value" id="customBackgroundOverlayValue">0%</span></div></div>
+              <div class="row"><div class="rl"><div class="rt">Image Position</div><div class="rd">Choose which part of the image stays visible when it is cropped.</div></div><div class="rc"><select class="field" id="custom_background_position"><option value="top">Top</option><option value="center">Center</option><option value="bottom">Bottom</option></select></div></div>
+              <div class="row"><div class="rl"><div class="rt">Studied Text</div><div class="rd">Choose a light or dark colour for the studied-today summary.</div></div><div class="rc"><select class="field" id="custom_background_studied_text"><option value="dark">Dark</option><option value="light">Light</option></select></div></div>
+            </div>
+          </div>
+          <div class="group-label">Deck Counter Colors</div>
+          <div class="group">
+            <div class="row">
+              <div class="rl"><div class="rt">Enable Custom Counter Colors</div><div class="rd">Customize the New, Learn and Due numbers in the main Deck Browser.</div></div>
+              <div class="rc"><label class="switch"><input type="checkbox" id="deck_counter_colors_enabled"><span class="slider"></span></label></div>
+            </div>
+            <div class="counter-color-panel" id="deckCounterColorPanel">
+              <div class="row" style="display:block;">
+                <div class="counter-preview-grid">
+                  <div class="counter-preview light"><div class="counter-preview-title">Light Mode Colors</div><div class="counter-preview-values"><div><b>New</b><span id="counterPreviewNewLight">20</span></div><div><b>Learn</b><span id="counterPreviewLearnLight">8</span></div><div><b>Due</b><span id="counterPreviewDueLight">42</span></div></div></div>
+                  <div class="counter-preview dark"><div class="counter-preview-title">Dark Mode Colors</div><div class="counter-preview-values"><div><b>New</b><span id="counterPreviewNewDark">20</span></div><div><b>Learn</b><span id="counterPreviewLearnDark">8</span></div><div><b>Due</b><span id="counterPreviewDueDark">42</span></div></div></div>
+                </div>
+              </div>
+              <div class="row" style="display:block;">
+                <div class="counter-mode-title">Light Mode Colors</div>
+                <div class="counter-color-grid">
+                  <div class="counter-color-control"><label for="deck_counter_new_light">New</label><div class="counter-color-inputs"><input class="counter-color-picker" type="color" id="deck_counter_new_light_picker"><input class="counter-hex" id="deck_counter_new_light" maxlength="7" spellcheck="false"></div></div>
+                  <div class="counter-color-control"><label for="deck_counter_learn_light">Learn</label><div class="counter-color-inputs"><input class="counter-color-picker" type="color" id="deck_counter_learn_light_picker"><input class="counter-hex" id="deck_counter_learn_light" maxlength="7" spellcheck="false"></div></div>
+                  <div class="counter-color-control"><label for="deck_counter_due_light">Due</label><div class="counter-color-inputs"><input class="counter-color-picker" type="color" id="deck_counter_due_light_picker"><input class="counter-hex" id="deck_counter_due_light" maxlength="7" spellcheck="false"></div></div>
+                </div>
+              </div>
+              <div class="row" style="display:block;">
+                <div class="counter-mode-title">Dark Mode Colors</div>
+                <div class="counter-color-grid">
+                  <div class="counter-color-control"><label for="deck_counter_new_dark">New</label><div class="counter-color-inputs"><input class="counter-color-picker" type="color" id="deck_counter_new_dark_picker"><input class="counter-hex" id="deck_counter_new_dark" maxlength="7" spellcheck="false"></div></div>
+                  <div class="counter-color-control"><label for="deck_counter_learn_dark">Learn</label><div class="counter-color-inputs"><input class="counter-color-picker" type="color" id="deck_counter_learn_dark_picker"><input class="counter-hex" id="deck_counter_learn_dark" maxlength="7" spellcheck="false"></div></div>
+                  <div class="counter-color-control"><label for="deck_counter_due_dark">Due</label><div class="counter-color-inputs"><input class="counter-color-picker" type="color" id="deck_counter_due_dark_picker"><input class="counter-hex" id="deck_counter_due_dark" maxlength="7" spellcheck="false"></div></div>
+                </div>
+              </div>
+              <div class="row counter-color-actions"><div class="counter-color-note">Only affects the card counters in the main Deck Browser.</div><button type="button" class="btn btn-grey" onclick="resetDeckCounterDefaults()">Restore Counter Defaults</button></div>
             </div>
           </div>
         </section>
@@ -431,6 +569,13 @@
     </div>
   </div>
 
+  <div class="wallpaper-modal" id="exampleWallpaperModal" role="dialog" aria-modal="true" aria-labelledby="exampleWallpaperTitle" onclick="if(event.target===this)closeExampleWallpapers()">
+    <div class="wallpaper-dialog">
+      <div class="wallpaper-dialog-head"><h2 id="exampleWallpaperTitle">Example Wallpapers</h2><button type="button" class="wallpaper-close" onclick="closeExampleWallpapers()" title="Close" aria-label="Close">×</button></div>
+      <div class="wallpaper-grid" id="exampleWallpaperGrid"></div>
+    </div>
+  </div>
+
 <script>
   var PRESETS = [
     ['ocean','Ocean','#0071D3','#004990'],
@@ -442,7 +587,8 @@
   ];
   var DASH = [
     ['gamification_widgets_enabled','Gamification Widgets','Your level, XP and daily streak.'],
-    ['daily_widgets_enabled','Daily Widgets','Your study plan and the daily fact.'],
+    ['study_plan_widget_enabled','Study Plan Widget','Your daily study plan.'],
+    ['daily_fact_widget_enabled','Daily Fact Widget','A new fact on your Anki home screen each day.'],
     ['deadline_bar_enabled','Deadline Bar','A countdown bar towards your exam or deadline.'],
     ['statistics_widget_enabled','Advanced Statistics','An extra panel with detailed review statistics.'],
   ];
@@ -464,10 +610,30 @@
 
   var _logos = {}, _activeTheme = 'ocean';
   var _shortcutValues = {}, _shortcutDisplays = {};
+  var _exampleWallpapers = [];
+  var COUNTER_DEFAULTS = {
+    deck_counter_new_light:'#0071D3', deck_counter_learn_light:'#E60012', deck_counter_due_light:'#00A000',
+    deck_counter_new_dark:'#4FACFE', deck_counter_learn_dark:'#FF6B6B', deck_counter_due_dark:'#63D471'
+  };
 
   function esc(s){return (s==null?'':String(s)).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
   function bridge(action, payload){ try{ console.log('SYNAPSEPRO_SETTINGS:'+action+(payload!==undefined?(':'+payload):'')); }catch(e){} }
   function openUrl(u){ bridge('openUrl', u); }
+  function renderExampleWallpapers(){
+    var grid=document.getElementById('exampleWallpaperGrid');
+    grid.innerHTML=(_exampleWallpapers||[]).map(function(item){
+      var available=!!item.available&&!!item.preview;
+      return '<article class="wallpaper-card"><div class="wallpaper-thumb">'+
+        (available?'<img src="'+esc(item.preview)+'" alt="'+esc(item.title||'')+'">':'<div class="wallpaper-missing">'+esc(tr('Wallpaper file not available yet.'))+'</div>')+
+        '</div><div class="wallpaper-copy"><b>'+esc(item.title||'')+'</b><p>'+esc(item.description||'')+'</p>'+
+        '<button type="button" class="btn btn-primary" '+(available?'data-example-key="'+esc(item.key)+'"':'disabled')+'>'+esc(tr('Use Wallpaper'))+'</button></div></article>';
+    }).join('');
+    Array.prototype.forEach.call(grid.querySelectorAll('[data-example-key]'),function(btn){
+      btn.addEventListener('click',function(){bridge('selectExampleBackground',btn.dataset.exampleKey);closeExampleWallpapers();});
+    });
+  }
+  function openExampleWallpapers(){renderExampleWallpapers();document.getElementById('exampleWallpaperModal').classList.add('open');}
+  function closeExampleWallpapers(){document.getElementById('exampleWallpaperModal').classList.remove('open');}
 
   function toggleRow(key,title,desc,on,withShortcut){
     var controls = '<label class="switch"><input type="checkbox" data-key="'+key+'" '+(on?'checked':'')+'><span class="slider"></span></label>';
@@ -549,6 +715,7 @@
     _activeTheme = 'custom';
     document.querySelectorAll('.sw').forEach(function(s){ s.classList.remove('sel'); });
     applyAccent(data.accent, data.accentPress);
+    if(data.logo) _logos.custom = data.logo;
     setLogo('custom');
   };
 
@@ -745,7 +912,7 @@
     });
   }
   document.addEventListener('click', closeDD);
-  document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeDD(); });
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape'){ closeDD(); closeExampleWallpapers(); } });
   window.addEventListener('resize', closeDD);
   // Close when the page behind scrolls — but NOT when scrolling inside the
   // open menu itself, otherwise long option lists become unusable.
@@ -787,6 +954,28 @@
       setSelect('stats_time_range', cfg.stats_time_range != null ? cfg.stats_time_range : 7);
       setSelect('sidebar_visibility', cfg.sidebar_visibility_mode || 'always_show');
       setSelect('background_style', cfg.active_theme || 'medical_theme.css');
+      var customEnabled = document.getElementById('custom_background_enabled');
+      customEnabled.checked = !!cfg.custom_background_enabled;
+      document.getElementById('custom_background_blur').value = Number(cfg.custom_background_blur)||0;
+      document.getElementById('custom_background_overlay').value = Number(cfg.custom_background_overlay)||0;
+      setSelect('custom_background_position', ['top','center','bottom'].indexOf(cfg.custom_background_position)>=0 ? cfg.custom_background_position : 'center');
+      setSelect('custom_background_studied_text', cfg.custom_background_studied_text === 'light' ? 'light' : 'dark');
+      updateCustomBackground(data.customBackground || {});
+      _exampleWallpapers=(data.customBackground&&Array.isArray(data.customBackground.examples))?data.customBackground.examples:[];
+      customEnabled.addEventListener('change', syncCustomBackgroundControls);
+      document.getElementById('custom_background_blur').addEventListener('input', syncCustomBackgroundControls);
+      document.getElementById('custom_background_overlay').addEventListener('input', syncCustomBackgroundControls);
+      document.getElementById('custom_background_position').addEventListener('change', syncCustomBackgroundControls);
+      syncCustomBackgroundControls();
+
+      var counterEnabled = document.getElementById('deck_counter_colors_enabled');
+      counterEnabled.checked = !!cfg.deck_counter_colors_enabled;
+      Object.keys(COUNTER_DEFAULTS).forEach(function(id){
+        setCounterColor(id, cfg[id] || COUNTER_DEFAULTS[id]);
+        bindCounterColor(id);
+      });
+      counterEnabled.addEventListener('change', syncDeckCounterControls);
+      syncDeckCounterControls();
 
       // toggles
       renderToggles('minimalGroup', MINIMAL_DASH, cfg);
@@ -828,12 +1017,87 @@
       active_color_theme: _activeTheme || 'ocean',
       custom_bg_light: '#f5f5f7',
       custom_bg_dark: '#1f1f21',
+      custom_background_enabled: !!document.getElementById('custom_background_enabled').checked,
+      custom_background_blur: Number(val('custom_background_blur')) || 0,
+      custom_background_overlay: Number(val('custom_background_overlay')) || 0,
+      custom_background_position: ['top','center','bottom'].indexOf(val('custom_background_position'))>=0 ? val('custom_background_position') : 'center',
+      custom_background_studied_text: val('custom_background_studied_text') === 'light' ? 'light' : 'dark',
+      deck_counter_colors_enabled: !!document.getElementById('deck_counter_colors_enabled').checked,
+      deck_counter_new_light: counterColorValue('deck_counter_new_light'),
+      deck_counter_learn_light: counterColorValue('deck_counter_learn_light'),
+      deck_counter_due_light: counterColorValue('deck_counter_due_light'),
+      deck_counter_new_dark: counterColorValue('deck_counter_new_dark'),
+      deck_counter_learn_dark: counterColorValue('deck_counter_learn_dark'),
+      deck_counter_due_dark: counterColorValue('deck_counter_due_dark'),
       sidebar_shortcuts: Object.assign({}, _shortcutValues)
     };
     document.querySelectorAll('input[type=checkbox][data-key]').forEach(function(cb){ out[cb.dataset.key]=cb.checked; });
     return out;
   }
   function save(){ bridge('save', JSON.stringify(collect())); }
+  function syncCustomBackgroundControls(){
+    var enabled=!!document.getElementById('custom_background_enabled').checked;
+    document.getElementById('customBackgroundPanel').classList.toggle('open',enabled);
+    document.getElementById('backgroundStyleRow').classList.toggle('setting-locked',enabled);
+    var blur=Number(val('custom_background_blur'))||0,overlay=Number(val('custom_background_overlay'))||0;
+    document.getElementById('customBackgroundBlurValue').textContent=blur+' px';
+    document.getElementById('customBackgroundOverlayValue').textContent=overlay+'%';
+    var preview=document.getElementById('customBackgroundPreview');
+    preview.style.setProperty('--preview-blur',blur+'px');
+    preview.style.setProperty('--preview-overlay',String(overlay/100));
+    var position=val('custom_background_position');
+    document.getElementById('customBackgroundImage').style.objectPosition='center '+(position==='top'?'top':position==='bottom'?'bottom':'center');
+  }
+  function resetCustomBackgroundDefaults(){
+    document.getElementById('custom_background_blur').value=0;
+    document.getElementById('custom_background_overlay').value=0;
+    setSelect('custom_background_position','center');
+    setSelect('custom_background_studied_text','dark');
+    syncCustomBackgroundControls();
+  }
+  function validCounterHex(value){ return /^#[0-9A-F]{6}$/.test(String(value||'').trim().toUpperCase()); }
+  function counterColorValue(id){
+    var input=document.getElementById(id),value=String(input.value||'').trim().toUpperCase();
+    return validCounterHex(value)?value:(input.dataset.valid||COUNTER_DEFAULTS[id]);
+  }
+  function setCounterColor(id,value){
+    var input=document.getElementById(id),picker=document.getElementById(id+'_picker');
+    var normalized=String(value||'').trim().toUpperCase();
+    if(!validCounterHex(normalized)) normalized=COUNTER_DEFAULTS[id];
+    input.value=normalized;input.dataset.valid=normalized;input.classList.remove('invalid');picker.value=normalized.toLowerCase();
+  }
+  function bindCounterColor(id){
+    var input=document.getElementById(id),picker=document.getElementById(id+'_picker');
+    if(input.dataset.bound==='1')return;input.dataset.bound='1';
+    picker.addEventListener('input',function(){setCounterColor(id,picker.value);syncDeckCounterControls();});
+    input.addEventListener('input',function(){
+      var value=String(input.value||'').trim().toUpperCase(),valid=validCounterHex(value);
+      input.classList.toggle('invalid',!valid);
+      if(valid){input.value=value;input.dataset.valid=value;picker.value=value.toLowerCase();syncDeckCounterControls();}
+    });
+    input.addEventListener('blur',function(){if(!validCounterHex(input.value))setCounterColor(id,input.dataset.valid||COUNTER_DEFAULTS[id]);syncDeckCounterControls();});
+  }
+  function syncDeckCounterControls(){
+    var enabled=!!document.getElementById('deck_counter_colors_enabled').checked;
+    document.getElementById('deckCounterColorPanel').classList.toggle('open',enabled);
+    var previewMap={
+      deck_counter_new_light:'counterPreviewNewLight',deck_counter_learn_light:'counterPreviewLearnLight',deck_counter_due_light:'counterPreviewDueLight',
+      deck_counter_new_dark:'counterPreviewNewDark',deck_counter_learn_dark:'counterPreviewLearnDark',deck_counter_due_dark:'counterPreviewDueDark'
+    };
+    Object.keys(previewMap).forEach(function(id){document.getElementById(previewMap[id]).style.color=counterColorValue(id);});
+  }
+  function resetDeckCounterDefaults(){
+    Object.keys(COUNTER_DEFAULTS).forEach(function(id){setCounterColor(id,COUNTER_DEFAULTS[id]);});
+    syncDeckCounterControls();
+  }
+  window.updateCustomBackground=function(data){
+    data=data||{};var preview=document.getElementById('customBackgroundPreview');
+    var image=document.getElementById('customBackgroundImage');
+    preview.classList.toggle('has-image',!!data.hasImage);
+    image.src=data.preview||'';
+    document.getElementById('removeBackgroundButton').disabled=!data.hasImage;
+    document.getElementById('customBackgroundQualityWarning').classList.toggle('visible',!!data.hasImage&&!!data.qualityWarning);
+  };
 
   // navigation
   function gotoPage(p){

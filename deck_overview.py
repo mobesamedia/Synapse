@@ -582,6 +582,34 @@ def on_overview_render(web, ctx):
         lbl_brainstorm_btn = _("Deck Brainstorm Cloud")
         lbl_start_study = _("Start Study")
 
+        custom_background_override = ""
+        if current_settings.get("custom_background_enabled", False):
+            try:
+                from . import custom_background
+                custom_background_available = custom_background.has_image()
+            except Exception:
+                custom_background_available = False
+            if custom_background_available:
+                # This hook replaces the whole body after the global theme hook
+                # has run. Re-add the state class here and place the override
+                # after the linked colour theme so its gradient cannot win.
+                canvas_js = custom_background.canvas_script(True)
+                custom_background_override = """
+                <style id="synapse-overview-custom-background">
+                  html:has(body.synapse-custom-background):has(#custom-dashboard),
+                  body.synapse-custom-background:has(#custom-dashboard),
+                  body.synapse-custom-background #overview-wrapper {
+                    background: transparent !important;
+                    background-color: transparent !important;
+                    background-image: none !important;
+                    background-attachment: initial !important;
+                  }
+                </style>
+                """ + (
+                    "<script>" + canvas_js
+                    + "document.body.classList.add('overview');</script>"
+                )
+
         page_html = f"""
         {get_style()}
         <div id="overview-wrapper">
@@ -642,6 +670,7 @@ def on_overview_render(web, ctx):
             </div>
         </div>
         {get_script()}
+        {custom_background_override}
         """
         web.body = page_html
     except Exception as e:

@@ -66,14 +66,14 @@ def get_daily_review_counts(since_days=None):
         if since_days is None:
             rows = mw.col.db.all(
                 "SELECT strftime('%Y-%m-%d', id/1000 - ?, 'unixepoch', 'localtime') AS d, "
-                "COUNT(*) FROM revlog GROUP BY d",
+                "COUNT(*) FROM revlog WHERE type != 4 GROUP BY d",
                 offset,
             )
         else:
             start = datetime.now() - timedelta(days=int(since_days))
             rows = mw.col.db.all(
                 "SELECT strftime('%Y-%m-%d', id/1000 - ?, 'unixepoch', 'localtime') AS d, "
-                "COUNT(*) FROM revlog WHERE id >= ? GROUP BY d",
+                "COUNT(*) FROM revlog WHERE id >= ? AND type != 4 GROUP BY d",
                 offset,
                 int(start.timestamp()) * 1000,
             )
@@ -83,21 +83,23 @@ def get_daily_review_counts(since_days=None):
         return {}
 
 
-CHART_DAYS = 30  # days shown in the mini activity sparkline
+DEFAULT_CHART_DAYS = 30
 
 
-def _build_mini_chart():
-    """Inline-SVG sparkline: reviews per day, last CHART_DAYS days.
+def _build_mini_chart(chart_days=DEFAULT_CHART_DAYS):
+    """Inline-SVG sparkline: reviews per day for the selected period.
 
     The y-axis is relative to the window: the best day in the window is 100%,
     a day with no reviews sits on the baseline. Native per-day tooltips via
     invisible full-height hover rects (hit target ≫ mark).
     """
+    if chart_days not in (7, 30, 365):
+        chart_days = DEFAULT_CHART_DAYS
     today = anki_today()
-    counts = get_daily_review_counts(since_days=CHART_DAYS + 2)
-    start = today - timedelta(days=CHART_DAYS - 1)
+    counts = get_daily_review_counts(since_days=chart_days + 2)
+    start = today - timedelta(days=chart_days - 1)
     days, values = [], []
-    for i in range(CHART_DAYS):
+    for i in range(chart_days):
         d = start + timedelta(days=i)
         days.append(d)
         values.append(counts.get(d.isoformat(), 0))
@@ -105,7 +107,7 @@ def _build_mini_chart():
 
     W, H, PAD = 300.0, 62.0, 4.0
     PAD_R = 5.0  # right inset so the "today" dot isn't clipped at the edge
-    step = (W - PAD_R) / (CHART_DAYS - 1)
+    step = (W - PAD_R) / (chart_days - 1)
     y_lo, y_hi = H - PAD, PAD  # baseline / peak
     pts = [(i * step, y_lo - (v / vmax) * (y_lo - y_hi)) for i, v in enumerate(values)]
 
@@ -162,7 +164,7 @@ def _build_mini_chart():
     )
 
 
-def get_statistics_data(stats_days=7):
+def get_statistics_data(stats_days=7, chart_days=DEFAULT_CHART_DAYS):
     """
     Sammelt und berechnet alle Statistiken.
     Erhält den Zeitraum (stats_days) als Argument von __init__.py.
@@ -170,13 +172,16 @@ def get_statistics_data(stats_days=7):
 
     if not isinstance(stats_days, int) or stats_days < 1:
         stats_days = 7
+    if chart_days not in (7, 30, 365):
+        chart_days = DEFAULT_CHART_DAYS
 
     now = time.monotonic()
-    cached = _statistics_cache.get(stats_days)
+    cache_key = ("full", stats_days, chart_days)
+    cached = _statistics_cache.get(cache_key)
     if cached and now - cached[0] <= _STATISTICS_CACHE_TTL_SECONDS:
         return cached[1]
 
-    chart_html = _build_mini_chart()
+    chart_html = _build_mini_chart(chart_days)
 
     stats_start_ts = int((datetime.now() - timedelta(days=stats_days)).timestamp()) * 1000
 
@@ -229,9 +234,10 @@ def get_statistics_data(stats_days=7):
         "accuracy_raw": accuracy_percent,
         "retention_percent": retention_percent,
         "new_cards_percent": new_cards_percent,
-        "days_scope": stats_days 
+        "days_scope": stats_days,
+        "chart_days": chart_days,
     }
-    _statistics_cache[stats_days] = (time.monotonic(), result)
+    _statistics_cache[cache_key] = (time.monotonic(), result)
     return result
 
 
@@ -288,8 +294,13 @@ def get_minimal_statistics_data(stats_days=7):
     _statistics_cache[cache_key] = (time.monotonic(), result)
     return result
 
-def render_widget_html_internal(stats):
+def render_widget_html_internal(stats, visibility=None):
     """Interne Funktion zum Bauen des HTMLs."""
+    visibility = visibility or {}
+    show_consistency = bool(visibility.get("consistency", True))
+    show_efficiency = bool(visibility.get("efficiency", True))
+    show_retention = bool(visibility.get("retention", True))
+    show_new_cards = bool(visibility.get("new_cards", True))
     retention_val = stats['retention_percent']
     new_cards_val = stats['new_cards_percent']
     days_scope = stats['days_scope']
@@ -319,12 +330,15 @@ def render_widget_html_internal(stats):
     accuracy_color = MAIN_BLUE
     retention_color = MAIN_BLUE
 
-    tooltip_consistency = _("Reviews per day (last 30 days). The best day in this period is the top of the curve.")
+    chart_days = stats.get("chart_days", DEFAULT_CHART_DAYS)
+    chart_period_text = _("Last year") if chart_days == 365 else _("Last {} days").format(chart_days)
+    tooltip_consistency = _("Reviews per day ({}). The best day in this period is the top of the curve.").format(chart_period_text)
     tooltip_efficiency = _("Cards per minute ({}). Time capped at 45s/card.").format(period_text)
     tooltip_accuracy = _("Correct answers: {:.1f}% ({}).").format(acc_real, period_text)
     tooltip_retention = _("Retention on reviews ({}).").format(period_text)
     tooltip_new_cards = _("Percentage of unseen cards in collection.")
     tooltip_info = _("What do these statistics show?")
+    tooltip_settings = _("Customize statistics")
 
     # Pre-computed translated labels for HTML
     label_consistency = _("Consistency")
@@ -337,6 +351,56 @@ def render_widget_html_internal(stats):
 
     _cl = _palette(False)
     _cd = _palette(True)
+    flexible_columns = []
+    if show_consistency:
+        flexible_columns.append("minmax(190px, 1.55fr)")
+    if show_efficiency:
+        flexible_columns.append("minmax(175px, 1fr)")
+    shown_circle_count = int(show_retention) + int(show_new_cards)
+    circle_column = "196px" if shown_circle_count == 2 else "104px"
+    if shown_circle_count and not flexible_columns:
+        circle_column = "minmax(196px, 1fr)" if shown_circle_count == 2 else "minmax(104px, 1fr)"
+    fixed_columns = [circle_column] if shown_circle_count else []
+    grid_columns = " ".join(flexible_columns + fixed_columns) or "1fr"
+
+    blocks = []
+    if show_consistency:
+        blocks.append(f"""
+        <div class="stat-block stat-consistency">
+            <h3 class="subtle-title" title="{tooltip_consistency}" style="margin:0;">{label_consistency}</h3>
+            <div class="stat-spacer"></div>
+            <div class="spark-wrap">{stats['chart_html']}</div>
+        </div>""")
+    if show_efficiency:
+        blocks.append(f"""
+        <div class="stat-block stat-efficiency">
+            <h3 class="subtle-title">{label_efficiency}</h3>
+            <div class="stat-spacer efficiency-spacer"></div>
+            <div class="progress-row" title="{tooltip_efficiency}">
+                <span class="label">{label_eff_short}</span>
+                <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:{eff_visual:.1f}%;background-color:{efficiency_color};"></div></div>
+            </div>
+            <div class="progress-row" title="{tooltip_accuracy}">
+                <span class="label">{label_acc_short}</span>
+                <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:{acc_visual:.1f}%;background-color:{accuracy_color};"></div></div>
+            </div>
+        </div>""")
+    circle_items = []
+    if show_retention:
+        circle_items.append(f"""
+        <div class="single-circle-stat" title="{tooltip_retention}">
+            <h3 class="subtle-title">{label_retention}</h3>
+            <div class="retention-circle" style="background:radial-gradient(closest-side,var(--stat-bg) 79%,transparent 80% 100%),conic-gradient({retention_color} {retention_val:.1f}%,var(--progress-bg) 0);">{retention_val:.0f}%</div>
+        </div>""")
+    if show_new_cards:
+        circle_items.append(f"""
+        <div class="single-circle-stat" title="{tooltip_new_cards}">
+            <h3 class="subtle-title">{label_new_cards}</h3>
+            <div class="retention-circle" style="background:radial-gradient(closest-side,var(--stat-bg) 79%,transparent 80% 100%),conic-gradient({MAIN_BLUE} {new_cards_val:.1f}%,var(--progress-bg) 0);">{new_cards_val:.0f}%</div>
+        </div>""")
+    if circle_items:
+        blocks.append(f'<div class="stat-block circle-group">{"".join(circle_items)}</div>')
+
     css = f"""
     <style>
         :root {{
@@ -364,7 +428,7 @@ def render_widget_html_internal(stats):
             /* anchor for the absolutely positioned info button (top right) */
             position: relative;
             display: grid;
-            grid-template-columns: 1.2fr 1.1fr 0.9fr;
+            grid-template-columns: {grid_columns};
             gap: 16px;
             /* stretch: all three blocks share the tallest height, so their
                contents can bottom-align flush via the flexible spacers */
@@ -390,17 +454,15 @@ def render_widget_html_internal(stats):
             gap: 8px;
             text-align: left;
         }}
-        .stat-block.circle-group {{
-            flex-direction: row;
-            justify-content: center;
-            gap: 20px;
-        }}
-        /* Divider before the middle and right blocks. With the grid gap of
-           16px and 16px padding after the line, the spacing is symmetric on
-           both sides of each divider. */
-        .stat-block.divided {{
+        .stat-block + .stat-block {{
             border-left: 1px solid var(--stat-border);
             padding-left: 16px;
+        }}
+        .circle-group {{
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
         }}
         .stat-block h3 {{
             margin: 0 0 4px 0;
@@ -426,6 +488,8 @@ def render_widget_html_internal(stats):
             height: 62px;
             display: block;
         }}
+        .stat-spacer {{ flex: 1 1 auto; }}
+        .efficiency-spacer {{ min-height: var(--spacer-height-efficiency); }}
 
         .progress-row {{
             display: flex;
@@ -462,11 +526,16 @@ def render_widget_html_internal(stats):
             font-size: 18px;
             font-weight: 600;
         }}
-        /* ── Info button (top right): opens the statistics explanations ── */
-        .stats-info-btn {{
+        /* ── Widget controls (top right) ── */
+        .stats-widget-controls {{
             position: absolute;
             top: 12px;
             right: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }}
+        .stats-control-btn {{
             width: 20px;
             height: 20px;
             border-radius: 50%;
@@ -482,78 +551,46 @@ def render_widget_html_internal(stats):
             opacity: 0.8;
             transition: opacity 0.2s ease;
         }}
-        .stats-info-btn:hover {{
+        .stats-control-btn:hover {{
             opacity: 1;
+        }}
+        .stats-control-btn svg {{ width: 12px; height: 12px; display: block; }}
+        @media (max-width: 720px) {{
+            .stats-widget-container {{ grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }}
+            .stat-block + .stat-block {{ border-left: 0; padding-left: 0; }}
+            .stat-block {{ border-top: 1px solid var(--stat-border); padding-top: 12px; }}
+            .stats-widget-controls + .stat-block {{ border-top: 0; padding-top: 0; }}
+        }}
+        @media (max-width: 470px) {{
+            .stats-widget-container {{ grid-template-columns: minmax(0, 1fr); padding-right: 42px; }}
         }}
     </style>
     """
 
     html = f"""
     <div class="stats-widget-container">
-        <!-- Info button: opens a dialog explaining every statistic -->
-        <div class="stats-info-btn" title="{tooltip_info}" onclick="pycmd('pycmd:synapsepro:stats_info')">i</div>
-
-        <!-- Block 1: Consistency (activity sparkline) -->
-        <div class="stat-block">
-            <h3 class="subtle-title" title="{tooltip_consistency}" style="margin:0;">{label_consistency}</h3>
-            <div style="flex: 1 1 auto;"></div>
-            <div class="spark-wrap">
-                {stats['chart_html']}
+        <div class="stats-widget-controls">
+            <div class="stats-control-btn" title="{tooltip_settings}" onclick="pycmd('pycmd:synapsepro:stats_settings')" aria-label="{tooltip_settings}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06a1.7 1.7 0 0 0-1.88-.34 1.7 1.7 0 0 0-1.03 1.56V21h-4v-.08A1.7 1.7 0 0 0 8.97 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.56-1.03H3v-4h.08A1.7 1.7 0 0 0 4.6 8.97a1.7 1.7 0 0 0-.34-1.88l-.06-.06L7.03 4.2l.06.06a1.7 1.7 0 0 0 1.88.34A1.7 1.7 0 0 0 10 3.04V3h4v.08a1.7 1.7 0 0 0 1.03 1.52 1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06a1.7 1.7 0 0 0-.34 1.88A1.7 1.7 0 0 0 20.96 10H21v4h-.08A1.7 1.7 0 0 0 19.4 15z"></path></svg>
             </div>
+            <div class="stats-control-btn" title="{tooltip_info}" onclick="pycmd('pycmd:synapsepro:stats_info')">i</div>
         </div>
-
-        <!-- Block 2: Efficiency -->
-        <div class="stat-block divided">
-            <h3 class="subtle-title">{label_efficiency}</h3>
-            <div style="flex: 1 1 auto; min-height: var(--spacer-height-efficiency);"></div>
-
-            <div class="progress-row" title="{tooltip_efficiency}">
-                <span class="label">{label_eff_short}</span>
-                <div class="progress-bar-bg">
-                    <div class="progress-bar-fill" style="width: {eff_visual:.1f}%; background-color: {efficiency_color};"></div>
-                </div>
-            </div>
-
-            <div class="progress-row" title="{tooltip_accuracy}">
-                <span class="label">{label_acc_short}</span>
-                <div class="progress-bar-bg">
-                    <div class="progress-bar-fill" style="width: {acc_visual:.1f}%; background-color: {accuracy_color};"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Block 3: Circles -->
-        <div class="stat-block circle-group divided">
-            <div class="single-circle-stat" title="{tooltip_retention}">
-                <h3 class="subtle-title">{label_retention}</h3>
-                <div class="retention-circle-container">
-                    <div class="retention-circle" style="background: radial-gradient(closest-side, var(--stat-bg) 79%, transparent 80% 100%), conic-gradient({retention_color} {retention_val:.1f}%, var(--progress-bg) 0);">{retention_val:.0f}%</div>
-                </div>
-            </div>
-
-            <div class="single-circle-stat" title="{tooltip_new_cards}">
-                <h3 class="subtle-title">{label_new_cards}</h3>
-                <div class="retention-circle-container">
-                    <div class="retention-circle" style="background: radial-gradient(closest-side, var(--stat-bg) 79%, transparent 80% 100%), conic-gradient({MAIN_BLUE} {new_cards_val:.1f}%, var(--progress-bg) 0);">{new_cards_val:.0f}%</div>
-                </div>
-            </div>
-        </div>
-
+        {''.join(blocks)}
     </div>
     """
     
     return css + html
 
-def render_statistics_widget_html(stats_days=7):
+def render_statistics_widget_html(stats_days=7, chart_days=DEFAULT_CHART_DAYS, visibility=None):
     """
     Hauptfunktion, die von __init__.py aufgerufen wird.
     Akzeptiert den Zeitraum und gibt das HTML zurück.
     """
-    data = get_statistics_data(stats_days)
-    return render_widget_html_internal(data)
+    data = get_statistics_data(stats_days, chart_days)
+    return render_widget_html_internal(data, visibility)
 
 
-def show_statistics_info_dialog(parent=None, stats_days=7):
+def show_statistics_info_dialog(parent=None, stats_days=7, chart_days=DEFAULT_CHART_DAYS):
     """Info dialog for the dashboard statistics widget ("i" button).
 
     Explains every statistic shown in the widget. Opened from the deck
@@ -567,12 +604,15 @@ def show_statistics_info_dialog(parent=None, stats_days=7):
         period_text = _("Last 24 hours")
     else:
         period_text = _("Last {} days").format(stats_days)
+    if chart_days not in (7, 30, 365):
+        chart_days = DEFAULT_CHART_DAYS
+    chart_period_text = _("the last year") if chart_days == 365 else _("the last {} days").format(chart_days)
 
     sections = [
         (_("Consistency"),
-         _("Your reviews per day over the last 30 days. The curve is relative "
+         _("Your reviews per day over {}. The curve is relative "
            "to this period: the day with the most reviews forms the peak, days "
-           "without reviews sit on the baseline. The dot marks today.")),
+           "without reviews sit on the baseline. The dot marks today.").format(chart_period_text)),
         (_("Efficiency (Eff.)"),
          _("How many cards you answer correctly per minute of study time "
            "({}). A full bar equals 7.5 correct cards per minute. Time per "
@@ -595,7 +635,7 @@ def show_statistics_info_dialog(parent=None, stats_days=7):
         f"<p style='margin:0 0 12px 0;'><b>{title}</b><br>{text}</p>"
         for title, text in sections
     )
-    footer = _("The time period ({}) can be changed in the SynapsePro settings.").format(period_text)
+    footer = _("Use the gear button on the statistics widget to change periods and visible insights.")
     html_text = (
         f"<h3 style='margin:0 0 12px 0;'>{_('Statistics')}</h3>"
         f"{body}"

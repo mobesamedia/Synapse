@@ -285,8 +285,14 @@ def generate_learning_plan_widget(plan_data: List[Dict]) -> str:
 
     date_style = f"font-size: 0.95em; font-weight: bold; color: var(--plan-date-color); white-space: nowrap;"
     header_style = "display: flex; justify-content: space-between; align-items: center; padding: 15px 15px 10px 15px;"
+    empty_status_html = ""
+    if not plan_data:
+        empty_status_html = (
+            f'<span class="plan-widget-empty-status">'
+            f'{_("No study plan configured.")}</span>'
+        )
 
-    header_html = f'''<div style="{header_style}"><h5 style="{main_title_style}">{widget_title}</h5><span style="{date_style}">{today_str}</span></div>'''
+    header_html = f'''<div class="plan-widget-header" style="{header_style}"><h5 style="{main_title_style}">{widget_title}</h5>{empty_status_html}<span class="plan-widget-date" style="{date_style}">{today_str}</span></div>'''
 
     rows_html = ""
 
@@ -325,8 +331,7 @@ def generate_learning_plan_widget(plan_data: List[Dict]) -> str:
     '''
 
     if not plan_data:
-        no_plan_msg = _("No learning plan configured yet.")
-        rows_html = f"<div style='padding: 0 15px 15px 15px;'><p style='font-size:0.9em; color: var(--text-color-light); margin: 0;'>{no_plan_msg}</p></div>"
+        rows_html = ""
     else:
         rows_container_style = "padding: 0 10px 10px 10px;"
         rows_content = ""
@@ -599,10 +604,18 @@ def generate_learning_plan_widget(plan_data: List[Dict]) -> str:
             </div>
             '''
 
-        rows_html = f'<div style="{rows_container_style}">{rows_content}{modal_html}</div>'
+        rows_html = f'<div class="plan-widget-content plan-widget-rows" style="{rows_container_style}">{rows_content}{modal_html}</div>'
 
     widget_style = f"{base_style} flex: {PLAN_WIDGET_FLEX_GROW} {PLAN_WIDGET_FLEX_SHRINK} {PLAN_WIDGET_FLEX_BASIS}; max-width: {PLAN_WIDGET_MAX_WIDTH}; min-width: 200px; min-height: 100px; display: flex; flex-direction: column; justify-content: flex-start;"
-    widget_html = f'''<div class="daily-widget plan-widget" style="{widget_style}">{header_html}{rows_html}</div>'''
+    if not plan_data:
+        plan_state_class = " plan-widget-is-empty"
+    elif len(plan_data) == 1:
+        plan_state_class = " plan-widget-is-single"
+    elif len(plan_data) == 2:
+        plan_state_class = " plan-widget-is-multiple plan-widget-count-2"
+    else:
+        plan_state_class = " plan-widget-is-multiple plan-widget-count-many"
+    widget_html = f'''<div class="daily-widget plan-widget{plan_state_class}" style="{widget_style}">{header_html}{rows_html}</div>'''
     return widget_html
 
 def generate_fact_widget(fact_theme: str = "Medical") -> str:
@@ -693,8 +706,8 @@ def generate_fact_widget(fact_theme: str = "Medical") -> str:
     widget_outer_style = f"{base_style} flex: {FACT_WIDGET_FLEX_GROW} {FACT_WIDGET_FLEX_SHRINK} {FACT_WIDGET_FLEX_BASIS}; max-width: {FACT_WIDGET_MAX_WIDTH}; min-width: 300px; min-height: 100px;"
     widget_html = f'''
     <div class="daily-widget fact-widget" style="{widget_outer_style}">
-      <div style="{widget_inner_style}">
-        <div style="flex: 1; text-align: left;">
+      <div class="fact-widget-content" style="{widget_inner_style}">
+        <div class="fact-widget-text" style="flex: 1; text-align: left;">
             <h5 style="{title_style}">{fact_title}</h5>
             <p style="{text_style}">{fact_text}</p>
         </div>
@@ -705,7 +718,10 @@ def generate_fact_widget(fact_theme: str = "Medical") -> str:
     return widget_html
 
 # --- Entry point ---
-def generate_daily_widgets_html(learning_plan_data: List[Dict], fact_theme: str) -> str:
+def generate_daily_widgets_html(
+    learning_plan_data: List[Dict], fact_theme: str,
+    show_study_plan: bool = True, show_daily_fact: bool = True,
+) -> str:
     _cl = _palette(False)
     _cd = _palette(True)
     css_styles = f"""
@@ -719,6 +735,157 @@ def generate_daily_widgets_html(learning_plan_data: List[Dict], fact_theme: str)
         }}
         .daily-widget {{
             border: 1px solid var(--stat-border);
+        }}
+        #daily-widgets-container:not(.single-widget) .plan-widget-is-empty .plan-widget-header {{
+            display: grid !important;
+            grid-template-columns: minmax(0, 1fr) auto;
+            align-items: start !important;
+            gap: 8px 12px;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 15px !important;
+        }}
+        #daily-widgets-container:not(.single-widget) .plan-widget-is-empty .plan-widget-header h5 {{
+            grid-column: 1;
+            grid-row: 1;
+            min-width: 0;
+        }}
+        #daily-widgets-container:not(.single-widget) .plan-widget-is-empty .plan-widget-date {{
+            grid-column: 2;
+            grid-row: 1;
+            justify-self: end;
+        }}
+        #daily-widgets-container:not(.single-widget) .plan-widget-is-empty .plan-widget-empty-status {{
+            grid-column: 1 / -1;
+            grid-row: 2;
+            color: var(--text-color-light);
+            font-size: 0.82em;
+            font-weight: 500;
+            line-height: 1.35;
+            text-align: left;
+        }}
+        #daily-widgets-container.single-widget .daily-widget {{
+            flex: 1 1 100% !important;
+            width: 100%;
+            max-width: none !important;
+        }}
+        #daily-widgets-container.single-widget .fact-widget-content {{
+            gap: clamp(28px, 4vw, 56px) !important;
+        }}
+        #daily-widgets-container.single-widget .fact-widget-text {{
+            min-width: 0;
+        }}
+        #daily-widgets-container.single-widget .plan-widget {{
+            flex-direction: column !important;
+            min-height: 0 !important;
+        }}
+        #daily-widgets-container.single-widget .plan-widget-header {{
+            width: 100%;
+            box-sizing: border-box;
+            flex-direction: row;
+            align-items: center !important;
+        }}
+        #daily-widgets-container.single-widget .plan-widget-content {{
+            flex: 1 1 auto;
+            min-width: 0;
+            box-sizing: border-box;
+            padding-top: 10px !important;
+        }}
+        #daily-widgets-container.single-widget .plan-widget-is-empty {{
+            min-height: 0 !important;
+            align-items: stretch;
+        }}
+        #daily-widgets-container.single-widget .plan-widget-is-empty .plan-widget-header {{
+            display: grid !important;
+            grid-template-columns: auto minmax(0, 1fr) auto;
+            gap: 16px;
+            padding: 11px 15px !important;
+        }}
+        #daily-widgets-container.single-widget .plan-widget-is-single {{
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center;
+            gap: 28px;
+            padding: 0;
+        }}
+        #daily-widgets-container.single-widget .plan-widget-is-single .plan-widget-header {{
+            flex: 1 1 auto;
+            width: auto;
+            justify-content: flex-start !important;
+            gap: 22px;
+            padding: 15px 0 15px 15px !important;
+        }}
+        #daily-widgets-container.single-widget .plan-widget-is-single .plan-widget-content {{
+            flex: 0 1 320px;
+            width: min(320px, 42%);
+            padding: 11px 15px 11px 0 !important;
+        }}
+        #daily-widgets-container.single-widget .plan-widget-is-single .plan-widget-date {{
+            margin-left: 0;
+        }}
+        #daily-widgets-container.single-widget .plan-widget-is-single .plan-row-item {{
+            width: 100%;
+            margin: 0 !important;
+        }}
+        #daily-widgets-container.single-widget .plan-widget-empty-status {{
+            min-width: 0;
+            color: var(--text-color-light);
+            font-size: 0.82em;
+            font-weight: 500;
+            text-align: center;
+            overflow-wrap: anywhere;
+        }}
+        #daily-widgets-container.single-widget .plan-widget-rows {{
+            display: grid;
+            gap: 8px;
+        }}
+        #daily-widgets-container.single-widget .plan-widget-count-2 .plan-widget-rows {{
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }}
+        #daily-widgets-container.single-widget .plan-widget-count-many .plan-widget-rows {{
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        }}
+        #daily-widgets-container.single-widget .plan-row-item {{
+            width: auto;
+            min-width: 0;
+            margin-bottom: 0 !important;
+            box-sizing: border-box;
+        }}
+        #daily-widgets-container.single-widget .plan-row-item > span:first-child {{
+            min-width: 0;
+            overflow-wrap: anywhere;
+        }}
+        @media (max-width: 650px) {{
+            #daily-widgets-container.single-widget .fact-widget-content {{
+                gap: 20px !important;
+            }}
+            #daily-widgets-container.single-widget .plan-widget-content {{
+                width: 100%;
+                padding-top: 0 !important;
+            }}
+            #daily-widgets-container.single-widget .plan-widget-rows {{
+                grid-template-columns: 1fr;
+            }}
+            #daily-widgets-container.single-widget .plan-widget-is-empty .plan-widget-header {{
+                gap: 8px;
+            }}
+            #daily-widgets-container.single-widget .plan-widget-is-single {{
+                flex-direction: column !important;
+                align-items: stretch;
+                gap: 10px 16px;
+            }}
+            #daily-widgets-container.single-widget .plan-widget-is-single .plan-widget-header {{
+                width: 100%;
+                padding: 12px 15px 0 15px !important;
+            }}
+            #daily-widgets-container.single-widget .plan-widget-is-single .plan-widget-content {{
+                width: 100%;
+                padding: 0 15px 12px 15px !important;
+            }}
+            #daily-widgets-container.single-widget .plan-widget-count-2 .plan-widget-rows,
+            #daily-widgets-container.single-widget .plan-widget-count-many .plan-widget-rows {{
+                grid-template-columns: 1fr;
+            }}
         }}
         body.night_mode {{
             --stat-bg: {_cd["surface"]};
@@ -734,10 +901,12 @@ def generate_daily_widgets_html(learning_plan_data: List[Dict], fact_theme: str)
     """
 
     plan_widget_html = ""; fact_widget_html = ""
-    try: plan_widget_html = generate_learning_plan_widget(learning_plan_data)
-    except Exception as e: print(f"ERROR generating plan widget: {e}"); traceback.print_exc(); plan_widget_html = "<!-- Error -->"
-    try: fact_widget_html = generate_fact_widget(fact_theme)
-    except Exception as e: print(f"ERROR generating fact widget: {e}"); traceback.print_exc(); fact_widget_html = "<!-- Error -->"
+    if show_study_plan:
+        try: plan_widget_html = generate_learning_plan_widget(learning_plan_data)
+        except Exception as e: print(f"ERROR generating plan widget: {e}"); traceback.print_exc(); plan_widget_html = "<!-- Error -->"
+    if show_daily_fact:
+        try: fact_widget_html = generate_fact_widget(fact_theme)
+        except Exception as e: print(f"ERROR generating fact widget: {e}"); traceback.print_exc(); fact_widget_html = "<!-- Error -->"
 
     container_style = f"""
         display: flex; align-items: flex-start; flex-wrap: wrap;
@@ -745,6 +914,8 @@ def generate_daily_widgets_html(learning_plan_data: List[Dict], fact_theme: str)
         margin: 0 auto {DAILY_WIDGETS_MARGIN_BOTTOM} auto;
         padding: 0 10px; box-sizing: border-box;
     """
-    container_html = f'''<div id="daily-widgets-container" style="{container_style}">{plan_widget_html}{fact_widget_html}</div>'''
+    enabled_widget_count = int(show_study_plan) + int(show_daily_fact)
+    container_class = "single-widget" if enabled_widget_count == 1 else ""
+    container_html = f'''<div id="daily-widgets-container" class="{container_class}" style="{container_style}">{plan_widget_html}{fact_widget_html}</div>'''
 
     return css_styles + container_html

@@ -13,6 +13,7 @@ Bridge protocol (JS -> Python), every message is a console.log of the form
     cancel               -> reject() the dialog
     editTheme            -> open the native colour editor, push the result back
     editShortcut:<key>   -> record a native Qt shortcut for one sidebar tool
+    selectExampleBackground:<key> -> stage one bundled example wallpaper
     openUrl:<url>        -> open the url in the system browser
 
 Public API (matches the native SettingsDialog so __init__.show_settings_dialog
@@ -27,6 +28,7 @@ import json
 import base64
 import threading
 import time
+import re
 from typing import Any, Dict, Optional
 
 try:
@@ -63,10 +65,11 @@ try:
     from aqt.qt import (
         QDialog, QDialogButtonBox, QKeySequence, QKeySequenceEdit, QLabel,
         QPushButton, QVBoxLayout, QDesktopServices, QUrl, Qt, pyqtSignal,
+        QBuffer, QIODevice, QSize,
     )
     from PyQt6.QtWebEngineWidgets import QWebEngineView
     from PyQt6.QtWebEngineCore import QWebEnginePage, QWebEngineSettings
-    from PyQt6.QtGui import QColor
+    from PyQt6.QtGui import QColor, QImageReader
     _QT_AVAILABLE = True
 except ImportError:
     pass
@@ -90,12 +93,36 @@ _THEME_LOGOS = {
     "dusty":   "logo_dusty.svg",
 }
 
+_COUNTER_COLOR_DEFAULTS = {
+    "deck_counter_new_light": "#0071D3",
+    "deck_counter_learn_light": "#E60012",
+    "deck_counter_due_light": "#00A000",
+    "deck_counter_new_dark": "#4FACFE",
+    "deck_counter_learn_dark": "#FF6B6B",
+    "deck_counter_due_dark": "#63D471",
+}
+_HEX_COLOR_RE = re.compile(r"^#[0-9A-Fa-f]{6}$")
+
+
+def _safe_counter_color(value: Any, fallback: str) -> str:
+    return value.upper() if isinstance(value, str) and _HEX_COLOR_RE.fullmatch(value) else fallback
+
 # Home/news banner. The fixed config endpoint is controlled by SynapsePro and
 # can update the image and click target without shipping a new add-on version.
 HOME_BANNER_URL = "https://www.synapse-pro.de/addon/home_banner.png"
 HOME_BANNER_LINK = "https://www.synapse-pro.de/"
 HOME_BANNER_CONFIG_URL = "https://www.synapse-pro.de/addon/home_banner.json"
 NEWS_BANNER_FALLBACK_FILENAME = "news-banner.png"
+EXAMPLE_WALLPAPER_DIR = "example_wallpapers"
+EXAMPLE_WALLPAPERS = (
+    ("light", "synapsepro_starter_light.webp", "Light Wallpaper",
+     "A bright wallpaper designed for Light Mode."),
+    ("dark", "synapsepro_starter_dark.webp", "Dark Wallpaper",
+     "A dark wallpaper designed for Dark Mode."),
+    ("abstract", "synapsepro_starter_abstract.webp", "Abstract Wallpaper",
+     "A colorful abstract wallpaper suitable for either mode."),
+)
+_EXAMPLE_PREVIEW_CACHE: Dict[tuple, str] = {}
 
 SUPPORTERS = [
     {
@@ -107,6 +134,8 @@ SUPPORTERS = [
         "contributions": [
             "Configurable keyboard shortcuts for individual features",
             "SoundCloud support for the Music Player",
+            "Reliable SoundCloud playback while the Music Player is hidden",
+            "Independent Music Player and Pomodoro feature toggles",
             "Claude CLI as a local API provider",
         ],
     },
@@ -118,6 +147,16 @@ SUPPORTERS = [
         ),
         "contributions": [
             "llama.cpp server support as a local AI provider",
+        ],
+    },
+    {
+        "name": "betterpull10",
+        "description": (
+            "Helped through a GitHub issue report and pull request. The changes "
+            "were reviewed and adapted to fit SynapsePro."
+        ),
+        "contributions": [
+            "Excluded manual rescheduling entries from the Consistency chart",
         ],
     },
 ]
@@ -132,7 +171,8 @@ SUPPORTERS_NOTE = (
 # Config keys that are simple on/off toggles.
 _TOGGLE_KEYS = [
     "minimal_dashboard_enabled",
-    "gamification_widgets_enabled", "daily_widgets_enabled", "deadline_bar_enabled",
+    "gamification_widgets_enabled", "study_plan_widget_enabled",
+    "daily_fact_widget_enabled", "deadline_bar_enabled",
     "statistics_widget_enabled", "deck_overview_enabled", "mindmap_enabled",
     "gamification_sidebar_enabled", "music_player_enabled", "pomodoro_enabled",
     "ai_assistant_enabled", "website_viewer_enabled", "notebook_enabled",
@@ -171,6 +211,13 @@ if _QT_AVAILABLE:
             )
             self._result: Optional[Dict] = None
             self._injected = False
+            self._background_action: Optional[str] = None
+            try:
+                from . import custom_background
+                custom_background.discard_pending()
+                self.rejected.connect(custom_background.discard_pending)
+            except Exception:
+                pass
 
             html = _html_path()
             self._available = os.path.exists(html)
@@ -235,6 +282,9 @@ if _QT_AVAILABLE:
                 )
             else:
                 s["sidebar_shortcuts"] = dict(self._shortcut_values)
+            s["deck_counter_colors_enabled"] = bool(s.get("deck_counter_colors_enabled", False))
+            for key, fallback in _COUNTER_COLOR_DEFAULTS.items():
+                s[key] = _safe_counter_color(s.get(key), fallback)
             return s
 
         # -- bridge ----------------------------------------------------------
@@ -256,6 +306,12 @@ if _QT_AVAILABLE:
                     self._edit_theme()
                 elif action == "editShortcut":
                     self._edit_shortcut(payload)
+                elif action == "selectBackground":
+                    self._select_background()
+                elif action == "selectExampleBackground":
+                    self._select_example_background(payload)
+                elif action == "removeBackground":
+                    self._remove_background()
                 elif action == "openUrl":
                     if payload:
                         QDesktopServices.openUrl(QUrl(payload))
@@ -326,6 +382,15 @@ if _QT_AVAILABLE:
             except Exception as e:
                 print(f"WebSettings: bad save payload: {e}")
                 self._result = {}
+            try:
+                from . import custom_background
+                if self._background_action == "replace":
+                    custom_background.commit_pending()
+                elif self._background_action == "remove":
+                    custom_background.remove_image()
+                custom_background.discard_pending()
+            except Exception as e:
+                print(f"WebSettings: could not commit background change: {e}")
             self.accept()
 
         def _edit_theme(self):
@@ -345,10 +410,89 @@ if _QT_AVAILABLE:
                     c = self._custom_theme_colors
                     accent = c.get("blue", "#0071D3")
                     press = c.get("blue_pressed", c.get("blue_hover", "#004990"))
-                    data = json.dumps({"accent": accent, "accentPress": press})
+                    data = json.dumps({
+                        "accent": accent,
+                        "accentPress": press,
+                        "logo": self._logo_uri("logo.svg", accent),
+                    })
                     self._page.runJavaScript(f"window.applyCustomTheme && applyCustomTheme({data});")
             except Exception as e:
                 print(f"WebSettings: theme editor error: {e}")
+
+        def _push_background_state(self):
+            try:
+                from . import custom_background
+                staged = custom_background.pending_image_path()
+                if self._background_action == "replace":
+                    has_image = os.path.isfile(staged)
+                    preview = custom_background.data_uri_for(staged)
+                elif self._background_action == "remove":
+                    has_image = False
+                    preview = ""
+                else:
+                    has_image = custom_background.has_image()
+                    preview = custom_background.preview_data_uri()
+                data = {
+                    "hasImage": has_image,
+                    "preview": preview,
+                    "qualityWarning": (
+                        custom_background.would_upscale_strongly(staged)
+                        if self._background_action == "replace" and has_image
+                        else custom_background.would_upscale_strongly()
+                        if has_image else False
+                    ),
+                }
+                self._page.runJavaScript(
+                    "window.updateCustomBackground && updateCustomBackground(%s);"
+                    % json.dumps(data)
+                )
+            except Exception as e:
+                print(f"WebSettings: background preview update failed: {e}")
+
+        def _select_background(self):
+            try:
+                from . import custom_background
+                # Keep an already staged image until the user confirms a valid
+                # replacement. Cancelling the picker must not discard it.
+                if custom_background.import_image(
+                    self, custom_background.pending_image_path()
+                ):
+                    self._background_action = "replace"
+                    self._push_background_state()
+            except Exception as e:
+                print(f"WebSettings: background import failed: {e}")
+
+        @staticmethod
+        def _example_wallpaper_path(key: str) -> str:
+            filename = next(
+                (item[1] for item in EXAMPLE_WALLPAPERS if item[0] == key), ""
+            )
+            return os.path.join(constants.icons_folder, EXAMPLE_WALLPAPER_DIR, filename) if filename else ""
+
+        def _select_example_background(self, key: str):
+            try:
+                from . import custom_background
+                path = self._example_wallpaper_path(key)
+                if not path or not os.path.isfile(path):
+                    return
+                # import_image_file() replaces the staged image atomically on
+                # success; keep the previous preview intact if decoding fails.
+                if custom_background.import_image_file(
+                    path, parent=self, target_path=custom_background.pending_image_path()
+                ):
+                    self._background_action = "replace"
+                    self._push_background_state()
+            except Exception as e:
+                print(f"WebSettings: example background import failed: {e}")
+
+        def _remove_background(self):
+            try:
+                from . import custom_background
+                custom_background.discard_pending()
+                self._background_action = "remove"
+                self._push_background_state()
+            except Exception as e:
+                print(f"WebSettings: background removal failed: {e}")
 
         def _edit_shortcut(self, feature_key: str):
             """Record one native Qt key chord and return it to the web UI."""
@@ -467,19 +611,25 @@ if _QT_AVAILABLE:
                 return c.get("blue", "#0071D3"), c.get("blue_pressed", c.get("blue_hover", "#004990"))
             return _PRESET_ACCENTS.get(key, _PRESET_ACCENTS["ocean"])
 
-        def _logo_uri(self, filename: str) -> str:
+        def _logo_uri(self, filename: str, accent: Optional[str] = None) -> str:
             try:
                 path = os.path.join(constants.icons_folder, filename)
                 if not os.path.exists(path):
                     path = os.path.join(constants.icons_folder, "logo.svg")
-                with open(path, "rb") as fh:
-                    return "data:image/svg+xml;base64," + base64.b64encode(fh.read()).decode("ascii")
+                if accent:
+                    from .logo_utils import recoloured_brand_svg_bytes
+                    raw = recoloured_brand_svg_bytes(path, accent)
+                else:
+                    with open(path, "rb") as fh:
+                        raw = fh.read()
+                return "data:image/svg+xml;base64," + base64.b64encode(raw).decode("ascii")
             except Exception:
                 return ""
 
         def _logos(self) -> Dict[str, str]:
             out = {k: self._logo_uri(f) for k, f in _THEME_LOGOS.items()}
-            out["custom"] = out.get("ocean", "")
+            accent, _pressed = self._accent_for("custom")
+            out["custom"] = self._logo_uri("logo.svg", accent)
             return out
 
         def _png_uri(self, filename: str) -> str:
@@ -547,8 +697,23 @@ if _QT_AVAILABLE:
                 "active_color_theme": active,
                 "custom_bg_light": cfg.get("custom_bg_light", "#f5f5f7"),
                 "custom_bg_dark": cfg.get("custom_bg_dark", "#1f1f21"),
+                "custom_background_enabled": bool(cfg.get("custom_background_enabled", False)),
+                "custom_background_blur": int(cfg.get("custom_background_blur", 0) or 0),
+                "custom_background_overlay": int(cfg.get("custom_background_overlay", 0) or 0),
+                "custom_background_position": (
+                    cfg.get("custom_background_position")
+                    if cfg.get("custom_background_position") in ("top", "center", "bottom")
+                    else "center"
+                ),
+                "custom_background_studied_text": (
+                    "light" if cfg.get("custom_background_studied_text") == "light"
+                    else "dark"
+                ),
+                "deck_counter_colors_enabled": bool(cfg.get("deck_counter_colors_enabled", False)),
                 "sidebar_shortcuts": dict(self._shortcut_values),
             }
+            for key, fallback in _COUNTER_COLOR_DEFAULTS.items():
+                conf[key] = _safe_counter_color(cfg.get(key), fallback)
             for k in _TOGGLE_KEYS:
                 default = False if k == "minimal_dashboard_enabled" else True
                 conf[k] = bool(cfg.get(k, default))
@@ -575,8 +740,71 @@ if _QT_AVAILABLE:
                 "supporters": SUPPORTERS,
                 "supportersNote": SUPPORTERS_NOTE,
                 "aboutLogo": self._png_uri("logo_mobesa.png"),
+                "customBackground": self._custom_background_payload(),
                 "config": conf,
             }
+
+        @staticmethod
+        def _example_preview_uri(path: str) -> str:
+            """Return one bounded cached JPEG preview, never the full wallpaper."""
+            try:
+                stat = os.stat(path)
+                cache_key = (path, stat.st_mtime_ns, stat.st_size)
+                cached = _EXAMPLE_PREVIEW_CACHE.get(cache_key)
+                if cached:
+                    return cached
+                reader = QImageReader(path)
+                reader.setAutoTransform(True)
+                source = reader.size()
+                if source.width() < 1 or source.height() < 1:
+                    return ""
+                scale = min(1.0, 720 / source.width(), 405 / source.height())
+                if scale < 1.0:
+                    reader.setScaledSize(QSize(
+                        max(1, round(source.width() * scale)),
+                        max(1, round(source.height() * scale)),
+                    ))
+                image = reader.read()
+                if image.isNull():
+                    return ""
+                buffer = QBuffer()
+                buffer.open(QIODevice.OpenModeFlag.WriteOnly)
+                if not image.save(buffer, "JPEG", 76):
+                    return ""
+                uri = "data:image/jpeg;base64," + base64.b64encode(bytes(buffer.data())).decode("ascii")
+                _EXAMPLE_PREVIEW_CACHE[cache_key] = uri
+                if len(_EXAMPLE_PREVIEW_CACHE) > 6:
+                    _EXAMPLE_PREVIEW_CACHE.pop(next(iter(_EXAMPLE_PREVIEW_CACHE)))
+                return uri
+            except Exception:
+                return ""
+
+        def _custom_background_payload(self) -> Dict[str, Any]:
+            try:
+                from . import custom_background
+                return {
+                    "hasImage": custom_background.has_image(),
+                    "preview": custom_background.preview_data_uri(),
+                    "qualityWarning": custom_background.would_upscale_strongly(),
+                    "maxFileMB": custom_background.MAX_FILE_BYTES // (1024 * 1024),
+                    "maxMegapixels": custom_background.MAX_PIXELS // 1_000_000,
+                    "examples": [
+                        {
+                            "key": key,
+                            "title": _(title),
+                            "description": _(description),
+                            "available": os.path.isfile(self._example_wallpaper_path(key)),
+                            "preview": self._example_preview_uri(self._example_wallpaper_path(key))
+                            if os.path.isfile(self._example_wallpaper_path(key)) else "",
+                        }
+                        for key, _filename, title, description in EXAMPLE_WALLPAPERS
+                    ],
+                }
+            except Exception:
+                return {
+                    "hasImage": False, "preview": "", "qualityWarning": False,
+                    "maxFileMB": 20, "maxMegapixels": 40, "examples": [],
+                }
 
 else:  # pragma: no cover - WebEngine unavailable
 

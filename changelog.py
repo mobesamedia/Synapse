@@ -3,6 +3,52 @@
 
 CHANGELOG = [
     {
+        "version": "1.5.0",
+        "date": "August 2026",
+        "items": [
+            {
+                "tag": "Highlight",
+                "text": "A new Minimalist Dashboard offers a cleaner, more linear SynapsePro experience with fewer distractions.",
+            },
+            {
+                "tag": "Highlight",
+                "text": "Custom Backgrounds let you use your own optimized image across the Dashboard and toolbars, with controls for blur, overlay, position, and text contrast.",
+            },
+            {
+                "tag": "Highlight",
+                "text": "Dedicated Statistics Settings now let you choose separate time ranges and decide which insights appear in the responsive statistics widget.",
+            },
+            {
+                "tag": "Improved",
+                "text": "Study Plan and Daily Fact widgets can now be enabled or disabled independently.",
+            },
+            {
+                "tag": "Improved",
+                "text": "The PDF Viewer and card-creation workflow now include visible page numbers, manual page selection, easier deck selection, and direct links back to selected PDF pages during review.",
+            },
+            {
+                "tag": "New",
+                "text": "SynapsePro now remembers whether the launcher sidebar was open or closed and restores that state on the next start.",
+            },
+            {
+                "tag": "Improved",
+                "text": "The SynapsePro logo now follows the primary colour of custom themes while preserving its white details.",
+            },
+            {
+                "tag": "New",
+                "text": "Deck Browser counter colours can now be customized independently for New, Learn, and Due cards in Light and Dark mode.",
+            },
+            {
+                "tag": "Improved",
+                "text": "Added a subtle loading animation to the Mind Map workspace.",
+            },
+            {
+                "tag": "Fix",
+                "text": "Fixed issues affecting the Consistency graph, SoundCloud playback, and the Pomodoro and Music Player icons in the sidebar.",
+            },
+        ],
+    },
+    {
         "version": "1.4.0",
         "date": "July 2026",
         "items": [

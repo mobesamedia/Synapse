@@ -29,7 +29,7 @@ try:
     from aqt.webview import WebContent
     from aqt.deckbrowser import DeckBrowser, DeckBrowserContent, DeckBrowserBottomBar
     from aqt.overview import Overview, OverviewBottomBar
-    from aqt.reviewer import ReviewerBottomBar
+    from aqt.reviewer import Reviewer, ReviewerBottomBar
     from aqt.toolbar import TopToolbar
 except ImportError:
     print(f"SynapsePro1: ERROR - Failed to import Anki modules.")
@@ -69,9 +69,12 @@ try:
     from .background_music import cleanup_music_player
     from .ai_assistant import cleanup_ai_assistant_sidebar
     from .mindmap_sidebar import cleanup_mindmap_sidebar    
-    from .notebook_sidebar import cleanup_notebook_sidebar, setup_notebook_sidebar, toggle_notebook_dock
+    from .notebook_sidebar import (
+        cleanup_notebook_sidebar, setup_notebook_sidebar,
+        toggle_notebook_dock, open_pdf_review_link,
+    )
     from . import deck_overview, sidebar_shortcuts
-    from . import statistics_widget, daily_widgets, minimal_dashboard, settings_dialog
+    from . import statistics_widget, daily_widgets, minimal_dashboard, settings_dialog, custom_background
     from .gamification import GamificationManager, CMD_RESET_DATA, CMD_CLAIM_CHALLENGE, CMD_LP_START_PREFIX, CMD_LP_PAUSE_PREFIX
     from .sidebar import GamificationSidebar
     from .learning_plan import LearningPlanManager
@@ -117,11 +120,14 @@ def get_default_settings() -> Dict[str, Any]:
     return {
         "onboarding_completed": False,
         "theme_enabled": True,
+        "theme_restart_warning_suppressed": False,
         "active_theme": "medical_theme.css",
         "fact_theme": "Medical", 
         "sidebar_visibility_mode": "always_show",
+        "launcher_sidebar_open": True,
         "minimal_dashboard_enabled": False,
-        "gamification_widgets_enabled": True, "daily_widgets_enabled": True, 
+        "gamification_widgets_enabled": True,
+        "study_plan_widget_enabled": True, "daily_fact_widget_enabled": True,
         "deadline_bar_enabled": True, "statistics_widget_enabled": True,
         "deck_overview_enabled": True,
         "pomodoro_enabled": True, "ai_assistant_enabled": True,
@@ -129,12 +135,29 @@ def get_default_settings() -> Dict[str, Any]:
         "mindmap_enabled": True, "gamification_sidebar_enabled": True,
         "gamification_popups_enabled": True,
         "music_player_enabled": True, "stats_time_range": 7,
+        "stats_consistency_days": 30,
+        "stats_show_consistency": True,
+        "stats_show_efficiency": True,
+        "stats_show_retention": True,
+        "stats_show_new_cards": True,
         "sidebar_shortcuts": {},
         "language": "auto",  # UI language: "auto", "en", "de", "es"
         "active_color_theme": "ocean",   # Colour theme: "ocean","orchid","forest","deluge","horizon","dusty","custom"
         "custom_theme_colors": {},       # Used when active_color_theme == "custom"
         "custom_bg_light": "#f5f5f7",    # Custom solid background (light mode)
         "custom_bg_dark":  "#1f1f21",    # Custom solid background (dark mode)
+        "custom_background_enabled": False,
+        "custom_background_blur": 0,
+        "custom_background_overlay": 0,
+        "custom_background_position": "center",
+        "custom_background_studied_text": "dark",
+        "deck_counter_colors_enabled": False,
+        "deck_counter_new_light": "#0071D3",
+        "deck_counter_learn_light": "#E60012",
+        "deck_counter_due_light": "#00A000",
+        "deck_counter_new_dark": "#4FACFE",
+        "deck_counter_learn_dark": "#FF6B6B",
+        "deck_counter_due_dark": "#63D471",
     }
 
 # --- Custom solid background -------------------------------------------------
@@ -178,7 +201,13 @@ def load_addon_settings():
     defaults = get_default_settings()
     try:
         with open(addon_settings_path, 'r', encoding='utf-8') as f:
-            defaults.update(json.load(f))
+            saved_settings = json.load(f)
+        # Older versions used one switch for both daily widgets.  Preserve its
+        # value for each new independent switch during migration.
+        legacy_daily_enabled = saved_settings.get("daily_widgets_enabled", True)
+        saved_settings.setdefault("study_plan_widget_enabled", legacy_daily_enabled)
+        saved_settings.setdefault("daily_fact_widget_enabled", legacy_daily_enabled)
+        defaults.update(saved_settings)
     except FileNotFoundError:
         pass  # First run / no settings yet — defaults are correct.
     except json.JSONDecodeError as e:
@@ -269,7 +298,12 @@ def toggle_launcher_sidebar() -> None:
     if not launcher_dock_widget:
         return
     try:
-        launcher_dock_widget.setVisible(not launcher_dock_widget.isVisible())
+        is_open = not launcher_dock_widget.isVisible()
+        launcher_dock_widget.setVisible(is_open)
+        # Persist only explicit user toggles. Automatic hiding while reviewing
+        # must not overwrite the user's preferred startup state.
+        addon_settings["launcher_sidebar_open"] = is_open
+        save_addon_settings()
         _sync_launcher_toolbar_button()
     except RuntimeError:
         pass
@@ -352,6 +386,10 @@ def _add_launcher_toggle_to_top_toolbar(links, toolbar) -> None:
 def on_state_change(new_state: str, old_state: str):
     global launcher_dock_widget
     _sync_toolbar_review_class(new_state)
+    try:
+        custom_background.sync_state(new_state)
+    except Exception as e:
+        print(f"SynapsePro: custom background state sync failed: {e}")
 
     # Remember when a review session starts — Anki's congrats screen gets a
     # session summary (cards, time, XP) injected afterwards.
@@ -395,7 +433,8 @@ def on_state_change(new_state: str, old_state: str):
             if new_state == "review":
                 launcher_dock_widget.setVisible(False)
             else:
-                launcher_dock_widget.setVisible(True)
+                launcher_dock_widget.setVisible(
+                    bool(addon_settings.get("launcher_sidebar_open", True)))
         _sync_launcher_toolbar_button()
 
     except RuntimeError:
@@ -637,6 +676,10 @@ def _apply_saved_settings(new_settings):
     # (Its HTML is only rendered on demand, unlike the bottom bar.)
     _schedule_top_toolbar_redraw(0)
     _sync_webview_bg_colors()
+    try:
+        custom_background.setup(addon_settings)
+    except Exception as e:
+        print(f"SynapsePro: custom background refresh failed: {e}")
 
     if mw.state == "deckBrowser": mw.deckBrowser.refresh()
     if mw.state == "overview": mw.reset()
@@ -729,10 +772,19 @@ def _sync_webview_bg_colors():
             night = bool(mw.pm.night_mode())
         except Exception:
             pass
-        qc = QColor(_get_theme_bg_hex(night))
+        theme_qc = QColor(_get_theme_bg_hex(night))
+        custom_active = bool(
+            addon_settings.get("custom_background_enabled", False)
+            and custom_background.has_image()
+            and getattr(mw, "state", "") in custom_background.ACTIVE_STATES
+        )
+        qc = QColor(0, 0, 0, 0) if custom_active else theme_qc
         if not qc.isValid():
             return
-        for wv in (getattr(mw, "web", None), getattr(mw, "bottomWeb", None)):
+        for wv in (
+            getattr(getattr(mw, "toolbar", None), "web", None),
+            getattr(mw, "web", None), getattr(mw, "bottomWeb", None),
+        ):
             try:
                 if wv is not None and wv.page() is not None:
                     wv.page().setBackgroundColor(qc)
@@ -742,7 +794,10 @@ def _sync_webview_bg_colors():
             cw = mw.centralWidget()
             if cw is not None:
                 pal = cw.palette()
-                pal.setColor(cw.backgroundRole(), qc)
+                # The native background layer is a child of this widget. Keep
+                # an opaque fallback behind it, but never paint that colour in
+                # front of the transparent WebEngine pages.
+                pal.setColor(cw.backgroundRole(), theme_qc)
                 cw.setPalette(pal)
                 cw.setAutoFillBackground(True)
         except Exception:
@@ -771,6 +826,27 @@ def show_settings_dialog():
         if dlg.exec():
             _apply_saved_settings(dlg.get_new_settings())
     except Exception:
+        traceback.print_exc()
+
+
+def show_statistics_settings_dialog():
+    """Open statistics settings after the dashboard web callback returned.
+
+    Creating a second modal QWebEngine dialog directly inside DeckBrowser's
+    pycmd handler can leave its renderer waiting on the still-active callback,
+    producing a permanently white window on macOS.
+    """
+    try:
+        from .statistics_settings_dialog import StatisticsSettingsDialog
+        dialog = StatisticsSettingsDialog(addon_settings, mw)
+        if dialog.exec():
+            addon_settings.update(dialog.get_new_settings())
+            save_addon_settings()
+            statistics_widget.invalidate_statistics_cache()
+            if mw.state == "deckBrowser":
+                mw.deckBrowser.refresh()
+    except Exception as e:
+        print(f"SynapsePro: statistics settings dialog error: {e}")
         traceback.print_exc()
 
 def _ensure_gamification_sidebar():
@@ -818,11 +894,49 @@ def show_configuration_dialog():
 def on_theme_changed():
     _sync_webview_bg_colors()
     try:
+        custom_background.setup(addon_settings)
+    except Exception:
+        pass
+    # Anki rebuilds its WebEngine documents after this hook. Refresh once the
+    # switch has settled so the transparent root is present in the newly
+    # created light/dark documents as well.
+    def refresh_custom_background_after_theme() -> None:
+        try:
+            if not (
+                addon_settings.get("custom_background_enabled", False)
+                and custom_background.has_image()
+            ):
+                return
+            custom_background.setup(addon_settings)
+            _schedule_top_toolbar_redraw(0)
+            state = getattr(mw, "state", "")
+            if state == "deckBrowser":
+                mw.deckBrowser.refresh()
+            elif state == "overview":
+                mw.reset()
+        except Exception as e:
+            print(f"SynapsePro: custom background theme refresh failed: {e}")
+    try:
+        mw.progress.single_shot(120, refresh_custom_background_after_theme)
+    except Exception:
+        pass
+    try:
         from .ai_assistant import refresh_ai_assistant_theme
         refresh_ai_assistant_theme()
     except Exception:
         pass
-    if mw: mw.progress.single_shot(500, mode.show_restart_warning)
+    def show_theme_restart_warning() -> None:
+        if addon_settings.get("theme_restart_warning_suppressed", False):
+            return
+        try:
+            if mode.show_restart_warning():
+                addon_settings["theme_restart_warning_suppressed"] = True
+                save_addon_settings()
+        except Exception as e:
+            print(f"SynapsePro: theme restart warning failed: {e}")
+
+    if mw:
+        mw.progress.single_shot(500, show_theme_restart_warning)
 
 
 def on_sync_finished(*_args) -> None:
@@ -875,7 +989,7 @@ def _init_data_managers() -> None:
         except Exception as e:
             print(f"SynapsePro: deadline manager initialization failed: {e}")
 
-    if (minimal_dashboard_enabled or addon_settings.get("daily_widgets_enabled", True)) and not learning_plan_manager:
+    if (minimal_dashboard_enabled or addon_settings.get("study_plan_widget_enabled", True)) and not learning_plan_manager:
         try:
             learning_plan_manager = LearningPlanManager(
                 study_plan_config_json_path)
@@ -926,6 +1040,7 @@ def _init_launcher_dock() -> None:
         dock.setTitleBarWidget(QWidget())
         dock.setFixedWidth(constants.SIDEBAR_WIDTH)
         mw.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, dock)
+        dock.setVisible(bool(addon_settings.get("launcher_sidebar_open", True)))
 
         launcher_dock_widget = dock
         sidebar_widget_instance = content
@@ -1024,6 +1139,7 @@ def on_profile_open():
             _init_data_managers()
             _init_launcher_dock()
             _sync_webview_bg_colors()
+            custom_background.setup(addon_settings)
             _schedule_top_toolbar_redraw(0)
             mw.progress.single_shot(
                 300, lambda g=profile_generation: _init_ui_delayed(g))
@@ -1098,6 +1214,10 @@ def on_profile_close():
     cleanup_pomodoro(); cleanup_website_sidebar()
     cleanup_music_player(); cleanup_ai_assistant_sidebar()
     cleanup_mindmap_sidebar(); cleanup_notebook_sidebar()
+    try:
+        custom_background.cleanup()
+    except Exception:
+        pass
 
     # Docks are children of Anki's persistent main window, not of a profile.
     # Remove them explicitly so profile switches cannot retain old web pages,
@@ -1134,7 +1254,8 @@ def render_all_deck_browser_widgets(deck_browser: DeckBrowser, content: DeckBrow
     if (not minimal_enabled
             and not addon_settings.get("statistics_widget_enabled", True)
             and not addon_settings.get("gamification_widgets_enabled", True)
-            and not addon_settings.get("daily_widgets_enabled", True)
+            and not addon_settings.get("study_plan_widget_enabled", True)
+            and not addon_settings.get("daily_fact_widget_enabled", True)
             and not addon_settings.get("deadline_bar_enabled", True)):
         _dashboard_rendered_with_models = True
         return
@@ -1157,18 +1278,36 @@ def render_all_deck_browser_widgets(deck_browser: DeckBrowser, content: DeckBrow
     else:
         _dashboard_rendered_with_models = bool(
             (not addon_settings.get("gamification_widgets_enabled", True) or gm)
-            and (not addon_settings.get("daily_widgets_enabled", True) or lpm)
+            and (not addon_settings.get("study_plan_widget_enabled", True) or lpm)
             and (not addon_settings.get("deadline_bar_enabled", True) or dm)
         )
 
         if addon_settings.get("statistics_widget_enabled", True):
-            try: stats_html = statistics_widget.render_statistics_widget_html(stats_days=int(addon_settings.get("stats_time_range", 7)))
+            try:
+                stats_html = statistics_widget.render_statistics_widget_html(
+                    stats_days=int(addon_settings.get("stats_time_range", 7)),
+                    chart_days=int(addon_settings.get("stats_consistency_days", 30)),
+                    visibility={
+                        "consistency": addon_settings.get("stats_show_consistency", True),
+                        "efficiency": addon_settings.get("stats_show_efficiency", True),
+                        "retention": addon_settings.get("stats_show_retention", True),
+                        "new_cards": addon_settings.get("stats_show_new_cards", True),
+                    },
+                )
             except Exception as e: print(f"SynapsePro: stats widget render error: {e}")
         if addon_settings.get("gamification_widgets_enabled", True) and gm:
             try: gamification_html = gm.render_widgets_html()
             except Exception as e: print(f"SynapsePro: gamification widget render error: {e}")
-        if addon_settings.get("daily_widgets_enabled", True) and lpm:
-            try: daily_html = daily_widgets.generate_daily_widgets_html(lpm.get_plan_for_display(), addon_settings.get("fact_theme", "Medical"))
+        plan_enabled = addon_settings.get("study_plan_widget_enabled", True)
+        fact_enabled = addon_settings.get("daily_fact_widget_enabled", True)
+        if fact_enabled or (plan_enabled and lpm):
+            try:
+                plan_data = lpm.get_plan_for_display() if plan_enabled and lpm else []
+                daily_html = daily_widgets.generate_daily_widgets_html(
+                    plan_data, addon_settings.get("fact_theme", "Medical"),
+                    show_study_plan=bool(plan_enabled and lpm),
+                    show_daily_fact=bool(fact_enabled),
+                )
             except Exception as e: print(f"SynapsePro: daily widget render error: {e}")
         if addon_settings.get("deadline_bar_enabled", True) and dm:
             try: deadline_html = dm.render_deadline_bar_html()
@@ -1231,6 +1370,17 @@ def _handle_plan_timer(cmd: str):
         _plan_timer_cancel(_up.unquote(parts[2]))
 
 def webview_did_receive_js_message(handled: bool, message: str, context: object) -> Union[bool, object]:
+    pdf_link_prefix = "pycmd:synapsepro:pdf:"
+    if (
+        isinstance(message, str)
+        and message.startswith(pdf_link_prefix)
+        and isinstance(context, Reviewer)
+    ):
+        try:
+            open_pdf_review_link(message[len(pdf_link_prefix):])
+        except Exception as e:
+            print(f"SynapsePro PDF review link error: {e}")
+        return (True, None)
     if not isinstance(message, str) or not message.startswith("pycmd:"): return handled
     # These commands are emitted exclusively by widgets injected into the deck
     # browser.  Reject the same strings from reviewer/card/add-on WebViews.
@@ -1294,9 +1444,20 @@ def webview_did_receive_js_message(handled: bool, message: str, context: object)
     if cmd == "synapsepro:stats_info":
         try:
             statistics_widget.show_statistics_info_dialog(
-                parent=mw, stats_days=int(addon_settings.get("stats_time_range", 7)))
+                parent=mw,
+                stats_days=int(addon_settings.get("stats_time_range", 7)),
+                chart_days=int(addon_settings.get("stats_consistency_days", 30)),
+            )
         except Exception as e:
             print(f"SynapsePro: statistics info dialog error: {e}")
+        return (True, None)
+    if cmd == "synapsepro:stats_settings":
+        try:
+            # Return from the QWebEngine pycmd callback before constructing the
+            # second web view. This prevents a white modal window on macOS.
+            QTimer.singleShot(0, show_statistics_settings_dialog)
+        except Exception as e:
+            print(f"SynapsePro: could not schedule statistics settings: {e}")
         return (True, None)
     # "Don't show again" checkbox in the gamification celebration popup.
     if cmd == "synapsepro:celebrate_optout:1":
@@ -1338,6 +1499,29 @@ def inject_theme_assets(web_content: WebContent, context: Optional[Any]):
                     f"<script>document.body.classList.add('deckbrowser'{dashboard_class});</script>"
                     + web_content.body
                 )
+                if addon_settings.get("deck_counter_colors_enabled", False):
+                    counter_defaults = {
+                        "new_light": "#0071D3", "learn_light": "#E60012", "due_light": "#00A000",
+                        "new_dark": "#4FACFE", "learn_dark": "#FF6B6B", "due_dark": "#63D471",
+                    }
+
+                    def counter_color(key: str) -> str:
+                        value = addon_settings.get(f"deck_counter_{key}", counter_defaults[key])
+                        return value.upper() if _is_valid_hex(value) else counter_defaults[key]
+
+                    # These selectors are deliberately scoped to body.deckbrowser.
+                    # The Deck Overview, statistics widget and reviewer therefore
+                    # keep their own independent colour semantics.
+                    web_content.head += f"""
+                    <style id="synapse-deck-counter-colors">
+                      body.deckbrowser .new-count {{ color:{counter_color('new_light')} !important; }}
+                      body.deckbrowser .learn-count {{ color:{counter_color('learn_light')} !important; }}
+                      body.deckbrowser .review-count {{ color:{counter_color('due_light')} !important; }}
+                      body.nightMode.deckbrowser .new-count {{ color:{counter_color('new_dark')} !important; }}
+                      body.nightMode.deckbrowser .learn-count {{ color:{counter_color('learn_dark')} !important; }}
+                      body.nightMode.deckbrowser .review-count {{ color:{counter_color('due_dark')} !important; }}
+                    </style>
+                    """
             elif isinstance(context, Overview): web_content.body += "<script>document.body.classList.add('overview');</script>"
             elif isinstance(context, TopToolbar): web_content.body += "<script>document.body.classList.add('top-toolbar');</script>"
             elif isinstance(context, ReviewerBottomBar):
@@ -1356,6 +1540,17 @@ def inject_theme_assets(web_content: WebContent, context: Optional[Any]):
                 "&&!b.classList.contains('overview'))b.classList.add('bottom-toolbar');"
                 "}catch(e){}})();</script>"
             )
+            try:
+                custom_background.inject_style(
+                    web_content,
+                    bool(
+                        addon_settings.get("custom_background_enabled", False)
+                        and custom_background.has_image()
+                        and getattr(mw, "state", "") in custom_background.ACTIVE_STATES
+                    ),
+                )
+            except Exception as e:
+                print(f"SynapsePro: custom background CSS injection failed: {e}")
 
     except Exception as e: print(f"SynapsePro: CSS injection error: {e}")
 
@@ -1395,6 +1590,10 @@ if modules_loaded and mw and gui_hooks:
         )
     mw.addonManager.setWebExports(__name__, r"(theme/user_files/.+\.css|web_notebook/.+|media/.+)$") # Allow css, notebook AND media files
     gui_hooks.webview_will_set_content.append(inject_theme_assets)
+    if hasattr(gui_hooks, "webview_did_inject_style_into_page"):
+        gui_hooks.webview_did_inject_style_into_page.append(
+            custom_background.on_internal_page_styled
+        )
     
     if hasattr(gui_hooks, "theme_did_change"):
         gui_hooks.theme_did_change.append(on_theme_changed)
