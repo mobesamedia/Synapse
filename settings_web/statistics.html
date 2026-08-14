@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Statistics Settings</title>
+<style>
+  :root{color-scheme:light;--accent:#0071D3;--win-bg:#fff;--group-bg:#fff;--group-border:rgba(0,0,0,.08);--hairline:rgba(0,0,0,.08);--text:#1d1d1f;--muted:#6e6e73;--field-bg:#f0f0f2;--switch-off:#d8d8dd;--chip-hover:rgba(0,0,0,.05)}
+  html.dark{color-scheme:dark;--win-bg:#1c1c1e;--group-bg:#2a2a2c;--group-border:rgba(255,255,255,.08);--hairline:rgba(255,255,255,.1);--text:#f5f5f7;--muted:#9a9aa0;--field-bg:#3a3a3c;--switch-off:#48484a;--chip-hover:rgba(255,255,255,.07)}
+  *{box-sizing:border-box}html,body{height:100%;margin:0}body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--win-bg);color:var(--text);font-size:13px;-webkit-font-smoothing:antialiased}
+  .app{height:100%;display:flex;flex-direction:column}.content{flex:1;overflow:auto;padding:28px 32px 20px}.title-row{display:flex;align-items:center;gap:12px}.icon{width:38px;height:38px;border-radius:11px;background:var(--accent);display:grid;place-items:center;color:#fff;flex:none}.icon svg{width:21px;height:21px}.page-title{font-size:23px;font-weight:700;letter-spacing:-.02em;margin:0}.page-sub{font-size:13px;color:var(--muted);margin:5px 0 22px;line-height:1.45}.group-label{font-size:11px;font-weight:650;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:20px 4px 8px}.group{background:var(--group-bg);border:1px solid var(--group-border);border-radius:11px;overflow:hidden}.row{display:flex;align-items:center;gap:14px;padding:13px 16px;border-top:1px solid var(--hairline)}.row:first-child{border-top:0}.rl{flex:1;min-width:0}.rt{font-size:14px;font-weight:550}.rd{font-size:12px;color:var(--muted);margin-top:2px;line-height:1.4}.rc{flex:none}
+  .segmented{display:flex;background:var(--field-bg);border-radius:9px;padding:3px;gap:2px}.segmented button{border:0;background:transparent;color:var(--muted);font:inherit;font-weight:600;font-size:12px;padding:6px 11px;border-radius:7px;cursor:pointer;min-width:47px}.segmented button.active{background:var(--group-bg);color:var(--accent);box-shadow:0 1px 4px rgba(0,0,0,.12)}
+  .switch{position:relative;display:inline-block;width:42px;height:26px}.switch input{opacity:0;width:0;height:0}.slider{position:absolute;inset:0;background:var(--switch-off);border-radius:26px;transition:.2s;cursor:pointer}.slider:before{content:"";position:absolute;width:22px;height:22px;left:2px;top:2px;background:#fff;border-radius:50%;transition:transform .2s cubic-bezier(.4,1.3,.5,1);box-shadow:0 1px 3px rgba(0,0,0,.3)}.switch input:checked+.slider{background:var(--accent)}.switch input:checked+.slider:before{transform:translateX(16px)}
+  .footer{display:flex;justify-content:flex-end;gap:9px;padding:14px 24px;border-top:1px solid var(--hairline);background:var(--win-bg)}.btn{border:0;border-radius:9px;padding:8px 17px;font:inherit;font-weight:600;cursor:pointer}.btn-grey{background:var(--field-bg);color:var(--text)}.btn-grey:hover{background:var(--chip-hover)}.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{filter:brightness(1.08)}
+  @media(max-width:580px){.content{padding:22px 20px 16px}.row{align-items:flex-start;flex-direction:column}.rc{width:100%}.segmented{width:100%}.segmented button{flex:1}}
+</style>
+</head>
+<body>
+<div class="app">
+  <main class="content">
+    <div class="title-row"><h1 class="page-title" data-i18n="Statistics Settings">Statistics Settings</h1></div>
+    <p class="page-sub" data-i18n="Choose the periods and decide which insights appear on your dashboard.">Choose the periods and decide which insights appear on your dashboard.</p>
+    <div class="group-label" data-i18n="Time ranges">Time ranges</div>
+    <section class="group">
+      <div class="row"><div class="rl"><div class="rt" data-i18n="Statistics period">Statistics period</div><div class="rd" data-i18n="Used for Efficiency, Accuracy and Retention.">Used for Efficiency, Accuracy and Retention.</div></div><div class="rc"><div class="segmented" data-key="stats_time_range"><button data-value="1">24h</button><button data-value="7">7d</button><button data-value="30">30d</button></div></div></div>
+      <div class="row"><div class="rl"><div class="rt" data-i18n="Consistency period">Consistency period</div><div class="rd" data-i18n="Controls only the review activity graph.">Controls only the review activity graph.</div></div><div class="rc"><div class="segmented" data-key="stats_consistency_days"><button data-value="7">7d</button><button data-value="30">30d</button><button data-value="365">1y</button></div></div></div>
+    </section>
+    <div class="group-label" data-i18n="Visible insights">Visible insights</div>
+    <section class="group" id="visibilityGroup"></section>
+  </main>
+  <footer class="footer"><button class="btn btn-grey" data-i18n="Cancel" onclick="bridge('cancel')">Cancel</button><button class="btn btn-primary" data-i18n="Save" onclick="save()">Save</button></footer>
+</div>
+<script>
+  var state={},TR={};
+  function tr(s){return TR[s]||s}
+  function applyTranslations(){document.querySelectorAll('[data-i18n]').forEach(function(el){el.textContent=tr(el.dataset.i18n)})}
+  function bridge(action,payload){console.log('SYNAPSEPRO_STATS_SETTINGS:'+action+(payload!=null?':'+payload:''))}
+  var items=[['stats_show_consistency','Consistency','Review activity graph.'],['stats_show_efficiency','Efficiency','Efficiency and Accuracy bars.'],['stats_show_retention','Retention','Retention percentage circle.'],['stats_show_new_cards','New Cards','Unseen cards percentage circle.']];
+  function renderVisibility(){document.getElementById('visibilityGroup').innerHTML=items.map(function(i){return '<div class="row"><div class="rl"><div class="rt">'+tr(i[1])+'</div><div class="rd">'+tr(i[2])+'</div></div><div class="rc"><label class="switch"><input type="checkbox" data-key="'+i[0]+'" '+(state[i[0]]?'checked':'')+'><span class="slider"></span></label></div></div>'}).join('');document.querySelectorAll('input[data-key]').forEach(function(el){el.onchange=function(){state[this.dataset.key]=this.checked}})}
+  function setSegments(){document.querySelectorAll('.segmented').forEach(function(seg){seg.querySelectorAll('button').forEach(function(btn){btn.classList.toggle('active',Number(btn.dataset.value)===Number(state[seg.dataset.key]));btn.onclick=function(){state[seg.dataset.key]=Number(this.dataset.value);setSegments()}})})}
+  window.initStatisticsSettings=function(payload){payload=payload||{};state=Object.assign({},payload.config||{});TR=payload.translations||{};document.documentElement.classList.toggle('dark',!!payload.isDark);if(payload.accent)document.documentElement.style.setProperty('--accent',payload.accent);applyTranslations();renderVisibility();setSegments()};
+  function save(){bridge('save',JSON.stringify(state))}
+  document.addEventListener('DOMContentLoaded',function(){bridge('ready')});
+</script>
+</body>
+</html>

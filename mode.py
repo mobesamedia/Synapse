@@ -52,7 +52,14 @@ class ThemeChangeDialog(QDialog):
         label.setAlignment(Qt.AlignmentFlag.AlignCenter) 
         
         layout.addWidget(label)
-        
+
+        self.dont_show_again_checkbox = QCheckBox(_("Don't show this message again"))
+        layout.addWidget(
+            self.dont_show_again_checkbox,
+            0,
+            Qt.AlignmentFlag.AlignCenter,
+        )
+
         layout.addSpacing(10)
         
         buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok)
@@ -62,8 +69,13 @@ class ThemeChangeDialog(QDialog):
         
         self.setLayout(layout)
 
+    def dont_show_again(self) -> bool:
+        return bool(self.dont_show_again_checkbox.isChecked())
+
 def show_restart_warning():
-    """Zeigt den Dialog an."""
+    """Show the dialog and return whether future warnings should be hidden."""
     if mw:
         d = ThemeChangeDialog(mw)
         d.exec()
+        return d.dont_show_again()
+    return False

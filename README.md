@@ -40,15 +40,14 @@ Additional features include:
 - Light and dark modes, multiple color themes, and multilingual interface text
 - Full-screen workspaces for Notebook, Mind Map, and Website Viewer
 
-## What's new in 1.4.0
+## What's new in 1.5.0
 
-- Full-screen workspaces provide more room for Notebook, Mind Map, and Website Viewer
-- Improved PDF viewing with 100% default zoom, text selection, and quick access to Anki's card editor
-- Active-recall conceal/reveal tools, folders, and linked subpages in Notebook
-- Redesigned Settings, Pomodoro controls, and Music Player
-- New Dashboard study-history graph and improved challenge progress tracking
-- Resizable Mind Map nodes, optional recall hints, and enhanced study-session summaries
-- General stability, usability, and interface improvements
+- Optional Minimalist Dashboard for a cleaner, distraction-reduced layout
+- Custom background images with performance-conscious optimization and display controls
+- Dedicated settings for statistics periods and visible Dashboard insights
+- Improved PDF card creation with page selection, source links, and easier deck navigation
+- Independent Study Plan and Daily Fact widgets, remembered sidebar state, and theme-aware branding
+- Mind Map loading feedback and fixes for statistics, SoundCloud, and sidebar icons
 
 ## Requirements
 
@@ -106,4 +105,3 @@ The source code is licensed under the [MIT License](LICENSE). SynapsePro
 branding, images, animations, and audio are excluded and remain All Rights
 Reserved by MobesaMedia. Licenses for bundled third-party libraries are listed
 in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
-

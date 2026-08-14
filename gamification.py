@@ -428,6 +428,37 @@ class GamificationManager:
             return total_ms / 1000.0
         except Exception:
             return 0
+
+    def _get_study_time_for_range(self, start_day, end_day) -> float:
+        """Return capped review time for ``[start_day, end_day)``.
+
+        A single aggregate query keeps catch-up cheap even when Anki was not
+        opened for several days. Both boundaries use Anki's rollover hour, so
+        late-night reviews are assigned exactly like the normal daily query.
+        """
+        if not mw.col or start_day >= end_day:
+            return 0
+        rollover = self._get_rollover_hour()
+        start_dt = (
+            datetime.combine(start_day, datetime.min.time())
+            + timedelta(hours=rollover)
+        )
+        end_dt = (
+            datetime.combine(end_day, datetime.min.time())
+            + timedelta(hours=rollover)
+        )
+        try:
+            total_ms = mw.col.db.scalar(
+                "SELECT sum(CASE WHEN time > 45000 THEN 45000 "
+                "WHEN time < 0 THEN 0 ELSE time END) FROM revlog "
+                "WHERE ease > 0 AND id >= ? AND id < ?",
+                int(start_dt.timestamp() * 1000),
+                int(end_dt.timestamp() * 1000),
+            ) or 0
+            return total_ms / 1000.0
+        except Exception as exc:
+            print(f"SynapsePro: Could not calculate missed study time: {exc}")
+            return 0
             
     def _get_rollover_hour(self) -> int:
         """
@@ -512,16 +543,38 @@ class GamificationManager:
             self.assign_new_daily_challenge()
             self.data["last_login_day"] = today_int
         
-        last_time_check_day = self.data.get("last_time_xp_check_day", 0)
+        try:
+            last_time_check_day = int(
+                self.data.get("last_time_xp_check_day", 0)
+            )
+        except (TypeError, ValueError):
+            last_time_check_day = int(
+                (_anki_today() - timedelta(days=1)).strftime("%Y%m%d")
+            )
         time_xp_gain = 0
         time_reason = ""
         if today_int > last_time_check_day:
-            day_to_calculate = _anki_today() - timedelta(days=1)
-            day_to_calculate_int = int(day_to_calculate.strftime("%Y%m%d"))
-            if day_to_calculate_int >= last_time_check_day:
-                study_seconds = self._get_study_time_for_day(day_to_calculate_int)
+            today = _anki_today()
+            try:
+                # The marker represents the first not-yet-finalized Anki day.
+                # This catches every day since the previous launch instead of
+                # looking only at yesterday and silently losing older study XP.
+                first_unprocessed_day = datetime.strptime(
+                    str(last_time_check_day), "%Y%m%d"
+                ).date()
+            except (TypeError, ValueError):
+                first_unprocessed_day = today - timedelta(days=1)
+
+            # A corrupt/future marker must never create a backwards query.
+            if first_unprocessed_day < today:
+                study_seconds = self._get_study_time_for_range(
+                    first_unprocessed_day, today
+                )
                 if study_seconds > 0:
-                    time_xp_gain = int((study_seconds / 60.0) * XP_PER_MINUTE_STUDIED)
+                    time_xp_gain = int(
+                        (study_seconds / 60.0) * XP_PER_MINUTE_STUDIED
+                    )
+                    time_reason = f"Study Time (+{time_xp_gain} XP)"
             self.data["last_time_xp_check_day"] = today_int
             data_changed = True
             

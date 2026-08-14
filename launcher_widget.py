@@ -167,7 +167,8 @@ class SidebarWidget(QWidget):
 
         if QSvgWidget is not object and QStackedWidget is not object and os.path.exists(logo_path):
             # Page 0 – the theme logo
-            _logo_svg = QSvgWidget(logo_path)
+            _logo_svg = QSvgWidget()
+            self._load_theme_logo(_logo_svg)
             _logo_svg.setFixedSize(QSize(target_width, target_width))
             _logo_svg.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True)
 
@@ -202,8 +203,8 @@ class SidebarWidget(QWidget):
             constants.WEBSITE_ICON_FILENAME: ("website_viewer_enabled", getattr(website_sidebar, 'toggle_website_dock', None), constants.WEBSITE_DOCK_OBJECT_NAME),
             constants.NOTEBOOK_ICON_FILENAME: ("notebook_enabled", getattr(notebook_sidebar, 'toggle_notebook_dock', None), constants.NOTEBOOK_DOCK_OBJECT_NAME),
             constants.MINDMAP_ICON_FILENAME: ("mindmap_enabled", getattr(mindmap_sidebar, 'toggle_mindmap_dock', None), constants.MINDMAP_DOCK_OBJECT_NAME),
-            constants.GAME_ICON_FILENAME: ("gamification_sidebar_enabled", getattr(study_plan_trigger, 'trigger_gamification_sidebar_action', None), None),
-            constants.STUDY_PLAN_ICON_FILENAME: ("daily_widgets_enabled", getattr(study_plan_trigger, 'trigger_study_plan_action', None), None),
+            constants.GAME_ICON_FILENAME: ("gamification_sidebar_enabled", getattr(study_plan_trigger, 'trigger_gamification_sidebar_action', None), "GamificationSidebar"),
+            constants.STUDY_PLAN_ICON_FILENAME: ("study_plan_widget_enabled", getattr(study_plan_trigger, 'trigger_study_plan_action', None), None),
         }
         
         top_icon_definitions = [
@@ -273,27 +274,27 @@ class SidebarWidget(QWidget):
                 main_layout.addWidget(self._timer_icon_button)
                 self._timer_icon_button.installEventFilter(self)
 
-            if self.settings.get("music_player_enabled", True):
-                self._music_button = self.create_icon_button(constants.MUSIC_ICON_FILENAME, _("Play Music"))
-                if self._music_button:
-                    self._music_button.setCheckable(False)
-                    if hasattr(background_music, 'toggle_music_menu'):
-                        btn_ref = weakref.ref(self._music_button)
-                        qconnect(self._music_button.clicked, lambda _checked, b=btn_ref: background_music.toggle_music_menu(b()))
-                    else: self._music_button.setEnabled(False)
-                    main_layout.addWidget(self._music_button)
-                    self._music_button.installEventFilter(self)
-                    # Show the playing track's cover art on this button.
-                    if hasattr(background_music, 'set_artwork_callback'):
-                        _self_ref = weakref.ref(self)
-                        _btn_ref = weakref.ref(self._music_button)
-                        def _on_music_artwork(path, _s=_self_ref, _b=_btn_ref):
-                            s, b = _s(), _b()
-                            if s is not None and b is not None:
-                                s._set_music_button_artwork(b, path)
-                        background_music.set_artwork_callback(_on_music_artwork)
-            
             self.update_timer_ui()
+
+        if self.settings.get("music_player_enabled", True):
+            self._music_button = self.create_icon_button(constants.MUSIC_ICON_FILENAME, _("Play Music"))
+            if self._music_button:
+                self._music_button.setCheckable(False)
+                if hasattr(background_music, 'toggle_music_menu'):
+                    btn_ref = weakref.ref(self._music_button)
+                    qconnect(self._music_button.clicked, lambda _checked, b=btn_ref: background_music.toggle_music_menu(b()))
+                else: self._music_button.setEnabled(False)
+                main_layout.addWidget(self._music_button)
+                self._music_button.installEventFilter(self)
+                # Show the playing track's cover art on this button.
+                if hasattr(background_music, 'set_artwork_callback'):
+                    _self_ref = weakref.ref(self)
+                    _btn_ref = weakref.ref(self._music_button)
+                    def _on_music_artwork(path, _s=_self_ref, _b=_btn_ref):
+                        s, b = _s(), _b()
+                        if s is not None and b is not None:
+                            s._set_music_button_artwork(b, path)
+                    background_music.set_artwork_callback(_on_music_artwork)
         
         for button_ref, dock_name in buttons_to_connect.items():
             QTimer.singleShot(500, partial(self._setup_dock_visibility_connection, button_weak_ref=button_ref, dock_object_name=dock_name))
@@ -487,16 +488,30 @@ class SidebarWidget(QWidget):
         if self.logo_widget is None or QSvgWidget is object:
             return
         try:
-            logo_path = self._get_logo_path()
             if self._logo_stack is not None and self._logo_stack.count() > 0:
                 first = self._logo_stack.widget(0)
                 if isinstance(first, QSvgWidget):
-                    first.load(logo_path)
+                    self._load_theme_logo(first)
             elif isinstance(self.logo_widget, QSvgWidget):
-                self.logo_widget.load(logo_path)
+                self._load_theme_logo(self.logo_widget)
             self._refresh_settings_icon()
         except Exception:
             pass
+
+    @staticmethod
+    def _load_theme_logo(widget) -> None:
+        """Load the current logo, recolouring only its blue layer for Custom."""
+        logo_path = SidebarWidget._get_logo_path()
+        try:
+            from .theme import get_active_theme, palette
+            if get_active_theme() == "custom" and QByteArray is not object:
+                from .logo_utils import recoloured_brand_svg_bytes
+                accent = palette(False).get("blue", "#0071D3")
+                widget.load(QByteArray(recoloured_brand_svg_bytes(logo_path, accent)))
+                return
+        except Exception:
+            pass
+        widget.load(logo_path)
 
     @staticmethod
     def _get_settings_svg_bytes(color: str) -> bytes:

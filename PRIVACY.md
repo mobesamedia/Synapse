@@ -1,6 +1,6 @@
 # SynapsePro privacy and data behavior
 
-This document describes SynapsePro 1.4.0. SynapsePro is a local Anki Desktop
+This document describes SynapsePro 1.5.0. SynapsePro is a local Anki Desktop
 add-on with several optional online tools.
 
 ## Automatic behavior

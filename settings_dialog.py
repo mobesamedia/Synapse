@@ -619,8 +619,10 @@ class SettingsDialog(QDialog):
         features = [
             ("gamification_widgets_enabled", _("Gamification Widgets"),
              _("Your level, XP and daily streak.")),
-            ("daily_widgets_enabled", _("Daily Widgets"),
-             _("Your study plan and the daily fact.")),
+            ("study_plan_widget_enabled", _("Study Plan Widget"),
+             _("Your daily study plan.")),
+            ("daily_fact_widget_enabled", _("Daily Fact Widget"),
+             _("A new fact on your Anki home screen each day.")),
             ("deadline_bar_enabled", _("Deadline Bar"),
              _("A countdown bar towards your exam or deadline.")),
             ("statistics_widget_enabled", _("Advanced Statistics"),

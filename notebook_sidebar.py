@@ -43,6 +43,55 @@ def _json_for_script(value, *, ensure_ascii: bool = True) -> str:
     """Serialize data for an inline script without allowing </script> breaks."""
     return json.dumps(value, ensure_ascii=ensure_ascii).replace("</", "<\\/")
 
+
+def _valid_pdf_id(value) -> str:
+    value = value if isinstance(value, str) else ""
+    return value if re.fullmatch(r"[A-Za-z0-9_-]{1,80}", value) else ""
+
+
+def _pdf_review_token(pdf_id: str, page: int) -> str:
+    payload = json.dumps(
+        {"id": pdf_id, "page": max(1, int(page or 1))},
+        separators=(",", ":"),
+    ).encode("utf-8")
+    return base64.urlsafe_b64encode(payload).decode("ascii").rstrip("=")
+
+
+def _pdf_source_html(filename: str, pages: list[int], pdf_id: str) -> str:
+    """Build a safe source label plus optional SynapsePro review links."""
+    source = f"{_('Source')}: {filename}"
+    if pages:
+        label = _("Page") if len(pages) == 1 else _("Pages")
+        source += f" — {label} {', '.join(str(page) for page in pages)}"
+
+    links = ""
+    pdf_id = _valid_pdf_id(pdf_id)
+    if pdf_id:
+        targets = pages or [1]
+        link_items = []
+        page_word = _("Page")
+        for page in targets:
+            token = _pdf_review_token(pdf_id, page)
+            label = _("Open PDF")
+            if pages:
+                label += f" · {page_word} {page}"
+            link_items.append(
+                '<a href="#" style="color:#4a86c5;text-decoration:none;'
+                'font-weight:600;margin-right:9px" '
+                'onclick="if(typeof pycmd===\'function\'){' 
+                f"pycmd('pycmd:synapsepro:pdf:{token}');"
+                '}return false;">'
+                f"{html.escape(label)}</a>"
+            )
+        links = '<div style="margin-top:4px">' + "".join(link_items) + "</div>"
+
+    return (
+        '<div style="margin-top:10px;color:#888;font-size:0.72em;'
+        'line-height:1.35;border-top:1px solid rgba(128,128,128,.2);'
+        'padding-top:5px">'
+        f"{html.escape(source)}{links}</div>"
+    )
+
 # ──────────────────────────────────────────────
 # HTML i18n injection
 # ──────────────────────────────────────────────
@@ -182,10 +231,16 @@ def _build_i18n_script(tool_name: str) -> str:
             "include_source":      _("Add PDF source to the back"),
             "source_hint":         _("Adds the file name and selected page numbers in small text."),
             "source_short":        _("Source"),
+            "selected_pages":      _("Selected pages"),
+            "select_pages_hint":   _("Click PDF pages to select them."),
             "cards_ready":         _("{count} cards ready"),
             "cards_label":         _("Cards"),
             "deck_name":           _("Deck name"),
             "deck_placeholder":    _("Choose an existing deck or enter a new name"),
+            "current_deck":        _("Current deck"),
+            "recent_decks":        _("Recent decks"),
+            "all_decks":           _("Decks"),
+            "no_matching_decks":   _("No matching decks. Enter a name to create one."),
             "finish_session":      _("Create cards"),
             "finish_cards":        _("Finish · Create {count} cards"),
             "discard_session":     _("Discard session"),
@@ -214,6 +269,7 @@ def _build_i18n_script(tool_name: str) -> str:
             "delete_folder_named": _("Delete folder \"{name}\"? {count} PDF file(s) will become unfiled."),
             "loading_short":       _("Loading…"),
             "page_error":          _("Page {page}: {error}"),
+            "rendering_page":      _("Rendering page {page}…"),
             "selected_text_copied": _("Selected text copied"),
             "copy_text_failed":    _("Could not copy text"),
             "cards_created":       _("Cards created"),
@@ -858,6 +914,19 @@ def _pdf_deck_names() -> list[str]:
         return []
 
 
+def _pdf_current_deck_name() -> str:
+    """Return the current normal deck as a quick Card Creator suggestion."""
+    try:
+        if not mw or not getattr(mw, "col", None):
+            return ""
+        deck = mw.col.decks.current()
+        if not isinstance(deck, dict) or deck.get("dyn"):
+            return ""
+        return str(deck.get("name", ""))
+    except Exception:
+        return ""
+
+
 # ── Serialized background writer ──────────────
 
 class _PendingSnapshotWrite:
@@ -1050,6 +1119,7 @@ class NotebookPanel(QWidget):
         self._page_ready = False
         self._flush_in_progress = False
         self._pending_tool_switch: Optional[str] = None
+        self._pending_pdf_reference: Optional[tuple[str, int]] = None
         self._unload_requested = False
         self._unload_callbacks: list[Callable[[bool], None]] = []
         # Store a reference to the parent dock for fullscreen toggling
@@ -1116,6 +1186,33 @@ class NotebookPanel(QWidget):
 
     def _on_load_finished(self, ok: bool) -> None:
         self._page_ready = bool(ok)
+        if ok and self.current_tool == "pdf" and self._pending_pdf_reference:
+            QTimer.singleShot(0, self._consume_pending_pdf_reference)
+
+    def open_pdf_reference(self, file_path: str, page: int = 1) -> None:
+        """Open a library PDF from a review-card source link."""
+        self._pending_pdf_reference = (file_path, max(1, int(page or 1)))
+        if not self.web:
+            # Load the PDF tool directly. Loading the default Notebook first and
+            # immediately replacing it can produce an out-of-order loadFinished
+            # signal on slower WebEngine builds.
+            self.current_tool = "pdf"
+            self.load_content()
+            return
+        if self.current_tool == "pdf":
+            if self._page_ready:
+                self._consume_pending_pdf_reference()
+            return
+        self._pending_tool_switch = "pdf"
+        if not self._flush_in_progress:
+            self._flush_current_state(self._finish_tool_switch)
+
+    def _consume_pending_pdf_reference(self) -> None:
+        if not self._pending_pdf_reference or not self.web or not self._page_ready:
+            return
+        file_path, page = self._pending_pdf_reference
+        self._pending_pdf_reference = None
+        self._render_pdf_inline(file_path, initial_page=page)
 
     def _destroy_web_view(self, web_ref: AnkiWebView) -> None:
         if self.web is not web_ref:
@@ -1465,6 +1562,9 @@ class NotebookPanel(QWidget):
             preload_data = load_pdf_list_enriched()
             preload_js   = _json_for_script(preload_data)
             deck_names_js = _json_for_script(_pdf_deck_names(), ensure_ascii=False)
+            current_deck_js = _json_for_script(
+                _pdf_current_deck_name(), ensure_ascii=False
+            )
 
             # Try to use locally cached PDF.js (offline support + avoids cross-origin
             # worker restriction that can occur with setHtml() pages).
@@ -1478,6 +1578,7 @@ class NotebookPanel(QWidget):
                     f'<script id="synapse-preload">'
                     f'window.__SYNAPSE_PDF_PRELOAD__={preload_js};'
                     f'window.__SYNAPSE_DECKS__={deck_names_js};'
+                    f'window.__SYNAPSE_CURRENT_DECK__={current_deck_js};'
                     f'window.__PDFJS_WORKER_CODE__={worker_json};'
                     f'</script>'
                 )
@@ -1486,6 +1587,7 @@ class NotebookPanel(QWidget):
                     f'<script id="synapse-preload">'
                     f'window.__SYNAPSE_PDF_PRELOAD__={preload_js};'
                     f'window.__SYNAPSE_DECKS__={deck_names_js};'
+                    f'window.__SYNAPSE_CURRENT_DECK__={current_deck_js};'
                     f'</script>'
                 )
             html = re.sub(r'</head>', lambda m: preload_tag + m.group(0), html,
@@ -1658,7 +1760,7 @@ class NotebookPanel(QWidget):
                 f"if(window.onPdfRelinked) window.onPdfRelinked({id_json}, {path_json});"
             )
 
-    def _render_pdf_inline(self, file_path: str) -> None:
+    def _render_pdf_inline(self, file_path: str, initial_page: int = 1) -> None:
         """Render a PDF inline via PDF.js running inside pdf_viewer.html."""
         if not self.web:
             return
@@ -1716,6 +1818,7 @@ class NotebookPanel(QWidget):
             f"window.__PDF_B64__={json.dumps(b64)};"
             f"window.__PDF_NAME__={name_json};"
             f"window.__PDF_PATH__={path_json};"
+            f"window.__PDF_INITIAL_PAGE__={max(1, int(initial_page or 1))};"
             f"if(window.renderFromGlobals) window.renderFromGlobals();"
         )
 
@@ -1894,6 +1997,7 @@ class NotebookPanel(QWidget):
         try:
             data = self._decode_pdf_action_payload(body)
             deck_name = data.get("deckName", "")
+            pdf_id = _valid_pdf_id(data.get("pdfId", ""))
             raw_cards = data.get("cards", [])
             if not isinstance(deck_name, str) or not isinstance(raw_cards, list):
                 raise ValueError("Invalid PDF card batch payload")
@@ -1979,9 +2083,6 @@ class NotebookPanel(QWidget):
             )
             preferred_notetype_id = defaults.notetype_id
             source_filename = os.path.basename(self._current_pdf_path) or _("PDF")
-            source_label = _("Source")
-            page_label = _("Page")
-            pages_label = _("Pages")
             undo_label = _("Create PDF cards")
             success_message = _("Created {count} cards in “{deck}”.").format(
                 count=len(cards), deck=deck_name
@@ -2019,16 +2120,8 @@ class NotebookPanel(QWidget):
                 note.fields[0] = NotebookPanel._pdf_text_to_html(card["front"])
                 back_html = NotebookPanel._pdf_text_to_html(card["back"])
                 if card["include_source"]:
-                    source = f"{source_label}: {source_filename}"
-                    pages = card["pages"]
-                    if pages:
-                        label = page_label if len(pages) == 1 else pages_label
-                        source += f" — {label} {', '.join(str(page) for page in pages)}"
-                    back_html += (
-                        '<div style="margin-top:10px;color:#888;font-size:0.72em;'
-                        'line-height:1.35;border-top:1px solid rgba(128,128,128,.2);'
-                        'padding-top:5px">'
-                        f"{html.escape(source)}</div>"
+                    back_html += _pdf_source_html(
+                        source_filename, card["pages"], pdf_id
                     )
                 note.fields[1] = back_html
                 notes.append(note)
@@ -2071,6 +2164,57 @@ class NotebookPanel(QWidget):
         CollectionOp(parent=mw, op=create_batch).success(on_success).failure(
             on_failure
         ).run_in_background(initiator=self)
+
+
+def open_pdf_review_link(token: str) -> bool:
+    """Resolve an opaque card link against this profile's PDF library."""
+    try:
+        if not isinstance(token, str) or len(token) > 512:
+            raise ValueError("Invalid PDF link")
+        padded = token + "=" * (-len(token) % 4)
+        payload = json.loads(
+            base64.urlsafe_b64decode(padded.encode("ascii")).decode("utf-8")
+        )
+        if not isinstance(payload, dict):
+            raise ValueError("Invalid PDF link payload")
+        pdf_id = _valid_pdf_id(payload.get("id", ""))
+        page = max(1, min(1_000_000, int(payload.get("page", 1) or 1)))
+        if not pdf_id:
+            raise ValueError("Invalid PDF id")
+
+        raw = json.loads(load_pdf_list())
+        entries = raw if isinstance(raw, list) else raw.get("pdfs", []) if isinstance(raw, dict) else []
+        entry = next(
+            (
+                item for item in entries
+                if isinstance(item, dict) and item.get("id") == pdf_id
+            ),
+            None,
+        )
+        path = entry.get("path", "") if entry else ""
+        if (
+            not isinstance(path, str)
+            or not path.lower().endswith(".pdf")
+            or not os.path.isfile(path)
+        ):
+            showInfo(
+                _("This linked PDF is not available on this device. Open the PDF library to relink it."),
+                parent=mw,
+            )
+            return True
+
+        dock = _ensure_dock()
+        panel = dock.widget()
+        if not isinstance(panel, NotebookPanel):
+            raise RuntimeError("Notebook panel is unavailable")
+        panel.open_pdf_reference(path, page)
+        dock.show()
+        dock.raise_()
+        return True
+    except Exception as exc:
+        print(f"Notebook PDF review link failed: {exc}")
+        showInfo(_("Could not open the linked PDF."), parent=mw)
+        return True
 
 
 # ──────────────────────────────────────────────
