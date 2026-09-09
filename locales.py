@@ -27,6 +27,7 @@ Supported values for :data:`USER_LANG`:
 * ``"vi"``   – Tiếng Việt
 * ``"zh"``   – 中文
 * ``"hi"``   – हिन्दी
+* ``"pl"``   – Polski
 
 
 Adding / editing translations
@@ -49,7 +50,8 @@ except ImportError:
 # --------------------------------------------------------------------- #
 # Active language
 # --------------------------------------------------------------------- #
-# Valid values: "auto", "en", "de", "es", "ko", "pt", "fr", "vi", "zh", "hi".
+# Valid values: "auto", "en", "de", "es", "ko", "pt", "fr", "vi", "zh", "hi",
+# "pl".
 # Defaults to "auto" until ``on_profile_open()`` overwrites it from the
 # user's settings.
 USER_LANG: str = "auto"
@@ -62,8 +64,8 @@ def _detect_anki_lang() -> str:
     """Best-effort detection of Anki's current UI language.
 
     Returns one of ``"en"``, ``"de"``, ``"es"``, ``"ko"``, ``"pt"``,
-    ``"fr"``, ``"vi"``, ``"zh"``, ``"hi"``. Unknown Anki locales fall
-    back to English.
+    ``"fr"``, ``"vi"``, ``"zh"``, ``"hi"``, ``"pl"``. Unknown Anki
+    locales fall back to English.
     """
     raw = ""
     # Preferred API (modern Anki versions).
@@ -105,6 +107,8 @@ def _detect_anki_lang() -> str:
         return "zh"
     if raw.startswith("hi"):
         return "hi"
+    if raw.startswith("pl"):
+        return "pl"
     return "en"
 
 
@@ -113,7 +117,7 @@ def _current_lang() -> str:
     lang = USER_LANG
     if lang == "auto":
         return _detect_anki_lang()
-    if lang in ("en", "de", "es", "ko", "pt", "fr", "vi", "zh", "hi"):
+    if lang in ("en", "de", "es", "ko", "pt", "fr", "vi", "zh", "hi", "pl"):
         return lang
     return "en"
 
@@ -152,7 +156,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "SynapsePro est prêt !",
         "vi": "SynapsePro đã sẵn sàng!",
         "zh": "SynapsePro 已就绪！",
-        "hi": "SynapsePro तैयार है!",
+        "hi": "SynapsePro तैयार है!", "pl": "SynapsePro jest gotowy!",
     },
     "Settings saved.": {
         "de": "Einstellungen gespeichert.",
@@ -162,7 +166,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Paramètres enregistrés.",
         "vi": "Đã lưu cài đặt.",
         "zh": "设置已保存。",
-        "hi": "सेटिंग्स सहेजी गईं।",
+        "hi": "सेटिंग्स सहेजी गईं।", "pl": "Ustawienia zapisane.",
     },
     "Settings...": {
         "de": "Einstellungen…",
@@ -172,7 +176,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Paramètres…",
         "vi": "Cài đặt…",
         "zh": "设置…",
-        "hi": "सेटिंग्स…",
+        "hi": "सेटिंग्स…", "pl": "Ustawienia...",
     },
     "Configure Study Plan...": {
         "de": "Lernplan konfigurieren…",
@@ -182,7 +186,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Configurer le plan d'étude…",
         "vi": "Cấu hình kế hoạch học tập…",
         "zh": "配置学习计划…",
-        "hi": "अध्ययन योजना कॉन्फ़िगर करें…",
+        "hi": "अध्ययन योजना कॉन्फ़िगर करें…", "pl": "Konfiguruj plan nauki...",
     },
     "Toggle Gamification Sidebar": {
         "de": "Gamification-Sidebar ein-/ausblenden",
@@ -192,7 +196,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Afficher/masquer la barre de gamification",
         "vi": "Bật/tắt thanh gamification",
         "zh": "切换游戏化侧边栏",
-        "hi": "गेमिफिकेशन साइडबार टॉगल करें",
+        "hi": "गेमिफिकेशन साइडबार टॉगल करें", "pl": "Przełącz panel boczny grywalizacji",
     },
 
     # ================================================================= #
@@ -206,7 +210,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Paramètres",
         "vi": "Cài đặt",
         "zh": "设置",
-        "hi": "सेटिंग्स",
+        "hi": "सेटिंग्स", "pl": "Ustawienia",
     },
     "Version": {
         "de": "Version",
@@ -216,7 +220,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Version",
         "vi": "Phiên bản",
         "zh": "版本",
-        "hi": "संस्करण",
+        "hi": "संस्करण", "pl": "Wersja",
     },
     "Changelog": {
         "de": "Änderungen",
@@ -226,7 +230,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Journal des modifications",
         "vi": "Nhật ký thay đổi",
         "zh": "更新日志",
-        "hi": "बदलाव लॉग",
+        "hi": "बदलाव लॉग", "pl": "Lista zmian",
     },
     "News": {
         "de": "Neuigkeiten",
@@ -236,7 +240,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Actualités",
         "vi": "Tin tức",
         "zh": "新闻",
-        "hi": "समाचार",
+        "hi": "समाचार", "pl": "Nowości",
     },
     "General Settings": {
         "de": "Allgemeine Einstellungen",
@@ -246,7 +250,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Paramètres généraux",
         "vi": "Cài đặt chung",
         "zh": "常规设置",
-        "hi": "सामान्य सेटिंग्स",
+        "hi": "सामान्य सेटिंग्स", "pl": "Ustawienia ogólne",
     },
     "Language:": {
         "de": "Sprache:",
@@ -256,7 +260,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Langue :",
         "vi": "Ngôn ngữ:",
         "zh": "语言：",
-        "hi": "भाषा:",
+        "hi": "भाषा:", "pl": "Język:",
     },
     "Auto": {
         "de": "Automatisch",
@@ -266,7 +270,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Automatique",
         "vi": "Tự động",
         "zh": "自动",
-        "hi": "स्वचालित",
+        "hi": "स्वचालित", "pl": "Automatyczny",
     },
     "Daily Fact Topic:": {
         "de": "Thema der täglichen Fakten:",
@@ -276,7 +280,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Thème du fait du jour :",
         "vi": "Chủ đề sự kiện hàng ngày:",
         "zh": "每日知识主题：",
-        "hi": "दैनिक तथ्य विषय:",
+        "hi": "दैनिक तथ्य विषय:", "pl": "Temat codziennej ciekawostki:",
     },
     "Medical": {
         "de": "Medizin",
@@ -286,7 +290,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Médecine",
         "vi": "Y học",
         "zh": "医学",
-        "hi": "चिकित्सा",
+        "hi": "चिकित्सा", "pl": "Medycyna",
     },
     "Law": {
         "de": "Recht",
@@ -296,7 +300,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Droit",
         "vi": "Pháp luật",
         "zh": "法律",
-        "hi": "कानून",
+        "hi": "कानून", "pl": "Prawo",
     },
     "General": {
         "de": "Allgemein",
@@ -306,7 +310,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Général",
         "vi": "Chung",
         "zh": "常规",
-        "hi": "सामान्य",
+        "hi": "सामान्य", "pl": "Ogólne",
     },
     "Countries": {
         "de": "Länder",
@@ -316,7 +320,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Pays",
         "vi": "Quốc gia",
         "zh": "国家",
-        "hi": "देश",
+        "hi": "देश", "pl": "Kraje",
     },
     "Background Color:": {
         "de": "Hintergrundfarbe:",
@@ -326,7 +330,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Couleur d'arrière-plan :",
         "vi": "Màu nền:",
         "zh": "背景颜色：",
-        "hi": "पृष्ठभूमि रंग:",
+        "hi": "पृष्ठभूमि रंग:", "pl": "Kolor tła:",
     },
     "Statistics Time Range:": {
         "de": "Statistik-Zeitraum:",
@@ -336,7 +340,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Plage des statistiques :",
         "vi": "Khoảng thời gian thống kê:",
         "zh": "统计时间范围：",
-        "hi": "सांख्यिकी समय सीमा:",
+        "hi": "सांख्यिकी समय सीमा:", "pl": "Zakres czasu statystyk:",
     },
     "Last 24 Hours": {
         "de": "Letzte 24 Stunden",
@@ -346,7 +350,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "24 dernières heures",
         "vi": "24 giờ qua",
         "zh": "过去24小时",
-        "hi": "पिछले 24 घंटे",
+        "hi": "पिछले 24 घंटे", "pl": "Ostatnie 24 godziny",
     },
     "Last 7 Days (Week)": {
         "de": "Letzte 7 Tage (Woche)",
@@ -356,7 +360,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "7 derniers jours (semaine)",
         "vi": "7 ngày qua (tuần)",
         "zh": "过去7天（周）",
-        "hi": "पिछले 7 दिन (सप्ताह)",
+        "hi": "पिछले 7 दिन (सप्ताह)", "pl": "Ostatnie 7 dni (tydzień)",
     },
     "Last 30 Days (Month)": {
         "de": "Letzte 30 Tage (Monat)",
@@ -366,7 +370,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "30 derniers jours (mois)",
         "vi": "30 ngày qua (tháng)",
         "zh": "过去30天（月）",
-        "hi": "पिछले 30 दिन (महीना)",
+        "hi": "पिछले 30 दिन (महीना)", "pl": "Ostatnie 30 dni (miesiąc)",
     },
     "Sidebar Visibility:": {
         "de": "Sidebar-Sichtbarkeit:",
@@ -376,7 +380,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Visibilité de la barre latérale :",
         "vi": "Hiển thị thanh bên:",
         "zh": "侧边栏可见性：",
-        "hi": "साइडबार दृश्यता:",
+        "hi": "साइडबार दृश्यता:", "pl": "Widoczność panelu bocznego:",
     },
     "Always Show": {
         "de": "Immer anzeigen",
@@ -386,7 +390,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Toujours afficher",
         "vi": "Luôn hiển thị",
         "zh": "始终显示",
-        "hi": "हमेशा दिखाएं",
+        "hi": "हमेशा दिखाएं", "pl": "Zawsze pokazuj",
     },
     "Hide while Reviewing": {
         "de": "Beim Lernen ausblenden",
@@ -396,7 +400,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Masquer pendant la révision",
         "vi": "Ẩn khi ôn tập",
         "zh": "复习时隐藏",
-        "hi": "समीक्षा के दौरान छिपाएं",
+        "hi": "समीक्षा के दौरान छिपाएं", "pl": "Ukryj podczas powtórek",
     },
     "Enjoying the add-on? Please leave a <b>Thumbs Up</b> on AnkiWeb – it supports me the most!": {
         "de": "Gefällt dir das Add-on? Bitte hinterlasse einen <b>Daumen hoch</b> auf AnkiWeb – damit unterstützt du mich am meisten!",
@@ -406,7 +410,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Vous aimez ce module ? Laissez un <b>pouce en l'air</b> sur AnkiWeb – c'est ce qui m'aide le plus !",
         "vi": "Bạn thích tiện ích này? Hãy để lại <b>Thích</b> trên AnkiWeb – đó là sự ủng hộ lớn nhất!",
         "zh": "喜欢这个插件吗？请在 AnkiWeb 留下<b>点赞</b>——这对我帮助最大！",
-        "hi": "ऐड-ऑन पसंद आया? AnkiWeb पर <b>थम्स अप</b> दें – यही मेरे लिए सबसे बड़ा समर्थन है!",
+        "hi": "ऐड-ऑन पसंद आया? AnkiWeb पर <b>थम्स अप</b> दें – यही मेरे लिए सबसे बड़ा समर्थन है!", "pl": "Podoba ci się ten dodatek? Zostaw, proszę, <b>kciuka w górę</b> na AnkiWeb – to najlepsze wsparcie!",
     },
     "Rate on AnkiWeb": {
         "de": "Auf AnkiWeb bewerten",
@@ -416,7 +420,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Évaluer sur AnkiWeb",
         "vi": "Đánh giá trên AnkiWeb",
         "zh": "在 AnkiWeb 评分",
-        "hi": "AnkiWeb पर रेटिंग दें",
+        "hi": "AnkiWeb पर रेटिंग दें", "pl": "Oceń na AnkiWeb",
     },
     "Home Screen Dashboard": {
         "de": "Startseiten-Dashboard",
@@ -426,7 +430,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Tableau de bord d'accueil",
         "vi": "Bảng điều khiển màn hình chính",
         "zh": "主屏幕仪表板",
-        "hi": "होम स्क्रीन डैशबोर्ड",
+        "hi": "होम स्क्रीन डैशबोर्ड", "pl": "Pulpit ekranu głównego",
     },
     "Gamification Widgets (Level, XP, Streak)": {
         "de": "Gamification-Widgets (Level, XP, Streak)",
@@ -436,7 +440,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Widgets de gamification (niveau, XP, série)",
         "vi": "Widget gamification (Cấp độ, XP, Chuỗi)",
         "zh": "游戏化小部件（等级、XP、连击）",
-        "hi": "गेमिफिकेशन विजेट (स्तर, XP, स्ट्रीक)",
+        "hi": "गेमिफिकेशन विजेट (स्तर, XP, स्ट्रीक)", "pl": "Widżety grywalizacji (poziom, XP, seria)",
     },
     "Daily Widgets (Study Plan & Facts)": {
         "de": "Tages-Widgets (Lernplan & Fakten)",
@@ -446,7 +450,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Widgets quotidiens (plan d'étude et faits)",
         "vi": "Widget hàng ngày (kế hoạch học & sự kiện)",
         "zh": "每日小部件（学习计划和知识）",
-        "hi": "दैनिक विजेट (अध्ययन योजना और तथ्य)",
+        "hi": "दैनिक विजेट (अध्ययन योजना और तथ्य)", "pl": "Widżety dnia (plan nauki i ciekawostki)",
     },
     "Deadline Bar": {
         "de": "Deadline-Leiste",
@@ -456,7 +460,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Barre d'échéance",
         "vi": "Thanh thời hạn",
         "zh": "截止日期栏",
-        "hi": "समयसीमा बार",
+        "hi": "समयसीमा बार", "pl": "Pasek terminu",
     },
     "Advanced Statistics": {
         "de": "Erweiterte Statistiken",
@@ -466,7 +470,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Statistiques avancées",
         "vi": "Thống kê nâng cao",
         "zh": "高级统计",
-        "hi": "उन्नत सांख्यिकी",
+        "hi": "उन्नत सांख्यिकी", "pl": "Zaawansowane statystyki",
     },
     "Deck Overview": {
         "de": "Stapel-Übersicht",
@@ -476,7 +480,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Aperçu du paquet",
         "vi": "Tổng quan bộ thẻ",
         "zh": "牌组概览",
-        "hi": "डेक अवलोकन",
+        "hi": "डेक अवलोकन", "pl": "Przegląd talii",
     },
     "Enable Custom Deck Dashboard": {
         "de": "Eigenes Stapel-Dashboard aktivieren",
@@ -486,7 +490,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Activer le tableau de bord personnalisé",
         "vi": "Bật bảng điều khiển bộ thẻ tùy chỉnh",
         "zh": "启用自定义牌组仪表板",
-        "hi": "कस्टम डेक डैशबोर्ड सक्षम करें",
+        "hi": "कस्टम डेक डैशबोर्ड सक्षम करें", "pl": "Włącz własny pulpit talii",
     },
     "Replaces the standard Deck Overview screen with a modern dashboard displaying Retention, Hard Cards, and more.": {
         "de": "Ersetzt die Standard-Stapelübersicht durch ein modernes Dashboard mit Retention, schweren Karten und mehr.",
@@ -496,7 +500,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Remplace l'écran standard par un tableau de bord moderne affichant rétention, cartes difficiles et plus.",
         "vi": "Thay thế màn hình tổng quan tiêu chuẩn bằng bảng điều khiển hiện đại hiển thị tỷ lệ ghi nhớ, thẻ khó và nhiều hơn nữa.",
         "zh": "将标准牌组概览替换为显示记忆率、困难卡片等内容的现代仪表板。",
-        "hi": "मानक डेक अवलोकन स्क्रीन को रिटेंशन, कठिन कार्ड आदि दिखाने वाले आधुनिक डैशबोर्ड से बदलता है।",
+        "hi": "मानक डेक अवलोकन स्क्रीन को रिटेंशन, कठिन कार्ड आदि दिखाने वाले आधुनिक डैशबोर्ड से बदलता है।", "pl": "Zastępuje standardowy ekran Przeglądu talii nowoczesnym pulpitem, wyświetlającym Zapamiętywanie, Trudne karty i wiele innych.",
     },
     "Sidebar": {
         "de": "Sidebar",
@@ -506,7 +510,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Barre latérale",
         "vi": "Thanh bên",
         "zh": "侧边栏",
-        "hi": "साइडबार",
+        "hi": "साइडबार", "pl": "Panel boczny",
     },
     "Show or hide the launcher sidebar.": {
         "de": "Launcher-Sidebar ein- oder ausblenden.",
@@ -516,7 +520,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Afficher ou masquer la barre latérale du lanceur.",
         "vi": "Hiện hoặc ẩn thanh bên của trình khởi chạy.",
         "zh": "显示或隐藏启动器侧边栏。",
-        "hi": "लॉन्चर साइडबार दिखाएँ या छिपाएँ।",
+        "hi": "लॉन्चर साइडबार दिखाएँ या छिपाएँ।", "pl": "Pokazuje lub ukrywa panel boczny launchera.",
     },
     "Mind Map": {
         "de": "Mindmap",
@@ -526,7 +530,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Carte mentale",
         "vi": "Sơ đồ tư duy",
         "zh": "思维导图",
-        "hi": "माइंड मैप",
+        "hi": "माइंड मैप", "pl": "Mind Map",
     },
     "Gamification Sidebar": {
         "de": "Gamification-Sidebar",
@@ -536,7 +540,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Barre de gamification",
         "vi": "Thanh gamification",
         "zh": "游戏化侧边栏",
-        "hi": "गेमिफिकेशन साइडबार",
+        "hi": "गेमिफिकेशन साइडबार", "pl": "Panel boczny grywalizacji",
     },
     "Music Player": {
         "de": "Musik-Player",
@@ -546,7 +550,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Lecteur de musique",
         "vi": "Trình phát nhạc",
         "zh": "音乐播放器",
-        "hi": "म्यूजिक प्लेयर",
+        "hi": "म्यूजिक प्लेयर", "pl": "Odtwarzacz muzyki",
     },
     "Pomodoro Timer": {
         "de": "Pomodoro-Timer",
@@ -556,7 +560,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Minuterie Pomodoro",
         "vi": "Hẹn giờ Pomodoro",
         "zh": "番茄钟",
-        "hi": "पोमोडोरो टाइमर",
+        "hi": "पोमोडोरो टाइमर", "pl": "Timer Pomodoro",
     },
     "AI Assistant": {
         "de": "KI-Assistent",
@@ -566,7 +570,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Assistant IA",
         "vi": "Trợ lý AI",
         "zh": "AI 助手",
-        "hi": "AI सहायक",
+        "hi": "AI सहायक", "pl": "Asystent AI",
     },
     "Website Viewer": {
         "de": "Website-Anzeige",
@@ -576,7 +580,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Visionneuse de sites web",
         "vi": "Trình xem trang web",
         "zh": "网页查看器",
-        "hi": "वेबसाइट व्यूअर",
+        "hi": "वेबसाइट व्यूअर", "pl": "Przeglądarka stron internetowych",
     },
     "Notebook": {
         "de": "Notizbuch",
@@ -586,7 +590,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Carnet de notes",
         "vi": "Sổ tay",
         "zh": "笔记本",
-        "hi": "नोटबुक",
+        "hi": "नोटबुक", "pl": "Notatnik",
     },
     "You need to restart Anki to see the changes of the Sidebar Settings.": {
         "de": "Du musst Anki neu starten, damit die Änderungen an den Sidebar-Einstellungen wirksam werden.",
@@ -596,7 +600,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Vous devez redémarrer Anki pour appliquer les changements des paramètres de la barre latérale.",
         "vi": "Bạn cần khởi động lại Anki để thấy các thay đổi trong cài đặt thanh bên.",
         "zh": "您需要重启 Anki 才能看到侧边栏设置的更改。",
-        "hi": "साइडबार सेटिंग्स के बदलाव देखने के लिए Anki को पुनः प्रारंभ करें।",
+        "hi": "साइडबार सेटिंग्स के बदलाव देखने के लिए Anki को पुनः प्रारंभ करें।", "pl": "Musisz zrestartować Anki, aby zobaczyć zmiany w ustawieniach panelu bocznego.",
     },
     "Cancel": {
         "de": "Abbrechen",
@@ -606,7 +610,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Annuler",
         "vi": "Hủy",
         "zh": "取消",
-        "hi": "रद्द करें",
+        "hi": "रद्द करें", "pl": "Anuluj",
     },
     "Save Settings": {
         "de": "Einstellungen speichern",
@@ -616,7 +620,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Enregistrer les paramètres",
         "vi": "Lưu cài đặt",
         "zh": "保存设置",
-        "hi": "सेटिंग्स सहेजें",
+        "hi": "सेटिंग्स सहेजें", "pl": "Zapisz ustawienia",
     },
     "Default": {
         "de": "Standard",
@@ -626,7 +630,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Par défaut",
         "vi": "Mặc định",
         "zh": "默认",
-        "hi": "डिफ़ॉल्ट",
+        "hi": "डिफ़ॉल्ट", "pl": "Domyślny",
     },
 
     # ================================================================= #
@@ -640,7 +644,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Plan d'étude",
         "vi": "Kế hoạch học tập",
         "zh": "学习计划",
-        "hi": "अध्ययन योजना",
+        "hi": "अध्ययन योजना", "pl": "Plan nauki",
     },
     "Study Plan Timer": {
         "de": "Lernplan-Timer",
@@ -650,7 +654,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Minuterie du plan d'étude",
         "vi": "Hẹn giờ kế hoạch học tập",
         "zh": "学习计划计时器",
-        "hi": "अध्ययन योजना टाइमर",
+        "hi": "अध्ययन योजना टाइमर", "pl": "Timer planu nauki",
     },
     "Done": {
         "de": "Fertig",
@@ -660,7 +664,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Terminé",
         "vi": "Xong",
         "zh": "完成",
-        "hi": "हो गया",
+        "hi": "हो गया", "pl": "Gotowe",
     },
     "Pause": {
         "de": "Pause",
@@ -670,7 +674,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Pause",
         "vi": "Tạm dừng",
         "zh": "暂停",
-        "hi": "रुकें",
+        "hi": "रुकें", "pl": "Pauza",
     },
     "Paused": {
         "de": "Pausiert",
@@ -680,7 +684,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "En pause",
         "vi": "Đã tạm dừng",
         "zh": "已暂停",
-        "hi": "रुका हुआ",
+        "hi": "रुका हुआ", "pl": "Wstrzymany",
     },
     "Resume": {
         "de": "Fortsetzen",
@@ -690,7 +694,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Reprendre",
         "vi": "Tiếp tục",
         "zh": "继续",
-        "hi": "फिर शुरू करें",
+        "hi": "फिर शुरू करें", "pl": "Wznów",
     },
     "Reset": {
         "de": "Zurücksetzen",
@@ -700,7 +704,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Réinitialiser",
         "vi": "Đặt lại",
         "zh": "重置",
-        "hi": "रीसेट",
+        "hi": "रीसेट", "pl": "Resetuj",
     },
     "Timer is running": {
         "de": "Timer läuft",
@@ -710,7 +714,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Minuterie en cours",
         "vi": "Bộ đếm giờ đang chạy",
         "zh": "计时器运行中",
-        "hi": "टाइमर चल रहा है",
+        "hi": "टाइमर चल रहा है", "pl": "Timer działa",
     },
     "Timer is paused": {
         "de": "Timer pausiert",
@@ -720,7 +724,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Minuterie en pause",
         "vi": "Bộ đếm giờ đã tạm dừng",
         "zh": "计时器已暂停",
-        "hi": "टाइमर रुका है",
+        "hi": "टाइमर रुका है", "pl": "Timer jest wstrzymany",
     },
     "Add subjects": {
         "de": "Fächer hinzufügen",
@@ -730,7 +734,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Ajouter des matières",
         "vi": "Thêm môn học",
         "zh": "添加科目",
-        "hi": "विषय जोड़ें",
+        "hi": "विषय जोड़ें", "pl": "Dodaj przedmioty",
     },
     "Subject finished": {
         "de": "Fach abgeschlossen",
@@ -740,7 +744,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Matière terminée",
         "vi": "Môn học hoàn thành",
         "zh": "科目完成",
-        "hi": "विषय पूर्ण",
+        "hi": "विषय पूर्ण", "pl": "Przedmiot ukończony",
     },
     "Finished learning %s!": {
         "de": "%s fertig gelernt!",
@@ -750,7 +754,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Apprentissage de %s terminé !",
         "vi": "Đã học xong %s!",
         "zh": "%s 学习完成！",
-        "hi": "%s सीखना पूरा हुआ!",
+        "hi": "%s सीखना पूरा हुआ!", "pl": "Ukończono naukę %s!",
     },
     "No learning plan configured yet.": {
         "de": "Noch kein Lernplan konfiguriert.",
@@ -760,7 +764,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Aucun plan d'étude configuré pour l'instant.",
         "vi": "Chưa cấu hình kế hoạch học tập.",
         "zh": "尚未配置学习计划。",
-        "hi": "अभी तक कोई अध्ययन योजना कॉन्फ़िगर नहीं की गई।",
+        "hi": "अभी तक कोई अध्ययन योजना कॉन्फ़िगर नहीं की गई।", "pl": "Nie skonfigurowano jeszcze planu nauki.",
     },
     "No study plan configured.": {
         "de": "Kein Lernplan konfiguriert.",
@@ -770,7 +774,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Aucun plan d’étude configuré.",
         "vi": "Chưa cấu hình kế hoạch học tập.",
         "zh": "尚未配置学习计划。",
-        "hi": "कोई अध्ययन योजना कॉन्फ़िगर नहीं की गई है।",
+        "hi": "कोई अध्ययन योजना कॉन्फ़िगर नहीं की गई है।", "pl": "Nie skonfigurowano planu nauki.",
     },
     "Unknown Subject": {
         "de": "Unbekanntes Fach",
@@ -780,7 +784,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Matière inconnue",
         "vi": "Môn học không xác định",
         "zh": "未知科目",
-        "hi": "अज्ञात विषय",
+        "hi": "अज्ञात विषय", "pl": "Nieznany przedmiot",
     },
     "Daily Medical Fact": {
         "de": "Medizin-Fakt des Tages",
@@ -790,7 +794,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Fait médical du jour",
         "vi": "Sự kiện y học hôm nay",
         "zh": "今日医学知识",
-        "hi": "आज का चिकित्सा तथ्य",
+        "hi": "आज का चिकित्सा तथ्य", "pl": "Codzienna ciekawostka medyczna",
     },
     "Daily Legal Fact": {
         "de": "Rechts-Fakt des Tages",
@@ -800,7 +804,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Fait juridique du jour",
         "vi": "Sự kiện pháp luật hôm nay",
         "zh": "今日法律知识",
-        "hi": "आज का कानूनी तथ्य",
+        "hi": "आज का कानूनी तथ्य", "pl": "Codzienna ciekawostka prawnicza",
     },
     "Daily General Fact": {
         "de": "Allgemeiner Fakt des Tages",
@@ -810,7 +814,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Fait général du jour",
         "vi": "Sự kiện tổng quát hôm nay",
         "zh": "今日常识",
-        "hi": "आज का सामान्य तथ्य",
+        "hi": "आज का सामान्य तथ्य", "pl": "Codzienna ogólna ciekawostka",
     },
     "Daily Country Fact": {
         "de": "Länder-Fakt des Tages",
@@ -820,7 +824,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Fait sur les pays du jour",
         "vi": "Sự kiện về quốc gia hôm nay",
         "zh": "今日国家知识",
-        "hi": "आज का देश तथ्य",
+        "hi": "आज का देश तथ्य", "pl": "Codzienna ciekawostka o kraju",
     },
     "No daily facts available.": {
         "de": "Keine täglichen Fakten verfügbar.",
@@ -830,7 +834,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Aucun fait du jour disponible.",
         "vi": "Không có sự kiện nào hôm nay.",
         "zh": "没有每日知识可用。",
-        "hi": "कोई दैनिक तथ्य उपलब्ध नहीं।",
+        "hi": "कोई दैनिक तथ्य उपलब्ध नहीं।", "pl": "Brak dostępnych dzisiejszych ciekawostek.",
     },
     "Fact text missing.": {
         "de": "Fakten-Text fehlt.",
@@ -840,7 +844,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Texte du fait manquant.",
         "vi": "Thiếu văn bản sự kiện.",
         "zh": "缺少知识文本。",
-        "hi": "तथ्य पाठ अनुपलब्ध।",
+        "hi": "तथ्य पाठ अनुपलब्ध।", "pl": "Brak tekstu ciekawostki.",
     },
     "Error loading daily fact.": {
         "de": "Fehler beim Laden des täglichen Fakts.",
@@ -850,7 +854,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Erreur lors du chargement du fait du jour.",
         "vi": "Lỗi khi tải sự kiện hàng ngày.",
         "zh": "加载每日知识时出错。",
-        "hi": "दैनिक तथ्य लोड करने में त्रुटि।",
+        "hi": "दैनिक तथ्य लोड करने में त्रुटि।", "pl": "Błąd wczytywania codziennej ciekawostki.",
     },
     "Fact Image": {
         "de": "Fakten-Bild",
@@ -860,7 +864,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Image du fait",
         "vi": "Hình ảnh sự kiện",
         "zh": "知识图片",
-        "hi": "तथ्य छवि",
+        "hi": "तथ्य छवि", "pl": "Obraz ciekawostki",
     },
     "Missing": {
         "de": "Fehlt",
@@ -870,7 +874,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Manquant",
         "vi": "Thiếu",
         "zh": "缺失",
-        "hi": "अनुपलब्ध",
+        "hi": "अनुपलब्ध", "pl": "Brak",
     },
     "Error": {
         "de": "Fehler",
@@ -880,7 +884,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Erreur",
         "vi": "Lỗi",
         "zh": "错误",
-        "hi": "त्रुटि",
+        "hi": "त्रुटि", "pl": "Błąd",
     },
     "Load Error": {
         "de": "Ladefehler",
@@ -890,7 +894,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Erreur de chargement",
         "vi": "Lỗi tải",
         "zh": "加载错误",
-        "hi": "लोड त्रुटि",
+        "hi": "लोड त्रुटि", "pl": "Błąd wczytywania",
     },
     "No Image": {
         "de": "Kein Bild",
@@ -900,7 +904,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Pas d'image",
         "vi": "Không có hình ảnh",
         "zh": "无图片",
-        "hi": "कोई छवि नहीं",
+        "hi": "कोई छवि नहीं", "pl": "Brak obrazu",
     },
     "{} sec": {
         "de": "{} Sek.",
@@ -910,7 +914,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "{} s",
         "vi": "{} giây",
         "zh": "{} 秒",
-        "hi": "{} से.",
+        "hi": "{} से.", "pl": "{} s",
     },
     "{} min": {
         "de": "{} Min.",
@@ -920,7 +924,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "{} min",
         "vi": "{} phút",
         "zh": "{} 分钟",
-        "hi": "{} मि.",
+        "hi": "{} मि.", "pl": "{} min",
     },
     "{} h": {
         "de": "{} Std.",
@@ -930,7 +934,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "{} h",
         "vi": "{} giờ",
         "zh": "{} 小时",
-        "hi": "{} घं.",
+        "hi": "{} घं.", "pl": "{} godz.",
     },
     "{} h {} min": {
         "de": "{} Std. {} Min.",
@@ -940,7 +944,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "{} h {} min",
         "vi": "{} giờ {} phút",
         "zh": "{} 小时 {} 分钟",
-        "hi": "{} घं. {} मि.",
+        "hi": "{} घं. {} मि.", "pl": "{} godz. {} min",
     },
 
     # ================================================================= #
@@ -954,7 +958,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Rang inconnu",
         "vi": "Cấp bậc không xác định",
         "zh": "未知等级",
-        "hi": "अज्ञात रैंक",
+        "hi": "अज्ञात रैंक", "pl": "Nieznana ranga",
     },
     "Level Up! Lvl {}!": {
         "de": "Level-Up! Level {}!",
@@ -964,7 +968,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Niveau supérieur ! Niv. {} !",
         "vi": "Lên cấp! Cấp {}!",
         "zh": "升级！等级 {}！",
-        "hi": "लेवल अप! स्तर {}!",
+        "hi": "लेवल अप! स्तर {}!", "pl": "Awans! Poziom {}!",
     },
     "New Rank: {}!": {
         "de": "Neuer Rang: {}!",
@@ -974,7 +978,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Nouveau rang : {} !",
         "vi": "Cấp bậc mới: {}!",
         "zh": "新等级：{}！",
-        "hi": "नया रैंक: {}!",
+        "hi": "नया रैंक: {}!", "pl": "Nowa ranga: {}!",
     },
     "Streak: {} days!\n+{} XP Bonus": {
         "de": "Streak: {} Tage!\n+{} XP Bonus",
@@ -984,7 +988,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Série : {} jours !\n+{} XP de bonus",
         "vi": "Chuỗi: {} ngày!\n+{} XP thưởng",
         "zh": "连击：{}天！\n+{} XP 奖励",
-        "hi": "स्ट्रीक: {} दिन!\n+{} XP बोनस",
+        "hi": "स्ट्रीक: {} दिन!\n+{} XP बोनस", "pl": "Seria: {} dni!\n+{} XP bonusu",
     },
     "No challenge available.": {
         "de": "Keine Challenge verfügbar.",
@@ -994,7 +998,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Aucun défi disponible.",
         "vi": "Không có thử thách nào.",
         "zh": "暂无挑战。",
-        "hi": "कोई चुनौती उपलब्ध नहीं।",
+        "hi": "कोई चुनौती उपलब्ध नहीं।", "pl": "Brak dostępnego wyzwania.",
     },
     "Challenge already completed today!": {
         "de": "Challenge heute bereits abgeschlossen!",
@@ -1004,7 +1008,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Défi déjà complété aujourd'hui !",
         "vi": "Thử thách hôm nay đã hoàn thành!",
         "zh": "今日挑战已完成！",
-        "hi": "आज की चुनौती पहले ही पूरी हो चुकी है!",
+        "hi": "आज की चुनौती पहले ही पूरी हो चुकी है!", "pl": "Wyzwanie zostało już dziś ukończone!",
     },
     "Challenge complete! +{} XP": {
         "de": "Challenge abgeschlossen! +{} XP",
@@ -1014,7 +1018,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Défi terminé ! +{} XP",
         "vi": "Hoàn thành thử thách! +{} XP",
         "zh": "挑战完成！+{} XP",
-        "hi": "चुनौती पूरी! +{} XP",
+        "hi": "चुनौती पूरी! +{} XP", "pl": "Wyzwanie ukończone! +{} XP",
     },
     "Reset all {} Gamification data?": {
         "de": "Alle {}-Gamification-Daten zurücksetzen?",
@@ -1024,7 +1028,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Réinitialiser toutes les données de gamification de {} ?",
         "vi": "Đặt lại tất cả dữ liệu gamification của {}?",
         "zh": "重置所有 {} 游戏化数据？",
-        "hi": "सभी {} गेमिफिकेशन डेटा रीसेट करें?",
+        "hi": "सभी {} गेमिफिकेशन डेटा रीसेट करें?", "pl": "Zresetować wszystkie dane grywalizacji {}?",
     },
     "Delete Study Plan?": {
         "de": "Lernplan löschen?",
@@ -1034,7 +1038,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Supprimer le plan d'étude ?",
         "vi": "Xóa kế hoạch học tập?",
         "zh": "删除学习计划？",
-        "hi": "अध्ययन योजना हटाएं?",
+        "hi": "अध्ययन योजना हटाएं?", "pl": "Usunąć plan nauki?",
     },
     "Also delete Study Plan config?": {
         "de": "Lernplan-Konfiguration ebenfalls löschen?",
@@ -1044,7 +1048,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Supprimer aussi la configuration du plan d'étude ?",
         "vi": "Cũng xóa cấu hình kế hoạch học tập?",
         "zh": "同时删除学习计划配置？",
-        "hi": "अध्ययन योजना कॉन्फ़िगरेशन भी हटाएं?",
+        "hi": "अध्ययन योजना कॉन्फ़िगरेशन भी हटाएं?", "pl": "Usunąć również konfigurację planu nauki?",
     },
     "{} data reset.": {
         "de": "{}-Daten zurückgesetzt.",
@@ -1054,7 +1058,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Données de {} réinitialisées.",
         "vi": "Dữ liệu {} đã được đặt lại.",
         "zh": "{} 数据已重置。",
-        "hi": "{} डेटा रीसेट हुआ।",
+        "hi": "{} डेटा रीसेट हुआ।", "pl": "Dane {} zresetowane.",
     },
     "Streak": {
         "de": "Streak",
@@ -1064,7 +1068,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Série",
         "vi": "Chuỗi",
         "zh": "连击",
-        "hi": "स्ट्रीक",
+        "hi": "स्ट्रीक", "pl": "Seria",
     },
     "Days": {
         "de": "Tage",
@@ -1074,7 +1078,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Jours",
         "vi": "Ngày",
         "zh": "天",
-        "hi": "दिन",
+        "hi": "दिन", "pl": "Dni",
     },
     "Daily Challenge": {
         "de": "Tages-Challenge",
@@ -1084,7 +1088,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Défi quotidien",
         "vi": "Thử thách hàng ngày",
         "zh": "每日挑战",
-        "hi": "दैनिक चुनौती",
+        "hi": "दैनिक चुनौती", "pl": "Codzienne wyzwanie",
     },
     "Next Level": {
         "de": "Nächstes Level",
@@ -1094,7 +1098,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Niveau suivant",
         "vi": "Cấp tiếp theo",
         "zh": "下一等级",
-        "hi": "अगला स्तर",
+        "hi": "अगला स्तर", "pl": "Następny poziom",
     },
     "remaining: {} XP": {
         "de": "noch: {} XP",
@@ -1104,7 +1108,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "restants : {} XP",
         "vi": "còn lại: {} XP",
         "zh": "剩余：{} XP",
-        "hi": "शेष: {} XP",
+        "hi": "शेष: {} XP", "pl": "pozostało: {} XP",
     },
     "Max Level Reached ({} XP Total)": {
         "de": "Maximales Level erreicht ({} XP gesamt)",
@@ -1114,7 +1118,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Niveau maximum atteint ({} XP au total)",
         "vi": "Đạt cấp tối đa ({} XP tổng cộng)",
         "zh": "已达最高等级（共 {} XP）",
-        "hi": "अधिकतम स्तर प्राप्त ({} XP कुल)",
+        "hi": "अधिकतम स्तर प्राप्त ({} XP कुल)", "pl": "Osiągnięto maksymalny poziom ({} XP łącznie)",
     },
 
     # ================================================================= #
@@ -1128,7 +1132,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Niveau : ?",
         "vi": "Cấp độ: ?",
         "zh": "等级：?",
-        "hi": "स्तर: ?",
+        "hi": "स्तर: ?", "pl": "Poziom: ?",
     },
     "Rank: ???": {
         "de": "Rang: ???",
@@ -1138,7 +1142,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Rang : ???",
         "vi": "Cấp bậc: ???",
         "zh": "等级：???",
-        "hi": "रैंक: ???",
+        "hi": "रैंक: ???", "pl": "Ranga: ???",
     },
     "XP: ? / ?": {
         "de": "XP: ? / ?",
@@ -1148,7 +1152,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "XP : ? / ?",
         "vi": "XP: ? / ?",
         "zh": "XP：? / ?",
-        "hi": "XP: ? / ?",
+        "hi": "XP: ? / ?", "pl": "XP: ? / ?",
     },
     "Next Goal": {
         "de": "Nächstes Ziel",
@@ -1158,7 +1162,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Prochain objectif",
         "vi": "Mục tiêu tiếp theo",
         "zh": "下一目标",
-        "hi": "अगला लक्ष्य",
+        "hi": "अगला लक्ष्य", "pl": "Następny cel",
     },
     "Loading next goal...": {
         "de": "Lade nächstes Ziel…",
@@ -1168,7 +1172,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Chargement du prochain objectif…",
         "vi": "Đang tải mục tiêu tiếp theo…",
         "zh": "加载下一目标中…",
-        "hi": "अगला लक्ष्य लोड हो रहा है…",
+        "hi": "अगला लक्ष्य लोड हो रहा है…", "pl": "Wczytywanie kolejnego celu...",
     },
     "? Day Streak": {
         "de": "? Tage Streak",
@@ -1178,7 +1182,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Série de ? jours",
         "vi": "Chuỗi ? ngày",
         "zh": "? 天连击",
-        "hi": "? दिन की स्ट्रीक",
+        "hi": "? दिन की स्ट्रीक", "pl": "? Seria dni",
     },
     "Loading challenge...": {
         "de": "Lade Challenge…",
@@ -1188,7 +1192,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Chargement du défi…",
         "vi": "Đang tải thử thách…",
         "zh": "加载挑战中…",
-        "hi": "चुनौती लोड हो रही है…",
+        "hi": "चुनौती लोड हो रही है…", "pl": "Wczytywanie wyzwania...",
     },
     "Loading...": {
         "de": "Lade…",
@@ -1198,7 +1202,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Chargement…",
         "vi": "Đang tải…",
         "zh": "加载中…",
-        "hi": "लोड हो रहा है…",
+        "hi": "लोड हो रहा है…", "pl": "Wczytywanie…",
     },
     "Complete Challenge": {
         "de": "Challenge abschließen",
@@ -1208,7 +1212,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Terminer le défi",
         "vi": "Hoàn thành thử thách",
         "zh": "完成挑战",
-        "hi": "चुनौती पूरी करें",
+        "hi": "चुनौती पूरी करें", "pl": "Ukończ wyzwanie",
     },
     "All Ranks": {
         "de": "Alle Ränge",
@@ -1218,7 +1222,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Tous les rangs",
         "vi": "Tất cả cấp bậc",
         "zh": "所有等级",
-        "hi": "सभी रैंक",
+        "hi": "सभी रैंक", "pl": "Wszystkie rangi",
     },
     "How it works": {
         "de": "So funktioniert's",
@@ -1228,7 +1232,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Comment ça marche",
         "vi": "Cách hoạt động",
         "zh": "使用说明",
-        "hi": "यह कैसे काम करता है",
+        "hi": "यह कैसे काम करता है", "pl": "Jak to działa",
     },
     "Level {}": {
         "de": "Level {}",
@@ -1238,15 +1242,15 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Niveau {}",
         "vi": "Cấp {}",
         "zh": "等级 {}",
-        "hi": "स्तर {}",
+        "hi": "स्तर {}", "pl": "Poziom {}",
     },
     "Level": {
         "de": "Level", "es": "Nivel", "ko": "레벨", "pt": "Nível",
-        "fr": "Niveau", "vi": "Cấp độ", "zh": "等级", "hi": "स्तर",
+        "fr": "Niveau", "vi": "Cấp độ", "zh": "等级", "hi": "स्तर", "pl": "Poziom",
     },
     "Daily Fact": {
         "de": "Täglicher Fakt", "es": "Dato diario", "ko": "오늘의 상식", "pt": "Fato diário",
-        "fr": "Fait du jour", "vi": "Sự thật hằng ngày", "zh": "每日知识", "hi": "दैनिक तथ्य",
+        "fr": "Fait du jour", "vi": "Sự thật hằng ngày", "zh": "每日知识", "hi": "दैनिक तथ्य", "pl": "Codzienna ciekawostka",
     },
     "{} Day Streak": {
         "de": "{} Tag Streak",
@@ -1256,7 +1260,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Série de {} jour",
         "vi": "Chuỗi {} ngày",
         "zh": "{} 天连击",
-        "hi": "{} दिन की स्ट्रीक",
+        "hi": "{} दिन की स्ट्रीक", "pl": "{} dzień serii",
     },
     "{} Days Streak": {
         "de": "{} Tage Streak",
@@ -1266,7 +1270,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Série de {} jours",
         "vi": "Chuỗi {} ngày",
         "zh": "{} 天连击",
-        "hi": "{} दिनों की स्ट्रीक",
+        "hi": "{} दिनों की स्ट्रीक", "pl": "{} dni serii",
     },
     "{} Day": {
         "de": "{} Tag",
@@ -1276,7 +1280,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "{} jour",
         "vi": "{} ngày",
         "zh": "{} 天",
-        "hi": "{} दिन",
+        "hi": "{} दिन", "pl": "{} dzień",
     },
     "{} Days": {
         "de": "{} Tage",
@@ -1286,7 +1290,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "{} jours",
         "vi": "{} ngày",
         "zh": "{} 天",
-        "hi": "{} दिन",
+        "hi": "{} दिन", "pl": "{} dni",
     },
     "Own icon or text…": {
         "de": "Eigenes Icon oder Text…",
@@ -1296,7 +1300,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Icône ou texte personnalisé…",
         "vi": "Biểu tượng hoặc chữ tùy chọn…",
         "zh": "自定义图标或文字…",
-        "hi": "अपना आइकन या टेक्स्ट…",
+        "hi": "अपना आइकन या टेक्स्ट…", "pl": "Własna ikona lub tekst…",
     },
     "Only {} XP left": {
         "de": "Nur noch {} XP",
@@ -1306,7 +1310,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Plus que {} XP",
         "vi": "Còn {} XP",
         "zh": "还差 {} XP",
-        "hi": "केवल {} XP शेष",
+        "hi": "केवल {} XP शेष", "pl": "Pozostało tylko {} XP",
     },
     "Needed for next level: {}": {
         "de": "Für das nächste Level: {}",
@@ -1316,7 +1320,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Requis pour le niveau suivant : {}",
         "vi": "Cần cho cấp tiếp theo: {}",
         "zh": "下一等级所需：{}",
-        "hi": "अगले स्तर के लिए आवश्यक: {}",
+        "hi": "अगले स्तर के लिए आवश्यक: {}", "pl": "Potrzebne do następnego poziomu: {}",
     },
     "Current streak bonus: +{} XP per day.\n(Formula: 20 XP \u00d7 {} days)": {
         "de": "Aktueller Streak-Bonus: +{} XP pro Tag.\n(Formel: 20 XP \u00d7 {} Tage)",
@@ -1326,7 +1330,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Bonus de série actuel : +{} XP par jour.\n(Formule : 20 XP \u00d7 {} jours)",
         "vi": "Thưởng chuỗi hiện tại: +{} XP/ngày.\n(Công thức: 20 XP \u00d7 {} ngày)",
         "zh": "当前连击奖励：+{} XP/天。\n（公式：20 XP \u00d7 {} 天）",
-        "hi": "वर्तमान स्ट्रीक बोनस: +{} XP प्रति दिन।\n(सूत्र: 20 XP \u00d7 {} दिन)",
+        "hi": "वर्तमान स्ट्रीक बोनस: +{} XP प्रति दिन।\n(सूत्र: 20 XP \u00d7 {} दिन)", "pl": "Aktualny bonus za serię: +{} XP dziennie.\n(Wzór: 20 XP × {} dni)",
     },
     "Completed": {
         "de": "Abgeschlossen",
@@ -1336,7 +1340,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Terminé",
         "vi": "Đã hoàn thành",
         "zh": "已完成",
-        "hi": "पूर्ण",
+        "hi": "पूर्ण", "pl": "Ukończone",
     },
     "Complete (+{} XP)": {
         "de": "Abschließen (+{} XP)",
@@ -1346,7 +1350,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Terminer (+{} XP)",
         "vi": "Hoàn thành (+{} XP)",
         "zh": "完成 (+{} XP)",
-        "hi": "पूर्ण (+{} XP)",
+        "hi": "पूर्ण (+{} XP)", "pl": "Ukończ (+{} XP)",
     },
     "Click to gain {} XP.": {
         "de": "Klicken, um {} XP zu erhalten.",
@@ -1356,7 +1360,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Cliquez pour gagner {} XP.",
         "vi": "Nhấn để nhận {} XP.",
         "zh": "点击获得 {} XP。",
-        "hi": "{} XP पाने के लिए क्लिक करें।",
+        "hi": "{} XP पाने के लिए क्लिक करें।", "pl": "Kliknij, aby zdobyć {} XP.",
     },
     "Only {} XP until:": {
         "de": "Nur noch {} XP bis:",
@@ -1366,7 +1370,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Plus que {} XP jusqu'à :",
         "vi": "Chỉ còn {} XP đến:",
         "zh": "距下一目标仅剩 {} XP：",
-        "hi": "केवल {} XP और चाहिए:",
+        "hi": "केवल {} XP और चाहिए:", "pl": "Tylko {} XP do:",
     },
     "Maximum Rank Achieved!": {
         "de": "Maximalen Rang erreicht!",
@@ -1376,7 +1380,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Rang maximum atteint !",
         "vi": "Đã đạt cấp bậc tối đa!",
         "zh": "已达最高等级！",
-        "hi": "अधिकतम रैंक प्राप्त!",
+        "hi": "अधिकतम रैंक प्राप्त!", "pl": "Osiągnięto maksymalną rangę!",
     },
     "Congratulations!": {
         "de": "Glückwunsch!",
@@ -1386,7 +1390,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Félicitations !",
         "vi": "Chúc mừng!",
         "zh": "恭喜！",
-        "hi": "बधाई!",
+        "hi": "बधाई!", "pl": "Gratulacje!",
     },
     "Lvl {}+: {}": {
         "de": "Lvl {}+: {}",
@@ -1396,7 +1400,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Niv {}+ : {}",
         "vi": "Cấp {}+: {}",
         "zh": "等级 {}+：{}",
-        "hi": "स्तर {}+: {}",
+        "hi": "स्तर {}+: {}", "pl": "Lvl {}+: {}",
     },
     "(Locked)": {
         "de": "(Gesperrt)",
@@ -1406,7 +1410,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "(Verrouillé)",
         "vi": "(Bị khóa)",
         "zh": "（已锁定）",
-        "hi": "(लॉक)",
+        "hi": "(लॉक)", "pl": "(Zablokowane)",
     },
     "Image not found: {}": {
         "de": "Bild nicht gefunden: {}",
@@ -1416,7 +1420,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Image introuvable : {}",
         "vi": "Không tìm thấy hình ảnh: {}",
         "zh": "找不到图片：{}",
-        "hi": "छवि नहीं मिली: {}",
+        "hi": "छवि नहीं मिली: {}", "pl": "Nie znaleziono obrazu: {}",
     },
     "Error loading guide.": {
         "de": "Fehler beim Laden der Anleitung.",
@@ -1426,7 +1430,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Erreur lors du chargement du guide.",
         "vi": "Lỗi khi tải hướng dẫn.",
         "zh": "加载指南时出错。",
-        "hi": "गाइड लोड करने में त्रुटि।",
+        "hi": "गाइड लोड करने में त्रुटि।", "pl": "Błąd podczas wczytywania przewodnika.",
     },
     "Error: Gamification Manager not available.": {
         "de": "Fehler: Gamification-Manager nicht verfügbar.",
@@ -1436,7 +1440,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Erreur : le gestionnaire de gamification n'est pas disponible.",
         "vi": "Lỗi: Trình quản lý gamification không khả dụng.",
         "zh": "错误：游戏化管理器不可用。",
-        "hi": "त्रुटि: गेमिफिकेशन मैनेजर उपलब्ध नहीं।",
+        "hi": "त्रुटि: गेमिफिकेशन मैनेजर उपलब्ध नहीं।", "pl": "Błąd: Menedżer grywalizacji niedostępny.",
     },
     "An error occurred.": {
         "de": "Ein Fehler ist aufgetreten.",
@@ -1446,7 +1450,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Une erreur est survenue.",
         "vi": "Đã xảy ra lỗi.",
         "zh": "发生了错误。",
-        "hi": "एक त्रुटि हुई।",
+        "hi": "एक त्रुटि हुई।", "pl": "Wystąpił błąd.",
     },
     "<p style=\"margin-bottom: 8px;\">Earn XP, level up, and climb the ranks while studying!</p><p style=\"margin-bottom: 2px;\"><b>How to Earn XP</b></p><ul style=\"margin-top: 0px; margin-bottom: 8px; padding-left: 20px;\"><li><b>Study Time:</b> 10 XP per minute.</li><li><b>Daily Challenge:</b> Bonus XP based on level.</li><li><b>Streak:</b> 20 XP \u00d7 current streak day.</li></ul><p style=\"margin-bottom: 2px;\"><b>Leveling & Ranks</b></p><ul style=\"margin-top: 0px; margin-bottom: 8px; padding-left: 20px;\"><li>Max Level: 100.</li><li>New Rank every 5 levels.</li></ul><p style=\"margin-top: 5px; color: {sec_color};\"><i>Tip: Consistency is key!</i></p>": {
         "de": "<p style=\"margin-bottom: 8px;\">Verdiene XP, steige im Level auf und klettere die Ränge hoch, während du lernst!</p><p style=\"margin-bottom: 2px;\"><b>So verdienst du XP</b></p><ul style=\"margin-top: 0px; margin-bottom: 8px; padding-left: 20px;\"><li><b>Lernzeit:</b> 10 XP pro Minute.</li><li><b>Tages-Challenge:</b> Bonus-XP je nach Level.</li><li><b>Streak:</b> 20 XP \u00d7 aktueller Streak-Tag.</li></ul><p style=\"margin-bottom: 2px;\"><b>Level & Ränge</b></p><ul style=\"margin-top: 0px; margin-bottom: 8px; padding-left: 20px;\"><li>Maximales Level: 100.</li><li>Neuer Rang alle 5 Level.</li></ul><p style=\"margin-top: 5px; color: {sec_color};\"><i>Tipp: Beständigkeit ist der Schlüssel!</i></p>",
@@ -1456,7 +1460,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "<p style=\"margin-bottom: 8px;\">Gagnez des XP, montez de niveau et grimpez les rangs en étudiant !</p><p style=\"margin-bottom: 2px;\"><b>Comment gagner des XP</b></p><ul style=\"margin-top: 0px; margin-bottom: 8px; padding-left: 20px;\"><li><b>Temps d'étude :</b> 10 XP par minute.</li><li><b>Défi quotidien :</b> XP bonus selon le niveau.</li><li><b>Série :</b> 20 XP \u00d7 jour actuel de la série.</li></ul><p style=\"margin-bottom: 2px;\"><b>Niveaux et rangs</b></p><ul style=\"margin-top: 0px; margin-bottom: 8px; padding-left: 20px;\"><li>Niveau maximum : 100.</li><li>Nouveau rang tous les 5 niveaux.</li></ul><p style=\"margin-top: 5px; color: {sec_color};\"><i>Conseil : la régularité est la clé !</i></p>",
         "vi": "<p style=\"margin-bottom: 8px;\">Kiếm XP, lên cấp và leo hạng khi học!</p><p style=\"margin-bottom: 2px;\"><b>Cách Kiếm XP</b></p><ul style=\"margin-top: 0px; margin-bottom: 8px; padding-left: 20px;\"><li><b>Thời gian học:</b> 10 XP mỗi phút.</li><li><b>Thử thách hàng ngày:</b> XP thưởng theo cấp độ.</li><li><b>Chuỗi:</b> 20 XP \u00d7 ngày chuỗi hiện tại.</li></ul><p style=\"margin-bottom: 2px;\"><b>Cấp độ & Hạng</b></p><ul style=\"margin-top: 0px; margin-bottom: 8px; padding-left: 20px;\"><li>Cấp tối đa: 100.</li><li>Hạng mới mỗi 5 cấp.</li></ul><p style=\"margin-top: 5px; color: {sec_color};\"><i>Mẹo: Kiên trì là chìa khóa!</i></p>",
         "zh": "<p style=\"margin-bottom: 8px;\">学习时积累 XP，提升等级，攀登排行榜！</p><p style=\"margin-bottom: 2px;\"><b>如何获取 XP</b></p><ul style=\"margin-top: 0px; margin-bottom: 8px; padding-left: 20px;\"><li><b>学习时间：</b>每分钟 10 XP。</li><li><b>每日挑战：</b>基于等级的奖励 XP。</li><li><b>连击：</b>20 XP \u00d7 当前连击天数。</li></ul><p style=\"margin-bottom: 2px;\"><b>升级与排名</b></p><ul style=\"margin-top: 0px; margin-bottom: 8px; padding-left: 20px;\"><li>最高等级：100。</li><li>每 5 级晋升新等级。</li></ul><p style=\"margin-top: 5px; color: {sec_color};\"><i>提示：坚持是关键！</i></p>",
-        "hi": "<p style=\"margin-bottom: 8px;\">पढ़ते हुए XP कमाएं, लेवल अप करें और रैंक चढ़ें!</p><p style=\"margin-bottom: 2px;\"><b>XP कैसे कमाएं</b></p><ul style=\"margin-top: 0px; margin-bottom: 8px; padding-left: 20px;\"><li><b>अध्ययन समय:</b> प्रति मिनट 10 XP।</li><li><b>दैनिक चुनौती:</b> स्तर के अनुसार बोनस XP।</li><li><b>स्ट्रीक:</b> 20 XP \u00d7 वर्तमान स्ट्रीक दिन।</li></ul><p style=\"margin-bottom: 2px;\"><b>लेवलिंग और रैंक</b></p><ul style=\"margin-top: 0px; margin-bottom: 8px; padding-left: 20px;\"><li>अधिकतम स्तर: 100।</li><li>हर 5 स्तरों पर नया रैंक।</li></ul><p style=\"margin-top: 5px; color: {sec_color};\"><i>सुझाव: निरंतरता ही कुंजी है!</i></p>",
+        "hi": "<p style=\"margin-bottom: 8px;\">पढ़ते हुए XP कमाएं, लेवल अप करें और रैंक चढ़ें!</p><p style=\"margin-bottom: 2px;\"><b>XP कैसे कमाएं</b></p><ul style=\"margin-top: 0px; margin-bottom: 8px; padding-left: 20px;\"><li><b>अध्ययन समय:</b> प्रति मिनट 10 XP।</li><li><b>दैनिक चुनौती:</b> स्तर के अनुसार बोनस XP।</li><li><b>स्ट्रीक:</b> 20 XP \u00d7 वर्तमान स्ट्रीक दिन।</li></ul><p style=\"margin-bottom: 2px;\"><b>लेवलिंग और रैंक</b></p><ul style=\"margin-top: 0px; margin-bottom: 8px; padding-left: 20px;\"><li>अधिकतम स्तर: 100।</li><li>हर 5 स्तरों पर नया रैंक।</li></ul><p style=\"margin-top: 5px; color: {sec_color};\"><i>सुझाव: निरंतरता ही कुंजी है!</i></p>", "pl": "<p style=\"margin-bottom: 8px;\">Zdobywaj XP, awansuj na wyższe poziomy i pnij się w górę rankingu podczas nauki!</p><p style=\"margin-bottom: 2px;\"><b>Jak zdobywać XP</b></p><ul style=\"margin-top: 0px; margin-bottom: 8px; padding-left: 20px;\"><li><b>Czas nauki:</b> 10 XP za minutę.</li><li><b>Codzienne wyzwanie:</b> Bonusowe XP zależne od poziomu.</li><li><b>Seria:</b> 20 XP × aktualny dzień serii.</li></ul><p style=\"margin-bottom: 2px;\"><b>Poziomy i rangi</b></p><ul style=\"margin-top: 0px; margin-bottom: 8px; padding-left: 20px;\"><li>Maksymalny poziom: 100.</li><li>Nowa ranga co 5 poziomów.</li></ul><p style=\"margin-top: 5px; color: {sec_color};\"><i>Wskazówka: kluczem jest konsekwencja!</i></p>",
     },
 
     # ================================================================= #
@@ -1470,7 +1474,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Erreur lors du déclenchement de l'action d'échéance du plan d'étude : {}",
         "vi": "Lỗi kích hoạt hành động thời hạn kế hoạch học tập: {}",
         "zh": "触发学习计划截止日期操作时出错：{}",
-        "hi": "अध्ययन योजना डेडलाइन क्रिया ट्रिगर करने में त्रुटि: {}",
+        "hi": "अध्ययन योजना डेडलाइन क्रिया ट्रिगर करने में त्रुटि: {}", "pl": "Błąd podczas wywoływania akcji terminu planu nauki: {}",
     },
     "Cannot trigger Study Plan Deadline: Function not initialized by main addon.": {
         "de": "Lernplan-Deadline kann nicht ausgelöst werden: Funktion wurde vom Haupt-Add-on nicht initialisiert.",
@@ -1480,7 +1484,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Impossible de déclencher l'échéance du plan d'étude : fonction non initialisée par le module principal.",
         "vi": "Không thể kích hoạt thời hạn kế hoạch học tập: chức năng chưa được khởi tạo bởi tiện ích chính.",
         "zh": "无法触发学习计划截止日期：功能未由主插件初始化。",
-        "hi": "अध्ययन योजना डेडलाइन ट्रिगर नहीं हो सकती: मुख्य ऐड-ऑन द्वारा फ़ंक्शन प्रारंभ नहीं किया गया।",
+        "hi": "अध्ययन योजना डेडलाइन ट्रिगर नहीं हो सकती: मुख्य ऐड-ऑन द्वारा फ़ंक्शन प्रारंभ नहीं किया गया।", "pl": "Nie można uruchomić terminu planu nauki: funkcja nie została zainicjowana przez główny dodatek.",
     },
     "Error triggering Gamification Sidebar action: {}": {
         "de": "Fehler beim Auslösen der Gamification-Sidebar-Aktion: {}",
@@ -1490,7 +1494,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Erreur lors du déclenchement de l'action de la barre de gamification : {}",
         "vi": "Lỗi kích hoạt hành động thanh gamification: {}",
         "zh": "触发游戏化侧边栏操作时出错：{}",
-        "hi": "गेमिफिकेशन साइडबार क्रिया ट्रिगर करने में त्रुटि: {}",
+        "hi": "गेमिफिकेशन साइडबार क्रिया ट्रिगर करने में त्रुटि: {}", "pl": "Błąd podczas wywoływania akcji panelu bocznego grywalizacji: {}",
     },
     "Cannot trigger Gamification Sidebar: Function not initialized by main addon.": {
         "de": "Gamification-Sidebar kann nicht ausgelöst werden: Funktion wurde vom Haupt-Add-on nicht initialisiert.",
@@ -1500,7 +1504,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Impossible de déclencher la barre de gamification : fonction non initialisée par le module principal.",
         "vi": "Không thể kích hoạt thanh gamification: chức năng chưa được khởi tạo bởi tiện ích chính.",
         "zh": "无法触发游戏化侧边栏：功能未由主插件初始化。",
-        "hi": "गेमिफिकेशन साइडबार ट्रिगर नहीं हो सकती: मुख्य ऐड-ऑन द्वारा फ़ंक्शन प्रारंभ नहीं किया गया।",
+        "hi": "गेमिफिकेशन साइडबार ट्रिगर नहीं हो सकती: मुख्य ऐड-ऑन द्वारा फ़ंक्शन प्रारंभ नहीं किया गया।", "pl": "Nie można uruchomić panelu bocznego grywalizacji: funkcja nie została zainicjowana przez główny dodatek.",
     },
 
     # ================================================================= #
@@ -1514,7 +1518,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Échéance de mon projet",
         "vi": "Thời hạn dự án của tôi",
         "zh": "我的项目截止日期",
-        "hi": "मेरी परियोजना की समयसीमा",
+        "hi": "मेरी परियोजना की समयसीमा", "pl": "Termin mojego projektu",
     },
     "Default Title": {
         "de": "Standardtitel",
@@ -1524,7 +1528,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Titre par défaut",
         "vi": "Tiêu đề mặc định",
         "zh": "默认标题",
-        "hi": "डिफ़ॉल्ट शीर्षक",
+        "hi": "डिफ़ॉल्ट शीर्षक", "pl": "Domyślny tytuł",
     },
     "Deadline": {
         "de": "Deadline",
@@ -1534,7 +1538,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Échéance",
         "vi": "Thời hạn",
         "zh": "截止日期",
-        "hi": "समयसीमा",
+        "hi": "समयसीमा", "pl": "Termin",
     },
     "Deadline Error": {
         "de": "Deadline-Fehler",
@@ -1544,7 +1548,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Erreur d'échéance",
         "vi": "Lỗi thời hạn",
         "zh": "截止日期错误",
-        "hi": "समयसीमा त्रुटि",
+        "hi": "समयसीमा त्रुटि", "pl": "Błąd terminu",
     },
     "Error: Start date is after end date": {
         "de": "Fehler: Startdatum liegt nach dem Enddatum",
@@ -1554,7 +1558,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Erreur : la date de début est après la date de fin",
         "vi": "Lỗi: Ngày bắt đầu sau ngày kết thúc",
         "zh": "错误：开始日期晚于结束日期",
-        "hi": "त्रुटि: प्रारंभ तिथि समाप्ति तिथि के बाद है",
+        "hi": "त्रुटि: प्रारंभ तिथि समाप्ति तिथि के बाद है", "pl": "Błąd: Data rozpoczęcia jest późniejsza niż data zakończenia",
     },
     "{} | Starts in {} day(s) | Ends in {} day(s)": {
         "de": "{} | Beginnt in {} Tag(en) | Endet in {} Tag(en)",
@@ -1564,7 +1568,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "{} | Commence dans {} jour(s) | Finit dans {} jour(s)",
         "vi": "{} | Bắt đầu trong {} ngày | Kết thúc trong {} ngày",
         "zh": "{} | {} 天后开始 | {} 天后结束",
-        "hi": "{} | {} दिन में शुरू | {} दिन में समाप्त",
+        "hi": "{} | {} दिन में शुरू | {} दिन में समाप्त", "pl": "{} | Zaczyna się za {} dni | Kończy się za {} dni",
     },
     "{} | Ended {} day(s) ago": {
         "de": "{} | Endete vor {} Tag(en)",
@@ -1574,7 +1578,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "{} | Terminé il y a {} jour(s)",
         "vi": "{} | Đã kết thúc {} ngày trước",
         "zh": "{} | {} 天前已结束",
-        "hi": "{} | {} दिन पहले समाप्त हुआ",
+        "hi": "{} | {} दिन पहले समाप्त हुआ", "pl": "{} | Zakończono {} dni temu",
     },
     "{} | {} day(s) remaining": {
         "de": "{} | Noch {} Tag(e)",
@@ -1584,7 +1588,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "{} | {} jour(s) restant(s)",
         "vi": "{} | Còn {} ngày",
         "zh": "{} | 剩余 {} 天",
-        "hi": "{} | {} दिन शेष",
+        "hi": "{} | {} दिन शेष", "pl": "{} | Pozostało {} dni",
     },
     "Error: Invalid date configuration ({})": {
         "de": "Fehler: Ungültige Datumskonfiguration ({})",
@@ -1594,7 +1598,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Erreur : configuration de date invalide ({})",
         "vi": "Lỗi: Cấu hình ngày không hợp lệ ({})",
         "zh": "错误：无效的日期配置（{}）",
-        "hi": "त्रुटि: अमान्य दिनांक कॉन्फ़िगरेशन ({})",
+        "hi": "त्रुटि: अमान्य दिनांक कॉन्फ़िगरेशन ({})", "pl": "Błąd: Nieprawidłowa konfiguracja daty ({})",
     },
     "Error: {}": {
         "de": "Fehler: {}",
@@ -1604,7 +1608,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Erreur : {}",
         "vi": "Lỗi: {}",
         "zh": "错误：{}",
-        "hi": "त्रुटि: {}",
+        "hi": "त्रुटि: {}", "pl": "Błąd: {}",
     },
     "Configure Deadline via Tools Menu": {
         "de": "Deadline über das Werkzeuge-Menü konfigurieren",
@@ -1614,7 +1618,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Configurer l'échéance via le menu Outils",
         "vi": "Cấu hình thời hạn qua menu Công cụ",
         "zh": "通过工具菜单配置截止日期",
-        "hi": "टूल्स मेनू के माध्यम से समयसीमा कॉन्फ़िगर करें",
+        "hi": "टूल्स मेनू के माध्यम से समयसीमा कॉन्फ़िगर करें", "pl": "Skonfiguruj termin w menu Narzędzia",
     },
     "Configure in Tools -> Gamification Widgets -> Configure Study Plan & Deadline": {
         "de": "Konfiguration über Werkzeuge \u2192 Gamification-Widgets \u2192 Lernplan & Deadline konfigurieren",
@@ -1624,7 +1628,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Configurez dans Outils \u2192 Widgets de gamification \u2192 Configurer le plan d'étude et l'échéance",
         "vi": "Cấu hình trong Công cụ \u2192 Widget gamification \u2192 Cấu hình kế hoạch học tập & thời hạn",
         "zh": "在工具 \u2192 游戏化小部件 \u2192 配置学习计划和截止日期中设置",
-        "hi": "टूल्स \u2192 गेमिफिकेशन विजेट \u2192 अध्ययन योजना और समयसीमा कॉन्फ़िगर करें में सेट करें",
+        "hi": "टूल्स \u2192 गेमिफिकेशन विजेट \u2192 अध्ययन योजना और समयसीमा कॉन्फ़िगर करें में सेट करें", "pl": "Skonfiguruj w Narzędzia -> Widżety grywalizacji -> Konfiguruj plan nauki i termin",
     },
 
     # ================================================================= #
@@ -1638,7 +1642,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Impossible de démarrer la minuterie : '{}' n'est pas prévu aujourd'hui.",
         "vi": "Không thể bắt đầu bộ đếm giờ: '{}' không được lên kế hoạch hôm nay.",
         "zh": "无法启动计时器：'{}'今天没有计划。",
-        "hi": "टाइमर शुरू नहीं हो सकता: '{}' आज के लिए योजनाबद्ध नहीं है।",
+        "hi": "टाइमर शुरू नहीं हो सकता: '{}' आज के लिए योजनाबद्ध नहीं है।", "pl": "Nie można uruchomić timera: '{}' nie zaplanowano na dziś.",
     },
     "'{}' is already completed.": {
         "de": "'{}' ist bereits abgeschlossen.",
@@ -1648,7 +1652,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "'{}' est déjà terminé.",
         "vi": "'{}' đã hoàn thành.",
         "zh": "'{}' 已完成。",
-        "hi": "'{}' पहले ही पूरा हो चुका है।",
+        "hi": "'{}' पहले ही पूरा हो चुका है।", "pl": "'{}' jest już ukończone.",
     },
     "Timer for '{}' is already running.": {
         "de": "Timer für '{}' läuft bereits.",
@@ -1658,7 +1662,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "La minuterie de '{}' est déjà en cours.",
         "vi": "Bộ đếm giờ cho '{}' đang chạy rồi.",
         "zh": "'{}'的计时器已在运行。",
-        "hi": "'{}' के लिए टाइमर पहले से चल रहा है।",
+        "hi": "'{}' के लिए टाइमर पहले से चल रहा है।", "pl": "Timer dla „{}” już działa.",
     },
     "Cannot pause timer: '{}' not planned for today.": {
         "de": "Timer kann nicht pausiert werden: '{}' ist heute nicht geplant.",
@@ -1668,7 +1672,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Impossible de mettre en pause la minuterie : '{}' n'est pas prévu aujourd'hui.",
         "vi": "Không thể tạm dừng bộ đếm giờ: '{}' không được lên kế hoạch hôm nay.",
         "zh": "无法暂停计时器：'{}'今天没有计划。",
-        "hi": "टाइमर रोका नहीं जा सकता: '{}' आज के लिए योजनाबद्ध नहीं है।",
+        "hi": "टाइमर रोका नहीं जा सकता: '{}' आज के लिए योजनाबद्ध नहीं है।", "pl": "Nie można wstrzymać timera: '{}' nie zaplanowano na dziś.",
     },
     "Error: Status for '{}' not found.": {
         "de": "Fehler: Status für '{}' nicht gefunden.",
@@ -1678,7 +1682,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Erreur : statut de '{}' introuvable.",
         "vi": "Lỗi: Không tìm thấy trạng thái của '{}'.",
         "zh": "错误：找不到'{}'的状态。",
-        "hi": "त्रुटि: '{}' की स्थिति नहीं मिली।",
+        "hi": "त्रुटि: '{}' की स्थिति नहीं मिली।", "pl": "Błąd: Nie znaleziono statusu dla „{}”.",
     },
     "Timer for '{}' is already paused.": {
         "de": "Timer für '{}' ist bereits pausiert.",
@@ -1688,7 +1692,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "La minuterie de '{}' est déjà en pause.",
         "vi": "Bộ đếm giờ cho '{}' đã tạm dừng rồi.",
         "zh": "'{}'的计时器已暂停。",
-        "hi": "'{}' के लिए टाइमर पहले से रुका हुआ है।",
+        "hi": "'{}' के लिए टाइमर पहले से रुका हुआ है।", "pl": "Timer dla „{}” jest już wstrzymany.",
     },
     "Timer for '{}' has not been started yet.": {
         "de": "Timer für '{}' wurde noch nicht gestartet.",
@@ -1698,7 +1702,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "La minuterie de '{}' n'a pas encore été démarrée.",
         "vi": "Bộ đếm giờ cho '{}' chưa được bắt đầu.",
         "zh": "'{}'的计时器尚未开始。",
-        "hi": "'{}' के लिए टाइमर अभी शुरू नहीं हुआ।",
+        "hi": "'{}' के लिए टाइमर अभी शुरू नहीं हुआ।", "pl": "Timer dla „{}” nie został jeszcze uruchomiony.",
     },
     "Cannot mark done: '{}' not planned for today.": {
         "de": "Kann nicht als erledigt markiert werden: '{}' ist heute nicht geplant.",
@@ -1708,7 +1712,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Impossible de marquer comme terminé : '{}' n'est pas prévu aujourd'hui.",
         "vi": "Không thể đánh dấu hoàn thành: '{}' không được lên kế hoạch hôm nay.",
         "zh": "无法标记为完成：'{}'今天没有计划。",
-        "hi": "पूर्ण के रूप में चिह्नित नहीं किया जा सकता: '{}' आज के लिए योजनाबद्ध नहीं है।",
+        "hi": "पूर्ण के रूप में चिह्नित नहीं किया जा सकता: '{}' आज के लिए योजनाबद्ध नहीं है।", "pl": "Nie można oznaczyć jako ukończone: '{}' nie zaplanowano na dziś.",
     },
     "'{}' is already marked as done.": {
         "de": "'{}' ist bereits als erledigt markiert.",
@@ -1718,7 +1722,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "'{}' est déjà marqué comme terminé.",
         "vi": "'{}' đã được đánh dấu hoàn thành rồi.",
         "zh": "'{}'已标记为完成。",
-        "hi": "'{}' पहले ही पूर्ण के रूप में चिह्नित है।",
+        "hi": "'{}' पहले ही पूर्ण के रूप में चिह्नित है।", "pl": "'{}' jest już oznaczone jako wykonane.",
     },
 
     # ================================================================= #
@@ -1732,7 +1736,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "{} cartes",
         "vi": "{} thẻ",
         "zh": "{} 张卡片",
-        "hi": "{} कार्ड",
+        "hi": "{} कार्ड", "pl": "{} kart",
     },
     "Progress": {
         "de": "Fortschritt",
@@ -1742,7 +1746,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Progression",
         "vi": "Tiến độ",
         "zh": "进度",
-        "hi": "प्रगति",
+        "hi": "प्रगति", "pl": "Postęp",
     },
     "{}% Completed": {
         "de": "{}% abgeschlossen",
@@ -1752,7 +1756,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "{}% terminé",
         "vi": "{}% hoàn thành",
         "zh": "已完成 {}%",
-        "hi": "{}% पूर्ण",
+        "hi": "{}% पूर्ण", "pl": "{}% ukończono",
     },
     "Retention": {
         "de": "Behaltensrate",
@@ -1762,7 +1766,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Rétention",
         "vi": "Tỷ lệ ghi nhớ",
         "zh": "记忆率",
-        "hi": "प्रतिधारण",
+        "hi": "प्रतिधारण", "pl": "Zapamiętywanie",
     },
     "Hard Cards": {
         "de": "Schwere Karten",
@@ -1772,7 +1776,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Cartes difficiles",
         "vi": "Thẻ khó",
         "zh": "困难卡片",
-        "hi": "कठिन कार्ड",
+        "hi": "कठिन कार्ड", "pl": "Trudne karty",
     },
     "Finished Cards": {
         "de": "Fertige Karten",
@@ -1782,7 +1786,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Cartes terminées",
         "vi": "Thẻ đã hoàn thành",
         "zh": "已完成卡片",
-        "hi": "पूर्ण कार्ड",
+        "hi": "पूर्ण कार्ड", "pl": "Ukończone karty",
     },
     "Click for details": {
         "de": "Für Details klicken",
@@ -1792,7 +1796,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Cliquez pour les détails",
         "vi": "Nhấn để xem chi tiết",
         "zh": "点击查看详情",
-        "hi": "विवरण के लिए क्लिक करें",
+        "hi": "विवरण के लिए क्लिक करें", "pl": "Kliknij, aby zobaczyć szczegóły",
     },
     "Generating Brainstorm Cloud...": {
         "de": "Brainstorm-Wolke wird erstellt…",
@@ -1802,7 +1806,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Génération du nuage d'idées…",
         "vi": "Đang tạo đám mây từ khóa…",
         "zh": "正在生成词云…",
-        "hi": "ब्रेनस्टॉर्म क्लाउड बन रहा है…",
+        "hi": "ब्रेनस्टॉर्म क्लाउड बन रहा है…", "pl": "Generowanie chmury pomysłów…",
     },
     "Displays the most frequent bold, underlined, or cloze terms in this deck.": {
         "de": "Zeigt die häufigsten fett, unterstrichen oder als Cloze markierten Begriffe in diesem Stapel.",
@@ -1812,7 +1816,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Affiche les termes les plus fréquents en gras, soulignés ou cloze dans ce paquet.",
         "vi": "Hiển thị các từ in đậm, gạch chân hoặc cloze xuất hiện nhiều nhất trong bộ thẻ này.",
         "zh": "显示此牌组中出现频率最高的粗体、下划线或填空词汇。",
-        "hi": "इस डेक में सबसे अधिक बार आने वाले बोल्ड, रेखांकित या क्लोज़ शब्द दिखाता है।",
+        "hi": "इस डेक में सबसे अधिक बार आने वाले बोल्ड, रेखांकित या क्लोज़ शब्द दिखाता है।", "pl": "Wyświetla najczęściej występujące w tej talii terminy pogrubione, podkreślone lub oznaczone jako cloze.",
     },
     "Deck Brainstorm Cloud": {
         "de": "Stapel-Brainstorm-Wolke",
@@ -1822,7 +1826,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Nuage d'idées du paquet",
         "vi": "Đám mây từ khóa bộ thẻ",
         "zh": "牌组词云",
-        "hi": "डेक ब्रेनस्टॉर्म क्लाउड",
+        "hi": "डेक ब्रेनस्टॉर्म क्लाउड", "pl": "Chmura pomysłów talii",
     },
     "Start Study": {
         "de": "Lernen starten",
@@ -1832,7 +1836,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Commencer l'étude",
         "vi": "Bắt đầu học",
         "zh": "开始学习",
-        "hi": "अध्ययन शुरू करें",
+        "hi": "अध्ययन शुरू करें", "pl": "Rozpocznij naukę",
     },
     "Retention rate for this deck over its entire lifetime.": {
         "de": "Retention-Rate dieses Stapels über seine gesamte Lebensdauer.",
@@ -1842,7 +1846,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Taux de rétention de ce paquet sur toute sa durée de vie.",
         "vi": "Tỷ lệ ghi nhớ của bộ thẻ này trong toàn bộ thời gian sử dụng.",
         "zh": "此牌组整个使用周期的记忆率。",
-        "hi": "इस डेक की पूरी अवधि में प्रतिधारण दर।",
+        "hi": "इस डेक की पूरी अवधि में प्रतिधारण दर।", "pl": "Wskaźnik zapamiętywania dla tej talii przez cały okres jej istnienia.",
     },
     "Hard cards are cards you have forgotten 8 or more times.": {
         "de": "Schwere Karten sind Karten, die du 8 oder mehr Mal vergessen hast.",
@@ -1852,7 +1856,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Les cartes difficiles sont celles que vous avez oubliées 8 fois ou plus.",
         "vi": "Thẻ khó là những thẻ bạn đã quên 8 lần trở lên.",
         "zh": "困难卡片是您忘记了8次或更多次的卡片。",
-        "hi": "कठिन कार्ड वे हैं जिन्हें आप 8 या अधिक बार भूल चुके हैं।",
+        "hi": "कठिन कार्ड वे हैं जिन्हें आप 8 या अधिक बार भूल चुके हैं।", "pl": "Trudne karty to karty zapomniane co najmniej 8 razy.",
     },
     "Show Hard Cards": {
         "de": "Schwere Karten anzeigen",
@@ -1862,7 +1866,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Afficher les cartes difficiles",
         "vi": "Hiển thị thẻ khó",
         "zh": "显示困难卡片",
-        "hi": "कठिन कार्ड दिखाएं",
+        "hi": "कठिन कार्ड दिखाएं", "pl": "Pokaż trudne karty",
     },
     "Finished cards are 'Mature' cards with an interval of 21 days or more.": {
         "de": "Fertige Karten sind 'reife' Karten mit einem Intervall von 21 Tagen oder mehr.",
@@ -1872,7 +1876,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Les cartes terminées sont des cartes «matures» avec un intervalle de 21 jours ou plus.",
         "vi": "Thẻ hoàn thành là thẻ 'trưởng thành' có khoảng cách ôn tập 21 ngày trở lên.",
         "zh": "已完成卡片是间隔21天或更长时间的'成熟'卡片。",
-        "hi": "पूर्ण कार्ड वे 'परिपक्व' कार्ड हैं जिनका अंतराल 21 दिन या अधिक है।",
+        "hi": "पूर्ण कार्ड वे 'परिपक्व' कार्ड हैं जिनका अंतराल 21 दिन या अधिक है।", "pl": "Ukończone karty to karty „Dojrzałe” z przerwą wynoszącą 21 dni lub więcej.",
     },
     "Difficulty is based on the average Ease Factor of this deck.": {
         "de": "Die Schwierigkeit basiert auf dem durchschnittlichen Ease-Faktor dieses Stapels.",
@@ -1882,7 +1886,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "La difficulté est basée sur le facteur de facilité moyen de ce paquet.",
         "vi": "Độ khó dựa trên hệ số dễ dàng trung bình của bộ thẻ này.",
         "zh": "难度基于此牌组的平均难易系数。",
-        "hi": "कठिनाई इस डेक के औसत आसानी कारक पर आधारित है।",
+        "hi": "कठिनाई इस डेक के औसत आसानी कारक पर आधारित है।", "pl": "Trudność jest obliczana na podstawie średniego współczynnika łatwości tej talii.",
     },
     "Analyzing...": {
         "de": "Analysiere…",
@@ -1892,7 +1896,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Analyse en cours…",
         "vi": "Đang phân tích…",
         "zh": "分析中…",
-        "hi": "विश्लेषण हो रहा है…",
+        "hi": "विश्लेषण हो रहा है…", "pl": "Analizowanie…",
     },
     "No marked words found.": {
         "de": "Keine markierten Wörter gefunden.",
@@ -1902,7 +1906,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Aucun mot marqué trouvé.",
         "vi": "Không tìm thấy từ nào được đánh dấu.",
         "zh": "未找到标记词汇。",
-        "hi": "कोई चिह्नित शब्द नहीं मिला।",
+        "hi": "कोई चिह्नित शब्द नहीं मिला।", "pl": "Nie znaleziono oznaczonych słów.",
     },
     "Error: wordcloud2.min.js missing in 'media' folder.": {
         "de": "Fehler: wordcloud2.min.js fehlt im 'media'-Ordner.",
@@ -1912,7 +1916,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Erreur : wordcloud2.min.js manquant dans le dossier 'media'.",
         "vi": "Lỗi: Thiếu wordcloud2.min.js trong thư mục 'media'.",
         "zh": "错误：'media' 文件夹中缺少 wordcloud2.min.js。",
-        "hi": "त्रुटि: 'media' फ़ोल्डर में wordcloud2.min.js गायब है।",
+        "hi": "त्रुटि: 'media' फ़ोल्डर में wordcloud2.min.js गायब है।", "pl": "Błąd: Brak pliku wordcloud2.min.js w folderze „media”.",
     },
 
     # background_music.py
@@ -1924,7 +1928,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Musique de concentration",
         "vi": "Nhạc tập trung",
         "zh": "专注音乐",
-        "hi": "फोकस संगीत",
+        "hi": "फोकस संगीत", "pl": "Muzyka skupienia",
     },
     "Multimedia libs missing.": {
         "de": "Multimedia-Bibliotheken fehlen.",
@@ -1934,7 +1938,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Bibliothèques multimédia manquantes.",
         "vi": "Thiếu thư viện đa phương tiện.",
         "zh": "缺少多媒体库。",
-        "hi": "मल्टीमीडिया लाइब्रेरी गायब हैं।",
+        "hi": "मल्टीमीडिया लाइब्रेरी गायब हैं।", "pl": "Brak bibliotek multimedialnych.",
     },
     "Alpha Waves": {
         "de": "Alpha-Wellen",
@@ -1944,7 +1948,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Ondes alpha",
         "vi": "Sóng Alpha",
         "zh": "阿尔法波",
-        "hi": "अल्फा तरंगें",
+        "hi": "अल्फा तरंगें", "pl": "Fale alfa",
     },
     "Beta Waves": {
         "de": "Beta-Wellen",
@@ -1954,7 +1958,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Ondes bêta",
         "vi": "Sóng Beta",
         "zh": "贝塔波",
-        "hi": "बीटा तरंगें",
+        "hi": "बीटा तरंगें", "pl": "Fale beta",
     },
     "Library": {
         "de": "Bibliothek",
@@ -1964,7 +1968,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Bibliothèque",
         "vi": "Thư viện",
         "zh": "图书馆",
-        "hi": "पुस्तकालय",
+        "hi": "पुस्तकालय", "pl": "Biblioteka",
     },
     "Jazz": {
         "de": "Jazz",
@@ -1974,7 +1978,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Jazz",
         "vi": "Jazz",
         "zh": "爵士乐",
-        "hi": "जैज़",
+        "hi": "जैज़", "pl": "Jazz",
     },
     "Rain": {
         "de": "Regen",
@@ -1984,7 +1988,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Pluie",
         "vi": "Tiếng mưa",
         "zh": "雨声",
-        "hi": "बारिश",
+        "hi": "बारिश", "pl": "Deszcz",
     },
     "Cozy": {
         "de": "Gemütlich",
@@ -1994,7 +1998,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Douillet",
         "vi": "Ấm cúng",
         "zh": "舒适",
-        "hi": "आरामदायक",
+        "hi": "आरामदायक", "pl": "Przytulne",
     },
     "Deep Focus": {
         "de": "Tiefe Konzentration",
@@ -2004,7 +2008,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Concentration profonde",
         "vi": "Tập trung sâu",
         "zh": "深度专注",
-        "hi": "गहरा फोकस",
+        "hi": "गहरा फोकस", "pl": "Głębokie skupienie",
     },
     "Chill Vibes": {
         "de": "Chill-Vibes",
@@ -2014,7 +2018,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Ambiance détendue",
         "vi": "Không khí thư giãn",
         "zh": "放松氛围",
-        "hi": "चिल वाइब्स",
+        "hi": "चिल वाइब्स", "pl": "Chillout",
     },
     "Lofi Beats": {
         "de": "Lofi-Beats",
@@ -2024,7 +2028,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Lofi Beats",
         "vi": "Nhạc Lofi",
         "zh": "Lofi 节拍",
-        "hi": "लोफाई बीट्स",
+        "hi": "लोफाई बीट्स", "pl": "Lofi Beats",
     },
 
     # help_dialog.py
@@ -2036,7 +2040,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "SynapsePro – Aide",
         "vi": "SynapsePro – Trợ giúp",
         "zh": "SynapsePro – 帮助",
-        "hi": "SynapsePro – सहायता",
+        "hi": "SynapsePro – सहायता", "pl": "SynapsePro - Pomoc",
     },
     """
 <h2>Troubleshooting & Manual Removal</h2>
@@ -2190,7 +2194,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
 
 <p>यदि आपको लगता है कि आपकी कुंजी वैध है लेकिन काम नहीं कर रही, या किसी अन्य समस्या के लिए, हमसे संपर्क करें:</p>
 <p><a href='mailto:help.synapse.pro@gmail.com'>help.synapse.pro@gmail.com</a></p>
-""",
+""", "pl": "\n<h2>Rozwiązywanie problemów i ręczne usuwanie</h2>\n<p>Jeśli nie możesz aktywować dodatku lub zamknąć Anki, możesz ręcznie usunąć SynapsePro, aby odzyskać dostęp.</p>\n\n<b>Wykonaj poniższe kroki:</b>\n<ol>\n    <li>Zamknij to okno i kliknij przycisk \"Zamknij Anki\" w oknie aktywacji. Jeśli to się nie powiedzie, wymuś zamknięcie Anki (np. przez Monitor aktywności na Macu lub Menedżera zadań w Windows).</li>\n    <li>Otwórz Anki, trzymając wciśnięty <b>klawisz Shift</b>. Tymczasowo wyłączy to wszystkie dodatki.</li>\n    <li>Przejdź do <b>Narzędzia > Dodatki</b> w menu Anki.</li>\n    <li>Wybierz \"SynapsePro\" z listy.</li>\n    <li>Kliknij przycisk \"Usuń\" po prawej stronie.</li>\n    <li>Uruchom ponownie Anki w normalny sposób.</li>\n</ol>\n\n<p>Jeśli uważasz, że twój klucz jest prawidłowy, ale nie działa, lub w razie innych problemów, skontaktuj się z nami:</p>\n<p><a href='mailto:help.synapse.pro@gmail.com'>help.synapse.pro@gmail.com</a></p>\n",
     },
 
     # launcher_widget.py
@@ -2202,7 +2206,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Logo",
         "vi": "Logo",
         "zh": "Logo",
-        "hi": "लोगो",
+        "hi": "लोगो", "pl": "Logo",
     },
     "Open Add-on Settings": {
         "de": "Add-on-Einstellungen öffnen",
@@ -2212,7 +2216,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Ouvrir les paramètres du module",
         "vi": "Mở cài đặt tiện ích",
         "zh": "打开插件设置",
-        "hi": "ऐड-ऑन सेटिंग्स खोलें",
+        "hi": "ऐड-ऑन सेटिंग्स खोलें", "pl": "Otwórz ustawienia dodatku",
     },
     "Show/Hide AI Assistant": {
         "de": "KI-Assistent anzeigen/ausblenden",
@@ -2222,7 +2226,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Afficher/masquer l'assistant IA",
         "vi": "Hiện/ẩn trợ lý AI",
         "zh": "显示/隐藏 AI 助手",
-        "hi": "AI सहायक दिखाएं/छिपाएं",
+        "hi": "AI सहायक दिखाएं/छिपाएं", "pl": "Pokaż/ukryj asystenta AI",
     },
     "Show/Hide Website Viewer": {
         "de": "Website-Ansicht anzeigen/ausblenden",
@@ -2232,7 +2236,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Afficher/masquer le navigateur web",
         "vi": "Hiện/ẩn trình xem trang web",
         "zh": "显示/隐藏网页查看器",
-        "hi": "वेबसाइट व्यूअर दिखाएं/छिपाएं",
+        "hi": "वेबसाइट व्यूअर दिखाएं/छिपाएं", "pl": "Pokaż/ukryj przeglądarkę witryn",
     },
     "Show/Hide Notebook": {
         "de": "Notizbuch anzeigen/ausblenden",
@@ -2242,7 +2246,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Afficher/masquer le carnet",
         "vi": "Hiện/ẩn sổ tay",
         "zh": "显示/隐藏笔记本",
-        "hi": "नोटबुक दिखाएं/छिपाएं",
+        "hi": "नोटबुक दिखाएं/छिपाएं", "pl": "Pokaż/ukryj notatnik",
     },
     "Show/Hide Mind Map": {
         "de": "Mindmap anzeigen/ausblenden",
@@ -2252,7 +2256,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Afficher/masquer la carte mentale",
         "vi": "Hiện/ẩn sơ đồ tư duy",
         "zh": "显示/隐藏思维导图",
-        "hi": "माइंड मैप दिखाएं/छिपाएं",
+        "hi": "माइंड मैप दिखाएं/छिपाएं", "pl": "Pokaż/ukryj Mind Map",
     },
     "Configure Study Plan": {
         "de": "Lernplan konfigurieren",
@@ -2262,7 +2266,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Configurer le plan d'étude",
         "vi": "Cấu hình kế hoạch học tập",
         "zh": "配置学习计划",
-        "hi": "अध्ययन योजना कॉन्फ़िगर करें",
+        "hi": "अध्ययन योजना कॉन्फ़िगर करें", "pl": "Konfiguruj plan nauki",
     },
     "Start/Pause Timer": {
         "de": "Timer starten/pausieren",
@@ -2272,7 +2276,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Démarrer/mettre en pause la minuterie",
         "vi": "Bắt đầu/tạm dừng bộ đếm giờ",
         "zh": "开始/暂停计时器",
-        "hi": "टाइमर शुरू/रोकें",
+        "hi": "टाइमर शुरू/रोकें", "pl": "Uruchom/wstrzymaj timer",
     },
     "Reset Timer": {
         "de": "Timer zurücksetzen",
@@ -2282,7 +2286,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Réinitialiser la minuterie",
         "vi": "Đặt lại bộ đếm giờ",
         "zh": "重置计时器",
-        "hi": "टाइमर रीसेट करें",
+        "hi": "टाइमर रीसेट करें", "pl": "Resetuj timer",
     },
     "Skip current phase": {
         "de": "Aktuelle Phase überspringen",
@@ -2292,7 +2296,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Passer la phase actuelle",
         "vi": "Bỏ qua giai đoạn hiện tại",
         "zh": "跳过当前阶段",
-        "hi": "वर्तमान चरण छोड़ें",
+        "hi": "वर्तमान चरण छोड़ें", "pl": "Pomiń bieżącą fazę",
     },
     "Timer Settings": {
         "de": "Timer-Einstellungen",
@@ -2302,7 +2306,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Paramètres de la minuterie",
         "vi": "Cài đặt bộ đếm giờ",
         "zh": "计时器设置",
-        "hi": "टाइमर सेटिंग्स",
+        "hi": "टाइमर सेटिंग्स", "pl": "Ustawienia timera",
     },
     "Pomodoro Timer Settings": {
         "de": "Pomodoro-Timer-Einstellungen",
@@ -2312,7 +2316,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Paramètres de la minuterie Pomodoro",
         "vi": "Cài đặt hẹn giờ Pomodoro",
         "zh": "番茄钟设置",
-        "hi": "पोमोडोरो टाइमर सेटिंग्स",
+        "hi": "पोमोडोरो टाइमर सेटिंग्स", "pl": "Ustawienia timera Pomodoro",
     },
     "Play Music": {
         "de": "Musik abspielen",
@@ -2322,7 +2326,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Jouer de la musique",
         "vi": "Phát nhạc",
         "zh": "播放音乐",
-        "hi": "संगीत चलाएं",
+        "hi": "संगीत चलाएं", "pl": "Odtwórz muzykę",
     },
     "Settings dialog could not be opened.": {
         "de": "Einstellungsdialog konnte nicht geöffnet werden.",
@@ -2332,7 +2336,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Impossible d'ouvrir la boîte de dialogue des paramètres.",
         "vi": "Không thể mở hộp thoại cài đặt.",
         "zh": "无法打开设置对话框。",
-        "hi": "सेटिंग्स डायलॉग नहीं खुल सका।",
+        "hi": "सेटिंग्स डायलॉग नहीं खुल सका।", "pl": "Nie udało się otworzyć okna ustawień.",
     },
 
     # mode.py
@@ -2344,7 +2348,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Redémarrage requis",
         "vi": "Cần khởi động lại",
         "zh": "需要重启",
-        "hi": "पुनः प्रारंभ आवश्यक",
+        "hi": "पुनः प्रारंभ आवश्यक", "pl": "Wymagany restart",
     },
     "Don't show this message again": {
         "de": "Diese Meldung nicht erneut anzeigen",
@@ -2354,7 +2358,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Ne plus afficher ce message",
         "vi": "Không hiển thị lại thông báo này",
         "zh": "不再显示此消息",
-        "hi": "यह संदेश दोबारा न दिखाएँ",
+        "hi": "यह संदेश दोबारा न दिखाएँ", "pl": "Nie pokazuj więcej tego komunikatu",
     },
     "<b>Theme Change Detected</b><br><br>You have switched between Light and Dark mode.<br>To ensure all SynapsePro UI elements and styles are applied correctly, please restart Anki.": {
         "de": "<b>Theme-Wechsel erkannt</b><br><br>Du hast zwischen hellem und dunklem Modus gewechselt.<br>Damit alle SynapsePro-UI-Elemente und -Stile korrekt übernommen werden, starte Anki bitte neu.",
@@ -2364,7 +2368,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "<b>Changement de thème détecté</b><br><br>Vous avez basculé entre le mode clair et sombre.<br>Pour s'assurer que tous les éléments et styles de l'interface SynapsePro sont correctement appliqués, veuillez redémarrer Anki.",
         "vi": "<b>Phát hiện thay đổi giao diện</b><br><br>Bạn đã chuyển đổi giữa chế độ sáng và tối.<br>Để đảm bảo tất cả thành phần giao diện SynapsePro được áp dụng đúng, hãy khởi động lại Anki.",
         "zh": "<b>检测到主题变更</b><br><br>您在浅色模式和深色模式之间进行了切换。<br>为确保所有 SynapsePro 界面元素和样式正确应用，请重启 Anki。",
-        "hi": "<b>थीम परिवर्तन का पता चला</b><br><br>आपने लाइट और डार्क मोड के बीच स्विच किया है।<br>सभी SynapsePro UI तत्वों और स्टाइल्स को सही से लागू करने के लिए कृपया Anki पुनः प्रारंभ करें।",
+        "hi": "<b>थीम परिवर्तन का पता चला</b><br><br>आपने लाइट और डार्क मोड के बीच स्विच किया है।<br>सभी SynapsePro UI तत्वों और स्टाइल्स को सही से लागू करने के लिए कृपया Anki पुनः प्रारंभ करें।", "pl": "<b>Wykryto zmianę motywu</b><br><br>Nastąpiło przełączenie między trybem jasnym a ciemnym.<br>Aby wszystkie elementy i style interfejsu SynapsePro zostały zastosowane poprawnie, zrestartuj Anki.",
     },
 
     # pomodoro.py
@@ -2376,7 +2380,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Pomodoro",
         "vi": "Pomodoro",
         "zh": "番茄钟",
-        "hi": "पोमोडोरो",
+        "hi": "पोमोडोरो", "pl": "Pomodoro",
     },
     "Pomodoro Settings": {
         "de": "Pomodoro-Einstellungen",
@@ -2386,7 +2390,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Paramètres Pomodoro",
         "vi": "Cài đặt Pomodoro",
         "zh": "番茄钟设置",
-        "hi": "पोमोडोरो सेटिंग्स",
+        "hi": "पोमोडोरो सेटिंग्स", "pl": "Ustawienia Pomodoro",
     },
     "Pomodoro settings saved.": {
         "de": "Pomodoro-Einstellungen gespeichert.",
@@ -2396,7 +2400,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Paramètres Pomodoro enregistrés.",
         "vi": "Đã lưu cài đặt Pomodoro.",
         "zh": "番茄钟设置已保存。",
-        "hi": "पोमोडोरो सेटिंग्स सहेजी गईं।",
+        "hi": "पोमोडोरो सेटिंग्स सहेजी गईं।", "pl": "Ustawienia Pomodoro zapisane.",
     },
     "Work Duration:": {
         "de": "Arbeitsdauer:",
@@ -2406,7 +2410,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Durée de travail :",
         "vi": "Thời gian làm việc:",
         "zh": "工作时长：",
-        "hi": "कार्य अवधि:",
+        "hi": "कार्य अवधि:", "pl": "Czas pracy:",
     },
     "Short Break:": {
         "de": "Kurze Pause:",
@@ -2416,7 +2420,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Pause courte :",
         "vi": "Nghỉ ngắn:",
         "zh": "短休息：",
-        "hi": "छोटा ब्रेक:",
+        "hi": "छोटा ब्रेक:", "pl": "Krótka przerwa:",
     },
     "Long Break:": {
         "de": "Lange Pause:",
@@ -2426,7 +2430,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Pause longue :",
         "vi": "Nghỉ dài:",
         "zh": "长休息：",
-        "hi": "लंबा ब्रेक:",
+        "hi": "लंबा ब्रेक:", "pl": "Długa przerwa:",
     },
     "Intervals per Cycle:": {
         "de": "Intervalle pro Zyklus:",
@@ -2436,7 +2440,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Intervalles par cycle :",
         "vi": "Khoảng thời gian mỗi chu kỳ:",
         "zh": "每周期间隔数：",
-        "hi": "प्रति चक्र अंतराल:",
+        "hi": "प्रति चक्र अंतराल:", "pl": "Interwały na cykl:",
     },
     "Auto-start next timer": {
         "de": "Nächsten Timer automatisch starten",
@@ -2446,7 +2450,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Démarrer automatiquement la prochaine minuterie",
         "vi": "Tự động bắt đầu bộ đếm giờ tiếp theo",
         "zh": "自动开始下一个计时器",
-        "hi": "अगला टाइमर स्वचालित रूप से शुरू करें",
+        "hi": "अगला टाइमर स्वचालित रूप से शुरू करें", "pl": "Automatycznie uruchom następny timer",
     },
     " min": {
         "de": " Min",
@@ -2456,7 +2460,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": " min",
         "vi": " phút",
         "zh": " 分钟",
-        "hi": " मि.",
+        "hi": " मि.", "pl": " min",
     },
     "Work session finished! ({}/{})": {
         "de": "Arbeitssitzung beendet! ({}/{})",
@@ -2466,7 +2470,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Session de travail terminée ! ({}/{})",
         "vi": "Phiên làm việc hoàn thành! ({}/{})",
         "zh": "工作会话完成！（{}/{}）",
-        "hi": "कार्य सत्र समाप्त! ({}/{})",
+        "hi": "कार्य सत्र समाप्त! ({}/{})", "pl": "Sesja pracy zakończona! ({}/{})",
     },
     "\nNext: Long Break!": {
         "de": "\nAls Nächstes: Lange Pause!",
@@ -2476,7 +2480,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "\nSuivant : Pause longue !",
         "vi": "\nTiếp theo: Nghỉ dài!",
         "zh": "\n下一步：长休息！",
-        "hi": "\nआगे: लंबा ब्रेक!",
+        "hi": "\nआगे: लंबा ब्रेक!", "pl": "\nNastępnie: Długa przerwa!",
     },
     "\nNext: Short Break!": {
         "de": "\nAls Nächstes: Kurze Pause!",
@@ -2486,7 +2490,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "\nSuivant : Pause courte !",
         "vi": "\nTiếp theo: Nghỉ ngắn!",
         "zh": "\n下一步：短休息！",
-        "hi": "\nआगे: छोटा ब्रेक!",
+        "hi": "\nआगे: छोटा ब्रेक!", "pl": "\nNastępnie: Krótka przerwa!",
     },
     "Break finished!\nNext: Work": {
         "de": "Pause beendet!\nAls Nächstes: Arbeit",
@@ -2496,7 +2500,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Pause terminée !\nSuivant : Travail",
         "vi": "Nghỉ xong!\nTiếp theo: Làm việc",
         "zh": "休息结束！\n下一步：工作",
-        "hi": "ब्रेक समाप्त!\nआगे: काम",
+        "hi": "ब्रेक समाप्त!\nआगे: काम", "pl": "Przerwa zakończona!\nNastępnie: Praca",
     },
     "Pomodoro: Error playing '{}': {}": {
         "de": "Pomodoro: Fehler beim Abspielen von '{}': {}",
@@ -2506,7 +2510,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Pomodoro : erreur lors de la lecture de '{}' : {}",
         "vi": "Pomodoro: Lỗi phát '{}': {}",
         "zh": "番茄钟：播放 '{}' 时出错：{}",
-        "hi": "Pomodoro: '{}' चलाने में त्रुटि: {}",
+        "hi": "Pomodoro: '{}' चलाने में त्रुटि: {}", "pl": "Pomodoro: błąd odtwarzania '{}': {}",
     },
     "Pomodoro: Sound file '{}' not found in folder '{}'.": {
         "de": "Pomodoro: Sounddatei '{}' im Ordner '{}' nicht gefunden.",
@@ -2516,7 +2520,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Pomodoro : fichier son '{}' introuvable dans le dossier '{}'.",
         "vi": "Pomodoro: Không tìm thấy tệp âm thanh '{}' trong thư mục '{}'.",
         "zh": "番茄钟：在文件夹 '{}' 中找不到声音文件 '{}'。",
-        "hi": "Pomodoro: फ़ोल्डर '{}' में ध्वनि फ़ाइल '{}' नहीं मिली।",
+        "hi": "Pomodoro: फ़ोल्डर '{}' में ध्वनि फ़ाइल '{}' नहीं मिली।", "pl": "Pomodoro: nie znaleziono pliku dźwiękowego '{}' w folderze '{}'.",
     },
 
     # pomodoro.py – Statistics tab
@@ -2528,7 +2532,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Statistiques",
         "vi": "Thống kê",
         "zh": "统计",
-        "hi": "सांख्यिकी",
+        "hi": "सांख्यिकी", "pl": "Statystyki",
     },
     "Total Pomodoros": {
         "de": "Gesamt Pomodoros",
@@ -2538,7 +2542,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Total Pomodoros",
         "vi": "Tổng số Pomodoro",
         "zh": "总番茄钟数",
-        "hi": "कुल पोमोडोरो",
+        "hi": "कुल पोमोडोरो", "pl": "Łącznie Pomodoro",
     },
     "Focus Time": {
         "de": "Fokuszeit",
@@ -2548,7 +2552,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Temps de concentration",
         "vi": "Thời gian tập trung",
         "zh": "专注时间",
-        "hi": "फोकस समय",
+        "hi": "फोकस समय", "pl": "Czas skupienia",
     },
     "Current Streak": {
         "de": "Aktuelle Serie",
@@ -2558,7 +2562,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Série actuelle",
         "vi": "Chuỗi hiện tại",
         "zh": "当前连续",
-        "hi": "वर्तमान क्रम",
+        "hi": "वर्तमान क्रम", "pl": "Obecna seria",
     },
     "Best Streak": {
         "de": "Beste Serie",
@@ -2568,7 +2572,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Meilleure série",
         "vi": "Chuỗi tốt nhất",
         "zh": "最佳连续",
-        "hi": "सर्वश्रेष्ठ क्रम",
+        "hi": "सर्वश्रेष्ठ क्रम", "pl": "Najlepsza seria",
     },
     "Last 7 Days": {
         "de": "Letzte 7 Tage",
@@ -2578,7 +2582,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "7 derniers jours",
         "vi": "7 ngày qua",
         "zh": "过去7天",
-        "hi": "पिछले 7 दिन",
+        "hi": "पिछले 7 दिन", "pl": "Ostatnie 7 dni",
     },
     "Today": {
         "de": "Heute",
@@ -2588,7 +2592,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Aujourd'hui",
         "vi": "Hôm nay",
         "zh": "今天",
-        "hi": "आज",
+        "hi": "आज", "pl": "Dziś",
     },
     "Reset Statistics": {
         "de": "Statistiken zurücksetzen",
@@ -2598,7 +2602,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Réinitialiser les statistiques",
         "vi": "Đặt lại thống kê",
         "zh": "重置统计",
-        "hi": "सांख्यिकी रीसेट करें",
+        "hi": "सांख्यिकी रीसेट करें", "pl": "Zresetuj statystyki",
     },
     "Are you sure you want to reset all Pomodoro statistics?": {
         "de": "Möchtest du wirklich alle Pomodoro-Statistiken zurücksetzen?",
@@ -2608,7 +2612,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Êtes-vous sûr de vouloir réinitialiser toutes les statistiques Pomodoro ?",
         "vi": "Bạn có chắc muốn đặt lại tất cả thống kê Pomodoro?",
         "zh": "确定要重置所有番茄钟统计数据吗？",
-        "hi": "क्या आप सभी पोमोडोरो सांख्यिकी रीसेट करना चाहते हैं?",
+        "hi": "क्या आप सभी पोमोडोरो सांख्यिकी रीसेट करना चाहते हैं?", "pl": "Czy na pewno chcesz zresetować wszystkie statystyki Pomodoro?",
     },
     "Statistics reset.": {
         "de": "Statistiken zurückgesetzt.",
@@ -2618,7 +2622,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Statistiques réinitialisées.",
         "vi": "Đã đặt lại thống kê.",
         "zh": "统计已重置。",
-        "hi": "सांख्यिकी रीसेट हुई।",
+        "hi": "सांख्यिकी रीसेट हुई।", "pl": "Statystyki zresetowane.",
     },
     # Short weekday labels used in the bar chart
     "Mon": {
@@ -2629,7 +2633,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Lun",
         "vi": "T2",
         "zh": "周一",
-        "hi": "सो",
+        "hi": "सो", "pl": "Pon",
     },
     "Tue": {
         "de": "Di",
@@ -2639,7 +2643,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Mar",
         "vi": "T3",
         "zh": "周二",
-        "hi": "मं",
+        "hi": "मं", "pl": "Wt",
     },
     "Wed": {
         "de": "Mi",
@@ -2649,7 +2653,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Mer",
         "vi": "T4",
         "zh": "周三",
-        "hi": "बु",
+        "hi": "बु", "pl": "Śr",
     },
     "Thu": {
         "de": "Do",
@@ -2659,7 +2663,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Jeu",
         "vi": "T5",
         "zh": "周四",
-        "hi": "गु",
+        "hi": "गु", "pl": "Czw",
     },
     "Fri": {
         "de": "Fr",
@@ -2669,7 +2673,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Ven",
         "vi": "T6",
         "zh": "周五",
-        "hi": "शु",
+        "hi": "शु", "pl": "Pt",
     },
     "Sat": {
         "de": "Sa",
@@ -2679,7 +2683,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Sam",
         "vi": "T7",
         "zh": "周六",
-        "hi": "श",
+        "hi": "श", "pl": "Sob",
     },
     "Sun": {
         "de": "So",
@@ -2689,7 +2693,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Dim",
         "vi": "CN",
         "zh": "周日",
-        "hi": "र",
+        "hi": "र", "pl": "Nd",
     },
 
     # ------------------------------------------------------------------
@@ -2703,7 +2707,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "24 dernières heures",
         "vi": "24 giờ qua",
         "zh": "过去24小时",
-        "hi": "पिछले 24 घंटे",
+        "hi": "पिछले 24 घंटे", "pl": "Ostatnie 24 godziny",
     },
     "Last {} days": {
         "de": "Letzte {} Tage",
@@ -2713,7 +2717,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "{} derniers jours",
         "vi": "{} ngày qua",
         "zh": "过去 {} 天",
-        "hi": "पिछले {} दिन",
+        "hi": "पिछले {} दिन", "pl": "Ostatnie {} dni",
     },
     "Your study activity (Last 7 days). Blue = Streak, Gray = Rest.": {
         "de": "Deine Lernaktivität (letzte 7 Tage). Blau = Streak, Grau = Pause.",
@@ -2723,7 +2727,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Votre activité d'étude (7 derniers jours). Bleu = série, gris = repos.",
         "vi": "Hoạt động học tập của bạn (7 ngày qua). Xanh = chuỗi, xám = nghỉ.",
         "zh": "您的学习活动（过去7天）。蓝色=连击，灰色=休息。",
-        "hi": "आपकी अध्ययन गतिविधि (पिछले 7 दिन)। नीला = स्ट्रीक, ग्रे = आराम।",
+        "hi": "आपकी अध्ययन गतिविधि (पिछले 7 दिन)। नीला = स्ट्रीक, ग्रे = आराम।", "pl": "Twoja aktywność w nauce (ostatnie 7 dni). Niebieski = seria, szary = odpoczynek.",
     },
     "Cards per minute ({}). Time capped at 45s/card.": {
         "de": "Karten pro Minute ({}). Zeit pro Karte auf 45 s begrenzt.",
@@ -2733,7 +2737,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Cartes par minute ({}). Temps limité à 45 s/carte.",
         "vi": "Thẻ mỗi phút ({}). Giới hạn 45s/thẻ.",
         "zh": "每分钟卡片数（{}）。每张卡上限45秒。",
-        "hi": "प्रति मिनट कार्ड ({}). प्रति कार्ड अधिकतम 45 सेकंड।",
+        "hi": "प्रति मिनट कार्ड ({}). प्रति कार्ड अधिकतम 45 सेकंड।", "pl": "Kart na minutę ({}). Czas ograniczony do 45 s/kartę.",
     },
     "Correct answers: {:.1f}% ({}).": {
         "de": "Richtige Antworten: {:.1f}% ({}).",
@@ -2743,7 +2747,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Réponses correctes : {:.1f}% ({}).",
         "vi": "Trả lời đúng: {:.1f}% ({}).",
         "zh": "正确率：{:.1f}%（{}）。",
-        "hi": "सही उत्तर: {:.1f}% ({})।",
+        "hi": "सही उत्तर: {:.1f}% ({})।", "pl": "Poprawne odpowiedzi: {:.1f}% ({}).",
     },
     "Retention on reviews ({}).": {
         "de": "Behaltensrate bei Wiederholungen ({}).",
@@ -2753,7 +2757,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Rétention sur les révisions ({}).",
         "vi": "Tỷ lệ ghi nhớ khi ôn tập ({}).",
         "zh": "复习记忆率（{}）。",
-        "hi": "समीक्षाओं पर प्रतिधारण ({})।",
+        "hi": "समीक्षाओं पर प्रतिधारण ({})।", "pl": "Zapamiętywanie przy powtórkach ({}).",
     },
     "Percentage of unseen cards in collection.": {
         "de": "Anteil ungesehener Karten in der Sammlung.",
@@ -2763,7 +2767,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Pourcentage de cartes non vues dans la collection.",
         "vi": "Tỷ lệ thẻ chưa xem trong bộ sưu tập.",
         "zh": "收藏中未查看卡片的百分比。",
-        "hi": "संग्रह में न देखे गए कार्डों का प्रतिशत।",
+        "hi": "संग्रह में न देखे गए कार्डों का प्रतिशत।", "pl": "Odsetek nieprzejrzanych kart w kolekcji.",
     },
     "Consistency": {
         "de": "Beständigkeit",
@@ -2773,7 +2777,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Régularité",
         "vi": "Tính nhất quán",
         "zh": "一致性",
-        "hi": "निरंतरता",
+        "hi": "निरंतरता", "pl": "Regularność",
     },
     "Efficiency": {
         "de": "Effizienz",
@@ -2783,7 +2787,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Efficacité",
         "vi": "Hiệu quả",
         "zh": "效率",
-        "hi": "दक्षता",
+        "hi": "दक्षता", "pl": "Efektywność",
     },
     "Eff.": {
         "de": "Eff.",
@@ -2793,7 +2797,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Eff.",
         "vi": "Hq.",
         "zh": "效率",
-        "hi": "दक्ष.",
+        "hi": "दक्ष.", "pl": "Efekt.",
     },
     "Acc.": {
         "de": "Gen.",
@@ -2803,7 +2807,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Préc.",
         "vi": "Độ cx.",
         "zh": "准确",
-        "hi": "सटी.",
+        "hi": "सटी.", "pl": "Popr.",
     },
     "New Cards": {
         "de": "Neue Karten",
@@ -2813,7 +2817,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Nouvelles cartes",
         "vi": "Thẻ mới",
         "zh": "新卡片",
-        "hi": "नए कार्ड",
+        "hi": "नए कार्ड", "pl": "Nowe karty",
     },
 
     # ------------------------------------------------------------------
@@ -2827,7 +2831,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Thèmes",
         "vi": "Giao diện",
         "zh": "主题",
-        "hi": "थीम",
+        "hi": "थीम", "pl": "Motywy",
     },
     "Color Theme:": {
         "de": "Farbthema:",
@@ -2837,7 +2841,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Thème de couleur :",
         "vi": "Chủ đề màu sắc:",
         "zh": "颜色主题：",
-        "hi": "रंग थीम:",
+        "hi": "रंग थीम:", "pl": "Motyw kolorystyczny:",
     },
     "Blue": {
         "de": "Blau",
@@ -2847,7 +2851,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Bleu",
         "vi": "Xanh dương",
         "zh": "蓝色",
-        "hi": "नीला",
+        "hi": "नीला", "pl": "Niebieski",
     },
     "Pink": {
         "de": "Pink",
@@ -2857,7 +2861,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Rose",
         "vi": "Hồng",
         "zh": "粉红",
-        "hi": "गुलाबी",
+        "hi": "गुलाबी", "pl": "Różowy",
     },
     "Green": {
         "de": "Grün",
@@ -2867,7 +2871,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Vert",
         "vi": "Xanh lá",
         "zh": "绿色",
-        "hi": "हरा",
+        "hi": "हरा", "pl": "Zielony",
     },
     "Edit Theme": {
         "de": "Theme bearbeiten",
@@ -2877,7 +2881,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Modifier le thème",
         "vi": "Chỉnh sửa giao diện",
         "zh": "编辑主题",
-        "hi": "थीम संपादित करें",
+        "hi": "थीम संपादित करें", "pl": "Edytuj motyw",
     },
     # ── theme_editor_dialog.py ─────────────────────────────────────────
     "Theme Editor": {
@@ -2888,7 +2892,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Éditeur de thèmes",
         "vi": "Trình chỉnh sửa giao diện",
         "zh": "主题编辑器",
-        "hi": "थीम संपादक",
+        "hi": "थीम संपादक", "pl": "Edytor motywów",
     },
     "Quick Presets": {
         "de": "Vorlagen",
@@ -2898,7 +2902,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Préréglages rapides",
         "vi": "Cài đặt sẵn nhanh",
         "zh": "快速预设",
-        "hi": "त्वरित प्रीसेट",
+        "hi": "त्वरित प्रीसेट", "pl": "Szybkie presety",
     },
     "Custom Colors": {
         "de": "Farben anpassen",
@@ -2908,7 +2912,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Couleurs personnalisées",
         "vi": "Màu sắc tùy chỉnh",
         "zh": "自定义颜色",
-        "hi": "कस्टम रंग",
+        "hi": "कस्टम रंग", "pl": "Własne kolory",
     },
     "Primary color": {
         "de": "Primärfarbe",
@@ -2918,7 +2922,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Couleur principale",
         "vi": "Màu chính",
         "zh": "主色",
-        "hi": "प्राथमिक रंग",
+        "hi": "प्राथमिक रंग", "pl": "Kolor podstawowy",
     },
     "Hover color": {
         "de": "Hover-Farbe",
@@ -2928,7 +2932,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Couleur au survol",
         "vi": "Màu khi di chuột",
         "zh": "悬停颜色",
-        "hi": "होवर रंग",
+        "hi": "होवर रंग", "pl": "Kolor po najechaniu myszką",
     },
     "Pressed color": {
         "de": "Gedrückt-Farbe",
@@ -2938,7 +2942,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Couleur enfoncé",
         "vi": "Màu khi nhấn",
         "zh": "按下颜色",
-        "hi": "दबाया रंग",
+        "hi": "दबाया रंग", "pl": "Kolor po naciśnięciu",
     },
     "Bright accent": {
         "de": "Heller Akzent",
@@ -2948,7 +2952,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Accent lumineux",
         "vi": "Màu nhấn sáng",
         "zh": "亮色强调",
-        "hi": "चमकीला उच्चारण",
+        "hi": "चमकीला उच्चारण", "pl": "Jasny akcent",
     },
     "Click to choose a color": {
         "de": "Klicken, um eine Farbe zu wählen",
@@ -2958,7 +2962,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Cliquez pour choisir une couleur",
         "vi": "Nhấn để chọn màu",
         "zh": "点击选择颜色",
-        "hi": "रंग चुनने के लिए क्लिक करें",
+        "hi": "रंग चुनने के लिए क्लिक करें", "pl": "Kliknij, aby wybrać kolor",
     },
     "Colors apply to both Light and Dark mode.": {
         "de": "Farben gelten für Light- und Dark-Mode gleichermaßen.",
@@ -2968,7 +2972,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Les couleurs s'appliquent aux modes clair et sombre.",
         "vi": "Màu sắc áp dụng cho cả chế độ sáng và tối.",
         "zh": "颜色同时适用于浅色和深色模式。",
-        "hi": "रंग लाइट और डार्क दोनों मोड पर लागू होते हैं।",
+        "hi": "रंग लाइट और डार्क दोनों मोड पर लागू होते हैं।", "pl": "Kolory dotyczą zarówno trybu jasnego, jak i ciemnego.",
     },
     "Apply": {
         "de": "Übernehmen",
@@ -2978,7 +2982,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Appliquer",
         "vi": "Áp dụng",
         "zh": "应用",
-        "hi": "लागू करें",
+        "hi": "लागू करें", "pl": "Zastosuj",
     },
 
     # ------------------------------------------------------------------
@@ -2992,7 +2996,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Exporter le carnet",
         "vi": "Xuất sổ tay",
         "zh": "导出笔记本",
-        "hi": "नोटबुक निर्यात करें",
+        "hi": "नोटबुक निर्यात करें", "pl": "Eksportuj notatnik",
     },
     "JSON (*.json)": {
         "de": "JSON (*.json)",
@@ -3002,7 +3006,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "JSON (*.json)",
         "vi": "JSON (*.json)",
         "zh": "JSON (*.json)",
-        "hi": "JSON (*.json)",
+        "hi": "JSON (*.json)", "pl": "JSON (*.json)",
     },
     "Notebook exported successfully!": {
         "de": "Notizbuch erfolgreich exportiert!",
@@ -3012,7 +3016,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Carnet exporté avec succès !",
         "vi": "Đã xuất sổ tay thành công!",
         "zh": "笔记本导出成功！",
-        "hi": "नोटबुक सफलतापूर्वक निर्यात हुई!",
+        "hi": "नोटबुक सफलतापूर्वक निर्यात हुई!", "pl": "Notatnik wyeksportowany pomyślnie!",
     },
     "Export failed: {}": {
         "de": "Export fehlgeschlagen: {}",
@@ -3022,7 +3026,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Échec de l'exportation : {}",
         "vi": "Xuất thất bại: {}",
         "zh": "导出失败：{}",
-        "hi": "निर्यात विफल: {}",
+        "hi": "निर्यात विफल: {}", "pl": "Eksport nie powiódł się: {}",
     },
     "<h1>Error: {}/index.html missing</h1>": {
         "de": "<h1>Fehler: {}/index.html fehlt</h1>",
@@ -3032,7 +3036,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "<h1>Erreur : {}/index.html manquant</h1>",
         "vi": "<h1>Lỗi: Thiếu {}/index.html</h1>",
         "zh": "<h1>错误：缺少 {}/index.html</h1>",
-        "hi": "<h1>त्रुटि: {}/index.html अनुपलब्ध</h1>",
+        "hi": "<h1>त्रुटि: {}/index.html अनुपलब्ध</h1>", "pl": "<h1>Błąd: brak {}/index.html</h1>",
     },
 
     # ------------------------------------------------------------------
@@ -3046,7 +3050,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Limite de {} sites personnalisés atteinte.",
         "vi": "Đã đạt giới hạn {} trang tùy chỉnh.",
         "zh": "已达到 {} 个自定义网站的限制。",
-        "hi": "{} कस्टम साइट की सीमा पहुंच गई।",
+        "hi": "{} कस्टम साइट की सीमा पहुंच गई।", "pl": "Osiągnięto limit {} niestandardowych stron.",
     },
     "Add Website": {
         "de": "Website hinzufügen",
@@ -3056,7 +3060,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Ajouter un site web",
         "vi": "Thêm trang web",
         "zh": "添加网站",
-        "hi": "वेबसाइट जोड़ें",
+        "hi": "वेबसाइट जोड़ें", "pl": "Dodaj stronę",
     },
     "Name for the new button:": {
         "de": "Name für den neuen Button:",
@@ -3066,7 +3070,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Nom du nouveau bouton :",
         "vi": "Tên cho nút mới:",
         "zh": "新按钮的名称：",
-        "hi": "नए बटन के लिए नाम:",
+        "hi": "नए बटन के लिए नाम:", "pl": "Nazwa nowego przycisku:",
     },
     "URL for '{}':": {
         "de": "URL für '{}':",
@@ -3076,7 +3080,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "URL pour '{}' :",
         "vi": "URL cho '{}':",
         "zh": "'{}'的 URL：",
-        "hi": "'{}' के लिए URL:",
+        "hi": "'{}' के लिए URL:", "pl": "Adres URL dla „{}”:",
     },
     "URL automatically prefixed with https://": {
         "de": "URL automatisch mit https:// ergänzt",
@@ -3086,7 +3090,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "URL préfixée automatiquement avec https://",
         "vi": "URL tự động thêm tiền tố https://",
         "zh": "URL 自动添加 https:// 前缀",
-        "hi": "URL स्वचालित रूप से https:// से शुरू होती है",
+        "hi": "URL स्वचालित रूप से https:// से शुरू होती है", "pl": "Adres URL automatycznie uzupełniany o https://",
     },
     "URL '{}' seems invalid.": {
         "de": "URL '{}' scheint ungültig zu sein.",
@@ -3096,7 +3100,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "L'URL '{}' semble invalide.",
         "vi": "URL '{}' có vẻ không hợp lệ.",
         "zh": "URL '{}' 似乎无效。",
-        "hi": "URL '{}' अमान्य लगती है।",
+        "hi": "URL '{}' अमान्य लगती है।", "pl": "Adres URL „{}” wydaje się nieprawidłowy.",
     },
     "Site '{}' added.": {
         "de": "Seite '{}' hinzugefügt.",
@@ -3106,7 +3110,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Site '{}' ajouté.",
         "vi": "Đã thêm trang '{}'.",
         "zh": "网站 '{}' 已添加。",
-        "hi": "साइट '{}' जोड़ी गई।",
+        "hi": "साइट '{}' जोड़ी गई।", "pl": "Witryna '{}' dodana.",
     },
     "Site '{}' removed.": {
         "de": "Seite '{}' entfernt.",
@@ -3116,7 +3120,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Site '{}' supprimé.",
         "vi": "Đã xóa trang '{}'.",
         "zh": "网站 '{}' 已删除。",
-        "hi": "साइट '{}' हटाई गई।",
+        "hi": "साइट '{}' हटाई गई।", "pl": "Witryna '{}' usunięta.",
     },
     "Could not delete site: Invalid index.": {
         "de": "Seite konnte nicht gelöscht werden: Ungültiger Index.",
@@ -3126,7 +3130,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Impossible de supprimer le site : index invalide.",
         "vi": "Không thể xóa trang: chỉ mục không hợp lệ.",
         "zh": "无法删除网站：索引无效。",
-        "hi": "साइट हटाई नहीं जा सकी: अमान्य इंडेक्स।",
+        "hi": "साइट हटाई नहीं जा सकी: अमान्य इंडेक्स।", "pl": "Nie udało się usunąć strony: Nieprawidłowy indeks.",
     },
     """
         <body style='font-family: sans-serif; padding: 20px; color: #333; background-color: #f9f9f9;'>
@@ -3181,7 +3185,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
             <h2 style='color: #d32f2f;'>अमान्य URL</h2>
             <p>आपने जो URL खोलने की कोशिश की वह अमान्य लगती है या मानक वेब URL (http/https) नहीं है।</p>
             <p>प्रयास की गई URL: <code>{url_str}</code></p>
-        </body>""",
+        </body>""", "pl": "\n        <body style='font-family: sans-serif; padding: 20px; color: #333; background-color: #f9f9f9;'>\n            <h2 style='color: #d32f2f;'>Nieprawidłowy URL</h2>\n            <p>Adres URL, który próbowano otworzyć, jest nieprawidłowy lub nie jest standardowym adresem URL (http/https).</p>\n            <p>Próbowany adres URL: <code>{url_str}</code></p>\n        </body>",
     },
     "Add new website": {
         "de": "Neue Website hinzufügen",
@@ -3191,7 +3195,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Ajouter un nouveau site web",
         "vi": "Thêm trang web mới",
         "zh": "添加新网站",
-        "hi": "नई वेबसाइट जोड़ें",
+        "hi": "नई वेबसाइट जोड़ें", "pl": "Dodaj nową stronę",
     },
     "Maximum {} custom sites reached": {
         "de": "Maximum von {} benutzerdefinierten Seiten erreicht",
@@ -3201,7 +3205,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Maximum de {} sites personnalisés atteint",
         "vi": "Đã đạt tối đa {} trang tùy chỉnh",
         "zh": "已达到 {} 个自定义网站上限",
-        "hi": "{} कस्टम साइट की अधिकतम सीमा पहुंच गई",
+        "hi": "{} कस्टम साइट की अधिकतम सीमा पहुंच गई", "pl": "Osiągnięto maksimum {} niestandardowych stron",
     },
     "Open: {}": {
         "de": "Öffnen: {}",
@@ -3211,7 +3215,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Ouvrir : {}",
         "vi": "Mở: {}",
         "zh": "打开：{}",
-        "hi": "खोलें: {}",
+        "hi": "खोलें: {}", "pl": "Otwórz: {}",
     },
     "Remove '{}'": {
         "de": "'{}' entfernen",
@@ -3221,7 +3225,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Supprimer '{}'",
         "vi": "Xóa '{}'",
         "zh": "删除 '{}'",
-        "hi": "'{}' हटाएं",
+        "hi": "'{}' हटाएं", "pl": "Usuń '{}'",
     },
     "Web Sidebar": {
         "de": "Web-Seitenleiste",
@@ -3231,7 +3235,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Barre latérale web",
         "vi": "Thanh bên web",
         "zh": "网页侧边栏",
-        "hi": "वेब साइडबार",
+        "hi": "वेब साइडबार", "pl": "Panel boczny WWW",
     },
     "Home": {
         "de": "Start",
@@ -3241,7 +3245,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Accueil",
         "vi": "Trang chủ",
         "zh": "主页",
-        "hi": "होम",
+        "hi": "होम", "pl": "Start",
     },
     "Home (Synapse Browser)": {
         "de": "Start (Synapse-Browser)",
@@ -3251,7 +3255,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Accueil (Navigateur Synapse)",
         "vi": "Trang chủ (Trình duyệt Synapse)",
         "zh": "主页（Synapse 浏览器）",
-        "hi": "होम (Synapse ब्राउज़र)",
+        "hi": "होम (Synapse ब्राउज़र)", "pl": "Strona główna (Synapse Browser)",
     },
     "Go Back": {
         "de": "Zurück",
@@ -3261,7 +3265,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Retour",
         "vi": "Quay lại",
         "zh": "后退",
-        "hi": "पीछे जाएं",
+        "hi": "पीछे जाएं", "pl": "Wstecz",
     },
     "Go Forward": {
         "de": "Vor",
@@ -3271,7 +3275,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Avancer",
         "vi": "Tiến lên",
         "zh": "前进",
-        "hi": "आगे जाएं",
+        "hi": "आगे जाएं", "pl": "Naprzód",
     },
     "Reload Page": {
         "de": "Seite neu laden",
@@ -3281,7 +3285,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Recharger la page",
         "vi": "Tải lại trang",
         "zh": "重新加载页面",
-        "hi": "पृष्ठ पुनः लोड करें",
+        "hi": "पृष्ठ पुनः लोड करें", "pl": "Odśwież stronę",
     },
     "Website Sidebar: Qt components not available.": {
         "de": "Website-Seitenleiste: Qt-Komponenten nicht verfügbar.",
@@ -3291,7 +3295,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Barre latérale web : composants Qt non disponibles.",
         "vi": "Thanh bên trang web: Các thành phần Qt không khả dụng.",
         "zh": "网页侧边栏：Qt 组件不可用。",
-        "hi": "वेबसाइट साइडबार: Qt घटक उपलब्ध नहीं हैं।",
+        "hi": "वेबसाइट साइडबार: Qt घटक उपलब्ध नहीं हैं।", "pl": "Panel boczny WWW: komponenty Qt niedostępne.",
     },
     "{}:\nCould not create or find the website sidebar.": {
         "de": "{}:\nWebsite-Seitenleiste konnte nicht erstellt oder gefunden werden.",
@@ -3301,7 +3305,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "{}:\nImpossible de créer ou de trouver la barre latérale web.",
         "vi": "{}:\nKhông thể tạo hoặc tìm thanh bên trang web.",
         "zh": "{}:\n无法创建或找到网页侧边栏。",
-        "hi": "{}:\nवेबसाइट साइडबार बनाया या मिला नहीं।",
+        "hi": "{}:\nवेबसाइट साइडबार बनाया या मिला नहीं।", "pl": "{}:\nNie udało się utworzyć ani znaleźć panelu bocznego WWW.",
     },
     "Sidebar Browser not initialized.": {
         "de": "Seitenleisten-Browser nicht initialisiert.",
@@ -3311,7 +3315,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Navigateur de la barre latérale non initialisé.",
         "vi": "Trình duyệt thanh bên chưa được khởi tạo.",
         "zh": "侧边栏浏览器未初始化。",
-        "hi": "साइडबार ब्राउज़र प्रारंभ नहीं हुआ।",
+        "hi": "साइडबार ब्राउज़र प्रारंभ नहीं हुआ।", "pl": "Przeglądarka panelu bocznego nie została zainicjowana.",
     },
     "Search '{}' in Sidebar": {
         "de": "'{}' in der Seitenleiste suchen",
@@ -3321,7 +3325,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Rechercher '{}' dans la barre latérale",
         "vi": "Tìm '{}' trong thanh bên",
         "zh": "在侧边栏搜索 '{}'",
-        "hi": "साइडबार में '{}' खोजें",
+        "hi": "साइडबार में '{}' खोजें", "pl": "Wyszukaj '{}' w panelu bocznym",
     },
 
     # ------------------------------------------------------------------
@@ -3335,7 +3339,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Impossible d'enregistrer les paramètres dans la base de données Anki : {}",
         "vi": "Không thể lưu cài đặt vào cơ sở dữ liệu Anki: {}",
         "zh": "无法将设置保存到 Anki 数据库：{}",
-        "hi": "सेटिंग्स Anki डेटाबेस में सहेजी नहीं जा सकीं: {}",
+        "hi": "सेटिंग्स Anki डेटाबेस में सहेजी नहीं जा सकीं: {}", "pl": "Nie udało się zapisać ustawień w bazie danych Anki: {}",
     },
     "Could not save license file: {}\nPlease check permissions.": {
         "de": "Lizenzdatei konnte nicht gespeichert werden: {}\nBitte Berechtigungen prüfen.",
@@ -3345,7 +3349,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Impossible d'enregistrer le fichier de licence : {}\nVérifiez les permissions.",
         "vi": "Không thể lưu tệp giấy phép: {}\nVui lòng kiểm tra quyền truy cập.",
         "zh": "无法保存许可证文件：{}\n请检查权限。",
-        "hi": "लाइसेंस फ़ाइल सहेजी नहीं जा सकी: {}\nकृपया अनुमतियां जांचें।",
+        "hi": "लाइसेंस फ़ाइल सहेजी नहीं जा सकी: {}\nकृपया अनुमतियां जांचें।", "pl": "Nie udało się zapisać pliku licencji: {}\nSprawdź uprawnienia.",
     },
     "Synapse Pro AI License": {
         "de": "Synapse Pro KI-Lizenz",
@@ -3355,7 +3359,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Licence IA Synapse Pro",
         "vi": "Giấy phép AI Synapse Pro",
         "zh": "Synapse Pro AI 许可证",
-        "hi": "Synapse Pro AI लाइसेंस",
+        "hi": "Synapse Pro AI लाइसेंस", "pl": "Licencja AI Synapse Pro",
     },
     "Please enter your Synapse Pro License Key to activate the AI Assistant.": {
         "de": "Bitte gib Deinen Synapse Pro Lizenzschlüssel ein, um den KI-Assistenten zu aktivieren.",
@@ -3365,7 +3369,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Entrez votre clé de licence Synapse Pro pour activer l'assistant IA.",
         "vi": "Nhập khóa giấy phép Synapse Pro để kích hoạt trợ lý AI.",
         "zh": "请输入您的 Synapse Pro 许可证密钥以激活 AI 助手。",
-        "hi": "AI सहायक सक्रिय करने के लिए Synapse Pro लाइसेंस कुंजी दर्ज करें।",
+        "hi": "AI सहायक सक्रिय करने के लिए Synapse Pro लाइसेंस कुंजी दर्ज करें।", "pl": "Wprowadź klucz licencyjny Synapse Pro, aby aktywować Asystenta AI.",
     },
     "Enter your license key here...": {
         "de": "Lizenzschlüssel hier eingeben...",
@@ -3375,7 +3379,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Entrez votre clé de licence ici...",
         "vi": "Nhập khóa giấy phép của bạn tại đây...",
         "zh": "在此输入您的许可证密钥...",
-        "hi": "यहाँ लाइसेंस कुंजी दर्ज करें...",
+        "hi": "यहाँ लाइसेंस कुंजी दर्ज करें...", "pl": "Wpisz tutaj swój klucz licencyjny...",
     },
     "Get Key at synapse-pro.de": {
         "de": "Schlüssel auf synapse-pro.de holen",
@@ -3385,7 +3389,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Obtenir une clé sur synapse-pro.de",
         "vi": "Lấy khóa tại synapse-pro.de",
         "zh": "在 synapse-pro.de 获取密钥",
-        "hi": "synapse-pro.de पर कुंजी प्राप्त करें",
+        "hi": "synapse-pro.de पर कुंजी प्राप्त करें", "pl": "Pobierz klucz na synapse-pro.de",
     },
     "Enter your <b>OpenRouter</b> API Key to use the AI Assistant.\n\nThis add-on is completely non-profit — I earn nothing from it. However, AI API calls have unavoidable costs that I can't cover for all users for free. With your own key, you pay only for what you actually use.": {
         "de": "Gib Deinen <b>OpenRouter</b>-API-Schlüssel ein, um den KI-Assistenten zu nutzen.\n\nDieses Add-on ist vollständig gemeinnützig – ich verdiene nichts damit. KI-API-Aufrufe verursachen jedoch unvermeidliche Kosten, die ich nicht für alle Nutzer kostenlos übernehmen kann. Mit deinem eigenen Schlüssel zahlst du nur für das, was du tatsächlich verwendest.",
@@ -3395,7 +3399,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Entrez votre clé API <b>OpenRouter</b> pour utiliser l'assistant IA.\n\nCe module est entièrement à but non lucratif — je n'en tire aucun revenu. Cependant, les appels à l'API IA ont des coûts inévitables que je ne peux pas couvrir gratuitement pour tous les utilisateurs. Avec votre propre clé, vous ne payez que ce que vous utilisez réellement.",
         "vi": "Nhập khóa API <b>OpenRouter</b> để sử dụng trợ lý AI.\n\nTiện ích này hoàn toàn phi lợi nhuận — tôi không kiếm gì từ nó. Tuy nhiên, các lệnh gọi API AI có chi phí không thể tránh khỏi mà tôi không thể chi trả miễn phí cho tất cả người dùng. Với khóa của riêng bạn, bạn chỉ trả tiền cho những gì bạn thực sự sử dụng.",
         "zh": "输入您的 <b>OpenRouter</b> API 密钥以使用 AI 助手。\n\n此插件完全非营利 — 我不从中获益。但是，AI API 调用有不可避免的成本，我无法为所有用户免费承担。使用您自己的密钥，您只需为实际使用的内容付费。",
-        "hi": "AI सहायक उपयोग करने के लिए अपनी <b>OpenRouter</b> API कुंजी दर्ज करें।\n\nयह ऐड-ऑन पूरी तरह से गैर-लाभकारी है — मुझे इससे कोई कमाई नहीं। हालांकि, AI API कॉल में अपरिहार्य लागतें हैं जो मैं सभी उपयोगकर्ताओं के लिए मुफ्त में नहीं दे सकता। अपनी खुद की कुंजी से, आप केवल वही भुगतान करते हैं जो आप वास्तव में उपयोग करते हैं।",
+        "hi": "AI सहायक उपयोग करने के लिए अपनी <b>OpenRouter</b> API कुंजी दर्ज करें।\n\nयह ऐड-ऑन पूरी तरह से गैर-लाभकारी है — मुझे इससे कोई कमाई नहीं। हालांकि, AI API कॉल में अपरिहार्य लागतें हैं जो मैं सभी उपयोगकर्ताओं के लिए मुफ्त में नहीं दे सकता। अपनी खुद की कुंजी से, आप केवल वही भुगतान करते हैं जो आप वास्तव में उपयोग करते हैं।", "pl": "Wprowadź swój klucz API <b>OpenRouter</b>, aby korzystać z asystenta AI.\n\nTen dodatek jest całkowicie niekomercyjny — nie zarabiam na nim nic. Jednak wywołania API AI wiążą się z nieuniknionymi kosztami, których nie mogę pokrywać za wszystkich użytkowników za darmo. Dzięki własnemu kluczowi płacisz tylko za to, co faktycznie wykorzystasz.",
     },
     "Enter your <b>OpenRouter</b> API Key.": {
         "de": "Gib Deinen <b>OpenRouter</b>-API-Schlüssel ein.",
@@ -3405,7 +3409,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Entrez votre clé API <b>OpenRouter</b>.",
         "vi": "Nhập khóa API <b>OpenRouter</b> của bạn.",
         "zh": "输入您的 <b>OpenRouter</b> API 密钥。",
-        "hi": "अपनी <b>OpenRouter</b> API कुंजी दर्ज करें।",
+        "hi": "अपनी <b>OpenRouter</b> API कुंजी दर्ज करें।", "pl": "Wprowadź swój klucz API <b>OpenRouter</b>.",
     },
     "How to get a key": {
         "de": "Wie bekomme ich einen Schlüssel?",
@@ -3415,7 +3419,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Comment obtenir une clé",
         "vi": "Cách lấy khóa",
         "zh": "如何获取密钥",
-        "hi": "कुंजी कैसे प्राप्त करें",
+        "hi": "कुंजी कैसे प्राप्त करें", "pl": "Jak zdobyć klucz",
     },
     "Why not free?": {
         "de": "Warum nicht kostenlos?",
@@ -3425,7 +3429,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Pourquoi pas gratuit ?",
         "vi": "Tại sao không miễn phí?",
         "zh": "为什么不免费？",
-        "hi": "मुफ्त क्यों नहीं?",
+        "hi": "मुफ्त क्यों नहीं?", "pl": "Dlaczego nie za darmo?",
     },
     "The SynapsePro AI Assistant is completely non-profit — I earn nothing from it.\n\nHowever, every AI response has a real cost: the model providers charge per token used. It is simply not possible to cover these API fees for all users for free.\n\nBy entering your own OpenRouter key, you connect directly to your own account and only pay for exactly what you use — typically just a few cents per session. No subscription, no markup.": {
         "de": "Der SynapsePro-KI-Assistent ist vollständig gemeinnützig – ich verdiene nichts damit.\n\nJede KI-Antwort kostet jedoch echtes Geld: Die Modellanbieter berechnen pro verwendetem Token. Es ist schlicht nicht möglich, diese API-Kosten für alle Nutzer kostenlos zu übernehmen.\n\nMit deinem eigenen OpenRouter-Schlüssel verbindest du dich direkt mit deinem eigenen Konto und zahlst nur für genau das, was du nutzt – in der Regel nur wenige Cent pro Sitzung. Kein Abo, keine Aufschläge.",
@@ -3435,7 +3439,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "L'assistant IA de SynapsePro est entièrement à but non lucratif — je n'en tire aucun revenu.\n\nCependant, chaque réponse IA a un coût réel : les fournisseurs de modèles facturent par token utilisé. Il est tout simplement impossible de couvrir ces frais d'API pour tous les utilisateurs gratuitement.\n\nEn entrant votre propre clé OpenRouter, vous vous connectez directement à votre compte et ne payez que pour ce que vous utilisez réellement — généralement quelques centimes par session. Pas d'abonnement, pas de majoration.",
         "vi": "Trợ lý AI của SynapsePro hoàn toàn phi lợi nhuận — tôi không kiếm gì từ nó.\n\nTuy nhiên, mỗi phản hồi AI có chi phí thực tế: các nhà cung cấp mô hình tính phí theo token sử dụng. Đơn giản là không thể chi trả các phí API này miễn phí cho tất cả người dùng.\n\nBằng cách nhập khóa OpenRouter của riêng bạn, bạn kết nối trực tiếp với tài khoản của mình và chỉ trả tiền cho những gì bạn thực sự sử dụng — thường chỉ vài xu mỗi phiên. Không có đăng ký, không có phụ phí.",
         "zh": "SynapsePro AI 助手完全非营利 — 我不从中获益。\n\n但是，每次 AI 响应都有实际成本：模型提供商按使用的 token 收费。根本不可能为所有用户免费承担这些 API 费用。\n\n输入您自己的 OpenRouter 密钥后，您直接连接到自己的账户，只为实际使用的内容付费 — 通常每次会话只需几分钱。无需订阅，无附加费。",
-        "hi": "SynapsePro AI सहायक पूरी तरह से गैर-लाभकारी है — मुझे इससे कोई कमाई नहीं।\n\nहालांकि, हर AI प्रतिक्रिया की वास्तविक लागत है: मॉडल प्रदाता प्रयोग किए गए टोकन के अनुसार शुल्क लेते हैं। सभी उपयोगकर्ताओं के लिए इन API शुल्कों को मुफ्त में कवर करना असंभव है।\n\nअपनी खुद की OpenRouter कुंजी दर्ज करके, आप सीधे अपने खाते से जुड़ते हैं और केवल वही भुगतान करते हैं जो आप वास्तव में उपयोग करते हैं — आमतौर पर प्रति सत्र कुछ सेंट। कोई सदस्यता नहीं, कोई मार्कअप नहीं।",
+        "hi": "SynapsePro AI सहायक पूरी तरह से गैर-लाभकारी है — मुझे इससे कोई कमाई नहीं।\n\nहालांकि, हर AI प्रतिक्रिया की वास्तविक लागत है: मॉडल प्रदाता प्रयोग किए गए टोकन के अनुसार शुल्क लेते हैं। सभी उपयोगकर्ताओं के लिए इन API शुल्कों को मुफ्त में कवर करना असंभव है।\n\nअपनी खुद की OpenRouter कुंजी दर्ज करके, आप सीधे अपने खाते से जुड़ते हैं और केवल वही भुगतान करते हैं जो आप वास्तव में उपयोग करते हैं — आमतौर पर प्रति सत्र कुछ सेंट। कोई सदस्यता नहीं, कोई मार्कअप नहीं।", "pl": "Asystent AI SynapsePro jest całkowicie niekomercyjny — nie zarabiam na nim nic.\n\nJednak każda odpowiedź AI ma realny koszt: dostawcy modeli naliczają opłaty za każdy zużyty token. Nie da się po prostu pokryć tych kosztów API dla wszystkich użytkowników za darmo.\n\nWprowadzając własny klucz OpenRouter, łączysz się bezpośrednio z własnym kontem i płacisz dokładnie za to, czego używasz — zwykle to tylko kilka centów za sesję. Bez subskrypcji, bez marży.",
     },
     "Only OpenRouter keys are supported currently.": {
         "de": "Zurzeit werden nur OpenRouter-Schlüssel unterstützt.",
@@ -3445,7 +3449,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Seules les clés OpenRouter sont actuellement prises en charge.",
         "vi": "Hiện tại chỉ hỗ trợ khóa OpenRouter.",
         "zh": "目前仅支持 OpenRouter 密钥。",
-        "hi": "वर्तमान में केवल OpenRouter कुंजियां समर्थित हैं।",
+        "hi": "वर्तमान में केवल OpenRouter कुंजियां समर्थित हैं।", "pl": "Obecnie obsługiwane są tylko klucze OpenRouter.",
     },
     "Why paid?": {
         "de": "Warum kostenpflichtig?",
@@ -3455,7 +3459,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Pourquoi payant ?",
         "vi": "Tại sao phải trả phí?",
         "zh": "为什么收费？",
-        "hi": "भुगतान क्यों?",
+        "hi": "भुगतान क्यों?", "pl": "Dlaczego płatny?",
     },
     "Need Help?": {
         "de": "Hilfe?",
@@ -3465,7 +3469,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Besoin d'aide ?",
         "vi": "Cần trợ giúp?",
         "zh": "需要帮助？",
-        "hi": "मदद चाहिए?",
+        "hi": "मदद चाहिए?", "pl": "Pomoc?",
     },
     "Enter own Key": {
         "de": "Eigenen Schlüssel eingeben",
@@ -3475,7 +3479,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Entrer sa propre clé",
         "vi": "Nhập khóa của riêng bạn",
         "zh": "输入自己的密钥",
-        "hi": "अपनी कुंजी दर्ज करें",
+        "hi": "अपनी कुंजी दर्ज करें", "pl": "Wprowadź własny klucz",
     },
     "Back to Synapse License": {
         "de": "Zurück zur Synapse-Lizenz",
@@ -3485,7 +3489,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Retour à la licence Synapse",
         "vi": "Quay lại giấy phép Synapse",
         "zh": "返回 Synapse 许可证",
-        "hi": "Synapse लाइसेंस पर वापस जाएं",
+        "hi": "Synapse लाइसेंस पर वापस जाएं", "pl": "Powrót do licencji Synapse",
     },
     "Save Key": {
         "de": "Schlüssel speichern",
@@ -3495,7 +3499,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Enregistrer la clé",
         "vi": "Lưu khóa",
         "zh": "保存密钥",
-        "hi": "कुंजी सहेजें",
+        "hi": "कुंजी सहेजें", "pl": "Zapisz klucz",
     },
     "OK": {
         "de": "OK",
@@ -3505,7 +3509,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "OK",
         "vi": "OK",
         "zh": "确认",
-        "hi": "ठीक है",
+        "hi": "ठीक है", "pl": "OK",
     },
     "Please enter a license key.": {
         "de": "Bitte gib einen Lizenzschlüssel ein.",
@@ -3515,7 +3519,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Veuillez entrer une clé de licence.",
         "vi": "Vui lòng nhập khóa giấy phép.",
         "zh": "请输入许可证密钥。",
-        "hi": "कृपया लाइसेंस कुंजी दर्ज करें।",
+        "hi": "कृपया लाइसेंस कुंजी दर्ज करें।", "pl": "Wprowadź klucz licencyjny.",
     },
     "Invalid Key": {
         "de": "Ungültiger Schlüssel",
@@ -3525,7 +3529,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Clé invalide",
         "vi": "Khóa không hợp lệ",
         "zh": "无效密钥",
-        "hi": "अमान्य कुंजी",
+        "hi": "अमान्य कुंजी", "pl": "Nieprawidłowy klucz",
     },
     "Please enter a valid OpenRouter API Key (starting with 'sk-or-').": {
         "de": "Bitte gib einen gültigen OpenRouter-API-Schlüssel ein (beginnt mit 'sk-or-').",
@@ -3535,7 +3539,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Entrez une clé API OpenRouter valide (commençant par 'sk-or-').",
         "vi": "Nhập khóa API OpenRouter hợp lệ (bắt đầu bằng 'sk-or-').",
         "zh": "请输入有效的 OpenRouter API 密钥（以 'sk-or-' 开头）。",
-        "hi": "एक वैध OpenRouter API कुंजी दर्ज करें ('sk-or-' से शुरू)।",
+        "hi": "एक वैध OpenRouter API कुंजी दर्ज करें ('sk-or-' से शुरू)।", "pl": "Wprowadź prawidłowy klucz API OpenRouter (zaczynający się od 'sk-or-').",
     },
     "Please enter an API key.": {
         "de": "Bitte gib einen API-Schlüssel ein.",
@@ -3545,7 +3549,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Veuillez entrer une clé API.",
         "vi": "Vui lòng nhập khóa API.",
         "zh": "请输入 API 密钥。",
-        "hi": "कृपया API कुंजी दर्ज करें।",
+        "hi": "कृपया API कुंजी दर्ज करें।", "pl": "Wprowadź klucz API.",
     },
     "Why is this a Paid Feature?": {
         "de": "Warum ist das ein kostenpflichtiges Feature?",
@@ -3555,7 +3559,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Pourquoi est-ce une fonctionnalité payante ?",
         "vi": "Tại sao đây là tính năng trả phí?",
         "zh": "为什么这是一个付费功能？",
-        "hi": "यह भुगतान वाली सुविधा क्यों है?",
+        "hi": "यह भुगतान वाली सुविधा क्यों है?", "pl": "Dlaczego to funkcja płatna?",
     },
     "Thank you for using the Synapse Pro Addon!\n\nWhile the vast majority of the addon is and will always remain free, the AI Assistant feature has significant running costs. These include API fees for the powerful language models and server expenses.\n\nYour license purchase directly supports these operational costs.": {
         "de": "Danke, dass Du das Synapse-Pro-Add-on verwendest!\n\nDer Großteil des Add-ons ist und bleibt kostenlos, aber die KI-Assistent-Funktion verursacht erhebliche laufende Kosten. Dazu gehören API-Gebühren für die leistungsstarken Sprachmodelle sowie Serverkosten.\n\nMit Deinem Lizenzkauf unterstützt Du diese Betriebskosten direkt.",
@@ -3565,7 +3569,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Merci d'utiliser le module Synapse Pro !\n\nBien que la grande majorité du module soit et reste toujours gratuite, la fonctionnalité d'assistant IA a des coûts de fonctionnement significatifs. Ceux-ci comprennent les frais d'API pour les puissants modèles de langage et les dépenses de serveur.\n\nVotre achat de licence soutient directement ces coûts opérationnels.",
         "vi": "Cảm ơn bạn đã sử dụng tiện ích Synapse Pro!\n\nMặc dù phần lớn tiện ích luôn miễn phí, tính năng trợ lý AI có chi phí vận hành đáng kể. Bao gồm phí API cho các mô hình ngôn ngữ mạnh và chi phí máy chủ.\n\nViệc mua giấy phép của bạn trực tiếp hỗ trợ các chi phí vận hành này.",
         "zh": "感谢您使用 Synapse Pro 插件！\n\n虽然插件的绝大部分是且将始终保持免费，但 AI 助手功能有显著的运营成本。这包括强大语言模型的 API 费用和服务器开支。\n\n您的许可证购买直接支持这些运营成本。",
-        "hi": "Synapse Pro ऐड-ऑन उपयोग करने के लिए धन्यवाद!\n\nहालांकि ऐड-ऑन का अधिकांश भाग हमेशा मुफ्त रहेगा, AI सहायक सुविधा में महत्वपूर्ण परिचालन लागतें हैं। इनमें शक्तिशाली भाषा मॉडल के API शुल्क और सर्वर खर्च शामिल हैं।\n\nआपकी लाइसेंस खरीद इन परिचालन लागतों का सीधे समर्थन करती है।",
+        "hi": "Synapse Pro ऐड-ऑन उपयोग करने के लिए धन्यवाद!\n\nहालांकि ऐड-ऑन का अधिकांश भाग हमेशा मुफ्त रहेगा, AI सहायक सुविधा में महत्वपूर्ण परिचालन लागतें हैं। इनमें शक्तिशाली भाषा मॉडल के API शुल्क और सर्वर खर्च शामिल हैं।\n\nआपकी लाइसेंस खरीद इन परिचालन लागतों का सीधे समर्थन करती है।", "pl": "Dziękujemy za korzystanie z dodatku Synapse Pro!\n\nZdecydowana większość dodatku jest i zawsze pozostanie bezpłatna, jednak funkcja Asystenta AI wiąże się ze znacznymi kosztami utrzymania. Obejmują one opłaty API za potężne modele językowe oraz koszty serwera.\n\nZakup licencji bezpośrednio wspiera pokrycie tych kosztów operacyjnych.",
     },
     "Help": {
         "de": "Hilfe",
@@ -3575,7 +3579,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Aide",
         "vi": "Trợ giúp",
         "zh": "帮助",
-        "hi": "सहायता",
+        "hi": "सहायता", "pl": "Pomoc",
     },
     "Contact help.synapse.pro@gmail.com if you have issues with your license key.": {
         "de": "Wende Dich an help.synapse.pro@gmail.com, falls Du Probleme mit Deinem Lizenzschlüssel hast.",
@@ -3585,7 +3589,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Contactez help.synapse.pro@gmail.com si vous avez des problèmes avec votre clé de licence.",
         "vi": "Liên hệ help.synapse.pro@gmail.com nếu bạn có vấn đề với khóa giấy phép.",
         "zh": "如果您的许可证密钥有问题，请联系 help.synapse.pro@gmail.com。",
-        "hi": "यदि आपकी लाइसेंस कुंजी में समस्या है तो help.synapse.pro@gmail.com से संपर्क करें।",
+        "hi": "यदि आपकी लाइसेंस कुंजी में समस्या है तो help.synapse.pro@gmail.com से संपर्क करें।", "pl": "Napisz na help.synapse.pro@gmail.com, jeśli masz problemy z kluczem licencyjnym.",
     },
     "Manage Your License Key": {
         "de": "Lizenzschlüssel verwalten",
@@ -3595,7 +3599,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Gérer votre clé de licence",
         "vi": "Quản lý khóa giấy phép của bạn",
         "zh": "管理您的许可证密钥",
-        "hi": "अपनी लाइसेंस कुंजी प्रबंधित करें",
+        "hi": "अपनी लाइसेंस कुंजी प्रबंधित करें", "pl": "Zarządzaj kluczem licencyjnym",
     },
     "Synapse Pro License": {
         "de": "Synapse Pro Lizenz",
@@ -3605,7 +3609,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Licence Synapse Pro",
         "vi": "Giấy phép Synapse Pro",
         "zh": "Synapse Pro 许可证",
-        "hi": "Synapse Pro लाइसेंस",
+        "hi": "Synapse Pro लाइसेंस", "pl": "Licencja Synapse Pro",
     },
     "Custom OpenRouter Key": {
         "de": "Eigener OpenRouter-Schlüssel",
@@ -3615,7 +3619,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Clé OpenRouter personnalisée",
         "vi": "Khóa OpenRouter tùy chỉnh",
         "zh": "自定义 OpenRouter 密钥",
-        "hi": "कस्टम OpenRouter कुंजी",
+        "hi": "कस्टम OpenRouter कुंजी", "pl": "Własny klucz OpenRouter",
     },
     "Active Key Type: <b>{}</b>": {
         "de": "Aktiver Schlüsseltyp: <b>{}</b>",
@@ -3625,7 +3629,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Type de clé active : <b>{}</b>",
         "vi": "Loại khóa đang dùng: <b>{}</b>",
         "zh": "当前密钥类型：<b>{}</b>",
-        "hi": "सक्रिय कुंजी प्रकार: <b>{}</b>",
+        "hi": "सक्रिय कुंजी प्रकार: <b>{}</b>", "pl": "Aktywny typ klucza: <b>{}</b>",
     },
     "Copy": {
         "de": "Kopieren",
@@ -3635,7 +3639,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Copier",
         "vi": "Sao chép",
         "zh": "复制",
-        "hi": "कॉपी करें",
+        "hi": "कॉपी करें", "pl": "Kopiuj",
     },
     "Remove Key": {
         "de": "Schlüssel entfernen",
@@ -3645,7 +3649,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Supprimer la clé",
         "vi": "Xóa khóa",
         "zh": "删除密钥",
-        "hi": "कुंजी हटाएं",
+        "hi": "कुंजी हटाएं", "pl": "Usuń klucz",
     },
     "Key copied!": {
         "de": "Schlüssel kopiert!",
@@ -3655,7 +3659,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Clé copiée !",
         "vi": "Đã sao chép khóa!",
         "zh": "密钥已复制！",
-        "hi": "कुंजी कॉपी हुई!",
+        "hi": "कुंजी कॉपी हुई!", "pl": "Klucz skopiowany!",
     },
     "Confirm Reset": {
         "de": "Zurücksetzen bestätigen",
@@ -3665,7 +3669,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Confirmer la réinitialisation",
         "vi": "Xác nhận đặt lại",
         "zh": "确认重置",
-        "hi": "रीसेट की पुष्टि करें",
+        "hi": "रीसेट की पुष्टि करें", "pl": "Potwierdź reset",
     },
     "Remove this key? You will need to enter it again to use the AI Assistant.": {
         "de": "Diesen Schlüssel entfernen? Du musst ihn erneut eingeben, um den KI-Assistenten zu verwenden.",
@@ -3675,7 +3679,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Supprimer cette clé ? Vous devrez la saisir à nouveau pour utiliser l'assistant IA.",
         "vi": "Xóa khóa này? Bạn sẽ cần nhập lại để sử dụng trợ lý AI.",
         "zh": "删除此密钥？您将需要重新输入才能使用 AI 助手。",
-        "hi": "यह कुंजी हटाएं? AI सहायक उपयोग करने के लिए आपको इसे फिर से दर्ज करना होगा।",
+        "hi": "यह कुंजी हटाएं? AI सहायक उपयोग करने के लिए आपको इसे फिर से दर्ज करना होगा।", "pl": "Usunąć ten klucz? Będzie trzeba wprowadzić go ponownie, aby korzystać z Asystenta AI.",
     },
     "Key removed.": {
         "de": "Schlüssel entfernt.",
@@ -3685,7 +3689,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Clé supprimée.",
         "vi": "Đã xóa khóa.",
         "zh": "密钥已删除。",
-        "hi": "कुंजी हटाई गई।",
+        "hi": "कुंजी हटाई गई।", "pl": "Klucz usunięty.",
     },
     "Failed to reset key: {}": {
         "de": "Schlüssel konnte nicht zurückgesetzt werden: {}",
@@ -3695,7 +3699,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Échec de la réinitialisation de la clé : {}",
         "vi": "Không thể đặt lại khóa: {}",
         "zh": "重置密钥失败：{}",
-        "hi": "कुंजी रीसेट विफल: {}",
+        "hi": "कुंजी रीसेट विफल: {}", "pl": "Nie udało się zresetować klucza: {}",
     },
     "Cannot open dialog.": {
         "de": "Dialog kann nicht geöffnet werden.",
@@ -3705,7 +3709,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Impossible d'ouvrir la boîte de dialogue.",
         "vi": "Không thể mở hộp thoại.",
         "zh": "无法打开对话框。",
-        "hi": "डायलॉग नहीं खुल सका।",
+        "hi": "डायलॉग नहीं खुल सका।", "pl": "Nie można otworzyć okna dialogowego.",
     },
     "License activated!": {
         "de": "Lizenz aktiviert!",
@@ -3715,7 +3719,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Licence activée !",
         "vi": "Giấy phép đã được kích hoạt!",
         "zh": "许可证已激活！",
-        "hi": "लाइसेंस सक्रिय हुआ!",
+        "hi": "लाइसेंस सक्रिय हुआ!", "pl": "Licencja aktywowana!",
     },
     "Custom Key saved!": {
         "de": "Eigener Schlüssel gespeichert!",
@@ -3725,7 +3729,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Clé personnalisée enregistrée !",
         "vi": "Đã lưu khóa tùy chỉnh!",
         "zh": "自定义密钥已保存！",
-        "hi": "कस्टम कुंजी सहेजी गई!",
+        "hi": "कस्टम कुंजी सहेजी गई!", "pl": "Własny klucz zapisany!",
     },
     "<div style='font-family:sans-serif;padding:20px;color:#333;'><h2>Error Loading AI Assistant</h2><p>URL invalid/blocked:<code>{url_str}</code></p><p>Check connection/firewall. Report if persists.</p></div>": {
         "de": "<div style='font-family:sans-serif;padding:20px;color:#333;'><h2>Fehler beim Laden des KI-Assistenten</h2><p>URL ungültig/blockiert:<code>{url_str}</code></p><p>Verbindung/Firewall prüfen. Bei anhaltendem Problem melden.</p></div>",
@@ -3735,7 +3739,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "<div style='font-family:sans-serif;padding:20px;color:#333;'><h2>Erreur de chargement de l'assistant IA</h2><p>URL invalide/bloquée :<code>{url_str}</code></p><p>Vérifiez la connexion/pare-feu. Signalez si ça persiste.</p></div>",
         "vi": "<div style='font-family:sans-serif;padding:20px;color:#333;'><h2>Lỗi tải trợ lý AI</h2><p>URL không hợp lệ/bị chặn:<code>{url_str}</code></p><p>Kiểm tra kết nối/tường lửa. Báo cáo nếu vẫn còn lỗi.</p></div>",
         "zh": "<div style='font-family:sans-serif;padding:20px;color:#333;'><h2>加载 AI 助手出错</h2><p>URL 无效/被屏蔽：<code>{url_str}</code></p><p>检查连接/防火墙。如问题持续请报告。</p></div>",
-        "hi": "<div style='font-family:sans-serif;padding:20px;color:#333;'><h2>AI सहायक लोड करने में त्रुटि</h2><p>URL अमान्य/अवरुद्ध:<code>{url_str}</code></p><p>कनेक्शन/फ़ायरवॉल जांचें। यदि जारी रहे तो रिपोर्ट करें।</p></div>",
+        "hi": "<div style='font-family:sans-serif;padding:20px;color:#333;'><h2>AI सहायक लोड करने में त्रुटि</h2><p>URL अमान्य/अवरुद्ध:<code>{url_str}</code></p><p>कनेक्शन/फ़ायरवॉल जांचें। यदि जारी रहे तो रिपोर्ट करें।</p></div>", "pl": "<div style='font-family:sans-serif;padding:20px;color:#333;'><h2>Błąd wczytywania asystenta AI</h2><p>Nieprawidłowy/zablokowany URL:<code>{url_str}</code></p><p>Sprawdź połączenie/zaporę sieciową. Zgłoś, jeśli problem się utrzymuje.</p></div>",
     },
     "Internal Error: Invalid URL for AI Assistant: {}": {
         "de": "Interner Fehler: Ungültige URL für den KI-Assistenten: {}",
@@ -3745,7 +3749,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Erreur interne : URL invalide pour l'assistant IA : {}",
         "vi": "Lỗi nội bộ: URL không hợp lệ cho trợ lý AI: {}",
         "zh": "内部错误：AI 助手的 URL 无效：{}",
-        "hi": "आंतरिक त्रुटि: AI सहायक के लिए अमान्य URL: {}",
+        "hi": "आंतरिक त्रुटि: AI सहायक के लिए अमान्य URL: {}", "pl": "Błąd wewnętrzny: nieprawidłowy adres URL Asystenta AI: {}",
     },
     "Error loading AI Assistant URL: {}": {
         "de": "Fehler beim Laden der KI-Assistent-URL: {}",
@@ -3755,7 +3759,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Erreur lors du chargement de l'URL de l'assistant IA : {}",
         "vi": "Lỗi tải URL trợ lý AI: {}",
         "zh": "加载 AI 助手 URL 时出错：{}",
-        "hi": "AI सहायक URL लोड करने में त्रुटि: {}",
+        "hi": "AI सहायक URL लोड करने में त्रुटि: {}", "pl": "Błąd wczytywania adresu URL Asystenta AI: {}",
     },
     "<p>Failed to load URL.</p>": {
         "de": "<p>URL konnte nicht geladen werden.</p>",
@@ -3765,7 +3769,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "<p>Échec du chargement de l'URL.</p>",
         "vi": "<p>Không tải được URL.</p>",
         "zh": "<p>无法加载 URL。</p>",
-        "hi": "<p>URL लोड करने में विफल।</p>",
+        "hi": "<p>URL लोड करने में विफल।</p>", "pl": "<p>Nie udało się wczytać adresu URL.</p>",
     },
     "Trial Mode: Use buttons above...": {
         "de": "Testmodus: Bitte die Buttons oben verwenden...",
@@ -3775,7 +3779,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Mode essai : utilisez les boutons ci-dessus...",
         "vi": "Chế độ dùng thử: sử dụng các nút ở trên...",
         "zh": "试用模式：使用上方按钮…",
-        "hi": "ट्रायल मोड: ऊपर के बटन उपयोग करें...",
+        "hi": "ट्रायल मोड: ऊपर के बटन उपयोग करें...", "pl": "Tryb próbny: skorzystaj z przycisków powyżej...",
     },
     "Ask a question...": {
         "de": "Stelle eine Frage...",
@@ -3785,7 +3789,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Posez une question...",
         "vi": "Đặt câu hỏi...",
         "zh": "提问…",
-        "hi": "एक प्रश्न पूछें...",
+        "hi": "एक प्रश्न पूछें...", "pl": "Zadaj pytanie...",
     },
     "Web component (QWebEngineView) not available.": {
         "de": "Web-Komponente (QWebEngineView) nicht verfügbar.",
@@ -3795,7 +3799,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Composant web (QWebEngineView) non disponible.",
         "vi": "Thành phần web (QWebEngineView) không khả dụng.",
         "zh": "Web 组件 (QWebEngineView) 不可用。",
-        "hi": "वेब घटक (QWebEngineView) उपलब्ध नहीं।",
+        "hi": "वेब घटक (QWebEngineView) उपलब्ध नहीं।", "pl": "Komponent webowy (QWebEngineView) niedostępny.",
     },
     "AI Assistant webview not initialized.": {
         "de": "KI-Assistent-Webview nicht initialisiert.",
@@ -3805,7 +3809,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Vue web de l'assistant IA non initialisée.",
         "vi": "Webview trợ lý AI chưa được khởi tạo.",
         "zh": "AI 助手 webview 未初始化。",
-        "hi": "AI सहायक वेबव्यू प्रारंभ नहीं हुआ।",
+        "hi": "AI सहायक वेबव्यू प्रारंभ नहीं हुआ।", "pl": "Widok WWW asystenta AI nie został zainicjowany.",
     },
     "AI Assistant sidebar must be visible.": {
         "de": "Die KI-Assistent-Seitenleiste muss sichtbar sein.",
@@ -3815,7 +3819,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "La barre latérale de l'assistant IA doit être visible.",
         "vi": "Thanh bên trợ lý AI phải hiển thị.",
         "zh": "AI 助手侧边栏必须可见。",
-        "hi": "AI सहायक साइडबार दृश्यमान होना चाहिए।",
+        "hi": "AI सहायक साइडबार दृश्यमान होना चाहिए।", "pl": "Panel boczny asystenta AI musi być widoczny.",
     },
     "AI Assistant page is still loading or not available.": {
         "de": "Die KI-Assistent-Seite wird noch geladen oder ist nicht verfügbar.",
@@ -3825,7 +3829,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "La page de l'assistant IA est toujours en chargement ou n'est pas disponible.",
         "vi": "Trang trợ lý AI vẫn đang tải hoặc không khả dụng.",
         "zh": "AI 助手页面仍在加载或不可用。",
-        "hi": "AI सहायक पृष्ठ अभी भी लोड हो रहा है या उपलब्ध नहीं है।",
+        "hi": "AI सहायक पृष्ठ अभी भी लोड हो रहा है या उपलब्ध नहीं है।", "pl": "Strona asystenta AI wciąż się ładuje lub jest niedostępna.",
     },
     "Prompt sent to AI Assistant.": {
         "de": "Prompt an den KI-Assistenten gesendet.",
@@ -3835,7 +3839,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Invite envoyée à l'assistant IA.",
         "vi": "Đã gửi prompt đến trợ lý AI.",
         "zh": "提示已发送给 AI 助手。",
-        "hi": "प्रॉम्प्ट AI सहायक को भेजा गया।",
+        "hi": "प्रॉम्प्ट AI सहायक को भेजा गया।", "pl": "Prompt wysłany do Asystenta AI.",
     },
     "{addon_name}: Could find text input field (id='{selector}') in AI. Website changed?": {
         "de": "{addon_name}: Eingabefeld (id='{selector}') der KI nicht gefunden. Hat sich die Website geändert?",
@@ -3845,7 +3849,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "{addon_name}: Impossible de trouver le champ de saisie (id='{selector}') dans l'IA. Le site a changé ?",
         "vi": "{addon_name}: Không tìm thấy trường nhập văn bản (id='{selector}') trong AI. Trang web đã thay đổi?",
         "zh": "{addon_name}：在 AI 中找不到文本输入框（id='{selector}'）。网站更改了？",
-        "hi": "{addon_name}: AI में टेक्स्ट इनपुट फ़ील्ड (id='{selector}') नहीं मिली। वेबसाइट बदल गई?",
+        "hi": "{addon_name}: AI में टेक्स्ट इनपुट फ़ील्ड (id='{selector}') नहीं मिली। वेबसाइट बदल गई?", "pl": "{addon_name}: Nie znaleziono pola tekstowego (id='{selector}') w AI. Strona się zmieniła?",
     },
     "{addon_name}: Could not find/interact with send button (id='{selector}'). Check Remote Debugger.": {
         "de": "{addon_name}: Sende-Button (id='{selector}') konnte nicht gefunden oder verwendet werden. Remote Debugger prüfen.",
@@ -3855,7 +3859,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "{addon_name}: Impossible de trouver/interagir avec le bouton d'envoi (id='{selector}'). Vérifiez le débogueur distant.",
         "vi": "{addon_name}: Không thể tìm/tương tác với nút gửi (id='{selector}'). Kiểm tra Remote Debugger.",
         "zh": "{addon_name}：无法找到/与发送按钮（id='{selector}'）交互。检查远程调试器。",
-        "hi": "{addon_name}: भेजें बटन (id='{selector}') नहीं मिला/इंटरैक्ट नहीं किया जा सका। Remote Debugger जांचें।",
+        "hi": "{addon_name}: भेजें बटन (id='{selector}') नहीं मिला/इंटरैक्ट नहीं किया जा सका। Remote Debugger जांचें।", "pl": "{addon_name}: Nie znaleziono przycisku wysyłania (id='{selector}') lub nie można było go użyć. Sprawdź Remote Debugger.",
     },
     "{addon_name}: AI JS Error - {result}. Check Remote Debugger.": {
         "de": "{addon_name}: KI-JS-Fehler – {result}. Remote Debugger prüfen.",
@@ -3865,7 +3869,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "{addon_name}: Erreur JS IA - {result}. Vérifiez le débogueur distant.",
         "vi": "{addon_name}: Lỗi JS AI - {result}. Kiểm tra Remote Debugger.",
         "zh": "{addon_name}：AI JS 错误 - {result}。检查远程调试器。",
-        "hi": "{addon_name}: AI JS त्रुटि - {result}। Remote Debugger जांचें।",
+        "hi": "{addon_name}: AI JS त्रुटि - {result}। Remote Debugger जांचें।", "pl": "{addon_name}: Błąd JS AI – {result}. Sprawdź Remote Debugger.",
     },
     "{addon_name}: Unexpected JS result: {result}. Check Remote Debugger.": {
         "de": "{addon_name}: Unerwartetes JS-Ergebnis: {result}. Remote Debugger prüfen.",
@@ -3875,7 +3879,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "{addon_name}: Résultat JS inattendu : {result}. Vérifiez le débogueur distant.",
         "vi": "{addon_name}: Kết quả JS bất ngờ: {result}. Kiểm tra Remote Debugger.",
         "zh": "{addon_name}：意外的 JS 结果：{result}。检查远程调试器。",
-        "hi": "{addon_name}: अनपेक्षित JS परिणाम: {result}। Remote Debugger जांचें।",
+        "hi": "{addon_name}: अनपेक्षित JS परिणाम: {result}। Remote Debugger जांचें।", "pl": "{addon_name}: Nieoczekiwany wynik JS: {result}. Sprawdź Remote Debugger.",
     },
     "{}: Error executing script. Check Remote Debugger.": {
         "de": "{}: Fehler beim Ausführen des Skripts. Remote Debugger prüfen.",
@@ -3885,7 +3889,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "{}: Erreur lors de l'exécution du script. Vérifiez le débogueur distant.",
         "vi": "{}: Lỗi thực thi script. Kiểm tra Remote Debugger.",
         "zh": "{}：执行脚本时出错。检查远程调试器。",
-        "hi": "{}: स्क्रिप्ट चलाने में त्रुटि। Remote Debugger जांचें।",
+        "hi": "{}: स्क्रिप्ट चलाने में त्रुटि। Remote Debugger जांचें।", "pl": "{}: Błąd podczas wykonywania skryptu. Sprawdź Remote Debugger.",
     },
     "{}: Unexpected script result. Check Remote Debugger.": {
         "de": "{}: Unerwartetes Skriptergebnis. Remote Debugger prüfen.",
@@ -3895,7 +3899,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "{}: Résultat de script inattendu. Vérifiez le débogueur distant.",
         "vi": "{}: Kết quả script bất ngờ. Kiểm tra Remote Debugger.",
         "zh": "{}：意外的脚本结果。检查远程调试器。",
-        "hi": "{}: अनपेक्षित स्क्रिप्ट परिणाम। Remote Debugger जांचें।",
+        "hi": "{}: अनपेक्षित स्क्रिप्ट परिणाम। Remote Debugger जांचें।", "pl": "{}: Nieoczekiwany wynik skryptu. Sprawdź Remote Debugger.",
     },
     "{addon_name}: Critical error sending prompt: {err}": {
         "de": "{addon_name}: Kritischer Fehler beim Senden des Prompts: {err}",
@@ -3905,7 +3909,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "{addon_name}: Erreur critique lors de l'envoi du prompt : {err}",
         "vi": "{addon_name}: Lỗi nghiêm trọng khi gửi prompt: {err}",
         "zh": "{addon_name}：发送提示时发生严重错误：{err}",
-        "hi": "{addon_name}: प्रॉम्प्ट भेजने में गंभीर त्रुटि: {err}",
+        "hi": "{addon_name}: प्रॉम्प्ट भेजने में गंभीर त्रुटि: {err}", "pl": "{addon_name}: Krytyczny błąd podczas wysyłania promptu: {err}",
     },
     "No card content found.": {
         "de": "Kein Karteninhalt gefunden.",
@@ -3915,7 +3919,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Aucun contenu de carte trouvé.",
         "vi": "Không tìm thấy nội dung thẻ.",
         "zh": "未找到卡片内容。",
-        "hi": "कोई कार्ड सामग्री नहीं मिली।",
+        "hi": "कोई कार्ड सामग्री नहीं मिली।", "pl": "Nie znaleziono treści karty.",
     },
     "No card content to use in custom prompt.": {
         "de": "Kein Karteninhalt für eigenen Prompt verfügbar.",
@@ -3925,7 +3929,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Aucun contenu de carte à utiliser dans le prompt personnalisé.",
         "vi": "Không có nội dung thẻ để sử dụng trong prompt tùy chỉnh.",
         "zh": "没有可在自定义提示中使用的卡片内容。",
-        "hi": "कस्टम प्रॉम्प्ट में उपयोग के लिए कोई कार्ड सामग्री नहीं।",
+        "hi": "कस्टम प्रॉम्प्ट में उपयोग के लिए कोई कार्ड सामग्री नहीं।", "pl": "Brak treści karty do użycia we własnym prompcie.",
     },
     "Custom prompt not set up correctly. Please define or edit it.": {
         "de": "Eigener Prompt ist nicht korrekt eingerichtet. Bitte definieren oder bearbeiten.",
@@ -3935,7 +3939,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Le prompt personnalisé n'est pas correctement configuré. Veuillez le définir ou le modifier.",
         "vi": "Prompt tùy chỉnh chưa được thiết lập đúng. Vui lòng định nghĩa hoặc chỉnh sửa nó.",
         "zh": "自定义提示设置不正确。请定义或编辑它。",
-        "hi": "कस्टम प्रॉम्प्ट सही तरीके से सेट नहीं है। कृपया परिभाषित करें या संपादित करें।",
+        "hi": "कस्टम प्रॉम्प्ट सही तरीके से सेट नहीं है। कृपया परिभाषित करें या संपादित करें।", "pl": "Własny prompt nie jest poprawnie skonfigurowany. Zdefiniuj go lub edytuj.",
     },
     "Cannot open prompt dialog (missing components).": {
         "de": "Prompt-Dialog kann nicht geöffnet werden (fehlende Komponenten).",
@@ -3945,7 +3949,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Impossible d'ouvrir la boîte de dialogue du prompt (composants manquants).",
         "vi": "Không thể mở hộp thoại prompt (thiếu thành phần).",
         "zh": "无法打开提示对话框（缺少组件）。",
-        "hi": "प्रॉम्प्ट डायलॉग नहीं खुल सकता (घटक अनुपलब्ध)।",
+        "hi": "प्रॉम्प्ट डायलॉग नहीं खुल सकता (घटक अनुपलब्ध)।", "pl": "Nie można otworzyć okna promptu (brak komponentów).",
     },
     "Edit Custom Prompt Template": {
         "de": "Eigene Prompt-Vorlage bearbeiten",
@@ -3955,7 +3959,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Modifier le modèle de prompt personnalisé",
         "vi": "Chỉnh sửa mẫu prompt tùy chỉnh",
         "zh": "编辑自定义提示模板",
-        "hi": "कस्टम प्रॉम्प्ट टेम्पलेट संपादित करें",
+        "hi": "कस्टम प्रॉम्प्ट टेम्पलेट संपादित करें", "pl": "Edytuj szablon własnego promptu",
     },
     "Enter your custom prompt template for the AI Assistant.\nUse the placeholder '{content}' (with curly braces) where you want the current card's front side content to be inserted.\nThe language suffix will be added automatically based on your selection.": {
         "de": "Gib Deine eigene Prompt-Vorlage für den KI-Assistenten ein.\nVerwende den Platzhalter '{content}' (mit geschweiften Klammern), wo der Inhalt der Kartenvorderseite eingefügt werden soll.\nDer Sprach-Suffix wird automatisch basierend auf Deiner Auswahl hinzugefügt.",
@@ -3965,7 +3969,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Entrez votre modèle de prompt personnalisé pour l'Assistant IA.\nUtilisez l'espace réservé '{content}' (avec accolades) là où vous souhaitez insérer le contenu du recto de la carte actuelle.\nLe suffixe de langue sera ajouté automatiquement en fonction de votre sélection.",
         "vi": "Nhập mẫu prompt tùy chỉnh cho Trợ lý AI.\nSử dụng '{content}' (có dấu ngoặc nhọn) ở nơi bạn muốn chèn nội dung mặt trước của thẻ hiện tại.\nHậu tố ngôn ngữ sẽ được thêm tự động theo lựa chọn của bạn.",
         "zh": "输入您的 AI 助手自定义提示模板。\n在您希望插入当前卡片正面内容的位置使用占位符 '{content}'（含花括号）。\n语言后缀将根据您的选择自动添加。",
-        "hi": "AI असिस्टेंट के लिए अपना कस्टम प्रॉम्प्ट टेम्पलेट दर्ज करें।\nजहाँ आप वर्तमान कार्ड के सामने की सामग्री डालना चाहते हैं वहाँ '{content}' प्लेसहोल्डर (घुंघराले कोष्ठक सहित) का उपयोग करें।\nभाषा प्रत्यय आपकी चयन के आधार पर स्वतः जोड़ा जाएगा।",
+        "hi": "AI असिस्टेंट के लिए अपना कस्टम प्रॉम्प्ट टेम्पलेट दर्ज करें।\nजहाँ आप वर्तमान कार्ड के सामने की सामग्री डालना चाहते हैं वहाँ '{content}' प्लेसहोल्डर (घुंघराले कोष्ठक सहित) का उपयोग करें।\nभाषा प्रत्यय आपकी चयन के आधार पर स्वतः जोड़ा जाएगा।", "pl": "Wprowadź własny szablon promptu dla Asystenta AI.\nUżyj placeholdera '{content}' (w nawiasach klamrowych) w miejscu, w którym ma zostać wstawiona treść przedniej strony bieżącej karty.\nSufiks językowy zostanie dodany automatycznie na podstawie wybranego języka.",
     },
     "Placeholder Missing": {
         "de": "Platzhalter fehlt",
@@ -3975,7 +3979,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Espace réservé manquant",
         "vi": "Thiếu trình giữ chỗ",
         "zh": "缺少占位符",
-        "hi": "प्लेसहोल्डर गायब",
+        "hi": "प्लेसहोल्डर गायब", "pl": "Brak symbolu zastępczego",
     },
     "The placeholder '{content}' is missing in your prompt template. Card content will not be inserted.\n\nSave anyway?": {
         "de": "Der Platzhalter '{content}' fehlt in Deiner Prompt-Vorlage. Der Karteninhalt wird nicht eingefügt.\n\nTrotzdem speichern?",
@@ -3985,7 +3989,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "L'espace réservé '{content}' est absent de votre modèle de prompt. Le contenu de la carte ne sera pas inséré.\n\nEnregistrer quand même?",
         "vi": "Trình giữ chỗ '{content}' bị thiếu trong mẫu prompt. Nội dung thẻ sẽ không được chèn.\n\nVẫn lưu?",
         "zh": "您的提示模板中缺少占位符 '{content}'。卡片内容将不会被插入。\n\n仍然保存吗？",
-        "hi": "आपके प्रॉम्प्ट टेम्पलेट में '{content}' प्लेसहोल्डर गायब है। कार्ड सामग्री नहीं डाली जाएगी।\n\nफिर भी सहेजें?",
+        "hi": "आपके प्रॉम्प्ट टेम्पलेट में '{content}' प्लेसहोल्डर गायब है। कार्ड सामग्री नहीं डाली जाएगी।\n\nफिर भी सहेजें?", "pl": "W szablonie promptu brakuje placeholdera '{content}'. Treść karty nie zostanie wstawiona.\n\nZapisać mimo to?",
     },
     "Custom prompt not saved (placeholder missing).": {
         "de": "Eigener Prompt nicht gespeichert (Platzhalter fehlt).",
@@ -3995,7 +3999,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Prompt personnalisé non enregistré (espace réservé manquant).",
         "vi": "Prompt tùy chỉnh chưa được lưu (thiếu trình giữ chỗ).",
         "zh": "自定义提示未保存（缺少占位符）。",
-        "hi": "कस्टम प्रॉम्प्ट सहेजा नहीं गया (प्लेसहोल्डर गायब)।",
+        "hi": "कस्टम प्रॉम्प्ट सहेजा नहीं गया (प्लेसहोल्डर गायब)।", "pl": "Własny prompt nie został zapisany (brak symbolu zastępczego).",
     },
     "Custom prompt template saved!": {
         "de": "Eigene Prompt-Vorlage gespeichert!",
@@ -4005,7 +4009,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Modèle de prompt personnalisé enregistré!",
         "vi": "Đã lưu mẫu prompt tùy chỉnh!",
         "zh": "自定义提示模板已保存！",
-        "hi": "कस्टम प्रॉम्प्ट टेम्पलेट सहेजा गया!",
+        "hi": "कस्टम प्रॉम्प्ट टेम्पलेट सहेजा गया!", "pl": "Szablon własnego promptu zapisany!",
     },
     " Click 'Own Prompt' again to use it.": {
         "de": " Klicke erneut auf 'Eigener Prompt', um sie zu verwenden.",
@@ -4015,7 +4019,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": " Cliquez à nouveau sur 'Prompt perso' pour l'utiliser.",
         "vi": " Nhấn 'Prompt riêng' lần nữa để sử dụng.",
         "zh": " 再次点击'自定义提示'以使用它。",
-        "hi": " इसे उपयोग करने के लिए 'स्वयं प्रॉम्प्ट' पर फिर से क्लिक करें।",
+        "hi": " इसे उपयोग करने के लिए 'स्वयं प्रॉम्प्ट' पर फिर से क्लिक करें।", "pl": " Kliknij ponownie „Własny prompt”, aby go użyć.",
     },
     "Custom prompt template not changed (empty).": {
         "de": "Eigene Prompt-Vorlage nicht geändert (leer).",
@@ -4025,7 +4029,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Modèle de prompt personnalisé non modifié (vide).",
         "vi": "Mẫu prompt tùy chỉnh chưa thay đổi (trống).",
         "zh": "自定义提示模板未更改（为空）。",
-        "hi": "कस्टम प्रॉम्प्ट टेम्पलेट नहीं बदला (खाली)।",
+        "hi": "कस्टम प्रॉम्प्ट टेम्पलेट नहीं बदला (खाली)।", "pl": "Szablon własnego promptu nie został zmieniony (jest pusty).",
     },
     "No license key is currently saved.": {
         "de": "Zurzeit ist kein Lizenzschlüssel gespeichert.",
@@ -4035,7 +4039,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Aucune clé de licence n'est actuellement enregistrée.",
         "vi": "Hiện không có khóa giấy phép nào được lưu.",
         "zh": "当前没有保存的许可证密钥。",
-        "hi": "वर्तमान में कोई लाइसेंस कुंजी सहेजी नहीं है।",
+        "hi": "वर्तमान में कोई लाइसेंस कुंजी सहेजी नहीं है।", "pl": "Obecnie nie zapisano żadnego klucza licencyjnego.",
     },
     "AI Assistant: Addon path issue. Default profile location.": {
         "de": "KI-Assistent: Problem mit dem Add-on-Pfad. Standard-Profilpfad wird verwendet.",
@@ -4045,7 +4049,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Assistant IA: problème de chemin du module. Emplacement de profil par défaut.",
         "vi": "Trợ lý AI: Lỗi đường dẫn tiện ích. Sử dụng vị trí hồ sơ mặc định.",
         "zh": "AI 助手：插件路径问题。使用默认配置文件位置。",
-        "hi": "AI असिस्टेंट: ऐड-ऑन पथ समस्या। डिफ़ॉल्ट प्रोफ़ाइल स्थान।",
+        "hi": "AI असिस्टेंट: ऐड-ऑन पथ समस्या। डिफ़ॉल्ट प्रोफ़ाइल स्थान।", "pl": "Asystent AI: problem ze ścieżką dodatku. Domyślna lokalizacja profilu.",
     },
     "AI Assistant profile error ({}). Non-persistent.": {
         "de": "KI-Assistent-Profilfehler ({}). Nicht persistent.",
@@ -4055,7 +4059,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Erreur de profil de l'Assistant IA ({}). Non persistant.",
         "vi": "Lỗi hồ sơ Trợ lý AI ({}). Không lưu trữ.",
         "zh": "AI 助手配置文件错误 ({})。非持久性。",
-        "hi": "AI असिस्टेंट प्रोफ़ाइल त्रुटि ({})। गैर-स्थायी।",
+        "hi": "AI असिस्टेंट प्रोफ़ाइल त्रुटि ({})। गैर-स्थायी।", "pl": "Błąd profilu asystenta AI ({}). Nietrwały.",
     },
     "Short": {
         "de": "Kurz",
@@ -4065,7 +4069,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Court",
         "vi": "Ngắn",
         "zh": "简短",
-        "hi": "संक्षिप्त",
+        "hi": "संक्षिप्त", "pl": "Krótka",
     },
     "Brief further explanation": {
         "de": "Kurze, weiterführende Erklärung",
@@ -4075,7 +4079,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Brève explication complémentaire",
         "vi": "Giải thích ngắn gọn thêm",
         "zh": "简短进一步说明",
-        "hi": "संक्षिप्त अतिरिक्त स्पष्टीकरण",
+        "hi": "संक्षिप्त अतिरिक्त स्पष्टीकरण", "pl": "Krótkie dodatkowe wyjaśnienie",
     },
     "Concise": {
         "de": "Prägnant",
@@ -4085,7 +4089,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Concis",
         "vi": "Súc tích",
         "zh": "简洁",
-        "hi": "संक्षिप्त",
+        "hi": "संक्षिप्त", "pl": "Zwięzły",
     },
     "Concise but comprehensive explanation": {
         "de": "Prägnante, aber umfassende Erklärung",
@@ -4095,7 +4099,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Explication concise mais complète",
         "vi": "Giải thích súc tích nhưng toàn diện",
         "zh": "简洁但全面的解释",
-        "hi": "संक्षिप्त किंतु व्यापक स्पष्टीकरण",
+        "hi": "संक्षिप्त किंतु व्यापक स्पष्टीकरण", "pl": "Zwięzłe, ale wyczerpujące wyjaśnienie",
     },
     "Detailed": {
         "de": "Ausführlich",
@@ -4105,7 +4109,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Détaillé",
         "vi": "Chi tiết",
         "zh": "详细",
-        "hi": "विस्तृत",
+        "hi": "विस्तृत", "pl": "Szczegółowy",
     },
     "Detailed explanation": {
         "de": "Ausführliche Erklärung",
@@ -4115,7 +4119,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Explication détaillée",
         "vi": "Giải thích chi tiết",
         "zh": "详细说明",
-        "hi": "विस्तृत स्पष्टीकरण",
+        "hi": "विस्तृत स्पष्टीकरण", "pl": "Szczegółowe wyjaśnienie",
     },
     "MCQ": {
         "de": "MCQ",
@@ -4125,7 +4129,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "QCM",
         "vi": "MCQ",
         "zh": "选择题",
-        "hi": "MCQ",
+        "hi": "MCQ", "pl": "MCQ",
     },
     "Generate MCQ": {
         "de": "MCQ erzeugen",
@@ -4135,7 +4139,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Générer QCM",
         "vi": "Tạo MCQ",
         "zh": "生成选择题",
-        "hi": "MCQ बनाएं",
+        "hi": "MCQ बनाएं", "pl": "Generuj MCQ",
     },
     "Mnemonic": {
         "de": "Eselsbrücke",
@@ -4145,7 +4149,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Mnémotechnique",
         "vi": "Mẹo ghi nhớ",
         "zh": "记忆术",
-        "hi": "स्मृति सहायक",
+        "hi": "स्मृति सहायक", "pl": "Mnemotechnika",
     },
     "Generate mnemonic": {
         "de": "Eselsbrücke erzeugen",
@@ -4155,7 +4159,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Générer un mnémotechnique",
         "vi": "Tạo mẹo ghi nhớ",
         "zh": "生成记忆术",
-        "hi": "स्मृति सहायक बनाएं",
+        "hi": "स्मृति सहायक बनाएं", "pl": "Generuj mnemonik",
     },
     "Own Prompt": {
         "de": "Eigener Prompt",
@@ -4165,7 +4169,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Prompt perso",
         "vi": "Prompt riêng",
         "zh": "自定义提示",
-        "hi": "स्वयं प्रॉम्प्ट",
+        "hi": "स्वयं प्रॉम्प्ट", "pl": "Własny prompt",
     },
     "Execute saved custom prompt": {
         "de": "Gespeicherten eigenen Prompt ausführen",
@@ -4175,7 +4179,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Exécuter le prompt personnalisé enregistré",
         "vi": "Thực thi prompt tùy chỉnh đã lưu",
         "zh": "执行已保存的自定义提示",
-        "hi": "सहेजा गया कस्टम प्रॉम्प्ट चलाएं",
+        "hi": "सहेजा गया कस्टम प्रॉम्प्ट चलाएं", "pl": "Wykonaj zapisany własny prompt",
     },
     "Edit Own Prompt": {
         "de": "Eigenen Prompt bearbeiten",
@@ -4185,7 +4189,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Modifier le prompt perso",
         "vi": "Chỉnh sửa prompt riêng",
         "zh": "编辑自定义提示",
-        "hi": "स्वयं प्रॉम्प्ट संपादित करें",
+        "hi": "स्वयं प्रॉम्प्ट संपादित करें", "pl": "Edytuj własny prompt",
     },
     "Key": {
         "de": "Schlüssel",
@@ -4195,7 +4199,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Clé",
         "vi": "Khóa",
         "zh": "密钥",
-        "hi": "कुंजी",
+        "hi": "कुंजी", "pl": "Klucz",
     },
     "Response language": {
         "de": "Antwortsprache",
@@ -4205,7 +4209,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Langue de réponse",
         "vi": "Ngôn ngữ phản hồi",
         "zh": "响应语言",
-        "hi": "प्रतिक्रिया भाषा",
+        "hi": "प्रतिक्रिया भाषा", "pl": "Język odpowiedzi",
     },
     "Content to include": {
         "de": "Einzubeziehender Inhalt",
@@ -4215,7 +4219,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Contenu à inclure",
         "vi": "Nội dung cần bao gồm",
         "zh": "要包含的内容",
-        "hi": "शामिल करने की सामग्री",
+        "hi": "शामिल करने की सामग्री", "pl": "Treść do uwzględnienia",
     },
     "Edit your saved custom prompt template": {
         "de": "Gespeicherte eigene Prompt-Vorlage bearbeiten",
@@ -4225,7 +4229,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Modifier votre modèle de prompt personnalisé enregistré",
         "vi": "Chỉnh sửa mẫu prompt tùy chỉnh đã lưu",
         "zh": "编辑您保存的自定义提示模板",
-        "hi": "सहेजा गया कस्टम प्रॉम्प्ट टेम्पलेट संपादित करें",
+        "hi": "सहेजा गया कस्टम प्रॉम्प्ट टेम्पलेट संपादित करें", "pl": "Edytuj zapisany szablon własnego promptu",
     },
     "View and manage your saved license key": {
         "de": "Gespeicherten Lizenzschlüssel anzeigen und verwalten",
@@ -4235,7 +4239,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Afficher et gérer votre clé de licence enregistrée",
         "vi": "Xem và quản lý khóa giấy phép đã lưu",
         "zh": "查看和管理您保存的许可证密钥",
-        "hi": "सहेजी गई लाइसेंस कुंजी देखें और प्रबंधित करें",
+        "hi": "सहेजी गई लाइसेंस कुंजी देखें और प्रबंधित करें", "pl": "Wyświetlanie i zarządzanie zapisanym kluczem licencyjnym",
     },
     "Error setting up AI Assistant: {}. See console.": {
         "de": "Fehler beim Einrichten des KI-Assistenten: {}. Siehe Konsole.",
@@ -4245,7 +4249,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Erreur lors de la configuration de l'Assistant IA: {}. Voir la console.",
         "vi": "Lỗi thiết lập Trợ lý AI: {}. Xem bảng điều khiển.",
         "zh": "设置 AI 助手时出错：{}。请查看控制台。",
-        "hi": "AI असिस्टेंट सेट अप करने में त्रुटि: {}। कंसोल देखें।",
+        "hi": "AI असिस्टेंट सेट अप करने में त्रुटि: {}। कंसोल देखें।", "pl": "Błąd podczas konfigurowania Asystenta AI: {}. Sprawdź konsolę.",
     },
     "AI language: {}": {
         "de": "KI-Sprache: {}",
@@ -4255,7 +4259,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Langue IA: {}",
         "vi": "Ngôn ngữ AI: {}",
         "zh": "AI 语言：{}",
-        "hi": "AI भाषा: {}",
+        "hi": "AI भाषा: {}", "pl": "Język AI: {}",
     },
     "AI Source: {}": {
         "de": "KI-Quelle: {}",
@@ -4265,7 +4269,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Source IA: {}",
         "vi": "Nguồn AI: {}",
         "zh": "AI 来源：{}",
-        "hi": "AI स्रोत: {}",
+        "hi": "AI स्रोत: {}", "pl": "Źródło AI: {}",
     },
     "AI Assistant cannot show. Check deps.": {
         "de": "KI-Assistent kann nicht angezeigt werden. Abhängigkeiten prüfen.",
@@ -4275,7 +4279,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "L'Assistant IA ne peut pas s'afficher. Vérifiez les dépendances.",
         "vi": "Không thể hiển thị Trợ lý AI. Kiểm tra các phụ thuộc.",
         "zh": "AI 助手无法显示。请检查依赖项。",
-        "hi": "AI असिस्टेंट नहीं दिखाया जा सकता। निर्भरताएं जांचें।",
+        "hi": "AI असिस्टेंट नहीं दिखाया जा सकता। निर्भरताएं जांचें।", "pl": "Asystent AI nie może się wyświetlić. Sprawdź zależności.",
     },
     "Error showing/hiding AI Assistant: {}": {
         "de": "Fehler beim Anzeigen/Verbergen des KI-Assistenten: {}",
@@ -4285,7 +4289,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Erreur lors de l'affichage/masquage de l'Assistant IA: {}",
         "vi": "Lỗi khi hiện/ẩn Trợ lý AI: {}",
         "zh": "显示/隐藏 AI 助手时出错：{}",
-        "hi": "AI असिस्टेंट दिखाने/छिपाने में त्रुटि: {}",
+        "hi": "AI असिस्टेंट दिखाने/छिपाने में त्रुटि: {}", "pl": "Błąd podczas pokazywania/ukrywania Asystenta AI: {}",
     },
 
     # ================================================================= #
@@ -4299,7 +4303,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Révisez 15 min d’affilée.",
         "vi": "Ôn thẻ liên tục 15 phút.",
         "zh": "连续复习卡片15分钟。",
-        "hi": "लगातार 15 मिनट तक कार्ड की समीक्षा करें।",
+        "hi": "लगातार 15 मिनट तक कार्ड की समीक्षा करें।", "pl": "Powtarzaj karty przez 15 minut bez przerwy.",
     },
     "Learn 10 new cards today.": {
         "de": "Heute 10 neue Karten lernen.",
@@ -4309,7 +4313,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Apprenez 10 nouvelles cartes aujourd'hui.",
         "vi": "Học 10 thẻ mới hôm nay.",
         "zh": "今天学习10张新卡片。",
-        "hi": "आज 10 नए कार्ड सीखें।",
+        "hi": "आज 10 नए कार्ड सीखें।", "pl": "Naucz się dziś 10 nowych kart.",
     },
     "Review for at least 1 hour today": {
         "de": "Heute mindestens 1 Stunde wiederholen",
@@ -4319,7 +4323,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Révisez 1 h aujourd’hui.",
         "vi": "Ôn tập ít nhất 1 giờ hôm nay",
         "zh": "今天至少复习1小时",
-        "hi": "आज कम से कम 1 घंटे समीक्षा करें",
+        "hi": "आज कम से कम 1 घंटे समीक्षा करें", "pl": "Powtarzaj dziś przez co najmniej 1 godzinę",
     },
     "Review cards from 3 different decks.": {
         "de": "Karten aus 3 Stapeln wiederholen.",
@@ -4329,7 +4333,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Révisez 3 paquets différents.",
         "vi": "Ôn thẻ từ 3 bộ thẻ khác nhau.",
         "zh": "复习来自3个不同牌组的卡片。",
-        "hi": "3 अलग-अलग डेक से कार्ड की समीक्षा करें।",
+        "hi": "3 अलग-अलग डेक से कार्ड की समीक्षा करें।", "pl": "Powtórz karty z 3 różnych talii.",
     },
     "Review 200 cards today": {
         "de": "Heute 200 Karten wiederholen",
@@ -4339,7 +4343,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Révisez 200 cartes aujourd'hui",
         "vi": "Ôn 200 thẻ hôm nay",
         "zh": "今天复习200张卡片",
-        "hi": "आज 200 कार्ड की समीक्षा करें",
+        "hi": "आज 200 कार्ड की समीक्षा करें", "pl": "Powtórz dzisiaj 200 kart",
     },
     "Finish all due reviews before noon.": {
         "de": "Alle fälligen Wiederholungen erledigen.",
@@ -4349,7 +4353,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Terminez toutes les révisions avant midi.",
         "vi": "Hoàn thành tất cả ôn tập trước trưa.",
         "zh": "在中午前完成所有待复习卡片。",
-        "hi": "दोपहर से पहले सभी बकाया समीक्षाएं पूरी करें।",
+        "hi": "दोपहर से पहले सभी बकाया समीक्षाएं पूरी करें।", "pl": "Ukończ wszystkie oczekujące powtórki przed południem.",
     },
     "Review 50 cards.": {
         "de": "50 Karten wiederholen.",
@@ -4359,7 +4363,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Révisez 50 cartes.",
         "vi": "Ôn 50 thẻ.",
         "zh": "复习50张卡片。",
-        "hi": "50 कार्ड की समीक्षा करें।",
+        "hi": "50 कार्ड की समीक्षा करें।", "pl": "Powtórz 50 kart.",
     },
     "Do your reviews with no distractions": {
         "de": "Ohne Ablenkung lernen",
@@ -4369,7 +4373,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Révisez sans distractions",
         "vi": "Ôn tập không bị phân tâm",
         "zh": "专注复习，不受干扰",
-        "hi": "बिना विचलित हुए समीक्षा करें",
+        "hi": "बिना विचलित हुए समीक्षा करें", "pl": "Rób powtórki bez rozpraszania uwagi",
     },
     "Review 150 cards": {
         "de": "150 Karten wiederholen",
@@ -4379,7 +4383,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Révisez 150 cartes",
         "vi": "Ôn 150 thẻ",
         "zh": "复习150张卡片",
-        "hi": "150 कार्ड की समीक्षा करें",
+        "hi": "150 कार्ड की समीक्षा करें", "pl": "Powtórz 150 kart",
     },
     "Do Anki for 30 minutes straight.": {
         "de": "30 Minuten Anki ohne Unterbrechung.",
@@ -4389,7 +4393,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Faites Anki pendant 30 minutes d'affilée.",
         "vi": "Học Anki liên tục 30 phút.",
         "zh": "连续使用Anki学习30分钟。",
-        "hi": "लगातार 30 मिनट Anki करें।",
+        "hi": "लगातार 30 मिनट Anki करें।", "pl": "Ucz się w Anki bez przerwy przez 30 minut.",
     },
     "Add 3 new notes with images.": {
         "de": "3 neue Notizen mit Bildern hinzufügen.",
@@ -4399,7 +4403,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Ajoutez 3 notes avec images.",
         "vi": "Thêm 3 ghi chú mới có hình ảnh.",
         "zh": "添加3条带图片的新笔记。",
-        "hi": "छवियों के साथ 3 नए नोट जोड़ें।",
+        "hi": "छवियों के साथ 3 नए नोट जोड़ें।", "pl": "Dodaj 3 nowe notatki z obrazami.",
     },
     "Review 50 cards": {
         "de": "50 Karten wiederholen",
@@ -4409,7 +4413,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Révisez 50 cartes",
         "vi": "Ôn 50 thẻ",
         "zh": "复习50张卡片",
-        "hi": "50 कार्ड की समीक्षा करें",
+        "hi": "50 कार्ड की समीक्षा करें", "pl": "Powtórz 50 kart",
     },
     "Study one filtered deck completely.": {
         "de": "Einen Stapel durcharbeiten.",
@@ -4419,7 +4423,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Étudiez entièrement un paquet filtré.",
         "vi": "Học hết một bộ thẻ lọc.",
         "zh": "完整学习一个筛选牌组。",
-        "hi": "एक फ़िल्टर्ड डेक पूरी तरह अध्ययन करें।",
+        "hi": "एक फ़िल्टर्ड डेक पूरी तरह अध्ययन करें।", "pl": "Ukończ całkowicie jedną talię filtrowaną.",
     },
     "Review 100 cards total": {
         "de": "Insgesamt 100 Karten wiederholen",
@@ -4429,7 +4433,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Révisez 100 cartes au total",
         "vi": "Ôn tổng cộng 100 thẻ",
         "zh": "总共复习100张卡片",
-        "hi": "कुल 100 कार्ड की समीक्षा करें",
+        "hi": "कुल 100 कार्ड की समीक्षा करें", "pl": "Powtórz łącznie 100 kart",
     },
     "Review 250 Cards.": {
         "de": "250 Karten wiederholen.",
@@ -4439,7 +4443,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Révisez 250 cartes.",
         "vi": "Ôn 250 thẻ.",
         "zh": "复习250张卡片。",
-        "hi": "250 कार्ड की समीक्षा करें।",
+        "hi": "250 कार्ड की समीक्षा करें।", "pl": "Powtórz 250 kart.",
     },
     "Learn 30 new cards": {
         "de": "30 neue Karten lernen",
@@ -4449,7 +4453,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Apprenez 30 nouvelles cartes",
         "vi": "Học 30 thẻ mới",
         "zh": "学习30张新卡片",
-        "hi": "30 नए कार्ड सीखें",
+        "hi": "30 नए कार्ड सीखें", "pl": "Naucz się 30 nowych kart",
     },
     "Review 100 cards.": {
         "de": "100 Karten wiederholen.",
@@ -4459,7 +4463,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Révisez 100 cartes.",
         "vi": "Ôn 100 thẻ.",
         "zh": "复习100张卡片。",
-        "hi": "100 कार्ड की समीक्षा करें।",
+        "hi": "100 कार्ड की समीक्षा करें।", "pl": "Powtórz 100 kart.",
     },
     "Learn 15 new cards.": {
         "de": "15 neue Karten lernen.",
@@ -4469,7 +4473,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Apprenez 15 nouvelles cartes.",
         "vi": "Học 15 thẻ mới.",
         "zh": "学习15张新卡片。",
-        "hi": "15 नए कार्ड सीखें।",
+        "hi": "15 नए कार्ड सीखें।", "pl": "Naucz się 15 nowych kart.",
     },
     "Sync your collection to AnkiWeb.": {
         "de": "Sammlung synchronisieren.",
@@ -4479,7 +4483,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Synchronisez avec AnkiWeb.",
         "vi": "Đồng bộ bộ thẻ với AnkiWeb.",
         "zh": "将收藏同步到AnkiWeb。",
-        "hi": "अपने संग्रह को AnkiWeb से सिंक करें।",
+        "hi": "अपने संग्रह को AnkiWeb से सिंक करें।", "pl": "Synchronizuj kolekcję z AnkiWeb.",
     },
     "Review all due cards for today.": {
         "de": "Heutige fälligen Karten wiederholen.",
@@ -4489,7 +4493,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Révisez toutes les cartes du jour.",
         "vi": "Ôn tất cả thẻ đến hạn hôm nay.",
         "zh": "复习今天所有到期的卡片。",
-        "hi": "आज के सभी देय कार्ड की समीक्षा करें।",
+        "hi": "आज के सभी देय कार्ड की समीक्षा करें।", "pl": "Powtórz wszystkie karty oczekujące na dzisiaj.",
     },
 
     # ================================================================= #
@@ -4503,7 +4507,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Le cerveau consomme ~20 % de l'énergie corporelle, bien qu'il ne représente que ~2 % du poids corporel.",
         "vi": "Não tiêu thụ ~20% năng lượng cơ thể dù chỉ chiếm ~2% trọng lượng cơ thể.",
         "zh": "大脑仅占体重的约2%，却消耗约20%的身体能量。",
-        "hi": "मस्तिष्क शरीर के वजन का केवल ~2% है, लेकिन शरीर की ~20% ऊर्जा उपभोग करता है।",
+        "hi": "मस्तिष्क शरीर के वजन का केवल ~2% है, लेकिन शरीर की ~20% ऊर्जा उपभोग करता है।", "pl": "Czy wiesz, że? Twój mózg zużywa znaczną ilość energii, około 20% całkowitego zapasu organizmu, mimo że stanowi zaledwie około 2% masy twojego ciała.",
     },
     "It's astounding: If you lined up all ~25 trillion erythrocytes (red blood cells) in your body end-to-end, they would form a chain long enough to circle the entire Earth four times at the equator!": {
         "de": "Die ~25 Billionen Erythrozyten deines Körpers würden aneinandergereiht die Erde viermal am Äquator umspannen!",
@@ -4513,7 +4517,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Les ~25 billions d'érythrocytes de votre corps, mis bout à bout, feraient quatre fois le tour de la Terre à l'équateur!",
         "vi": "Khoảng 25 nghìn tỷ hồng cầu trong cơ thể, nếu xếp thẳng hàng, sẽ quấn quanh Trái Đất 4 vòng ở đường xích đạo!",
         "zh": "体内约25万亿个红细胞首尾相连，可绕赤道4圈！",
-        "hi": "शरीर में ~25 ट्रिलियन लाल रक्त कोशिकाओं को एक पंक्ति में रखा जाए तो वे भूमध्य रेखा पर पृथ्वी के 4 चक्कर लगा सकती हैं!",
+        "hi": "शरीर में ~25 ट्रिलियन लाल रक्त कोशिकाओं को एक पंक्ति में रखा जाए तो वे भूमध्य रेखा पर पृथ्वी के 4 चक्कर लगा सकती हैं!", "pl": "To zdumiewające: gdyby ustawić w jednym rzędzie wszystkie ~25 bilionów erytrocytów (krwinek czerwonych) w organizmie, utworzyłyby łańcuch na tyle długi, by okrążyć całą Ziemię wzdłuż równika aż cztery razy!",
     },
     "Technically, you perceive sound with your brain, not directly with your ears. Your ears simply act as sophisticated collectors, converting sound waves into signals the brain interprets.": {
         "de": "Du nimmst Schall mit dem Gehirn wahr, nicht den Ohren. Die Ohren wandeln Schallwellen nur in Signale um.",
@@ -4523,7 +4527,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Vous percevez le son avec le cerveau, pas directement avec les oreilles. Les oreilles convertissent les ondes sonores en signaux.",
         "vi": "Bạn nghe bằng não, không phải bằng tai. Tai chỉ chuyển đổi sóng âm thành tín hiệu cho não.",
         "zh": "您用大脑感知声音，而非直接用耳朵。耳朵只是将声波转换为大脑解读的信号。",
-        "hi": "आप ध्वनि कानों से नहीं, मस्तिष्क से सुनते हैं। कान बस ध्वनि तरंगों को संकेतों में बदलते हैं।",
+        "hi": "आप ध्वनि कानों से नहीं, मस्तिष्क से सुनते हैं। कान बस ध्वनि तरंगों को संकेतों में बदलते हैं।", "pl": "Technicznie rzecz biorąc, dźwięk odbierasz mózgiem, a nie bezpośrednio uszami. Uszy działają jedynie jako wyrafinowane odbiorniki, zamieniające fale dźwiękowe na sygnały interpretowane przez mózg.",
     },
     "Unique within the body, the cornea lacks its own blood supply. Instead, this transparent eye layer gets the oxygen it needs directly from the surrounding air.": {
         "de": "Die Hornhaut hat keine eigenen Blutgefäße und bezieht Sauerstoff direkt aus der Luft.",
@@ -4533,7 +4537,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "La cornée est unique dans le corps: elle n'a pas de vaisseaux sanguins et obtient son oxygène directement de l'air.",
         "vi": "Giác mạc là mô duy nhất trong cơ thể không có mạch máu, lấy oxy trực tiếp từ không khí.",
         "zh": "角膜是体内唯一没有血液供应的组织，直接从空气中获取氧气。",
-        "hi": "कॉर्निया शरीर का एकमात्र ऊतक है जिसमें रक्त आपूर्ति नहीं होती, यह सीधे हवा से ऑक्सीजन लेता है।",
+        "hi": "कॉर्निया शरीर का एकमात्र ऊतक है जिसमें रक्त आपूर्ति नहीं होती, यह सीधे हवा से ऑक्सीजन लेता है।", "pl": "Rogówka jest wyjątkowa w organizmie — nie ma własnego ukrwienia. Ta przezroczysta warstwa oka pobiera potrzebny tlen bezpośrednio z otaczającego powietrza.",
     },
     "Your skeleton isn't static! Bones are constantly undergoing a process of breakdown and rebuilding, leading to a complete skeletal renewal approximately every 10 years.": {
         "de": "Knochen werden ständig ab- und aufgebaut – dein gesamtes Skelett erneuert sich etwa alle 10 Jahre.",
@@ -4543,7 +4547,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Les os se renouvellent constamment; l'intégralité du squelette se régénère environ tous les 10 ans.",
         "vi": "Xương liên tục được phá vỡ và tái tạo, toàn bộ bộ xương được đổi mới khoảng mỗi 10 năm.",
         "zh": "骨骼不是静止的！骨骼持续分解和重建，整个骨架约每10年完全更新一次。",
-        "hi": "हड्डियां लगातार टूटती और बनती रहती हैं – पूरा कंकाल लगभग हर 10 साल में नवीनीकृत होता है।",
+        "hi": "हड्डियां लगातार टूटती और बनती रहती हैं – पूरा कंकाल लगभग हर 10 साल में नवीनीकृत होता है।", "pl": "Twój szkielet nie jest statyczny! Kości nieustannie przechodzą proces rozpadu i odbudowy, co prowadzi do całkowitej odnowy szkieletu mniej więcej co 10 lat.",
     },
     "The power of the mind: The placebo effect can be so potent that treatments sometimes still work even when patients are fully aware they're receiving a placebo.": {
         "de": "Der Placebo-Effekt kann so stark sein, dass Behandlungen wirken, selbst wenn Patienten wissen, dass sie ein Placebo erhalten.",
@@ -4553,7 +4557,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "L'effet placebo peut être si puissant que les traitements fonctionnent parfois même quand les patients savent qu'ils reçoivent un placebo.",
         "vi": "Hiệu ứng giả dược có thể mạnh đến mức điều trị vẫn hiệu quả dù bệnh nhân biết họ đang dùng giả dược.",
         "zh": "安慰剂效应如此强大，即使患者知道自己在接受安慰剂，治疗有时仍然有效。",
-        "hi": "प्लेसबो प्रभाव इतना शक्तिशाली हो सकता है कि मरीज़ को पता होने पर भी उपचार काम करता है।",
+        "hi": "प्लेसबो प्रभाव इतना शक्तिशाली हो सकता है कि मरीज़ को पता होने पर भी उपचार काम करता है।", "pl": "Siła umysłu: efekt placebo bywa tak silny, że leczenie czasem działa nawet wtedy, gdy pacjenci w pełni zdają sobie sprawę, że otrzymują placebo.",
     },
     "Contrary to popular belief, human blood is never actually blue. It only appears bluish through the skin because of how different wavelengths of light penetrate and reflect off tissues.": {
         "de": "Menschliches Blut ist nie blau. Es wirkt durch die Haut bläulich, weil Licht unterschiedlich tief ins Gewebe eindringt.",
@@ -4563,7 +4567,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Contrairement aux idées reçues, le sang humain n'est jamais bleu. Il paraît bleuté à travers la peau en raison de la façon dont la lumière pénètre les tissus.",
         "vi": "Máu người không bao giờ thực sự có màu xanh. Vẻ xanh qua da là do cách các bước sóng ánh sáng khác nhau xuyên qua mô.",
         "zh": "与普遍认知相反，人类血液从不呈蓝色。通过皮肤看起来蓝色是因为不同波长的光穿透组织的方式不同。",
-        "hi": "आम धारणा के विपरीत, मानव रक्त कभी नीला नहीं होता। त्वचा के माध्यम से नीला दिखना प्रकाश की तरंगदैर्ध्य के कारण होता है।",
+        "hi": "आम धारणा के विपरीत, मानव रक्त कभी नीला नहीं होता। त्वचा के माध्यम से नीला दिखना प्रकाश की तरंगदैर्ध्य के कारण होता है।", "pl": "Wbrew powszechnemu przekonaniu ludzka krew nigdy nie jest niebieska. Wydaje się niebieskawa pod skórą ze względu na to, jak różne długości fali światła przenikają i odbijają się od tkanek.",
     },
     "Those wrinkly fingers after a bath aren't just from water absorption! It's an active nervous system response, possibly evolved to improve grip on wet surfaces.": {
         "de": "Schrumpelige Finger im Bad sind keine Wasseraufnahme, sondern eine Nervenreaktion – wohl zur besseren Griffigkeit.",
@@ -4573,7 +4577,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Les doigts ridés après un bain ne sont pas dus à l'absorption d'eau! C'est une réponse active du système nerveux, peut-être évoluée pour améliorer la prise sur les surfaces mouillées.",
         "vi": "Ngón tay nhăn sau khi tắm không chỉ do hút nước! Đó là phản ứng của hệ thần kinh, có thể tiến hóa để cải thiện độ bám trên bề mặt ướt.",
         "zh": "洗澡后手指起皱不只是因为吸水！这是神经系统的主动反应，可能是进化来改善湿滑表面的抓握力。",
-        "hi": "नहाने के बाद झुर्रीदार उंगलियां सिर्फ पानी सोखने से नहीं होतीं! यह तंत्रिका तंत्र की सक्रिय प्रतिक्रिया है।",
+        "hi": "नहाने के बाद झुर्रीदार उंगलियां सिर्फ पानी सोखने से नहीं होतीं! यह तंत्रिका तंत्र की सक्रिय प्रतिक्रिया है।", "pl": "Pomarszczone palce po kąpieli to nie tylko efekt wchłaniania wody! To aktywna reakcja układu nerwowego, która mogła wyewoluować, by poprawić chwyt na mokrych powierzchniach.",
     },
     "Your gut contains its own complex 'brain,' the enteric nervous system. This extensive network boasts over 100 million neurons, managing digestion largely independently.": {
         "de": "Dein Darm besitzt ein eigenes Nervensystem mit über 100 Mio. Neuronen, das die Verdauung weitgehend selbstständig steuert.",
@@ -4583,7 +4587,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "L'intestin possède son propre 'cerveau', le système nerveux entérique, avec plus de 100 millions de neurones.",
         "vi": "Ruột có 'bộ não' riêng là hệ thần kinh ruột, với hơn 100 triệu tế bào thần kinh điều hành tiêu hóa.",
         "zh": "肠道拥有自己的'大脑'——肠神经系统，拥有超过1亿个神经元，基本独立管理消化。",
-        "hi": "आंत में अपना जटिल 'मस्तिष्क' है - आंतरिक तंत्रिका तंत्र, जिसमें 10 करोड़ से अधिक न्यूरॉन्स हैं।",
+        "hi": "आंत में अपना जटिल 'मस्तिष्क' है - आंतरिक तंत्रिका तंत्र, जिसमें 10 करोड़ से अधिक न्यूरॉन्स हैं।", "pl": "Twoje jelita mają własny złożony „mózg” — jelitowy układ nerwowy. Ta rozbudowana sieć liczy ponad 100 milionów neuronów i w dużej mierze samodzielnie zarządza trawieniem.",
     },
     "The sheer complexity of the human brain is staggering: It contains more connections (synapses) between neurons than there are estimated stars in the entire Milky Way galaxy.": {
         "de": "Das menschliche Gehirn hat mehr Synapsen zwischen Neuronen als die Milchstraße Sterne besitzt.",
@@ -4593,7 +4597,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Le cerveau humain contient plus de connexions (synapses) entre neurones qu'il n'y a d'étoiles estimées dans la Voie lactée.",
         "vi": "Não người có nhiều kết nối (synapse) giữa các tế bào thần kinh hơn số sao ước tính trong dải Ngân hà.",
         "zh": "人脑神经元之间的突触数量超过了银河系中估计的星星数量。",
-        "hi": "मानव मस्तिष्क में न्यूरॉन्स के बीच जितने सिनैप्स हैं, उससे अधिक आकाशगंगा में तारे नहीं हैं।",
+        "hi": "मानव मस्तिष्क में न्यूरॉन्स के बीच जितने सिनैप्स हैं, उससे अधिक आकाशगंगा में तारे नहीं हैं।", "pl": "Złożoność ludzkiego mózgu jest oszałamiająca: zawiera więcej połączeń (synaps) między neuronami, niż wynosi szacowana liczba gwiazd w całej Drodze Mlecznej.",
     },
     "During moments of intense fear, your body initiates the 'fight or flight' response, strategically redirecting blood flow away from non-essential areas and towards your major muscles.": {
         "de": "Bei starker Angst leitet der Körper im 'Kampf-oder-Flucht'-Modus Blut von unwichtigen Bereichen zu den Hauptmuskeln um.",
@@ -4603,7 +4607,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "En cas de peur intense, le corps déclenche la réponse 'combat ou fuite', redirigeant le flux sanguin vers les muscles principaux.",
         "vi": "Khi sợ hãi tột độ, cơ thể kích hoạt phản ứng 'chiến đấu hay bỏ chạy', chuyển máu từ các cơ quan không thiết yếu đến cơ bắp chính.",
         "zh": "在极度恐惧时，身体会启动'战斗或逃跑'反应，将血流从非必要区域转向主要肌肉。",
-        "hi": "तीव्र भय के क्षणों में शरीर 'लड़ो या भागो' प्रतिक्रिया शुरू करता है, रक्त प्रवाह मुख्य मांसपेशियों की ओर मोड़ता है।",
+        "hi": "तीव्र भय के क्षणों में शरीर 'लड़ो या भागो' प्रतिक्रिया शुरू करता है, रक्त प्रवाह मुख्य मांसपेशियों की ओर मोड़ता है।", "pl": "W chwilach silnego strachu twój organizm uruchamia reakcję „walcz lub uciekaj”, celowo kierując przepływ krwi z obszarów mniej istotnych do głównych mięśni.",
     },
     "A good laugh is like natural medicine! Laughter can actually increase your pain tolerance by triggering the release of endorphins, the body's natural feel-good chemicals, in the brain.": {
         "de": "Lachen erhöht die Schmerztoleranz, indem es die Ausschüttung von Endorphinen – den körpereigenen Glückshormonen – anregt.",
@@ -4613,7 +4617,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Un bon rire est comme un médicament naturel! Le rire peut augmenter votre tolérance à la douleur en déclenchant la libération d'endorphines.",
         "vi": "Cười là thuốc tự nhiên! Tiếng cười kích thích giải phóng endorphin, giúp tăng khả năng chịu đựng đau.",
         "zh": "大笑如同天然良药！笑声能触发大脑释放内啡肽，提高痛觉耐受力。",
-        "hi": "अच्छी हंसी प्राकृतिक दवा की तरह है! हंसी एंडोर्फिन मुक्त करके दर्द सहनशीलता बढ़ाती है।",
+        "hi": "अच्छी हंसी प्राकृतिक दवा की तरह है! हंसी एंडोर्फिन मुक्त करके दर्द सहनशीलता बढ़ाती है।", "pl": "Dobry śmiech to jak naturalne lekarstwo! Śmiech może zwiększać tolerancję na ból, pobudzając w mózgu wydzielanie endorfin — naturalnych hormonów szczęścia organizmu.",
     },
     "Despite its widespread use in medicine for decades, the precise mechanisms of how general anesthesia works to induce unconsciousness remain surprisingly not fully understood by science.": {
         "de": "Obwohl seit Jahrzehnten eingesetzt, sind die genauen Wirkmechanismen der Vollnarkose wissenschaftlich noch nicht vollständig verstanden.",
@@ -4623,7 +4627,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Malgré des décennies d'utilisation médicale, les mécanismes précis par lesquels l'anesthésie générale induit l'inconscience ne sont toujours pas entièrement compris.",
         "vi": "Dù được dùng trong y học hàng chục năm, cơ chế chính xác của gây mê toàn thân vẫn chưa được khoa học hiểu đầy đủ.",
         "zh": "尽管在医学中使用了数十年，全身麻醉诱导失去意识的确切机制至今仍未完全被科学理解。",
-        "hi": "दशकों से चिकित्सा में उपयोग के बावजूद, सामान्य संज्ञाहरण अचेतनता कैसे उत्पन्न करता है, यह पूरी तरह समझा नहीं गया।",
+        "hi": "दशकों से चिकित्सा में उपयोग के बावजूद, सामान्य संज्ञाहरण अचेतनता कैसे उत्पन्न करता है, यह पूरी तरह समझा नहीं गया।", "pl": "Mimo powszechnego stosowania w medycynie od dziesięcioleci, dokładne mechanizmy działania znieczulenia ogólnego wywołującego utratę przytomności wciąż, zaskakująco, nie są w pełni poznane przez naukę.",
     },
     "Those tiny bumps on your skin? Goosebumps are a fascinating evolutionary leftover, a reflex inherited from our hairier ancestors used to raise fur for insulation or intimidation.": {
         "de": "Gänsehaut ist ein evolutionäres Überbleibsel: Bei behaarten Vorfahren richtete dieser Reflex das Fell zur Isolation oder Einschüchterung auf.",
@@ -4633,7 +4637,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "La chair de poule est un vestige évolutif fascinant, un réflexe hérité de nos ancêtres plus velus pour dresser la fourrure.",
         "vi": "Da gà là di tích tiến hóa thú vị, phản xạ thừa kế từ tổ tiên có nhiều lông để dựng lông giữ ấm hoặc dọa nạt.",
         "zh": "起鸡皮疙瘩是迷人的进化遗留，是从毛发更多的祖先遗传下来的反射，用于竖起毛发保暖或恐吓。",
-        "hi": "रोंगटे खड़े होना एक विकासवादी अवशेष है, जो हमारे बालदार पूर्वजों से विरासत में मिला है।",
+        "hi": "रोंगटे खड़े होना एक विकासवादी अवशेष है, जो हमारे बालदार पूर्वजों से विरासत में मिला है।", "pl": "Te małe wypukłości na skórze? Gęsia skórka to fascynująca pozostałość ewolucyjna — odruch odziedziczony po naszych owłosionych przodkach, który unosił futro w celu izolacji cieplnej lub odstraszania.",
     },
     "You're vastly outnumbered inside! Your gut microbiome hosts more individual bacterial cells than there are human cells comprising your entire body, playing vital roles in overall health.": {
         "de": "Dein Darmmikrobiom enthält mehr Bakterienzellen als der Körper menschliche Zellen hat – und ist entscheidend für die Gesundheit.",
@@ -4643,7 +4647,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Votre microbiome intestinal abrite plus de cellules bactériennes qu'il n'y a de cellules humaines dans votre corps!",
         "vi": "Hệ vi sinh vật ruột của bạn chứa nhiều tế bào vi khuẩn hơn tổng số tế bào người trong toàn cơ thể!",
         "zh": "您的肠道微生物组中的细菌细胞数量超过了整个身体的人类细胞数量！",
-        "hi": "आपके आंत के माइक्रोबायोम में पूरे शरीर की मानव कोशिकाओं से अधिक जीवाणु कोशिकाएं हैं!",
+        "hi": "आपके आंत के माइक्रोबायोम में पूरे शरीर की मानव कोशिकाओं से अधिक जीवाणु कोशिकाएं हैं!", "pl": "Jesteś zdecydowanie w mniejszości we własnym wnętrzu! Twój mikrobiom jelitowy zawiera więcej pojedynczych komórek bakteryjnych niż liczy sobie całe twoje ciało, odgrywając kluczową rolę w ogólnym zdrowiu.",
     },
     "A rare condition known as Superior Canal Dehiscence Syndrome allows some individuals to actually hear internal body sounds, such as their own eyeballs moving within their sockets.": {
         "de": "Das seltene Syndrom der superioren Bogengangsdehiszenz lässt Betroffene innere Körpergeräusche hören – z. B. die eigenen Augäpfel.",
@@ -4653,7 +4657,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Le Syndrome de Déhiscence du Canal Supérieur permet à certaines personnes d'entendre des sons corporels internes, comme leurs yeux bougeant.",
         "vi": "Hội chứng Vỡ Ống Bán khuyên Trên cho phép một số người nghe thấy âm thanh bên trong cơ thể, như tiếng nhãn cầu di chuyển.",
         "zh": "上半规管裂隙综合征这种罕见疾病使一些人能听到内部身体声音，如自己眼球移动的声音。",
-        "hi": "सुपीरियर कैनाल डीहिसेंस सिंड्रोम नामक दुर्लभ स्थिति में लोग अंदरूनी शरीर की आवाजें सुन सकते हैं।",
+        "hi": "सुपीरियर कैनाल डीहिसेंस सिंड्रोम नामक दुर्लभ स्थिति में लोग अंदरूनी शरीर की आवाजें सुन सकते हैं।", "pl": "Rzadkie schorzenie znane jako zespół dehiscencji górnego kanału półkolistego pozwala niektórym osobom słyszeć wewnętrzne dźwięki ciała, na przykład ruch własnych gałek ocznych w oczodołach.",
     },
     "Why do we yawn? One leading theory suggests yawning might function as a natural thermostat, helping to cool down an overheating brain by increasing blood flow and air intake.": {
         "de": "Warum gähnen wir? Eine Theorie besagt, Gähnen kühlt ein überhitztes Gehirn, indem es die Durchblutung und Luftaufnahme steigert.",
@@ -4663,7 +4667,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Pourquoi bâillons-nous? Une théorie principale suggère que le bâillement fonctionne comme un thermostat naturel pour refroidir un cerveau en surchauffe.",
         "vi": "Tại sao chúng ta ngáp? Một lý thuyết cho rằng ngáp hoạt động như bộ điều nhiệt tự nhiên, làm mát não quá nóng.",
         "zh": "为什么我们打哈欠？一种主要理论认为，打哈欠可能充当天然恒温器，通过增加血流和进气量来冷却过热的大脑。",
-        "hi": "हम जम्हाई क्यों लेते हैं? एक प्रमुख सिद्धांत बताता है कि जम्हाई मस्तिष्क को ठंडा करने के लिए प्राकृतिक थर्मोस्टेट है।",
+        "hi": "हम जम्हाई क्यों लेते हैं? एक प्रमुख सिद्धांत बताता है कि जम्हाई मस्तिष्क को ठंडा करने के लिए प्राकृतिक थर्मोस्टेट है।", "pl": "Dlaczego ziewamy? Jedna z wiodących teorii sugeruje, że ziewanie może działać jak naturalny termostat, pomagając schłodzić przegrzewający się mózg poprzez zwiększenie przepływu krwi i poboru powietrza.",
     },
     "There's a physiological basis for connection: Studies show that when people hold hands or gaze into each other's eyes for a period, their heartbeats can actually synchronize.": {
         "de": "Studien zeigen: Wenn Menschen sich in die Augen schauen oder die Hände halten, können sich ihre Herzschläge synchronisieren.",
@@ -4673,7 +4677,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Des études montrent que lorsque les gens se tiennent la main ou se regardent dans les yeux, leurs battements de cœur peuvent se synchroniser.",
         "vi": "Nghiên cứu cho thấy khi người ta nắm tay hoặc nhìn vào mắt nhau, nhịp tim của họ có thể đồng bộ hóa.",
         "zh": "研究表明，当人们牵手或凝视彼此眼睛时，他们的心跳实际上可以同步。",
-        "hi": "अध्ययन दिखाते हैं कि जब लोग हाथ पकड़ते हैं या एक-दूसरे की आंखों में देखते हैं, तो उनकी दिल की धड़कनें समन्वयित हो सकती हैं।",
+        "hi": "अध्ययन दिखाते हैं कि जब लोग हाथ पकड़ते हैं या एक-दूसरे की आंखों में देखते हैं, तो उनकी दिल की धड़कनें समन्वयित हो सकती हैं।", "pl": "Więź międzyludzka ma podłoże fizjologiczne: badania pokazują, że gdy ludzie trzymają się za ręce lub przez pewien czas patrzą sobie w oczy, ich tętno może się zsynchronizować.",
     },
     "Over an average lifetime, you'll shed approximately 40 pounds (around 18kg) of dead skin cells. Much of the common household dust is actually composed of this sloughed-off skin.": {
         "de": "Im Leben verlierst du rund 18 kg abgestorbene Hautzellen. Ein Großteil des Hausstaubs besteht aus dieser abgelösten Haut.",
@@ -4683,7 +4687,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Au cours d'une vie moyenne, vous perdrez environ 18 kg de cellules mortes de peau. Une grande partie de la poussière domestique est composée de cette peau.",
         "vi": "Trong suốt đời người, bạn sẽ bong ~18kg tế bào da chết. Phần lớn bụi nhà thực ra là da bong ra.",
         "zh": "在平均一生中，您将脱落约18公斤的死皮细胞。普通家庭灰尘很大程度上由这些脱落的皮肤组成。",
-        "hi": "जीवनकाल में लगभग 18 किलो मृत त्वचा कोशिकाएं झड़ती हैं। घर की धूल का बड़ा हिस्सा इसी से बना होता है।",
+        "hi": "जीवनकाल में लगभग 18 किलो मृत त्वचा कोशिकाएं झड़ती हैं। घर की धूल का बड़ा हिस्सा इसी से बना होता है।", "pl": "Przez całe życie tracisz około 40 funtów (mniej więcej 18 kg) martwych komórek skóry. Duża część powszechnego kurzu domowego składa się właśnie z tej złuszczonej skóry.",
     },
     "The brain's internal body map is powerful: Phantom limb sensations or even pain can occur in individuals born without that specific limb, demonstrating the map's innate nature.": {
         "de": "Das Gehirn hat eine innere Körperkarte: Phantomschmerzen können sogar bei Menschen auftreten, die ein Glied nie besessen haben.",
@@ -4693,7 +4697,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "La carte corporelle interne du cerveau est puissante: des sensations de membre fantôme peuvent survenir chez des personnes nées sans ce membre.",
         "vi": "Bản đồ cơ thể bên trong não rất mạnh: cảm giác chi ma thậm chí xuất hiện ở người sinh ra đã không có chi đó.",
         "zh": "大脑的内部身体地图非常强大：幻肢感甚至疼痛可能出现在天生缺少该肢体的人身上。",
-        "hi": "मस्तिष्क का आंतरिक शरीर मानचित्र शक्तिशाली है: जन्म से अंग के बिना लोगों को भी फैंटम दर्द हो सकता है।",
+        "hi": "मस्तिष्क का आंतरिक शरीर मानचित्र शक्तिशाली है: जन्म से अंग के बिना लोगों को भी फैंटम दर्द हो सकता है।", "pl": "Wewnętrzna mapa ciała w mózgu jest potężna: odczucia fantomowe, a nawet ból, mogą występować u osób urodzonych bez danej kończyny, co dowodzi wrodzonego charakteru tej mapy.",
     },
     "The liver possesses an incredible regenerative capacity. It's capable of regrowing back to its full, original size even if only 25% of the healthy tissue remains after damage or surgery.": {
         "de": "Die Leber kann sich selbst regenerieren: Sie wächst auf ihre volle Größe zurück, selbst wenn nur 25 % des Gewebes verbleiben.",
@@ -4703,7 +4707,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Le foie possède une incroyable capacité régénératrice. Il est capable de repousser jusqu'à sa taille originale même si seulement 25% du tissu sain reste.",
         "vi": "Gan có khả năng tái tạo đáng kinh ngạc: có thể phục hồi kích thước ban đầu dù chỉ còn 25% mô lành.",
         "zh": "肝脏具有令人难以置信的再生能力：即使只剩下25%的健康组织，也能重新长回原来的完整大小。",
-        "hi": "लिवर में अविश्वसनीय पुनर्जनन क्षमता है: केवल 25% स्वस्थ ऊतक बचे होने पर भी यह पूरे आकार में वापस आ सकता है।",
+        "hi": "लिवर में अविश्वसनीय पुनर्जनन क्षमता है: केवल 25% स्वस्थ ऊतक बचे होने पर भी यह पूरे आकार में वापस आ सकता है।", "pl": "Wątroba posiada niesamowitą zdolność regeneracji. Potrafi odrosnąć do pełnego, pierwotnego rozmiaru, nawet jeśli po uszkodzeniu lub operacji pozostanie tylko 25% zdrowej tkanki.",
     },
     "Believe it or not, humans actually emit a faint glow through natural bioluminescence! However, this light is approximately 1,000 times weaker than what the unaided human eye is capable of detecting.": {
         "de": "Menschen strahlen tatsächlich ein schwaches Biolumineszenzlicht aus – es ist jedoch ~1 000-mal schwächer, als das Auge wahrnehmen kann.",
@@ -4713,7 +4717,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Croyez-le ou non, les humains émettent une faible lueur par bioluminescence naturelle! Cependant, cette lumière est ~1 000 fois plus faible que ce que l'œil peut détecter.",
         "vi": "Tin hay không, con người thực sự phát sáng yếu qua bioluminescence tự nhiên! Tuy nhiên, ánh sáng này yếu hơn ~1.000 lần so với mắt thường có thể nhận ra.",
         "zh": "信不信由你，人类通过天然生物发光实际上会发出微弱的光！但这种光比肉眼能检测到的约弱1,000倍。",
-        "hi": "मानो या न मानो, मनुष्य प्राकृतिक जैव-प्रकाश के माध्यम से वास्तव में एक धीमी चमक उत्सर्जित करते हैं! लेकिन यह आंखों से ~1,000 गुना कमजोर है।",
+        "hi": "मानो या न मानो, मनुष्य प्राकृतिक जैव-प्रकाश के माध्यम से वास्तव में एक धीमी चमक उत्सर्जित करते हैं! लेकिन यह आंखों से ~1,000 गुना कमजोर है।", "pl": "Wierzcie lub nie, ludzie faktycznie emitują słabą poświatę dzięki naturalnej bioluminescencji! To światło jest jednak około 1000 razy słabsze, niż jest w stanie wykryć nieuzbrojone ludzkie oko.",
     },
     "You experience a slight height change daily! You're typically taller just after waking up because the cartilage discs in your spine gradually compress under gravity throughout the day.": {
         "de": "Du bist morgens etwas größer: Tagsüber komprimiert die Schwerkraft die Knorpelscheiben der Wirbelsäule.",
@@ -4723,7 +4727,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Vous subissez un léger changement de taille quotidien! Vous êtes généralement plus grand juste après le réveil car les disques cartilagineux se compriment sous la gravité.",
         "vi": "Bạn thay đổi chiều cao nhỏ mỗi ngày! Bạn cao hơn ngay khi thức dậy vì đĩa sụn cột sống dần bị nén bởi trọng lực.",
         "zh": "您每天都会经历轻微的身高变化！刚起床时通常更高，因为脊柱软骨盘在重力下整天逐渐压缩。",
-        "hi": "आप प्रतिदिन थोड़ी ऊंचाई में बदलाव अनुभव करते हैं! जागने के तुरंत बाद आप लंबे होते हैं क्योंकि कार्टिलेज डिस्क गुरुत्वाकर्षण से दबती हैं।",
+        "hi": "आप प्रतिदिन थोड़ी ऊंचाई में बदलाव अनुभव करते हैं! जागने के तुरंत बाद आप लंबे होते हैं क्योंकि कार्टिलेज डिस्क गुरुत्वाकर्षण से दबती हैं।", "pl": "Twój wzrost zmienia się nieznacznie każdego dnia! Zwykle jesteś wyższy zaraz po przebudzeniu, ponieważ krążki chrzęstne w kręgosłupie stopniowo ulegają kompresji pod wpływem grawitacji w ciągu dnia.",
     },
     "Fibrodysplasia Ossificans Progressiva, sometimes called 'Stone Man Syndrome,' is an extremely rare genetic condition where injured muscle and connective tissue gradually ossify, turning into solid bone over time.": {
         "de": "Die Fibrodysplasia ossificans progressiva («Steinmann-Syndrom») ist eine seltene Krankheit, bei der verletztes Muskel- und Bindegewebe zu Knochen verknöchert.",
@@ -4733,7 +4737,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "La Fibrodysplasie Ossifiante Progressive, parfois appelée 'Syndrome de l'Homme de Pierre', est une condition génétique extrêmement rare où les muscles et tissus conjonctifs s'ossifient progressivement.",
         "vi": "Fibrodysplasia Ossificans Progressiva, đôi khi gọi là 'Hội chứng Người Đá', là bệnh di truyền cực hiếm khiến cơ và mô liên kết bị ossify dần thành xương cứng.",
         "zh": "进行性骨化性纤维发育不全，有时称为'石人综合征'，是一种极为罕见的遗传病，受损的肌肉和结缔组织逐渐骨化。",
-        "hi": "'पत्थर मानव सिंड्रोम' के नाम से जानी जाने वाली फाइब्रोडिसप्लेसिया ओसिफिकेंस प्रोग्रेसिवा एक अत्यंत दुर्लभ आनुवांशिक स्थिति है।",
+        "hi": "'पत्थर मानव सिंड्रोम' के नाम से जानी जाने वाली फाइब्रोडिसप्लेसिया ओसिफिकेंस प्रोग्रेसिवा एक अत्यंत दुर्लभ आनुवांशिक स्थिति है।", "pl": "Fibrodysplasia Ossificans Progressiva, czasami nazywana „zespołem skamieniałego człowieka”, to niezwykle rzadka choroba genetyczna, w której uszkodzone mięśnie i tkanka łączna stopniowo kostnieją, zamieniając się z czasem w litą kość.",
     },
 
     # ================================================================= #
@@ -4747,7 +4751,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Le mot 'lawyer' vient du moyen anglais 'lawe', signifiant 'ce qui est établi', soulignant comment les lois étaient vues comme des fondements fixes de la société.",
         "vi": "Từ 'lawyer' xuất phát từ tiếng Anh Trung cổ 'lawe' nghĩa là 'điều được đặt ra', cho thấy luật pháp từng được xem là nền tảng cố định của xã hội.",
         "zh": "'lawyer'一词来自中古英语'lawe'，意为'被规定之物'，突显了法律被视为社会固定基础的观念。",
-        "hi": "'lawyer' शब्द मध्य अंग्रेजी 'lawe' से आता है, जिसका अर्थ है 'जो निर्धारित किया गया है', यह दर्शाता है कि कानूनों को समाज की स्थिर नींव माना जाता था।",
+        "hi": "'lawyer' शब्द मध्य अंग्रेजी 'lawe' से आता है, जिसका अर्थ है 'जो निर्धारित किया गया है', यह दर्शाता है कि कानूनों को समाज की स्थिर नींव माना जाता था।", "pl": "Słowo „lawyer” pochodzi od średnioangielskiego „lawe”, oznaczającego „to, co zostało ustanowione”, co pokazuje, że prawo postrzegano jako trwały fundament społeczeństwa.",
     },
     "The first-year law curriculum is notoriously intense; it's designed less to teach content and more to train the mind to 'think like a lawyer.'": {
         "de": "Das erste Jurastudiumsjahr ist bekannt intensiv – es soll weniger Inhalte lehren als vielmehr juristisches Denken trainieren.",
@@ -4757,7 +4761,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Le programme de première année de droit est notoirement intense; il est conçu moins pour enseigner du contenu que pour entraîner l'esprit à 'penser comme un avocat'.",
         "vi": "Chương trình năm nhất luật nổi tiếng là khốc liệt; được thiết kế ít để dạy nội dung hơn là rèn luyện tư duy 'suy nghĩ như một luật sư'.",
         "zh": "法律第一年课程以强度著称；它的设计不是为了教授内容，而是为了训练'像律师一样思考'。",
-        "hi": "कानून की पहली साल की पाठ्यक्रम कुख्यात रूप से कठिन है; यह सामग्री सिखाने से कम और 'वकील की तरह सोचना' प्रशिक्षित करने के लिए डिज़ाइन की गई है।",
+        "hi": "कानून की पहली साल की पाठ्यक्रम कुख्यात रूप से कठिन है; यह सामग्री सिखाने से कम और 'वकील की तरह सोचना' प्रशिक्षित करने के लिए डिज़ाइन की गई है।", "pl": "Program pierwszego roku studiów prawniczych jest znany z intensywności; chodzi w nim mniej o nauczenie treści, a bardziej o wytrenowanie umysłu do „myślenia jak prawnik”.",
     },
     "Some students experience 'law school syndrome' — jokingly believing they have every legal condition they study, similar to medical student syndrome.": {
         "de": "Manche Jurastudierenden glauben scherzhaft, jedes Rechtsproblem zu haben, das sie gerade studieren – ähnlich dem Medizinstudentensyndrom.",
@@ -4767,7 +4771,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Certains étudiants vivent le 'syndrome de l'école de droit' — croyant en plaisantant avoir chaque condition légale qu'ils étudient.",
         "vi": "Một số sinh viên gặp 'hội chứng trường luật' — vui đùa tin rằng mình mắc mọi tình trạng pháp lý họ học.",
         "zh": "一些学生经历'法学院综合症'——开玩笑地认为自己遇到了所学的每一种法律情况，类似于医学生综合症。",
-        "hi": "कुछ छात्र 'लॉ स्कूल सिंड्रोम' अनुभव करते हैं — मजाकिया तौर पर यह विश्वास करते हुए कि उनके पास अध्ययन की गई हर कानूनी स्थिति है।",
+        "hi": "कुछ छात्र 'लॉ स्कूल सिंड्रोम' अनुभव करते हैं — मजाकिया तौर पर यह विश्वास करते हुए कि उनके पास अध्ययन की गई हर कानूनी स्थिति है।", "pl": "Niektórzy studenci doświadczają 'syndromu szkoły prawniczej' — żartobliwie wierząc, że mają każdą przypadłość prawną, którą studiują, podobnie do syndromu studenta medycyny.",
     },
     "Legal language, often mocked for being confusing, is intentionally precise, as small word choices can completely change a statute's interpretation.": {
         "de": "Juristischer Sprachgebrauch wirkt verwirrend, ist aber bewusst präzise: Kleine Wortunterschiede können die Auslegung eines Gesetzes komplett verändern.",
@@ -4777,7 +4781,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Le langage juridique, souvent moqué pour sa complexité, est intentionnellement précis, car de petits choix de mots peuvent complètement changer l'interprétation d'une loi.",
         "vi": "Ngôn ngữ pháp lý, thường bị chế giễu vì gây bối rối, thực ra được cố ý chính xác, vì lựa chọn từ nhỏ có thể thay đổi hoàn toàn cách giải thích luật.",
         "zh": "法律语言常因令人困惑而被嘲笑，实际上是刻意精确的，因为小小的措辞选择可以完全改变法律的解释。",
-        "hi": "कानूनी भाषा, अक्सर भ्रामक होने के लिए उपहास की जाती है, जानबूझकर सटीक है क्योंकि छोटे शब्द चुनाव किसी क़ानून की व्याख्या पूरी तरह बदल सकते हैं।",
+        "hi": "कानूनी भाषा, अक्सर भ्रामक होने के लिए उपहास की जाती है, जानबूझकर सटीक है क्योंकि छोटे शब्द चुनाव किसी क़ानून की व्याख्या पूरी तरह बदल सकते हैं।", "pl": "Język prawniczy, często wyśmiewany za swoją zawiłość, jest celowo precyzyjny, ponieważ drobne różnice w doborze słów mogą całkowicie zmienić interpretację ustawy.",
     },
     "The scales of justice, a symbol recognized globally, date back to ancient Egypt, representing the weighing of truth and fairness before the gods.": {
         "de": "Die Waage der Gerechtigkeit stammt aus dem alten Ägypten und symbolisiert das Abwägen von Wahrheit und Fairness vor den Göttern.",
@@ -4787,7 +4791,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Les balances de la justice, symbole reconnu mondialement, remontent à l'Égypte antique, représentant la pesée de la vérité et de l'équité devant les dieux.",
         "vi": "Cán cân công lý, biểu tượng được công nhận toàn cầu, có từ Ai Cập cổ đại, tượng trưng cho việc cân đo sự thật và công bằng trước các vị thần.",
         "zh": "正义的天平，全球公认的象征，可追溯到古埃及，代表在诸神面前权衡真理与公平。",
-        "hi": "न्याय की तराजू, वैश्विक रूप से मान्यता प्राप्त प्रतीक, प्राचीन मिस्र से आती है, देवताओं के समक्ष सत्य और निष्पक्षता को तौलने का प्रतीक।",
+        "hi": "न्याय की तराजू, वैश्विक रूप से मान्यता प्राप्त प्रतीक, प्राचीन मिस्र से आती है, देवताओं के समक्ष सत्य और निष्पक्षता को तौलने का प्रतीक।", "pl": "Waga sprawiedliwości, symbol rozpoznawany na całym świecie, sięga starożytnego Egiptu i przedstawia ważenie prawdy i sprawiedliwości przed obliczem bogów.",
     },
     "The adversarial system, where two sides argue before a neutral judge, is based on the belief that truth emerges from conflict, not harmony.": {
         "de": "Das adversarische System, in dem zwei Seiten vor einem neutralen Richter streiten, beruht auf der Idee, dass Wahrheit aus Konflikt entsteht.",
@@ -4797,7 +4801,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Le système contradictoire, où deux parties argumentent devant un juge neutre, est basé sur la croyance que la vérité émerge du conflit, pas de l'harmonie.",
         "vi": "Hệ thống tranh tụng, nơi hai bên tranh luận trước thẩm phán trung lập, dựa trên niềm tin rằng sự thật xuất hiện từ xung đột, không phải hài hòa.",
         "zh": "对抗制，两方在中立法官前争辩，基于真相从冲突而非和谐中产生的信念。",
-        "hi": "प्रतिकूल प्रणाली, जहां दो पक्ष एक तटस्थ न्यायाधीश के सामने बहस करते हैं, इस विश्वास पर आधारित है कि सत्य संघर्ष से उभरता है।",
+        "hi": "प्रतिकूल प्रणाली, जहां दो पक्ष एक तटस्थ न्यायाधीश के सामने बहस करते हैं, इस विश्वास पर आधारित है कि सत्य संघर्ष से उभरता है।", "pl": "System kontradyktoryjny, w którym dwie strony spierają się przed bezstronnym sędzią, opiera się na przekonaniu, że prawda rodzi się z konfliktu, a nie z harmonii.",
     },
     "In legal philosophy, a core debate exists between natural law (law based on morality) and legal positivism (law based on human-made rules).": {
         "de": "In der Rechtsphilosophie streiten Naturrecht (Recht aus Moral) und Rechtspositivismus (Recht aus menschengesetzten Regeln) miteinander.",
@@ -4807,7 +4811,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "En philosophie juridique, un débat central existe entre le droit naturel (loi basée sur la morale) et le positivisme juridique (loi basée sur des règles humaines).",
         "vi": "Trong triết học pháp lý, tồn tại cuộc tranh luận cốt lõi giữa luật tự nhiên (luật dựa trên đạo đức) và chủ nghĩa thực chứng pháp lý (luật dựa trên quy tắc do con người tạo ra).",
         "zh": "在法律哲学中，自然法（基于道德的法律）和法律实证主义（基于人为规则的法律）之间存在核心争论。",
-        "hi": "कानूनी दर्शन में, प्राकृतिक कानून (नैतिकता पर आधारित) और कानूनी प्रत्यक्षवाद (मानव निर्मित नियमों पर आधारित) के बीच मुख्य बहस है।",
+        "hi": "कानूनी दर्शन में, प्राकृतिक कानून (नैतिकता पर आधारित) और कानूनी प्रत्यक्षवाद (मानव निर्मित नियमों पर आधारित) के बीच मुख्य बहस है।", "pl": "W filozofii prawa toczy się fundamentalny spór między prawem naturalnym (prawem opartym na moralności) a pozytywizmem prawniczym (prawem opartym na regułach stworzonych przez człowieka).",
     },
     "The phrase 'ignorance of the law is no excuse' exists in most legal systems, even though no one can possibly know all the laws that apply to them.": {
         "de": "'Unwissenheit schützt vor Strafe nicht' gilt in den meisten Rechtssystemen, obwohl niemand alle für ihn geltenden Gesetze kennen kann.",
@@ -4817,7 +4821,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "La phrase 'l'ignorance de la loi n'est pas une excuse' existe dans la plupart des systèmes juridiques, même si personne ne peut connaître toutes les lois qui leur sont applicables.",
         "vi": "Câu 'không biết luật không phải lý do chính đáng' tồn tại trong hầu hết hệ thống pháp lý, dù không ai có thể biết tất cả luật áp dụng với họ.",
         "zh": "'不知法不是借口'这一原则存在于大多数法律体系中，尽管没有人能了解适用于自己的所有法律。",
-        "hi": "'कानून से अनजानी कोई बहाना नहीं' का सिद्धांत अधिकांश कानूनी प्रणालियों में मौजूद है, हालांकि कोई भी सभी लागू कानूनों को नहीं जान सकता।",
+        "hi": "'कानून से अनजानी कोई बहाना नहीं' का सिद्धांत अधिकांश कानूनी प्रणालियों में मौजूद है, हालांकि कोई भी सभी लागू कानूनों को नहीं जान सकता।", "pl": "Zasada „nieznajomość prawa nie zwalnia z odpowiedzialności” obowiązuje w większości systemów prawnych, mimo że nikt nie jest w stanie poznać wszystkich przepisów, które go dotyczą.",
     },
     "Many of the world's influential legal systems, from civil law to common law, ultimately trace their roots back to Roman law.": {
         "de": "Viele einflussreiche Rechtssysteme der Welt – vom Civil Law bis zum Common Law – gehen letztlich auf das römische Recht zurück.",
@@ -4827,7 +4831,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Beaucoup des systèmes juridiques influents du monde, du droit civil à la common law, trouvent finalement leurs racines dans le droit romain.",
         "vi": "Nhiều hệ thống pháp lý có ảnh hưởng trên thế giới, từ luật dân sự đến common law, đều có nguồn gốc từ luật La Mã.",
         "zh": "世界上许多有影响力的法律体系，从民法到普通法，最终都可追溯到罗马法。",
-        "hi": "दुनिया की कई प्रभावशाली कानूनी प्रणालियां, सिविल लॉ से कॉमन लॉ तक, अंततः रोमन कानून से उत्पन्न होती हैं।",
+        "hi": "दुनिया की कई प्रभावशाली कानूनी प्रणालियां, सिविल लॉ से कॉमन लॉ तक, अंततः रोमन कानून से उत्पन्न होती हैं।", "pl": "Wiele wpływowych systemów prawnych na świecie, od prawa kontynentalnego po common law, wywodzi się ostatecznie z prawa rzymskiego.",
     },
     "The Latin phrases still used in modern law—like habeas corpus or mens rea—survive from medieval times, when Latin was the universal language of educated discourse.": {
         "de": "Lateinische Begriffe wie 'habeas corpus' oder 'mens rea' stammen aus dem Mittelalter, als Latein die Sprache der Gelehrten war.",
@@ -4837,7 +4841,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Les phrases latines encore utilisées dans le droit moderne — comme habeas corpus ou mens rea — survivent des temps médiévaux, quand le latin était la langue universelle du discours savant.",
         "vi": "Các cụm từ Latin vẫn dùng trong luật hiện đại — như habeas corpus hay mens rea — sống sót từ thời Trung Cổ khi Latin là ngôn ngữ phổ quát của học thuật.",
         "zh": "现代法律中仍使用的拉丁短语——如人身保护令或犯罪意图——从中世纪存活至今，当时拉丁语是受教育话语的通用语言。",
-        "hi": "आधुनिक कानून में अभी भी उपयोग किए जाने वाले लैटिन वाक्यांश — जैसे habeas corpus या mens rea — मध्ययुगीन काल से बचे हैं।",
+        "hi": "आधुनिक कानून में अभी भी उपयोग किए जाने वाले लैटिन वाक्यांश — जैसे habeas corpus या mens rea — मध्ययुगीन काल से बचे हैं।", "pl": "Łacińskie zwroty wciąż używane we współczesnym prawie — takie jak habeas corpus czy mens rea — przetrwały ze średniowiecza, gdy łacina była uniwersalnym językiem ludzi wykształconych.",
     },
     "The first recorded 'law school' dates back to ancient Rome around 450 BCE, when the Twelve Tables were taught as the foundation of Roman law.": {
         "de": "Die erste bekannte 'Rechtsschule' gab es im alten Rom um 450 v. Chr., wo die Zwölf Tafeln als Grundlage des römischen Rechts gelehrt wurden.",
@@ -4847,7 +4851,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "La première 'école de droit' enregistrée remonte à la Rome antique vers 450 avant J.-C., quand les Douze Tables étaient enseignées comme fondement du droit romain.",
         "vi": "Trường luật đầu tiên được ghi lại có từ La Mã cổ đại khoảng năm 450 TCN, khi Mười Hai Bảng được dạy như nền tảng của luật La Mã.",
         "zh": "第一所有记录的'法学院'可追溯到公元前450年的古罗马，当时十二铜表法作为罗马法的基础被教授。",
-        "hi": "पहला दर्ज 'लॉ स्कूल' लगभग 450 ईसा पूर्व प्राचीन रोम में था, जहां बारह तालिकाओं को रोमन कानून की नींव के रूप में पढ़ाया जाता था।",
+        "hi": "पहला दर्ज 'लॉ स्कूल' लगभग 450 ईसा पूर्व प्राचीन रोम में था, जहां बारह तालिकाओं को रोमन कानून की नींव के रूप में पढ़ाया जाता था।", "pl": "Pierwsza odnotowana 'szkoła prawnicza' sięga starożytnego Rzymu, około 450 r. p.n.e., kiedy Prawo XII Tablic nauczano jako podstawę prawa rzymskiego.",
     },
     "Most legal disputes never reach a courtroom; the vast majority are settled privately through negotiation or mediation.": {
         "de": "Die meisten Rechtsstreitigkeiten gelangen nie vor Gericht – die große Mehrheit wird durch Verhandlung oder Mediation privat beigelegt.",
@@ -4857,7 +4861,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "La plupart des litiges juridiques n'arrivent jamais devant un tribunal; la grande majorité est réglée en privé par négociation ou médiation.",
         "vi": "Phần lớn tranh chấp pháp lý không bao giờ đến tòa; đại đa số được giải quyết riêng tư qua thương lượng hoặc hòa giải.",
         "zh": "大多数法律纠纷从不上法庭；绝大多数通过谈判或调解私下解决。",
-        "hi": "अधिकांश कानूनी विवाद अदालत तक नहीं पहुंचते; अधिकांश को बातचीत या मध्यस्थता के माध्यम से निजी तौर पर सुलझाया जाता है।",
+        "hi": "अधिकांश कानूनी विवाद अदालत तक नहीं पहुंचते; अधिकांश को बातचीत या मध्यस्थता के माध्यम से निजी तौर पर सुलझाया जाता है।", "pl": "Większość sporów prawnych nigdy nie trafia na salę sądową; ogromna większość jest rozstrzygana prywatnie w drodze negocjacji lub mediacji.",
     },
     "There's a famous saying in legal circles: 'Hard cases make bad law,' meaning emotionally charged cases often lead to poor general rules.": {
         "de": "In Juristenkreisen gilt: 'Hard cases make bad law' – emotionsgeladene Fälle führen oft zu schlechten allgemeinen Regeln.",
@@ -4867,7 +4871,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Il y a un célèbre dicton dans les milieux juridiques: 'Les cas difficiles font de mauvaises lois', signifiant que les cas émotionnellement chargés mènent souvent à de mauvaises règles générales.",
         "vi": "Có câu nói nổi tiếng trong giới luật: 'Vụ án khó tạo ra luật tệ', nghĩa là các vụ án đầy cảm xúc thường dẫn đến quy tắc chung kém.",
         "zh": "法律界有句名言：'难案产生坏法'，意味着情绪化的案例往往导致糟糕的一般规则。",
-        "hi": "कानूनी क्षेत्र में एक प्रसिद्ध कहावत: 'कठिन मामले बुरे कानून बनाते हैं', अर्थात भावनात्मक रूप से आवेशित मामले अक्सर खराब नियमों की ओर ले जाते हैं।",
+        "hi": "कानूनी क्षेत्र में एक प्रसिद्ध कहावत: 'कठिन मामले बुरे कानून बनाते हैं', अर्थात भावनात्मक रूप से आवेशित मामले अक्सर खराब नियमों की ओर ले जाते हैं।", "pl": "W kręgach prawniczych krąży znane powiedzenie: „Hard cases make bad law” — oznacza to, że sprawy nacechowane emocjonalnie często prowadzą do złych ogólnych reguł.",
     },
     "In France, it is illegal to name a pig 'Napoleon' out of respect for the famous emperor.": {
         "de": "In Frankreich ist es aus Respekt vor dem Kaiser verboten, ein Schwein 'Napoleon' zu nennen.",
@@ -4877,7 +4881,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "En France, il est illégal de nommer un cochon 'Napoléon' par respect pour le célèbre empereur.",
         "vi": "Ở Pháp, việc đặt tên cho lợn là 'Napoleon' là bất hợp pháp vì tôn trọng hoàng đế nổi tiếng.",
         "zh": "在法国，出于对著名皇帝的尊重，将猪命名为'拿破仑'是违法的。",
-        "hi": "फ्रांस में, प्रसिद्ध सम्राट के सम्मान में सुअर का नाम 'नेपोलियन' रखना अवैध है।",
+        "hi": "फ्रांस में, प्रसिद्ध सम्राट के सम्मान में सुअर का नाम 'नेपोलियन' रखना अवैध है।", "pl": "We Francji nielegalne jest nadawanie świni imienia „Napoleon” z szacunku dla słynnego cesarza.",
     },
     "In Samoa, it's illegal to forget your wife's birthday—a law meant to protect marital harmony.": {
         "de": "In Samoa ist es illegal, den Geburtstag seiner Frau zu vergessen – ein Gesetz zum Schutz der ehelichen Harmonie.",
@@ -4887,7 +4891,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "À Samoa, il est illégal d'oublier l'anniversaire de votre femme — une loi destinée à protéger l'harmonie conjugale.",
         "vi": "Ở Samoa, việc quên ngày sinh nhật của vợ là bất hợp pháp — một luật nhằm bảo vệ hòa khí hôn nhân.",
         "zh": "在萨摩亚，忘记妻子生日是违法的——这是一条旨在保护婚姻和谐的法律。",
-        "hi": "समोआ में, पत्नी का जन्मदिन भूलना अवैध है — वैवाहिक सद्भाव की रक्षा के लिए बनाया गया कानून।",
+        "hi": "समोआ में, पत्नी का जन्मदिन भूलना अवैध है — वैवाहिक सद्भाव की रक्षा के लिए बनाया गया कानून।", "pl": "Na Samoa zapominanie o urodzinach żony jest nielegalne—to prawo ma chronić harmonię małżeńską.",
     },
     "The United States has more lawyers than any other country—roughly 1.3 million—which means about one lawyer for every 240 people.": {
         "de": "Die USA haben mehr Anwälte als jedes andere Land – rund 1,3 Millionen, also etwa einen pro 240 Einwohner.",
@@ -4897,7 +4901,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Les États-Unis ont plus d'avocats que tout autre pays — environ 1,3 million — ce qui signifie environ un avocat pour 240 personnes.",
         "vi": "Hoa Kỳ có nhiều luật sư hơn bất kỳ quốc gia nào khác — khoảng 1,3 triệu — tức là khoảng một luật sư cho mỗi 240 người.",
         "zh": "美国拥有比其他任何国家更多的律师——约130万——这意味着大约每240人就有一名律师。",
-        "hi": "संयुक्त राज्य अमेरिका में किसी भी अन्य देश की तुलना में अधिक वकील हैं — लगभग 1.3 मिलियन — यानी प्रत्येक 240 लोगों पर एक वकील।",
+        "hi": "संयुक्त राज्य अमेरिका में किसी भी अन्य देश की तुलना में अधिक वकील हैं — लगभग 1.3 मिलियन — यानी प्रत्येक 240 लोगों पर एक वकील।", "pl": "Stany Zjednoczone mają więcej prawników niż jakikolwiek inny kraj — około 1,3 miliona — co oznacza mniej więcej jednego prawnika na 240 osób.",
     },
     "In ancient Greece, lawyers didn't exist; citizens had to represent themselves in court, though they could hire speechwriters to craft their arguments.": {
         "de": "Im alten Griechenland gab es keine Anwälte – Bürger mussten sich selbst vertreten, konnten aber Redenschreiber engagieren.",
@@ -4907,7 +4911,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Dans la Grèce antique, les avocats n'existaient pas; les citoyens devaient se représenter eux-mêmes au tribunal, bien qu'ils puissent engager des rédacteurs de discours.",
         "vi": "Ở Hy Lạp cổ đại, không có luật sư; công dân phải tự đại diện cho mình tại tòa, dù có thể thuê người viết bài phát biểu.",
         "zh": "在古希腊，律师不存在；公民必须在法庭上为自己辩护，尽管他们可以雇用演讲撰写人。",
-        "hi": "प्राचीन ग्रीस में वकील नहीं थे; नागरिकों को अदालत में स्वयं का प्रतिनिधित्व करना पड़ता था, हालांकि वे भाषण लेखक नियुक्त कर सकते थे।",
+        "hi": "प्राचीन ग्रीस में वकील नहीं थे; नागरिकों को अदालत में स्वयं का प्रतिनिधित्व करना पड़ता था, हालांकि वे भाषण लेखक नियुक्त कर सकते थे।", "pl": "W starożytnej Grecji nie było prawników — obywatele musieli sami reprezentować się przed sądem, choć mogli zatrudnić autorów przemówień do przygotowania swojej argumentacji.",
     },
     "International law technically lacks a global 'police force'; compliance depends largely on mutual agreement and political pressure.": {
         "de": "Das Völkerrecht hat keine globale 'Polizei' – die Einhaltung beruht auf gegenseitigen Vereinbarungen und politischem Druck.",
@@ -4917,7 +4921,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Le droit international manque techniquement d'une 'force de police' mondiale; la conformité dépend largement des accords mutuels et de la pression politique.",
         "vi": "Luật quốc tế về mặt kỹ thuật thiếu 'lực lượng cảnh sát' toàn cầu; việc tuân thủ phụ thuộc phần lớn vào thỏa thuận chung và áp lực chính trị.",
         "zh": "国际法在技术上缺乏全球'警察力量'；合规性主要取决于相互协议和政治压力。",
-        "hi": "अंतरराष्ट्रीय कानून में तकनीकी रूप से वैश्विक 'पुलिस बल' का अभाव है; अनुपालन मुख्यतः आपसी समझौते और राजनीतिक दबाव पर निर्भर है।",
+        "hi": "अंतरराष्ट्रीय कानून में तकनीकी रूप से वैश्विक 'पुलिस बल' का अभाव है; अनुपालन मुख्यतः आपसी समझौते और राजनीतिक दबाव पर निर्भर है।", "pl": "Prawo międzynarodowe formalnie nie dysponuje globalną „policją” – przestrzeganie go zależy głównie od wzajemnych porozumień i nacisków politycznych.",
     },
     "Lawyers are sometimes called 'professional pessimists,' as their job is to imagine every possible way something could go wrong to protect their clients.": {
         "de": "Anwälte gelten als 'professionelle Pessimisten': Ihr Job ist es, jeden möglichen Fehlerfall zu antizipieren, um Mandanten zu schützen.",
@@ -4927,7 +4931,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Les avocats sont parfois appelés 'pessimistes professionnels', car leur travail consiste à imaginer toutes les façons possibles dont quelque chose pourrait mal tourner.",
         "vi": "Luật sư đôi khi được gọi là 'bi quan chuyên nghiệp', vì công việc của họ là tưởng tượng mọi cách có thể xảy ra sai sót để bảo vệ khách hàng.",
         "zh": "律师有时被称为'职业悲观主义者'，因为他们的工作是想象所有可能出错的方式来保护客户。",
-        "hi": "वकीलों को कभी-कभी 'पेशेवर निराशावादी' कहा जाता है, क्योंकि उनका काम है हर संभावित गलती की कल्पना करके अपने मुवक्किलों की रक्षा करना।",
+        "hi": "वकीलों को कभी-कभी 'पेशेवर निराशावादी' कहा जाता है, क्योंकि उनका काम है हर संभावित गलती की कल्पना करके अपने मुवक्किलों की रक्षा करना।", "pl": "Prawników czasem nazywa się „profesjonalnymi pesymistami”, ponieważ ich zadaniem jest wyobrażenie sobie każdego możliwego sposobu, w jaki coś może pójść źle, aby chronić swoich klientów.",
     },
     "The correct answer to almost any complex legal question is: 'It depends.'": {
         "de": "Die richtige Antwort auf fast jede komplexe Rechtsfrage lautet: 'Es kommt darauf an.'",
@@ -4937,7 +4941,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "La bonne réponse à presque toute question juridique complexe est: 'Ça dépend.'",
         "vi": "Câu trả lời đúng cho hầu hết câu hỏi pháp lý phức tạp là: 'Tùy trường hợp.'",
         "zh": "几乎任何复杂法律问题的正确答案是：'视情况而定。'",
-        "hi": "लगभग किसी भी जटिल कानूनी प्रश्न का सही उत्तर है: 'यह निर्भर करता है।'",
+        "hi": "लगभग किसी भी जटिल कानूनी प्रश्न का सही उत्तर है: 'यह निर्भर करता है।'", "pl": "Poprawną odpowiedzią na niemal każde złożone pytanie prawne jest: 'To zależy.'",
     },
     "Many famous revolutions, from the American to the French, began not with weapons but with legal arguments about rights and legitimacy.": {
         "de": "Viele berühmte Revolutionen – von der amerikanischen bis zur französischen – begannen nicht mit Waffen, sondern mit Rechtsargumenten.",
@@ -4947,7 +4951,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Beaucoup de révolutions célèbres, de l'américaine à la française, ont commencé non pas avec des armes mais avec des arguments juridiques sur les droits et la légitimité.",
         "vi": "Nhiều cuộc cách mạng nổi tiếng, từ Mỹ đến Pháp, bắt đầu không phải bằng vũ khí mà bằng các lập luận pháp lý về quyền lợi và tính hợp pháp.",
         "zh": "许多著名的革命，从美国到法国，开始不是用武器，而是用关于权利和合法性的法律论点。",
-        "hi": "कई प्रसिद्ध क्रांतियां, अमेरिकी से फ्रांसीसी तक, हथियारों से नहीं बल्कि अधिकारों और वैधता के बारे में कानूनी तर्कों से शुरू हुईं।",
+        "hi": "कई प्रसिद्ध क्रांतियां, अमेरिकी से फ्रांसीसी तक, हथियारों से नहीं बल्कि अधिकारों और वैधता के बारे में कानूनी तर्कों से शुरू हुईं।", "pl": "Wiele słynnych rewolucji, od amerykańskiej po francuską, zaczynało się nie od broni, lecz od argumentów prawnych dotyczących praw i legitymizacji.",
     },
     "The phrase 'law and order' is misleading—in reality, law often creates conflict before it restores order, since every rule can be challenged or reinterpreted.": {
         "de": "'Recht und Ordnung' ist irreführend: Recht schafft oft Konflikte, bevor es Ordnung herstellt, da jede Regel angefochten werden kann.",
@@ -4957,7 +4961,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "L'expression 'loi et ordre' est trompeuse — en réalité, la loi crée souvent des conflits avant de restaurer l'ordre, car chaque règle peut être contestée ou réinterprétée.",
         "vi": "Cụm từ 'pháp luật và trật tự' gây hiểu nhầm — thực tế, luật pháp thường tạo ra xung đột trước khi khôi phục trật tự vì mọi quy tắc đều có thể bị thách thức.",
         "zh": "'法律与秩序'这个说法具有误导性——实际上，法律往往在恢复秩序之前制造冲突，因为每条规则都可以被质疑或重新解释。",
-        "hi": "'कानून और व्यवस्था' वाक्यांश भ्रामक है — वास्तव में, कानून अक्सर व्यवस्था बहाल करने से पहले संघर्ष पैदा करता है।",
+        "hi": "'कानून और व्यवस्था' वाक्यांश भ्रामक है — वास्तव में, कानून अक्सर व्यवस्था बहाल करने से पहले संघर्ष पैदा करता है।", "pl": "Zwrot „prawo i porządek” jest mylący — w rzeczywistości prawo często najpierw wywołuje konflikt, zanim przywróci porządek, ponieważ każdą zasadę można zakwestionować lub zinterpretować na nowo.",
     },
     "Law students often spend more time reading cases than attending lectures—a single case can run dozens of pages, filled with historical reasoning.": {
         "de": "Jurastudierende verbringen mehr Zeit mit Fallstudien als mit Vorlesungen – ein einziger Fall kann dutzende Seiten umfassen.",
@@ -4967,7 +4971,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Les étudiants en droit passent souvent plus de temps à lire des affaires qu'à suivre des cours — une seule affaire peut s'étendre sur des dizaines de pages, remplie de raisonnements historiques.",
         "vi": "Sinh viên luật thường dành nhiều thời gian đọc án lệ hơn dự giảng — một vụ án có thể dài hàng chục trang đầy lý luận lịch sử.",
         "zh": "法学生通常花更多时间阅读案例而非上课——单个案例可能长达数十页，充满历史推理。",
-        "hi": "कानून के छात्र अक्सर व्याख्यानों में उपस्थित होने की तुलना में मामले पढ़ने में अधिक समय बिताते हैं — एक मामला ऐतिहासिक तर्क से भरे दर्जनों पृष्ठों का हो सकता है।",
+        "hi": "कानून के छात्र अक्सर व्याख्यानों में उपस्थित होने की तुलना में मामले पढ़ने में अधिक समय बिताते हैं — एक मामला ऐतिहासिक तर्क से भरे दर्जनों पृष्ठों का हो सकता है।", "pl": "Studenci prawa często spędzają więcej czasu na czytaniu spraw sądowych niż na wykładach — pojedyncza sprawa może liczyć dziesiątki stron pełnych historycznej argumentacji.",
     },
     "In South Korea, law students may study for up to 20 hours a day before bar exams, preparing for years before even sitting the test.": {
         "de": "In Südkorea lernen Jurastudierende vor dem Staatsexamen bis zu 20 Stunden täglich und bereiten sich jahrelang vor.",
@@ -4977,7 +4981,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "En Corée du Sud, les étudiants en droit peuvent étudier jusqu'à 20 heures par jour avant les examens du barreau, se préparant pendant des années.",
         "vi": "Ở Hàn Quốc, sinh viên luật có thể học tới 20 giờ mỗi ngày trước kỳ thi luật sư, chuẩn bị trong nhiều năm trước khi thi.",
         "zh": "在韩国，法学生在律师考试前可能每天学习多达20小时，在参加考试前准备数年。",
-        "hi": "दक्षिण कोरिया में, कानून के छात्र बार परीक्षाओं से पहले प्रतिदिन 20 घंटे तक पढ़ सकते हैं, परीक्षा देने से पहले वर्षों तक तैयारी करते हुए।",
+        "hi": "दक्षिण कोरिया में, कानून के छात्र बार परीक्षाओं से पहले प्रतिदिन 20 घंटे तक पढ़ सकते हैं, परीक्षा देने से पहले वर्षों तक तैयारी करते हुए।", "pl": "W Korei Południowej studenci prawa mogą uczyć się nawet do 20 godzin dziennie przed egzaminem adwokackim, przygotowując się latami, zanim w ogóle przystąpią do testu.",
     },
     "The shortest U.S. Supreme Court decision ever written contained only one word: 'Affirmed.' It meant the lower court's decision stood.": {
         "de": "Die kürzeste Entscheidung des US-Supreme-Court enthielt nur ein Wort: 'Affirmed' – die Vorinstanz hatte recht.",
@@ -4987,7 +4991,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "La plus courte décision de la Cour suprême des États-Unis jamais écrite ne contenait qu'un seul mot: 'Confirmé.' Cela signifiait que la décision du tribunal inférieur était maintenue.",
         "vi": "Bản án ngắn nhất của Tòa án Tối cao Mỹ chỉ gồm một từ: 'Khẳng định.' Nghĩa là quyết định của tòa cấp dưới được giữ nguyên.",
         "zh": "美国最高法院历史上最短的判决只包含一个词：'确认。' 这意味着下级法院的判决成立。",
-        "hi": "अमेरिकी सर्वोच्च न्यायालय का अब तक का सबसे छोटा निर्णय केवल एक शब्द का था: 'पुष्टि।' इसका अर्थ था कि निचली अदालत का निर्णय बरकरार है।",
+        "hi": "अमेरिकी सर्वोच्च न्यायालय का अब तक का सबसे छोटा निर्णय केवल एक शब्द का था: 'पुष्टि।' इसका अर्थ था कि निचली अदालत का निर्णय बरकरार है।", "pl": "Najkrótsze orzeczenie w historii Sądu Najwyższego USA składało się z jednego słowa: „Affirmed”. Oznaczało to, że wyrok sądu niższej instancji został utrzymany w mocy.",
     },
     "In China, law students must study Marxist legal theory as part of their curriculum, as it is a foundation for the country's legal philosophy.": {
         "de": "In China müssen Jurastudierende marxistische Rechtstheorie studieren, da sie Grundlage der staatlichen Rechtsphilosophie ist.",
@@ -4997,7 +5001,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "En Chine, les étudiants en droit doivent étudier la théorie juridique marxiste dans le cadre de leur programme, car c'est un fondement de la philosophie juridique du pays.",
         "vi": "Ở Trung Quốc, sinh viên luật phải học lý thuyết pháp lý Marxist như một phần của chương trình học, vì đây là nền tảng triết học pháp lý của đất nước.",
         "zh": "在中国，法学生必须将马克思主义法学理论作为课程的一部分来学习，因为它是国家法律哲学的基础。",
-        "hi": "चीन में, कानून के छात्रों को पाठ्यक्रम के हिस्से के रूप में मार्क्सवादी कानूनी सिद्धांत का अध्ययन करना होता है।",
+        "hi": "चीन में, कानून के छात्रों को पाठ्यक्रम के हिस्से के रूप में मार्क्सवादी कानूनी सिद्धांत का अध्ययन करना होता है।", "pl": "W Chinach studenci prawa muszą studiować marksistowską teorię prawa w ramach programu studiów, ponieważ stanowi ona podstawę filozofii prawa tego kraju.",
     },
 
     # ================================================================= #
@@ -5011,7 +5015,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Si vous pouviez supprimer tout l'espace vide à l'intérieur des atomes, toute la race humaine tiendrait dans un cube de sucre.",
         "vi": "Nếu bạn có thể loại bỏ tất cả không gian trống bên trong nguyên tử, toàn bộ nhân loại sẽ vừa vào một viên đường.",
         "zh": "如果你能移除原子内部的所有空间，整个人类将能装进一块方糖。",
-        "hi": "यदि आप परमाणुओं के अंदर की सारी खाली जगह हटा सकें, तो पूरी मानव जाति एक चीनी के क्यूब में समा जाएगी।",
+        "hi": "यदि आप परमाणुओं के अंदर की सारी खाली जगह हटा सकें, तो पूरी मानव जाति एक चीनी के क्यूब में समा जाएगी।", "pl": "Gdyby dało się usunąć całą pustą przestrzeń wewnątrz atomów, cała ludzkość zmieściłaby się w kostce cukru.",
     },
     "Sloths can hold their breath longer than dolphins — up to 40 minutes — by slowing their heart rate.": {
         "de": "Faultiere können länger als Delfine die Luft anhalten – bis zu 40 Minuten – indem sie ihren Herzschlag verlangsamen.",
@@ -5021,7 +5025,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Les paresseux peuvent retenir leur souffle plus longtemps que les dauphins — jusqu'à 40 minutes — en ralentissant leur rythme cardiaque.",
         "vi": "Lười biếng có thể nín thở lâu hơn cá heo — tới 40 phút — bằng cách làm chậm nhịp tim.",
         "zh": "树懒可以比海豚更长时间地憋气——最长40分钟——通过降低心率。",
-        "hi": "आलस अपनी हृदय गति धीमी करके डॉल्फिन से भी लंबे समय तक — 40 मिनट तक — सांस रोक सकते हैं।",
+        "hi": "आलस अपनी हृदय गति धीमी करके डॉल्फिन से भी लंबे समय तक — 40 मिनट तक — सांस रोक सकते हैं।", "pl": "Leniwce potrafią wstrzymywać oddech dłużej niż delfiny — nawet do 40 minut — spowalniając bicie serca.",
     },
     "The average cloud weighs around one million pounds, but floats because the air below it is even heavier.": {
         "de": "Eine durchschnittliche Wolke wiegt rund 500 Tonnen, schwebt aber, weil die Luft darunter noch schwerer ist.",
@@ -5031,7 +5035,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Un nuage moyen pèse environ 500 tonnes, mais flotte parce que l'air en dessous est encore plus lourd.",
         "vi": "Một đám mây trung bình nặng khoảng 500 tấn, nhưng nổi vì không khí bên dưới còn nặng hơn.",
         "zh": "平均云重约500吨，但漂浮是因为其下方的空气更重。",
-        "hi": "औसत बादल का वजन लगभग 500 टन होता है, लेकिन यह तैरता है क्योंकि इसके नीचे की हवा और भी भारी होती है।",
+        "hi": "औसत बादल का वजन लगभग 500 टन होता है, लेकिन यह तैरता है क्योंकि इसके नीचे की हवा और भी भारी होती है।", "pl": "Przeciętna chmura waży około miliona funtów, ale unosi się, ponieważ powietrze pod nią jest jeszcze cięższe.",
     },
     "There are more trees on Earth than stars in the Milky Way — roughly three trillion versus 100–400 billion.": {
         "de": "Auf der Erde gibt es mehr Bäume als Sterne in der Milchstraße – rund 3 Billionen gegenüber 100–400 Milliarden.",
@@ -5041,7 +5045,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Il y a plus d'arbres sur Terre que d'étoiles dans la Voie lactée — environ trois billions contre 100–400 milliards.",
         "vi": "Số cây trên Trái Đất nhiều hơn số sao trong dải Ngân hà — khoảng 3 nghìn tỷ so với 100–400 tỷ.",
         "zh": "地球上的树木数量超过银河系中的星星数量——大约3万亿棵对比1000–4000亿颗。",
-        "hi": "पृथ्वी पर आकाशगंगा के तारों से अधिक पेड़ हैं — लगभग 3 ट्रिलियन बनाम 100–400 बिलियन।",
+        "hi": "पृथ्वी पर आकाशगंगा के तारों से अधिक पेड़ हैं — लगभग 3 ट्रिलियन बनाम 100–400 बिलियन।", "pl": "Na Ziemi jest więcej drzew niż gwiazd w Drodze Mlecznej — około trzech bilionów wobec 100–400 miliardów.",
     },
     "A single strand of spider silk, if scaled up to the thickness of a pencil, could stop a passenger plane in flight.": {
         "de": "Eine einzelne Spinnenseide, auf Bleistiftdicke vergrößert, könnte ein Passagierflugzeug im Flug stoppen.",
@@ -5051,7 +5055,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Un seul brin de soie d'araignée, si agrandi à l'épaisseur d'un crayon, pourrait arrêter un avion de passagers en vol.",
         "vi": "Một sợi tơ nhện, nếu phóng đại đến độ dày của cây bút chì, có thể dừng máy bay chở khách đang bay.",
         "zh": "一根蜘蛛丝，如果放大到铅笔的粗细，可以停止一架飞行中的客机。",
-        "hi": "एक मकड़ी के जाले का एक धागा, यदि पेंसिल की मोटाई तक बड़ा किया जाए, उड़ान में एक यात्री विमान को रोक सकता है।",
+        "hi": "एक मकड़ी के जाले का एक धागा, यदि पेंसिल की मोटाई तक बड़ा किया जाए, उड़ान में एक यात्री विमान को रोक सकता है।", "pl": "Pojedyncza nić pajęczego jedwabiu, powiększona do grubości ołówka, mogłaby zatrzymać samolot pasażerski w locie.",
     },
     "In Antarctica, there's a waterfall that runs red as blood — it's actually caused by oxidized iron in saltwater.": {
         "de": "In der Antarktis gibt es einen blutrot fließenden Wasserfall – verursacht durch oxidiertes Eisen im Salzwasser.",
@@ -5061,7 +5065,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "En Antarctique, il y a une cascade qui coule rouge comme du sang — causée par du fer oxydé dans de l'eau salée.",
         "vi": "Ở Nam Cực, có một thác nước chảy đỏ như máu — thực ra do sắt bị oxy hóa trong nước muối.",
         "zh": "在南极洲，有一个像血一样红色流淌的瀑布——实际上是由盐水中氧化铁造成的。",
-        "hi": "अंटार्कटिका में एक झरना है जो खून की तरह लाल बहता है — यह वास्तव में खारे पानी में ऑक्सीकृत लोहे के कारण होता है।",
+        "hi": "अंटार्कटिका में एक झरना है जो खून की तरह लाल बहता है — यह वास्तव में खारे पानी में ऑक्सीकृत लोहे के कारण होता है।", "pl": "Na Antarktydzie znajduje się wodospad, który wygląda jak krew — jest to spowodowane utlenionym żelazem w słonej wodzie.",
     },
     "Time passes slightly faster at your head than at your feet — thanks to Einstein's theory of relativity and gravity's effect on time.": {
         "de": "An deinem Kopf vergeht die Zeit etwas schneller als an deinen Füßen – Einsteins Relativitätstheorie macht's möglich.",
@@ -5071,7 +5075,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Le temps passe légèrement plus vite à votre tête qu'à vos pieds — grâce à la théorie de la relativité d'Einstein et à l'effet de la gravité sur le temps.",
         "vi": "Thời gian trôi nhanh hơn một chút ở đầu bạn so với ở chân — nhờ thuyết tương đối của Einstein và ảnh hưởng của trọng lực lên thời gian.",
         "zh": "由于爱因斯坦的相对论和重力对时间的影响，您头部的时间流逝比脚部稍快。",
-        "hi": "आइंस्टीन के सापेक्षता सिद्धांत और समय पर गुरुत्वाकर्षण के प्रभाव के कारण आपके सिर पर समय पैरों की तुलना में थोड़ा तेज गुजरता है।",
+        "hi": "आइंस्टीन के सापेक्षता सिद्धांत और समय पर गुरुत्वाकर्षण के प्रभाव के कारण आपके सिर पर समय पैरों की तुलना में थोड़ा तेज गुजरता है।", "pl": "Czas płynie nieco szybciej przy twojej głowie niż przy stopach — to zasługa teorii względności Einsteina i wpływu grawitacji na czas.",
     },
     "Bananas are berries, but strawberries aren't — botanically speaking.": {
         "de": "Botanisch gesehen sind Bananen Beeren, Erdbeeren aber nicht.",
@@ -5081,7 +5085,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Les bananes sont des baies, mais les fraises ne le sont pas — botaniquement parlant.",
         "vi": "Về mặt thực vật học, chuối là quả mọng nhưng dâu tây thì không.",
         "zh": "从植物学角度来看，香蕉是浆果，但草莓不是。",
-        "hi": "वनस्पति विज्ञान की दृष्टि से केले जामुन हैं, लेकिन स्ट्रॉबेरी नहीं हैं।",
+        "hi": "वनस्पति विज्ञान की दृष्टि से केले जामुन हैं, लेकिन स्ट्रॉबेरी नहीं हैं।", "pl": "Banany są jagodami, a truskawki nie — botanicznie rzecz biorąc.",
     },
     "Wombat poop is cube-shaped, so it doesn't roll away and can be used to mark territory.": {
         "de": "Wombat-Kot ist würfelförmig, damit er nicht wegrollt und zur Reviermarkierung genutzt werden kann.",
@@ -5091,7 +5095,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Les crottes de wombat sont en forme de cube, pour qu'elles ne roulent pas et puissent être utilisées pour marquer le territoire.",
         "vi": "Phân wombat có hình khối vuông, để không lăn đi và có thể dùng để đánh dấu lãnh thổ.",
         "zh": "袋熊的粪便呈立方体形状，这样它不会滚走，可以用来标记领地。",
-        "hi": "वोम्बैट का मल घन आकार का होता है, इसलिए यह लुढ़कता नहीं और क्षेत्र चिह्नित करने में उपयोग किया जा सकता है।",
+        "hi": "वोम्बैट का मल घन आकार का होता है, इसलिए यह लुढ़कता नहीं और क्षेत्र चिह्नित करने में उपयोग किया जा सकता है।", "pl": "Kał wombata ma kształt sześcianu, dzięki czemu się nie stacza i może służyć do znaczenia terytorium.",
     },
     "Octopuses have three hearts and blue blood; two hearts pump to the gills, one to the rest of the body.": {
         "de": "Tintenfische haben drei Herzen und blaues Blut: Zwei pumpen zu den Kiemen, eines zum restlichen Körper.",
@@ -5101,7 +5105,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Les pieuvres ont trois cœurs et du sang bleu; deux cœurs pompent vers les branchies, un vers le reste du corps.",
         "vi": "Bạch tuộc có ba tim và máu xanh; hai tim bơm cho mang, một tim bơm cho phần còn lại của cơ thể.",
         "zh": "章鱼有三个心脏和蓝色血液；两个心脏向鳃泵血，一个向身体其余部分泵血。",
-        "hi": "ऑक्टोपस के तीन दिल और नीला खून होता है; दो दिल गलफड़ों को, एक बाकी शरीर को पंप करता है।",
+        "hi": "ऑक्टोपस के तीन दिल और नीला खून होता है; दो दिल गलफड़ों को, एक बाकी शरीर को पंप करता है।", "pl": "Ośmiornice mają trzy serca i niebieską krew; dwa serca pompują krew do skrzeli, a jedno do reszty ciała.",
     },
     "Cleopatra lived closer in time to the invention of the iPhone than to the construction of the Great Pyramid.": {
         "de": "Kleopatra lebte zeitlich näher an der Erfindung des iPhones als an der Erbauung der Großen Pyramide.",
@@ -5111,7 +5115,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Cléopâtre a vécu plus proche dans le temps de l'invention de l'iPhone que de la construction de la Grande Pyramide.",
         "vi": "Nữ hoàng Cleopatra sống gần thời điểm phát minh iPhone hơn là thời điểm xây Đại Kim Tự Tháp.",
         "zh": "克利奥帕特拉在时间上更接近iPhone的发明，而非大金字塔的建造。",
-        "hi": "क्लियोपेट्रा समय की दृष्टि से महान पिरामिड के निर्माण की बजाय iPhone के आविष्कार के करीब जीती थीं।",
+        "hi": "क्लियोपेट्रा समय की दृष्टि से महान पिरामिड के निर्माण की बजाय iPhone के आविष्कार के करीब जीती थीं।", "pl": "Kleopatra żyła bliżej w czasie wynalezienia iPhone'a niż budowy Wielkiej Piramidy.",
     },
     "There are more possible ways to shuffle a deck of cards than there are atoms on Earth.": {
         "de": "Es gibt mehr Möglichkeiten, ein Kartenspiel zu mischen, als Atome auf der Erde existieren.",
@@ -5121,7 +5125,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Il y a plus de façons possibles de mélanger un jeu de cartes qu'il n'y a d'atomes sur Terre.",
         "vi": "Số cách có thể xáo bộ bài nhiều hơn số nguyên tử trên Trái Đất.",
         "zh": "洗牌的可能方式比地球上的原子数量还多。",
-        "hi": "ताश के पत्तों को फेरने के संभावित तरीके पृथ्वी के परमाणुओं से भी अधिक हैं।",
+        "hi": "ताश के पत्तों को फेरने के संभावित तरीके पृथ्वी के परमाणुओं से भी अधिक हैं।", "pl": "Istnieje więcej możliwych sposobów potasowania talii kart niż atomów na Ziemi.",
     },
     "Sharks existed before trees did — by about 50 million years.": {
         "de": "Haie existierten schon vor Bäumen – rund 50 Millionen Jahre früher.",
@@ -5131,7 +5135,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Les requins ont existé avant les arbres — d'environ 50 millions d'années.",
         "vi": "Cá mập tồn tại trước cây cối khoảng 50 triệu năm.",
         "zh": "鲨鱼比树木早出现约5000万年。",
-        "hi": "शार्क पेड़ों से पहले अस्तित्व में थी — लगभग 5 करोड़ साल पहले।",
+        "hi": "शार्क पेड़ों से पहले अस्तित्व में थी — लगभग 5 करोड़ साल पहले।", "pl": "Rekiny istniały na Ziemi wcześniej niż drzewa — o około 50 milionów lat.",
     },
     "In theory, if you could fold a piece of paper 42 times, it would reach the Moon.": {
         "de": "Theoretisch würde ein 42-mal gefaltetes Blatt Papier bis zum Mond reichen.",
@@ -5141,7 +5145,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "En théorie, si vous pouviez plier une feuille de papier 42 fois, elle atteindrait la Lune.",
         "vi": "Về mặt lý thuyết, nếu bạn có thể gấp một tờ giấy 42 lần, nó sẽ chạm tới Mặt Trăng.",
         "zh": "理论上，如果你能将一张纸折叠42次，它将能到达月球。",
-        "hi": "सिद्धांत रूप में, यदि आप एक कागज़ के टुकड़े को 42 बार मोड़ सकें, तो यह चंद्रमा तक पहुंच जाएगा।",
+        "hi": "सिद्धांत रूप में, यदि आप एक कागज़ के टुकड़े को 42 बार मोड़ सकें, तो यह चंद्रमा तक पहुंच जाएगा।", "pl": "Teoretycznie, gdyby dało się złożyć kartkę papieru 42 razy, dotarłaby ona do Księżyca.",
     },
     "The Eiffel Tower grows taller in summer; heat expands the metal by about 15 centimeters.": {
         "de": "Der Eiffelturm wird im Sommer durch Wärmeausdehnung des Metalls um etwa 15 cm größer.",
@@ -5151,7 +5155,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "La Tour Eiffel grandit en été; la chaleur dilate le métal d'environ 15 centimètres.",
         "vi": "Tháp Eiffel cao hơn vào mùa hè; nhiệt làm giãn kim loại khoảng 15 cm.",
         "zh": "埃菲尔铁塔在夏天会变得更高；热量使金属膨胀约15厘米。",
-        "hi": "एफिल टॉवर गर्मियों में लंबा होता है; गर्मी धातु को लगभग 15 सेंटीमीटर तक फैला देती है।",
+        "hi": "एफिल टॉवर गर्मियों में लंबा होता है; गर्मी धातु को लगभग 15 सेंटीमीटर तक फैला देती है।", "pl": "Wieża Eiffla latem rośnie; ciepło rozszerza metal o około 15 centymetrów.",
     },
     "Honey never spoils — archaeologists have found 3,000-year-old honey that's still edible.": {
         "de": "Honig wird nie schlecht – Archäologen fanden 3 000 Jahre alten Honig, der noch essbar war.",
@@ -5161,7 +5165,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Le miel ne se gâte jamais — des archéologues ont trouvé du miel vieux de 3 000 ans encore comestible.",
         "vi": "Mật ong không bao giờ hỏng — các nhà khảo cổ đã tìm thấy mật ong 3.000 năm tuổi vẫn còn ăn được.",
         "zh": "蜂蜜永不变质——考古学家发现了3,000年前仍可食用的蜂蜜。",
-        "hi": "शहद कभी खराब नहीं होता — पुरातत्वविदों ने 3,000 साल पुराना शहद पाया जो अभी भी खाने योग्य था।",
+        "hi": "शहद कभी खराब नहीं होता — पुरातत्वविदों ने 3,000 साल पुराना शहद पाया जो अभी भी खाने योग्य था।", "pl": "Miód nigdy się nie psuje — archeolodzy znaleźli 3000-letni miód, który wciąż nadaje się do jedzenia.",
     },
     "A day on Venus is longer than a year on Venus — it rotates so slowly that it spins once per orbit.": {
         "de": "Ein Tag auf der Venus ist länger als ein Jahr auf der Venus – sie dreht sich so langsam wie eine Umlaufbahn.",
@@ -5171,7 +5175,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Un jour sur Vénus est plus long qu'une année sur Vénus — elle tourne si lentement qu'elle fait une rotation par orbite.",
         "vi": "Một ngày trên Sao Kim dài hơn một năm trên Sao Kim — nó quay quá chậm đến mức quay đúng một vòng mỗi quỹ đạo.",
         "zh": "金星上的一天比金星上的一年还长——它旋转如此缓慢，每绕轨道一圈才自转一次。",
-        "hi": "शुक्र पर एक दिन शुक्र पर एक साल से लंबा है — यह इतनी धीरे घूमता है कि प्रति कक्षा एक बार घूमता है।",
+        "hi": "शुक्र पर एक दिन शुक्र पर एक साल से लंबा है — यह इतनी धीरे घूमता है कि प्रति कक्षा एक बार घूमता है।", "pl": "Dzień na Wenus jest dłuższy niż rok na Wenus — planeta obraca się tak wolno, że wykonuje jeden obrót na jedno okrążenie orbity.",
     },
     "The fingerprints of koalas are so similar to humans' that they've confused crime scene investigators.": {
         "de": "Koala-Fingerabdrücke ähneln menschlichen so sehr, dass sie Kriminaltechniker schon verwirrt haben.",
@@ -5181,7 +5185,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Les empreintes digitales des koalas sont si similaires à celles des humains qu'elles ont confondu des enquêteurs de scènes de crime.",
         "vi": "Dấu vân tay của gấu túi rất giống với con người đến mức đã gây nhầm lẫn cho các điều tra viên hiện trường.",
         "zh": "考拉的指纹与人类的如此相似，以至于曾让犯罪现场调查人员感到困惑。",
-        "hi": "कोआला के उंगलियों के निशान इंसानों के निशानों से इतने मिलते-जुलते हैं कि इन्होंने अपराध स्थल जांचकर्ताओं को भ्रमित कर दिया है।",
+        "hi": "कोआला के उंगलियों के निशान इंसानों के निशानों से इतने मिलते-जुलते हैं कि इन्होंने अपराध स्थल जांचकर्ताओं को भ्रमित कर दिया है।", "pl": "Odciski palców koali są tak podobne do ludzkich, że wprawiały w błąd techników kryminalistycznych.",
     },
     "You can't hum while holding your nose closed — try it, it's impossible.": {
         "de": "Du kannst nicht summen, wenn du dir die Nase zuhältst – probiere es, es ist unmöglich.",
@@ -5191,7 +5195,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Vous ne pouvez pas fredonner en vous tenant le nez fermé — essayez, c'est impossible.",
         "vi": "Bạn không thể ngân nga khi bịt mũi — thử đi, không thể được.",
         "zh": "你无法在捏住鼻子的同时哼歌——试试看，这是不可能的。",
-        "hi": "आप नाक बंद रखते हुए गुनगुना नहीं सकते — कोशिश करें, यह असंभव है।",
+        "hi": "आप नाक बंद रखते हुए गुनगुना नहीं सकते — कोशिश करें, यह असंभव है।", "pl": "Nie można nucić, trzymając zatkany nos — spróbuj, to niemożliwe.",
     },
     "Some turtles can breathe through their rear ends during hibernation — it's called cloacal respiration.": {
         "de": "Manche Schildkröten atmen im Winterschlaf durch ihren Hintern – das nennt sich Kloakalatmung.",
@@ -5201,7 +5205,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Certaines tortues peuvent respirer par leur arrière-train pendant l'hibernation — c'est la respiration cloacale.",
         "vi": "Một số rùa có thể thở qua phần sau trong kỳ ngủ đông — gọi là hô hấp cloacal.",
         "zh": "一些乌龟在冬眠期间可以通过尾部呼吸——这被称为泄殖腔呼吸。",
-        "hi": "कुछ कछुए शीतनिद्रा के दौरान अपने पीछे से सांस ले सकते हैं — इसे क्लोकल श्वसन कहते हैं।",
+        "hi": "कुछ कछुए शीतनिद्रा के दौरान अपने पीछे से सांस ले सकते हैं — इसे क्लोकल श्वसन कहते हैं।", "pl": "Niektóre żółwie potrafią oddychać przez odbyt podczas hibernacji — nazywa się to oddychaniem kloakalnym.",
     },
     "There's enough DNA in your body to stretch from the Sun to Pluto and back — 17 times.": {
         "de": "Die DNA deines Körpers würde von der Sonne bis Pluto und zurück reichen – 17-mal.",
@@ -5211,7 +5215,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Il y a assez d'ADN dans votre corps pour s'étirer du Soleil à Pluton et retour — 17 fois.",
         "vi": "DNA trong cơ thể bạn đủ để trải dài từ Mặt Trời đến Sao Diêm Vương và trở lại — 17 lần.",
         "zh": "您体内的DNA足以从太阳延伸到冥王星再回来——17次。",
-        "hi": "आपके शरीर में पर्याप्त DNA है जो सूर्य से प्लूटो और वापस — 17 बार — तक फैल सके।",
+        "hi": "आपके शरीर में पर्याप्त DNA है जो सूर्य से प्लूटो और वापस — 17 बार — तक फैल सके।", "pl": "DNA w twoim ciele starczyłoby, by rozciągnąć je od Słońca do Plutona i z powrotem — 17 razy.",
     },
     "A teaspoon of neutron star material would weigh about six billion tons.": {
         "de": "Ein Teelöffel Neutronenstermmaterial würde etwa sechs Milliarden Tonnen wiegen.",
@@ -5221,7 +5225,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Une cuillère à café de matière d'étoile à neutrons pèserait environ six milliards de tonnes.",
         "vi": "Một thìa cà phê vật chất sao neutron sẽ nặng khoảng sáu tỷ tấn.",
         "zh": "一茶匙中子星物质的重量约为60亿吨。",
-        "hi": "न्यूट्रॉन तारे की सामग्री का एक चम्मच लगभग 6 अरब टन वजन का होगा।",
+        "hi": "न्यूट्रॉन तारे की सामग्री का एक चम्मच लगभग 6 अरब टन वजन का होगा।", "pl": "Łyżeczka materii gwiazdy neutronowej ważyłaby około sześciu miliardów ton.",
     },
     "The shortest war in history was between Britain and Zanzibar in 1896 — it lasted 38 minutes.": {
         "de": "Der kürzeste Krieg der Geschichte war der zwischen Großbritannien und Sansibar 1896 – er dauerte 38 Minuten.",
@@ -5231,7 +5235,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "La guerre la plus courte de l'histoire était entre la Grande-Bretagne et Zanzibar en 1896 — elle a duré 38 minutes.",
         "vi": "Cuộc chiến ngắn nhất trong lịch sử là giữa Anh và Zanzibar năm 1896 — kéo dài 38 phút.",
         "zh": "历史上最短的战争是1896年英国与桑给巴尔之间的战争——持续了38分钟。",
-        "hi": "इतिहास की सबसे छोटी लड़ाई 1896 में ब्रिटेन और ज़ांज़ीबार के बीच थी — यह 38 मिनट चली।",
+        "hi": "इतिहास की सबसे छोटी लड़ाई 1896 में ब्रिटेन और ज़ांज़ीबार के बीच थी — यह 38 मिनट चली।", "pl": "Najkrótsza wojna w historii toczyła się między Wielką Brytanią a Zanzibarem w 1896 roku — trwała 38 minut.",
     },
     "Cows have best friends and get stressed when they're separated.": {
         "de": "Kühe haben beste Freunde und werden gestresst, wenn sie voneinander getrennt werden.",
@@ -5241,7 +5245,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Les vaches ont des meilleurs amis et sont stressées quand elles sont séparées.",
         "vi": "Bò có bạn thân và bị căng thẳng khi bị tách ra.",
         "zh": "奶牛有最好的朋友，当它们被分开时会感到压力。",
-        "hi": "गायों के प्रिय मित्र होते हैं और जब उन्हें अलग किया जाता है तो वे तनावग्रस्त हो जाती हैं।",
+        "hi": "गायों के प्रिय मित्र होते हैं और जब उन्हें अलग किया जाता है तो वे तनावग्रस्त हो जाती हैं।", "pl": "Krowy mają najlepsze przyjaciółki i stresują się, gdy są od nich rozdzielone.",
     },
     "Space smells like seared steak — astronauts report the odor comes from dying stars and cosmic dust.": {
         "de": "Das Weltall riecht nach angebratenem Steak – laut Astronauten stammt der Geruch von sterbenden Sternen und kosmischem Staub.",
@@ -5251,7 +5255,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "L'espace sent le steak grillé — les astronautes rapportent que l'odeur provient d'étoiles mourantes et de poussière cosmique.",
         "vi": "Không gian có mùi như bít tết nướng — các phi hành gia cho biết mùi đến từ các ngôi sao đang tắt và bụi vũ trụ.",
         "zh": "太空闻起来像烤牛排——宇航员报告说气味来自垂死的星球和宇宙尘埃。",
-        "hi": "अंतरिक्ष में भुने हुए स्टेक की तरह गंध आती है — अंतरिक्ष यात्री रिपोर्ट करते हैं कि गंध मरते हुए तारों और ब्रह्मांडीय धूल से आती है।",
+        "hi": "अंतरिक्ष में भुने हुए स्टेक की तरह गंध आती है — अंतरिक्ष यात्री रिपोर्ट करते हैं कि गंध मरते हुए तारों और ब्रह्मांडीय धूल से आती है।", "pl": "Kosmos pachnie jak przypalony stek — astronauci twierdzą, że zapach pochodzi od umierających gwiazd i pyłu kosmicznego.",
     },
 
     # ================================================================= #
@@ -5265,7 +5269,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "La Papouasie-Nouvelle-Guinée est le pays linguistiquement le plus diversifié au monde. Avec plus de 800 langues indigènes, elle abrite ~12% des langues mondiales malgré sa petite population.",
         "vi": "Papua New Guinea là quốc gia đa dạng ngôn ngữ nhất trên Trái Đất. Với hơn 800 ngôn ngữ bản địa, chiếm ~12% ngôn ngữ thế giới dù dân số ít.",
         "zh": "巴布亚新几内亚是世界上语言最多元化的国家。尽管人口不多，却拥有800多种土著语言，约占世界语言的12%。",
-        "hi": "पापुआ न्यू गिनी पृथ्वी पर भाषाई रूप से सबसे विविध देश है। 800 से अधिक स्वदेशी भाषाओं के साथ, यह छोटी आबादी के बावजूद विश्व की ~12% भाषाएं रखता है।",
+        "hi": "पापुआ न्यू गिनी पृथ्वी पर भाषाई रूप से सबसे विविध देश है। 800 से अधिक स्वदेशी भाषाओं के साथ, यह छोटी आबादी के बावजूद विश्व की ~12% भाषाएं रखता है।", "pl": "Czy wiesz, że? Papua-Nowa Gwinea to najbardziej zróżnicowany językowo kraj na Ziemi. Z ponad 800 rdzennymi językami skupia około 12% wszystkich języków świata, mimo niewielkiej liczby ludności.",
     },
     "A musical masterpiece: South Africa's national anthem is globally unique. Its lyrics seamlessly switch between five of the country's twelve official languages: Xhosa, Zulu, Sesotho, Afrikaans, and English.": {
         "de": "Südafrikas Nationalhymne ist einzigartig: Ihre Texte wechseln nahtlos zwischen fünf der zwölf Amtssprachen – Xhosa, Zulu, Sesotho, Afrikaans und Englisch.",
@@ -5275,7 +5279,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "L'hymne national sud-africain est unique au monde. Ses paroles alternent parfaitement entre cinq des douze langues officielles du pays: Xhosa, Zulu, Sesotho, Afrikaans et Anglais.",
         "vi": "Quốc ca Nam Phi độc nhất trên thế giới. Lời bài hát chuyển đổi liền mạch giữa năm trong số mười hai ngôn ngữ chính thức: Xhosa, Zulu, Sesotho, Afrikaans và Anh.",
         "zh": "南非国歌在全球独一无二。歌词在该国十二种官方语言中的五种之间无缝切换：科萨语、祖鲁语、索托语、南非荷兰语和英语。",
-        "hi": "दक्षिण अफ्रीका का राष्ट्रगान विश्व में अद्वितीय है। इसके बोल देश की बारह आधिकारिक भाषाओं में से पांच के बीच सहजता से बदलते हैं।",
+        "hi": "दक्षिण अफ्रीका का राष्ट्रगान विश्व में अद्वितीय है। इसके बोल देश की बारह आधिकारिक भाषाओं में से पांच के बीच सहजता से बदलते हैं।", "pl": "Muzyczne arcydzieło: Hymn Republiki Południowej Afryki jest wyjątkowy na skalę światową. Jego tekst płynnie przełącza się między pięcioma z dwunastu oficjalnych języków kraju: xhosa, zulu, sesotho, afrikaans i angielski.",
     },
     "A touch of antiquity: Because Latin is the official language of the Catholic Church, Vatican City is the only country in the world offering ATMs with a Latin language interface.": {
         "de": "Da Latein die Amtssprache der Katholischen Kirche ist, ist der Vatikan das einzige Land der Welt mit Geldautomaten auf Lateinisch.",
@@ -5285,7 +5289,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Parce que le latin est la langue officielle de l'Église catholique, la Cité du Vatican est le seul pays au monde à proposer des distributeurs automatiques avec une interface en latin.",
         "vi": "Vì tiếng Latin là ngôn ngữ chính thức của Giáo hội Công giáo, Vatican là quốc gia duy nhất trên thế giới có máy ATM với giao diện tiếng Latin.",
         "zh": "因为拉丁语是天主教的官方语言，梵蒂冈城是世界上唯一提供拉丁语界面ATM的国家。",
-        "hi": "क्योंकि लैटिन कैथोलिक चर्च की आधिकारिक भाषा है, वेटिकन सिटी दुनिया का एकमात्र देश है जो लैटिन भाषा इंटरफ़ेस वाले ATM प्रदान करता है।",
+        "hi": "क्योंकि लैटिन कैथोलिक चर्च की आधिकारिक भाषा है, वेटिकन सिटी दुनिया का एकमात्र देश है जो लैटिन भाषा इंटरफ़ेस वाले ATM प्रदान करता है।", "pl": "Odrobina antyku: Ponieważ łacina jest oficjalnym językiem Kościoła katolickiego, Watykan jest jedynym krajem na świecie oferującym bankomaty z interfejsem w języku łacińskim.",
     },
     "A matter of perception: Historically, Japan used only one word ('ao') for both blue and green. Due to this linguistic quirk, Japanese traffic lights often illuminate in a distinct blue instead of green.": {
         "de": "Japan nutzte historisch nur ein Wort ('ao') für Blau und Grün. Deshalb leuchten japanische Ampeln oft eher blau als grün.",
@@ -5295,7 +5299,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Historiquement, le Japon n'utilisait qu'un seul mot ('ao') pour le bleu et le vert. En raison de cette particularité linguistique, les feux de circulation japonais s'illuminent souvent en bleu.",
         "vi": "Lịch sử, Nhật Bản chỉ dùng một từ ('ao') cho cả màu xanh lam lẫn xanh lá. Do đặc điểm ngôn ngữ này, đèn giao thông Nhật thường sáng màu xanh lam.",
         "zh": "历史上，日本用同一个词('ao')表示蓝色和绿色。由于这种语言特点，日本交通灯经常照亮为蓝色而非绿色。",
-        "hi": "ऐतिहासिक रूप से, जापान में नीले और हरे दोनों के लिए एक ही शब्द ('ao') था। इस भाषाई विशेषता के कारण, जापानी ट्रैफिक लाइटें अक्सर हरे की बजाय नीले रंग में जलती हैं।",
+        "hi": "ऐतिहासिक रूप से, जापान में नीले और हरे दोनों के लिए एक ही शब्द ('ao') था। इस भाषाई विशेषता के कारण, जापानी ट्रैफिक लाइटें अक्सर हरे की बजाय नीले रंग में जलती हैं।", "pl": "Kwestia postrzegania: Historycznie Japonia używała tylko jednego słowa ('ao') zarówno na niebieski, jak i zielony. Z powodu tej osobliwości językowej japońskie sygnalizatory świetlne często świecą wyraźnie na niebiesko zamiast na zielono.",
     },
     "A record holder for inclusion: Bolivia holds the world record for the most official languages. Alongside Spanish, the country's constitution recognizes a staggering 36 indigenous languages as completely equal.": {
         "de": "Bolivien hält den Rekord der meisten Amtssprachen: Neben Spanisch erkennt die Verfassung 36 indigene Sprachen als gleichwertig an.",
@@ -5305,7 +5309,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "La Bolivie détient le record mondial du plus grand nombre de langues officielles. En plus de l'espagnol, la constitution du pays reconnaît 36 langues indigènes comme complètement égales.",
         "vi": "Bolivia giữ kỷ lục thế giới về số ngôn ngữ chính thức nhiều nhất. Ngoài tiếng Tây Ban Nha, hiến pháp công nhận 36 ngôn ngữ bản địa hoàn toàn bình đẳng.",
         "zh": "玻利维亚保持着官方语言最多的世界记录。除西班牙语外，该国宪法承认36种土著语言具有完全平等的地位。",
-        "hi": "बोलीविया के पास सबसे अधिक आधिकारिक भाषाओं का विश्व रिकॉर्ड है। स्पेनिश के साथ, देश का संविधान 36 स्वदेशी भाषाओं को पूरी तरह समान मानता है।",
+        "hi": "बोलीविया के पास सबसे अधिक आधिकारिक भाषाओं का विश्व रिकॉर्ड है। स्पेनिश के साथ, देश का संविधान 36 स्वदेशी भाषाओं को पूरी तरह समान मानता है।", "pl": "Rekordzista pod względem różnorodności: Boliwia ma światowy rekord liczby języków urzędowych. Oprócz hiszpańskiego konstytucja kraju uznaje aż 36 języków rdzennych za całkowicie równorzędne.",
     },
     "A linguistic quirk: The Irish language (Gaeilge) has no direct words for 'yes' or 'no'. Instead, you answer by repeating the question's verb in either a positive or negative form.": {
         "de": "Das Irische (Gaeilge) hat keine direkte Entsprechung für 'Ja' oder 'Nein'. Stattdessen wiederholt man das Verb der Frage in positiver oder negativer Form.",
@@ -5315,7 +5319,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "La langue irlandaise (Gaeilge) n'a pas de mots directs pour 'oui' ou 'non'. Au lieu de cela, vous répondez en répétant le verbe de la question sous forme positive ou négative.",
         "vi": "Tiếng Ireland (Gaeilge) không có từ trực tiếp cho 'có' hoặc 'không'. Thay vào đó, bạn trả lời bằng cách lặp lại động từ của câu hỏi theo dạng khẳng định hoặc phủ định.",
         "zh": "爱尔兰语（盖尔语）没有直接的'是'或'否'词语。相反，你通过以肯定或否定形式重复问题的动词来回答。",
-        "hi": "आयरिश भाषा (गाएलगे) में 'हां' या 'नहीं' के लिए कोई सीधे शब्द नहीं हैं। इसके बजाय, आप प्रश्न के क्रिया को सकारात्मक या नकारात्मक रूप में दोहराकर उत्तर देते हैं।",
+        "hi": "आयरिश भाषा (गाएलगे) में 'हां' या 'नहीं' के लिए कोई सीधे शब्द नहीं हैं। इसके बजाय, आप प्रश्न के क्रिया को सकारात्मक या नकारात्मक रूप में दोहराकर उत्तर देते हैं।", "pl": "Osobliwość językowa: Język irlandzki (Gaeilge) nie ma bezpośrednich słów oznaczających 'tak' lub 'nie'. Zamiast tego odpowiada się, powtarzając czasownik z pytania w formie twierdzącej lub przeczącej.",
     },
     "An artificial alphabet: The Korean script, Hangul, didn't evolve naturally; it was invented in 1443. The letter shapes ingeniously mimic the anatomical positions of your tongue and lips when speaking.": {
         "de": "Das koreanische Alphabet Hangul wurde 1443 erfunden – die Buchstabenformen ahmen die Mund- und Zungenstellungen beim Sprechen nach.",
@@ -5325,7 +5329,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "L'alphabet coréen, le Hangul, n'a pas évolué naturellement; il a été inventé en 1443. Les formes des lettres imitent astucieusement les positions anatomiques de la langue et des lèvres lors de la parole.",
         "vi": "Chữ viết Hàn Quốc, Hangul, không phát triển tự nhiên; nó được phát minh năm 1443. Hình dạng các chữ cái khéo léo bắt chước vị trí giải phẫu của lưỡi và môi khi nói.",
         "zh": "韩文字母表韩文不是自然演化的；它于1443年被发明。字母形状巧妙地模仿了说话时舌头和嘴唇的解剖位置。",
-        "hi": "कोरियाई लिपि, हांगुल, प्राकृतिक रूप से विकसित नहीं हुई; इसे 1443 में आविष्कार किया गया था। अक्षर के आकार बोलते समय जीभ और होठों की शारीरिक स्थितियों की नकल करते हैं।",
+        "hi": "कोरियाई लिपि, हांगुल, प्राकृतिक रूप से विकसित नहीं हुई; इसे 1443 में आविष्कार किया गया था। अक्षर के आकार बोलते समय जीभ और होठों की शारीरिक स्थितियों की नकल करते हैं।", "pl": "Sztuczny alfabet: Koreańskie pismo, hangul, nie powstało w sposób naturalny — zostało wynalezione w 1443 roku. Kształty liter genialnie naśladują anatomiczne pozycje języka i warg podczas mówienia.",
     },
     "Whistling instead of speaking: On the Canary Island of La Gomera, locals communicate across vast valleys using 'Silbo Gomero'—a fully whistled version of Spanish that translates vowels and consonants into tones.": {
         "de": "Auf der Kanareninsel La Gomera kommunizieren Einheimische über weite Täler mit 'Silbo Gomero' – einer vollständig gepfiffenen Version des Spanischen.",
@@ -5335,7 +5339,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Sur l'île canarienne de La Gomera, les habitants communiquent à travers de vastes vallées en utilisant le 'Silbo Gomero' — une version entièrement sifflée de l'espagnol.",
         "vi": "Trên đảo Canary La Gomera, người dân giao tiếp qua các thung lũng rộng lớn bằng 'Silbo Gomero' — phiên bản tiếng Tây Ban Nha hoàn toàn bằng tiếng huýt sáo.",
         "zh": "在加那利岛拉戈梅拉岛，当地人使用'Silbo Gomero'横跨广阔山谷交流——一种完全用口哨发音的西班牙语版本。",
-        "hi": "कैनरी द्वीप ला गोमेरा पर, स्थानीय लोग 'सिल्बो गोमेरो' का उपयोग करके विशाल घाटियों में संवाद करते हैं — स्पेनिश का पूरी तरह से सीटी वाला संस्करण।",
+        "hi": "कैनरी द्वीप ला गोमेरा पर, स्थानीय लोग 'सिल्बो गोमेरो' का उपयोग करके विशाल घाटियों में संवाद करते हैं — स्पेनिश का पूरी तरह से सीटी वाला संस्करण।", "pl": "Gwizdanie zamiast mówienia: na Wyspach Kanaryjskich, na wyspie La Gomera, mieszkańcy porozumiewają się przez rozległe doliny za pomocą „Silbo Gomero” — w pełni gwizdanej wersji hiszpańskiego, w której samogłoski i spółgłoski przekładane są na tony.",
     },
     "Absolute orientation: The Australian Aboriginal language Guugu Yimithirr lacks words for 'left' or 'right'. Speakers use only cardinal directions, giving them an incredibly precise internal compass from birth.": {
         "de": "Die australische Aborigine-Sprache Guugu Yimithirr kennt kein 'links' oder 'rechts' – Sprecher nutzen nur Himmelsrichtungen und besitzen einen präzisen inneren Kompass.",
@@ -5345,7 +5349,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "La langue aborigène australienne Guugu Yimithirr n'a pas de mots pour 'gauche' ou 'droite'. Les locuteurs n'utilisent que les directions cardinales, leur donnant une boussole interne incroyablement précise.",
         "vi": "Ngôn ngữ thổ dân Úc Guugu Yimithirr không có từ cho 'trái' hay 'phải'. Người nói chỉ dùng phương hướng cơ bản, cho họ la bàn nội tâm cực kỳ chính xác từ khi sinh.",
         "zh": "澳大利亚土著语言Guugu Yimithirr缺乏'左'或'右'的词汇。说话者只使用基本方向，使他们从出生起就拥有极其精确的内部罗盘。",
-        "hi": "ऑस्ट्रेलियाई आदिवासी भाषा गुगु यिमिथिर में 'बाएं' या 'दाएं' के लिए शब्द नहीं हैं। वक्ता केवल दिशाओं का उपयोग करते हैं, जिससे उन्हें जन्म से अविश्वसनीय रूप से सटीक आंतरिक कम्पास मिलता है।",
+        "hi": "ऑस्ट्रेलियाई आदिवासी भाषा गुगु यिमिथिर में 'बाएं' या 'दाएं' के लिए शब्द नहीं हैं। वक्ता केवल दिशाओं का उपयोग करते हैं, जिससे उन्हें जन्म से अविश्वसनीय रूप से सटीक आंतरिक कम्पास मिलता है।", "pl": "Absolutna orientacja: Australijski język aborygeński Guugu Yimithirr nie ma słów oznaczających 'lewo' lub 'prawo'. Jego użytkownicy posługują się wyłącznie kierunkami świata, co daje im niezwykle precyzyjny wewnętrzny kompas od urodzenia.",
     },
     "Strict naming rules: In Iceland, you can't just pick any name for a child. A government Naming Committee strictly reviews new names to ensure they follow traditional Icelandic grammatical rules.": {
         "de": "In Island prüft ein staatlicher Namensausschuss jeden Kindesnamen streng darauf, ob er den isländischen Grammatikregeln entspricht.",
@@ -5355,7 +5359,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "En Islande, vous ne pouvez pas simplement choisir n'importe quel nom pour un enfant. Un Comité des Noms gouvernemental examine strictement les nouveaux noms pour s'assurer qu'ils suivent les règles grammaticales islandaises.",
         "vi": "Ở Iceland, bạn không thể tùy ý đặt tên cho trẻ. Một Ủy ban Đặt tên của chính phủ xem xét nghiêm ngặt các tên mới để đảm bảo chúng theo quy tắc ngữ pháp Iceland truyền thống.",
         "zh": "在冰岛，你不能随意给孩子取名。政府命名委员会严格审查新名字，确保它们遵循传统冰岛语语法规则。",
-        "hi": "आइसलैंड में, आप बच्चे के लिए कोई भी नाम नहीं चुन सकते। एक सरकारी नामकरण समिति नए नामों की सख्ती से समीक्षा करती है।",
+        "hi": "आइसलैंड में, आप बच्चे के लिए कोई भी नाम नहीं चुन सकते। एक सरकारी नामकरण समिति नए नामों की सख्ती से समीक्षा करती है।", "pl": "Surowe zasady nadawania imion: Na Islandii nie można po prostu wybrać dowolnego imienia dla dziecka. Rządowy Komitet Nadawania Imion ściśle sprawdza nowe imiona, aby upewnić się, że są zgodne z tradycyjnymi islandzkimi zasadami gramatycznymi.",
     },
     "It's astounding: Mandarin Chinese doesn't use a standard alphabet, but rather thousands of individual characters. To fluently read a daily newspaper, you must memorize approximately 3,000 of these logograms.": {
         "de": "Mandarin verwendet kein Alphabet, sondern tausende Schriftzeichen. Zum flüssigen Zeitunglesen braucht man rund 3 000 davon auswendig.",
@@ -5365,7 +5369,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Le mandarin n'utilise pas un alphabet standard, mais plutôt des milliers de caractères individuels. Pour lire couramment un journal quotidien, vous devez mémoriser environ 3 000 de ces logogrammes.",
         "vi": "Tiếng Quan Thoại không dùng bảng chữ cái chuẩn mà dùng hàng nghìn ký tự riêng lẻ. Để đọc báo hằng ngày thành thạo, bạn phải thuộc ~3.000 chữ tượng hình.",
         "zh": "令人惊叹：普通话不使用标准字母，而是使用数千个个别汉字。要流利地阅读日报，您必须记住大约3,000个这样的象形文字。",
-        "hi": "मंदारिन चीनी मानक वर्णमाला का उपयोग नहीं करती, बल्कि हजारों व्यक्तिगत अक्षरों का। दैनिक समाचार पत्र धाराप्रवाह पढ़ने के लिए आपको लगभग 3,000 लॉगोग्राम याद करने होंगे।",
+        "hi": "मंदारिन चीनी मानक वर्णमाला का उपयोग नहीं करती, बल्कि हजारों व्यक्तिगत अक्षरों का। दैनिक समाचार पत्र धाराप्रवाह पढ़ने के लिए आपको लगभग 3,000 लॉगोग्राम याद करने होंगे।", "pl": "To zdumiewające: język mandaryński nie korzysta ze standardowego alfabetu, lecz z tysięcy pojedynczych znaków. Aby płynnie czytać codzienną gazetę, trzeba zapamiętać około 3000 tych logogramów.",
     },
     "Historical irony: Despite being linguistic rivals today, French was actually the official language of the English royal court and nobility for nearly 300 years following the Norman Conquest in 1066.": {
         "de": "Trotz heutiger sprachlicher Rivalität war Französisch nach der normannischen Eroberung 1066 fast 300 Jahre lang die Sprache des englischen Hofes.",
@@ -5375,7 +5379,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Malgré leur rivalité linguistique actuelle, le français était en fait la langue officielle de la cour royale anglaise et de la noblesse pendant près de 300 ans après la Conquête normande en 1066.",
         "vi": "Dù ngày nay là đối thủ ngôn ngữ, tiếng Pháp thực sự là ngôn ngữ chính thức của triều đình hoàng gia Anh và giới quý tộc gần 300 năm sau Cuộc chinh phục Norman năm 1066.",
         "zh": "尽管今天是语言竞争对手，但在1066年诺曼征服后，法语实际上是英国皇室和贵族的官方语言，长达近300年。",
-        "hi": "आज भाषाई प्रतिद्वंद्वी होने के बावजूद, 1066 में नॉर्मन विजय के बाद लगभग 300 वर्षों तक फ्रेंच वास्तव में अंग्रेजी राजदरबार और कुलीनता की आधिकारिक भाषा थी।",
+        "hi": "आज भाषाई प्रतिद्वंद्वी होने के बावजूद, 1066 में नॉर्मन विजय के बाद लगभग 300 वर्षों तक फ्रेंच वास्तव में अंग्रेजी राजदरबार और कुलीनता की आधिकारिक भाषा थी।", "pl": "Ironia historii: Choć dziś są językowymi rywalami, francuski był oficjalnym językiem angielskiego dworu królewskiego i szlachty przez niemal 300 lat po podboju normańskim w 1066 roku.",
     },
     "Living in the present: The Finnish language completely lacks a grammatical future tense. Finns simply use the present tense for future events, relying entirely on conversational context to establish the timeframe.": {
         "de": "Das Finnische hat keine grammatische Zukunftsform. Finnen verwenden das Präsens für zukünftige Ereignisse und verlassen sich auf den Kontext.",
@@ -5385,7 +5389,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "La langue finnoise n'a pas de temps futur grammatical. Les Finlandais utilisent simplement le temps présent pour les événements futurs, en se fiant entièrement au contexte conversationnel.",
         "vi": "Tiếng Phần Lan hoàn toàn không có thì tương lai ngữ pháp. Người Phần Lan đơn giản dùng thì hiện tại cho sự kiện tương lai, hoàn toàn dựa vào ngữ cảnh hội thoại.",
         "zh": "芬兰语完全缺乏语法上的将来时态。芬兰人简单地用现在时态来表示未来事件，完全依赖对话语境来建立时间框架。",
-        "hi": "फ़िनिश भाषा में व्याकरणिक भविष्य काल पूरी तरह से नहीं है। फ़िन्स भविष्य की घटनाओं के लिए वर्तमान काल का उपयोग करते हैं, समय सीमा के लिए पूरी तरह बातचीत के संदर्भ पर निर्भर होते हैं।",
+        "hi": "फ़िनिश भाषा में व्याकरणिक भविष्य काल पूरी तरह से नहीं है। फ़िन्स भविष्य की घटनाओं के लिए वर्तमान काल का उपयोग करते हैं, समय सीमा के लिए पूरी तरह बातचीत के संदर्भ पर निर्भर होते हैं।", "pl": "Życie chwilą obecną: Język fiński w ogóle nie ma gramatycznego czasu przyszłego. Finowie po prostu używają czasu teraźniejszego w odniesieniu do przyszłych wydarzeń, polegając wyłącznie na kontekście rozmowy, aby określić ramy czasowe.",
     },
     "Mind your punctuation: When writing a question in Greek, don't use a standard question mark. The official Greek question mark actually looks exactly like an English semicolon (;).": {
         "de": "Im Griechischen sieht das Fragezeichen wie ein englisches Semikolon aus (;) – nicht wie das übliche '?'.",
@@ -5395,7 +5399,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Lors de l'écriture d'une question en grec, n'utilisez pas un point d'interrogation standard. Le point d'interrogation grec officiel ressemble exactement à un point-virgule anglais (;).",
         "vi": "Khi viết câu hỏi bằng tiếng Hy Lạp, đừng dùng dấu hỏi thông thường. Dấu hỏi chính thức của tiếng Hy Lạp trông giống hệt dấu chấm phẩy tiếng Anh (;).",
         "zh": "用希腊语写问题时，不要使用标准问号。官方希腊语问号实际上看起来与英语分号(;)完全相同。",
-        "hi": "यूनानी में प्रश्न लिखते समय मानक प्रश्न चिह्न का उपयोग न करें। आधिकारिक यूनानी प्रश्न चिह्न वास्तव में अंग्रेजी अर्धविराम (;) जैसा दिखता है।",
+        "hi": "यूनानी में प्रश्न लिखते समय मानक प्रश्न चिह्न का उपयोग न करें। आधिकारिक यूनानी प्रश्न चिह्न वास्तव में अंग्रेजी अर्धविराम (;) जैसा दिखता है।", "pl": "Uważaj na interpunkcję: pisząc pytanie po grecku, nie używaj standardowego znaku zapytania. Oficjalny grecki znak zapytania wygląda dokładnie tak jak angielski średnik (;).",
     },
     "An absolute mystery: Euskara, spoken by the Basque people in Spain and France, is a language isolate. It has absolutely no known genealogical relationship to any other living language on Earth.": {
         "de": "Euskara (Baskisch) ist ein Sprachenklassat ohne bekannte genealogische Verwandtschaft zu einer anderen lebenden Sprache der Welt.",
@@ -5405,7 +5409,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "L'Euskara, parlé par le peuple basque en Espagne et en France, est un isolat linguistique. Il n'a absolument aucune relation généalogique connue avec aucune autre langue vivante sur Terre.",
         "vi": "Euskara, do người Basque ở Tây Ban Nha và Pháp nói, là một ngôn ngữ bị cô lập. Nó hoàn toàn không có quan hệ phả hệ đã biết với bất kỳ ngôn ngữ sống nào khác trên Trái Đất.",
         "zh": "由西班牙和法国巴斯克人使用的埃斯克语是一种语言孤立语言。它与地球上任何其他活着的语言完全没有已知的谱系关系。",
-        "hi": "स्पेन और फ्रांस के बास्क लोगों द्वारा बोली जाने वाली एउस्कारा एक भाषाई पृथक्करण है। पृथ्वी पर किसी भी अन्य जीवित भाषा के साथ इसका कोई ज्ञात वंशावली संबंध नहीं है।",
+        "hi": "स्पेन और फ्रांस के बास्क लोगों द्वारा बोली जाने वाली एउस्कारा एक भाषाई पृथक्करण है। पृथ्वी पर किसी भी अन्य जीवित भाषा के साथ इसका कोई ज्ञात वंशावली संबंध नहीं है।", "pl": "Absolutna zagadka: Euskara, język Basków w Hiszpanii i Francji, jest językiem izolowanym. Nie ma absolutnie żadnego znanego pokrewieństwa genealogicznego z żadnym innym żywym językiem na Ziemi.",
     },
     "A singing culture: In the Indian village of Kongthong, residents don't use regular names. Instead, every person is assigned a unique melody composed by their mother, which is whistled to call them.": {
         "de": "Im indischen Dorf Kongthong haben Menschen keine Namen, sondern einzigartige Melodien, die ihre Mutter komponiert und zum Rufen gepfiffen wird.",
@@ -5415,7 +5419,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Dans le village indien de Kongthong, les résidents n'utilisent pas de noms ordinaires. Au lieu de cela, chaque personne se voit attribuer une mélodie unique composée par sa mère, sifflée pour les appeler.",
         "vi": "Ở làng Kongthong của Ấn Độ, cư dân không dùng tên thông thường. Thay vào đó, mỗi người được giao một giai điệu độc đáo do mẹ sáng tác, được huýt sáo để gọi họ.",
         "zh": "在印度村庄孔通，居民不使用普通名字。相反，每个人都被赋予一段由母亲创作的独特旋律，通过口哨声来呼唤他们。",
-        "hi": "भारतीय गांव कोंगथोंग में, निवासी सामान्य नामों का उपयोग नहीं करते। इसके बजाय, हर व्यक्ति को उनकी माँ द्वारा रचित एक अनूठी धुन दी जाती है, जिसे सीटी बजाकर बुलाते हैं।",
+        "hi": "भारतीय गांव कोंगथोंग में, निवासी सामान्य नामों का उपयोग नहीं करते। इसके बजाय, हर व्यक्ति को उनकी माँ द्वारा रचित एक अनूठी धुन दी जाती है, जिसे सीटी बजाकर बुलाते हैं।", "pl": "Śpiewająca kultura: W indyjskiej wsi Kongthong mieszkańcy nie używają zwykłych imion. Zamiast tego każdej osobie przypisywana jest unikalna melodia skomponowana przez matkę, którą gwiżdże się, aby ją przywołać.",
     },
     "A completely different worldview: The Pirahã people of the Brazilian Amazon speak a language entirely lacking words for exact numbers or specific colors, relying only on concepts like 'few' or 'many'.": {
         "de": "Die Pirahã im brasilianischen Amazonas sprechen eine Sprache ohne exakte Zahlen oder Farbwörter – nur Konzepte wie 'wenige' oder 'viele'.",
@@ -5425,7 +5429,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Le peuple Pirahã de l'Amazonie brésilienne parle une langue totalement dépourvue de mots pour les nombres exacts ou les couleurs spécifiques, se fiant uniquement à des concepts comme 'peu' ou 'beaucoup'.",
         "vi": "Người Pirahã ở Amazon Brazil nói một ngôn ngữ hoàn toàn thiếu từ cho số chính xác hay màu cụ thể, chỉ dựa vào các khái niệm như 'ít' hoặc 'nhiều'.",
         "zh": "巴西亚马逊的皮拉罕人说一种完全没有精确数字或特定颜色词汇的语言，只依赖'少'或'多'等概念。",
-        "hi": "ब्राजील के अमेज़ॅन के पिराहा लोग एक ऐसी भाषा बोलते हैं जिसमें सटीक संख्याओं या विशिष्ट रंगों के लिए बिल्कुल कोई शब्द नहीं हैं।",
+        "hi": "ब्राजील के अमेज़ॅन के पिराहा लोग एक ऐसी भाषा बोलते हैं जिसमें सटीक संख्याओं या विशिष्ट रंगों के लिए बिल्कुल कोई शब्द नहीं हैं।", "pl": "Zupełnie inny sposób postrzegania świata: Lud Pirahã z brazylijskiej Amazonii posługuje się językiem całkowicie pozbawionym słów oznaczających dokładne liczby lub konkretne kolory, opierając się jedynie na pojęciach takich jak 'kilka' lub 'wiele'.",
     },
     "A historical misunderstanding: The name 'Canada' stems from an explorer's mistake. He wrongly believed the Iroquoian word 'kanata'—which simply means 'village' or 'settlement'—was the specific name for the entire country.": {
         "de": "Der Name 'Kanada' geht auf einen Irrtum zurück: Ein Entdecker glaubte, das irokesische Wort 'kanata' (= Dorf) sei der Name des gesamten Landes.",
@@ -5435,7 +5439,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Le nom 'Canada' découle de l'erreur d'un explorateur. Il croyait à tort que le mot iroquois 'kanata'—qui signifie simplement 'village'—était le nom spécifique du pays entier.",
         "vi": "Tên 'Canada' xuất phát từ sai lầm của một nhà thám hiểm. Ông nhầm tưởng từ Iroquois 'kanata' — đơn giản có nghĩa là 'làng' — là tên riêng của cả quốc gia.",
         "zh": "'加拿大'这个名字来源于探险家的错误。他错误地认为易洛魁语词'kanata'——仅仅意为'村庄'——是整个国家的特定名称。",
-        "hi": "'कनाडा' नाम एक खोजकर्ता की गलती से आया है। उसने गलत तरीके से सोचा कि इरोक्वोई शब्द 'कनाटा' — जिसका सीधा अर्थ है 'गांव' — पूरे देश का विशिष्ट नाम है।",
+        "hi": "'कनाडा' नाम एक खोजकर्ता की गलती से आया है। उसने गलत तरीके से सोचा कि इरोक्वोई शब्द 'कनाटा' — जिसका सीधा अर्थ है 'गांव' — पूरे देश का विशिष्ट नाम है।", "pl": "Historyczne nieporozumienie: Nazwa 'Kanada' wzięła się z pomyłki odkrywcy. Błędnie sądził, że irokeskie słowo 'kanata' — które oznacza po prostu 'wieś' lub 'osadę' — było konkretną nazwą całego kraju.",
     },
     "A surprising greeting: The famous word 'Ciao', used today in Italian for both 'hello' and 'goodbye', originated in the Venetian dialect where it literally translated to 'I am your slave'.": {
         "de": "'Ciao' stammt aus dem venezianischen Dialekt und bedeutete ursprünglich 'Ich bin dein Sklave' – heute nutzt man es für Hallo und Tschüss.",
@@ -5445,7 +5449,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Le fameux mot 'Ciao', utilisé aujourd'hui en italien pour 'bonjour' et 'au revoir', est originaire du dialecte vénitien où il se traduisait littéralement par 'Je suis votre esclave'.",
         "vi": "Từ nổi tiếng 'Ciao', ngày nay dùng trong tiếng Ý cho cả 'xin chào' và 'tạm biệt', bắt nguồn từ phương ngữ Venice nơi nó nghĩa đen là 'Tôi là nô lệ của bạn'.",
         "zh": "著名的词'Ciao'，今天在意大利语中用作'你好'和'再见'，起源于威尼斯方言，字面意思是'我是你的奴隶'。",
-        "hi": "प्रसिद्ध शब्द 'Ciao', आज इटालियन में 'हैलो' और 'अलविदा' दोनों के लिए उपयोग किया जाता है, वेनिशियन बोली में उत्पन्न हुआ जहाँ इसका शाब्दिक अर्थ था 'मैं आपका दास हूं'।",
+        "hi": "प्रसिद्ध शब्द 'Ciao', आज इटालियन में 'हैलो' और 'अलविदा' दोनों के लिए उपयोग किया जाता है, वेनिशियन बोली में उत्पन्न हुआ जहाँ इसका शाब्दिक अर्थ था 'मैं आपका दास हूं'।", "pl": "Zaskakujące powitanie: Słynne słowo 'Ciao', używane dziś we włoskim zarówno na powitanie, jak i pożegnanie, pochodzi z dialektu weneckiego, gdzie dosłownie oznaczało 'jestem twoim niewolnikiem'.",
     },
     "Culture encoded in law: The Kingdom of Bhutan measures national success by 'Gross National Happiness' rather than GDP. This Buddhist-inspired concept is officially enshrined directly in the country's constitution.": {
         "de": "Bhutan misst nationalen Erfolg am 'Bruttoinlandsglück' statt am BIP – ein buddhistisch inspiriertes Konzept, das direkt in der Verfassung verankert ist.",
@@ -5455,7 +5459,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Le Royaume du Bhoutan mesure le succès national par le 'Bonheur National Brut' plutôt que par le PIB. Ce concept d'inspiration bouddhiste est officiellement inscrit dans la constitution du pays.",
         "vi": "Vương quốc Bhutan đo thành công quốc gia bằng 'Tổng Hạnh phúc Quốc gia' thay vì GDP. Khái niệm lấy cảm hứng từ Phật giáo này được chính thức ghi vào hiến pháp đất nước.",
         "zh": "不丹王国用'国民幸福总值'而非GDP来衡量国家成功。这个受佛教启发的概念被正式载入国家宪法。",
-        "hi": "भूटान साम्राज्य GDP के बजाय 'सकल राष्ट्रीय खुशी' से राष्ट्रीय सफलता मापता है। यह बौद्ध-प्रेरित अवधारणा आधिकारिक रूप से देश के संविधान में निहित है।",
+        "hi": "भूटान साम्राज्य GDP के बजाय 'सकल राष्ट्रीय खुशी' से राष्ट्रीय सफलता मापता है। यह बौद्ध-प्रेरित अवधारणा आधिकारिक रूप से देश के संविधान में निहित है।", "pl": "Kultura zakodowana w prawie: Królestwo Bhutanu mierzy sukces narodowy za pomocą „Szczęścia Narodowego Brutto”, a nie PKB. Ta inspirowana buddyzmem koncepcja jest oficjalnie zapisana wprost w konstytucji kraju.",
     },
     "A cartographical tongue-twister: The Welsh village of 'Llanfairpwllgwyngyllgogerychwyrndrobwllllantysiliogogogoch' holds the record for Europe's longest place name. It meticulously describes the precise geographic location of the local parish church.": {
         "de": "Das walisische Dorf 'Llanfairpwllgwyngyllgogerychwyrndrobwllllantysiliogogogoch' hält den Rekord für Europas längsten Ortsnamen und beschreibt die Lage der Pfarrkirche.",
@@ -5465,7 +5469,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Le village gallois 'Llanfairpwllgwyngyllgogerychwyrndrobwllllantysiliogogogoch' détient le record du plus long nom de lieu en Europe. Il décrit méticuleusement l'emplacement géographique précis de l'église paroissiale locale.",
         "vi": "Làng xứ Wales 'Llanfairpwllgwyngyllgogerychwyrndrobwllllantysiliogogogoch' giữ kỷ lục tên địa danh dài nhất châu Âu. Nó mô tả tỉ mỉ vị trí địa lý chính xác của nhà thờ giáo xứ địa phương.",
         "zh": "威尔士村庄'Llanfairpwllgwyngyllgogerychwyrndrobwllllantysiliogogogoch'保持着欧洲最长地名的记录。它详细描述了当地教区教堂的确切地理位置。",
-        "hi": "वेल्श गांव 'Llanfairpwllgwyngyllgogerychwyrndrobwllllantysiliogogogoch' यूरोप के सबसे लंबे स्थान नाम का रिकॉर्ड रखता है। यह स्थानीय पैरिश चर्च के सटीक भौगोलिक स्थान का सूक्ष्म वर्णन करता है।",
+        "hi": "वेल्श गांव 'Llanfairpwllgwyngyllgogerychwyrndrobwllllantysiliogogogoch' यूरोप के सबसे लंबे स्थान नाम का रिकॉर्ड रखता है। यह स्थानीय पैरिश चर्च के सटीक भौगोलिक स्थान का सूक्ष्म वर्णन करता है।", "pl": "Łamacz języka z geografii: Walijska wieś 'Llanfairpwllgwyngyllgogerychwyrndrobwllllantysiliogogogoch' ma rekord na najdłuższą nazwę miejscowości w Europie. Skrupulatnie opisuje dokładne położenie geograficzne miejscowego kościoła parafialnego.",
     },
     "A mark of inclusion: In 2006, New Zealand became the very first country in the world to make its national sign language (NZSL) an official state language, alongside English and Māori.": {
         "de": "Neuseeland wurde 2006 als erstes Land weltweit, das seine nationale Gebärdensprache (NZSL) neben Englisch und Māori zur Amtssprache erklärte.",
@@ -5475,7 +5479,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "En 2006, la Nouvelle-Zélande est devenue le tout premier pays au monde à faire de sa langue des signes nationale (NZSL) une langue d'état officielle, aux côtés de l'anglais et du māori.",
         "vi": "Năm 2006, New Zealand trở thành quốc gia đầu tiên trên thế giới biến ngôn ngữ ký hiệu quốc gia (NZSL) thành ngôn ngữ chính thức, bên cạnh tiếng Anh và tiếng Māori.",
         "zh": "2006年，新西兰成为世界上第一个将国家手语(NZSL)与英语和毛利语并列为官方国家语言的国家。",
-        "hi": "2006 में, न्यूजीलैंड दुनिया का पहला देश बना जिसने अपनी राष्ट्रीय सांकेतिक भाषा (NZSL) को अंग्रेजी और माओरी के साथ आधिकारिक राज्य भाषा बनाया।",
+        "hi": "2006 में, न्यूजीलैंड दुनिया का पहला देश बना जिसने अपनी राष्ट्रीय सांकेतिक भाषा (NZSL) को अंग्रेजी और माओरी के साथ आधिकारिक राज्य भाषा बनाया।", "pl": "Symbol integracji: W 2006 roku Nowa Zelandia jako pierwszy kraj na świecie nadała swojemu narodowemu językowi migowemu (NZSL) status oficjalnego języka państwowego, obok angielskiego i maoryskiego.",
     },
     "Unique in typography: The letter 'ß' (Eszett) exists exclusively in written German. Interestingly, it isn't even used in German-speaking Switzerland, where writers consistently use a double 'ss' instead.": {
         "de": "Das 'ß' (Eszett) existiert nur im Deutschen – und nicht einmal im deutschsprachigen Schweiz, wo konsequent 'ss' geschrieben wird.",
@@ -5485,7 +5489,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "La lettre 'ß' (Eszett) existe exclusivement en allemand écrit. De façon intéressante, elle n'est même pas utilisée en Suisse germanophone, où les écrivains utilisent systématiquement 'ss'.",
         "vi": "Chữ 'ß' (Eszett) chỉ tồn tại trong tiếng Đức viết. Thú vị là, nó không được dùng ở vùng nói tiếng Đức của Thụy Sĩ, nơi luôn viết 'ss' thay thế.",
         "zh": "'ß'(埃斯策特)字母仅存在于书面德语中。有趣的是，它甚至在德语区瑞士也不使用，那里的作者一致使用双'ss'。",
-        "hi": "'ß' (एस्जेट) अक्षर विशेष रूप से लिखित जर्मन में मौजूद है। दिलचस्प बात यह है कि यह जर्मन-भाषी स्विट्जरलैंड में भी उपयोग नहीं किया जाता, जहां 'ss' लिखा जाता है।",
+        "hi": "'ß' (एस्जेट) अक्षर विशेष रूप से लिखित जर्मन में मौजूद है। दिलचस्प बात यह है कि यह जर्मन-भाषी स्विट्जरलैंड में भी उपयोग नहीं किया जाता, जहां 'ss' लिखा जाता है।", "pl": "Ciekawostka typograficzna: litera „ß” (eszet) występuje wyłącznie w pisanym języku niemieckim. Co ciekawe, nie jest używana nawet w niemieckojęzycznej Szwajcarii, gdzie konsekwentnie zastępuje się ją podwójnym „ss”.",
     },
     "No federal official language: Despite having the world's largest Spanish-speaking population, Spanish isn't Mexico's federal official language. Instead, 68 indigenous languages are recognized as co-equal national languages alongside it.": {
         "de": "Obwohl Mexiko die größte spanischsprachige Bevölkerung hat, ist Spanisch keine Bundesamtssprache – 68 indigene Sprachen sind gleichwertig anerkannt.",
@@ -5495,7 +5499,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Malgré la plus grande population hispanophone du monde, l'espagnol n'est pas la langue officielle fédérale du Mexique. Au lieu de cela, 68 langues indigènes sont reconnues comme langues nationales co-égales.",
         "vi": "Dù có dân số nói tiếng Tây Ban Nha lớn nhất thế giới, tiếng Tây Ban Nha không phải là ngôn ngữ chính thức liên bang của Mexico. Thay vào đó, 68 ngôn ngữ bản địa được công nhận bình đẳng.",
         "zh": "尽管拥有世界上最大的西班牙语人口，西班牙语并非墨西哥的联邦官方语言。相反，68种土著语言被承认为同等的国家语言。",
-        "hi": "दुनिया की सबसे बड़ी स्पेनिश-भाषी आबादी होने के बावजूद, स्पेनिश मेक्सिको की संघीय आधिकारिक भाषा नहीं है। इसके बजाय, 68 स्वदेशी भाषाओं को सह-समान राष्ट्रीय भाषाओं के रूप में मान्यता है।",
+        "hi": "दुनिया की सबसे बड़ी स्पेनिश-भाषी आबादी होने के बावजूद, स्पेनिश मेक्सिको की संघीय आधिकारिक भाषा नहीं है। इसके बजाय, 68 स्वदेशी भाषाओं को सह-समान राष्ट्रीय भाषाओं के रूप में मान्यता है।", "pl": "Brak federalnego języka urzędowego: Mimo posiadania największej na świecie populacji hiszpańskojęzycznej, hiszpański nie jest federalnym językiem urzędowym Meksyku. Zamiast tego 68 języków rdzennych jest uznawanych za równorzędne języki narodowe obok niego.",
     },
     "Linguistic distance: Despite being in Central Europe, Hungarian belongs to the Uralic language family. Distantly related to Finnish, it is completely incomprehensible to all of Hungary's direct geographical neighbors.": {
         "de": "Ungarisch gehört zur uralischen Sprachfamilie und ist entfernt mit Finnisch verwandt – für alle direkten Nachbarländer völlig unverständlich.",
@@ -5505,7 +5509,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Malgré sa situation en Europe centrale, le hongrois appartient à la famille linguistique ouralique. Lointainement lié au finnois, il est totalement incompréhensible pour tous les voisins géographiques directs de la Hongrie.",
         "vi": "Dù ở Trung Âu, tiếng Hungary thuộc ngữ hệ Uralic. Có quan hệ xa với tiếng Phần Lan, nó hoàn toàn không thể hiểu được đối với tất cả các nước láng giềng địa lý trực tiếp của Hungary.",
         "zh": "尽管位于中欧，匈牙利语属于乌拉尔语系。与芬兰语有远亲关系，对匈牙利所有直接地理邻国来说完全无法理解。",
-        "hi": "मध्य यूरोप में होने के बावजूद, हंगेरियन उराल भाषा परिवार से संबंधित है। फिनिश से दूर का संबंध रखते हुए, यह हंगरी के सभी प्रत्यक्ष भौगोलिक पड़ोसियों के लिए पूरी तरह से समझ से बाहर है।",
+        "hi": "मध्य यूरोप में होने के बावजूद, हंगेरियन उराल भाषा परिवार से संबंधित है। फिनिश से दूर का संबंध रखते हुए, यह हंगरी के सभी प्रत्यक्ष भौगोलिक पड़ोसियों के लिए पूरी तरह से समझ से बाहर है।", "pl": "Językowy dystans: Mimo że leży w Europie Środkowej, węgierski należy do rodziny języków uralskich. Odlegle spokrewniony z fińskim, jest zupełnie niezrozumiały dla wszystkich bezpośrednich sąsiadów geograficznych Węgier.",
     },
 
     # ================================================================= #
@@ -5519,7 +5523,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Générateur de plan d\'étude IA",
         "vi": "Trình tạo kế hoạch học tập AI",
         "zh": "AI 学习计划生成器",
-        "hi": "AI अध्ययन योजना जेनरेटर",
+        "hi": "AI अध्ययन योजना जेनरेटर", "pl": "Pomocnik generatora planu nauki AI",
     },
     "Generate with AI": {
         "de": "Mit KI generieren",
@@ -5529,7 +5533,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Générer avec l\'IA",
         "vi": "Tạo bằng AI",
         "zh": "用 AI 生成",
-        "hi": "AI से बनाएं",
+        "hi": "AI से बनाएं", "pl": "Generuj za pomocą AI",
     },
     "Follow these steps to generate a study plan with an AI (like ChatGPT, Claude) and import it.": {
         "de": "Folge diesen Schritten, um einen Lernplan mit einer KI (z. B. ChatGPT, Claude) zu erstellen und zu importieren.",
@@ -5539,7 +5543,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Suivez ces étapes pour générer un plan d\'étude avec une IA (comme ChatGPT, Claude) et l\'importer.",
         "vi": "Thực hiện các bước sau để tạo kế hoạch học tập bằng AI (như ChatGPT, Claude) và nhập nó.",
         "zh": "按照以下步骤使用 AI（如 ChatGPT、Claude）生成学习计划并导入。",
-        "hi": "AI (जैसे ChatGPT, Claude) से अध्ययन योजना बनाने और आयात करने के लिए ये चरण अपनाएं।",
+        "hi": "AI (जैसे ChatGPT, Claude) से अध्ययन योजना बनाने और आयात करने के लिए ये चरण अपनाएं।", "pl": "Wykonaj poniższe kroki, aby wygenerować plan nauki za pomocą AI (np. ChatGPT, Claude) i go zaimportować.",
     },
     "Watch Tutorial on YouTube": {
         "de": "Tutorial auf YouTube ansehen",
@@ -5549,7 +5553,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Voir le tutoriel sur YouTube",
         "vi": "Xem hướng dẫn trên YouTube",
         "zh": "在 YouTube 上观看教程",
-        "hi": "YouTube पर ट्यूटोरियल देखें",
+        "hi": "YouTube पर ट्यूटोरियल देखें", "pl": "Obejrzyj samouczek na YouTube",
     },
     "Fill in your details, then copy this to your AI.": {
         "de": "Fülle deine Details aus und kopiere dies dann zu deiner KI.",
@@ -5559,7 +5563,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Remplissez vos informations, puis copiez-les dans votre IA.",
         "vi": "Điền thông tin của bạn, sau đó sao chép vào AI.",
         "zh": "填写你的详细信息，然后复制到你的 AI。",
-        "hi": "अपना विवरण भरें, फिर इसे अपनी AI में कॉपी करें।",
+        "hi": "अपना विवरण भरें, फिर इसे अपनी AI में कॉपी करें।", "pl": "Uzupełnij swoje dane, a następnie skopiuj to do swojego asystenta AI.",
     },
     "Step 2: Paste JSON Result": {
         "de": "Schritt 2: JSON-Ergebnis einfügen",
@@ -5569,7 +5573,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Étape 2 : Coller le résultat JSON",
         "vi": "Bước 2: Dán kết quả JSON",
         "zh": "第 2 步：粘贴 JSON 结果",
-        "hi": "चरण 2: JSON परिणाम पेस्ट करें",
+        "hi": "चरण 2: JSON परिणाम पेस्ट करें", "pl": "Krok 2: Wklej wynik JSON",
     },
     "Paste the JSON code block here.": {
         "de": "Füge den JSON-Codeblock hier ein.",
@@ -5579,7 +5583,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Collez le bloc de code JSON ici.",
         "vi": "Dán khối mã JSON vào đây.",
         "zh": "在此处粘贴 JSON 代码块。",
-        "hi": "यहाँ JSON कोड ब्लॉक पेस्ट करें।",
+        "hi": "यहाँ JSON कोड ब्लॉक पेस्ट करें।", "pl": "Wklej tutaj blok kodu JSON.",
     },
     "Paste the { ... } JSON code here...": {
         "de": "{ ... } JSON-Code hier einfügen…",
@@ -5589,7 +5593,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Collez le code JSON { ... } ici…",
         "vi": "Dán mã JSON { ... } vào đây…",
         "zh": "在此粘贴 { ... } JSON 代码…",
-        "hi": "यहाँ { ... } JSON कोड पेस्ट करें…",
+        "hi": "यहाँ { ... } JSON कोड पेस्ट करें…", "pl": "Wklej tutaj kod JSON { ... }…",
     },
     "Import Plan": {
         "de": "Plan importieren",
@@ -5599,7 +5603,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Importer le plan",
         "vi": "Nhập kế hoạch",
         "zh": "导入计划",
-        "hi": "योजना आयात करें",
+        "hi": "योजना आयात करें", "pl": "Importuj plan",
     },
     "Confirm Import": {
         "de": "Import bestätigen",
@@ -5609,7 +5613,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Confirmer l\'importation",
         "vi": "Xác nhận nhập",
         "zh": "确认导入",
-        "hi": "आयात की पुष्टि करें",
+        "hi": "आयात की पुष्टि करें", "pl": "Potwierdź import",
     },
     "Replace plan with AI generated one?": {
         "de": "Plan durch KI-generierten ersetzen?",
@@ -5619,7 +5623,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Remplacer le plan par celui généré par l\'IA ?",
         "vi": "Thay thế kế hoạch bằng kế hoạch do AI tạo?",
         "zh": "用 AI 生成的计划替换当前计划？",
-        "hi": "योजना को AI द्वारा बनाई योजना से बदलें?",
+        "hi": "योजना को AI द्वारा बनाई योजना से बदलें?", "pl": "Zastąpić plan planem wygenerowanym przez AI?",
     },
     "Import Error": {
         "de": "Importfehler",
@@ -5629,7 +5633,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Erreur d\'importation",
         "vi": "Lỗi nhập",
         "zh": "导入错误",
-        "hi": "आयात त्रुटि",
+        "hi": "आयात त्रुटि", "pl": "Błąd importowania",
     },
     "Invalid JSON.": {
         "de": "Ungültiges JSON.",
@@ -5639,7 +5643,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "JSON invalide.",
         "vi": "JSON không hợp lệ.",
         "zh": "无效的 JSON。",
-        "hi": "अमान्य JSON।",
+        "hi": "अमान्य JSON।", "pl": "Nieprawidłowy JSON.",
     },
     "Save Error": {
         "de": "Speicherfehler",
@@ -5649,7 +5653,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Erreur de sauvegarde",
         "vi": "Lỗi lưu",
         "zh": "保存错误",
-        "hi": "सहेजने में त्रुटि",
+        "hi": "सहेजने में त्रुटि", "pl": "Błąd zapisu",
     },
 
     # ================================================================= #
@@ -5663,7 +5667,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Sélectionner une date",
         "vi": "Chọn ngày",
         "zh": "选择日期",
-        "hi": "तारीख चुनें",
+        "hi": "तारीख चुनें", "pl": "Wybierz datę",
     },
     "Subject (e.g., Anatomy)": {
         "de": "Fach (z. B. Anatomie)",
@@ -5673,7 +5677,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Matière (ex. : Anatomie)",
         "vi": "Môn học (vd: Giải phẫu học)",
         "zh": "科目（如：解剖学）",
-        "hi": "विषय (जैसे, शरीर रचना)",
+        "hi": "विषय (जैसे, शरीर रचना)", "pl": "Temat (np. Anatomia)",
     },
     "Add": {
         "de": "Hinzufügen",
@@ -5683,7 +5687,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Ajouter",
         "vi": "Thêm",
         "zh": "添加",
-        "hi": "जोड़ें",
+        "hi": "जोड़ें", "pl": "Dodaj",
     },
     "Time:": {
         "de": "Zeit:",
@@ -5693,7 +5697,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Durée :",
         "vi": "Thời gian:",
         "zh": "时间：",
-        "hi": "समय:",
+        "hi": "समय:", "pl": "Czas:",
     },
     "View Timeline": {
         "de": "Zeitstrahl anzeigen",
@@ -5703,7 +5707,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Voir la chronologie",
         "vi": "Xem dòng thời gian",
         "zh": "查看时间轴",
-        "hi": "टाइमलाइन देखें",
+        "hi": "टाइमलाइन देखें", "pl": "Wyświetl oś czasu",
     },
     "Clear All": {
         "de": "Alles löschen",
@@ -5713,7 +5717,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Tout effacer",
         "vi": "Xóa tất cả",
         "zh": "清除所有",
-        "hi": "सब साफ करें",
+        "hi": "सब साफ करें", "pl": "Wyczyść wszystko",
     },
     "Remove Selected": {
         "de": "Ausgewählte entfernen",
@@ -5723,7 +5727,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Supprimer la sélection",
         "vi": "Xóa đã chọn",
         "zh": "删除所选",
-        "hi": "चुने हुए हटाएं",
+        "hi": "चुने हुए हटाएं", "pl": "Usuń zaznaczone",
     },
     "Deadlines": {
         "de": "Fristen",
@@ -5733,7 +5737,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Échéances",
         "vi": "Hạn chót",
         "zh": "截止日期",
-        "hi": "समय सीमाएं",
+        "hi": "समय सीमाएं", "pl": "Terminy",
     },
     "View Deadlines": {
         "de": "Fristen anzeigen",
@@ -5743,7 +5747,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Voir les échéances",
         "vi": "Xem hạn chót",
         "zh": "查看截止日期",
-        "hi": "समय सीमाएं देखें",
+        "hi": "समय सीमाएं देखें", "pl": "Wyświetl terminy",
     },
     "Configure Deadlines": {
         "de": "Fristen konfigurieren",
@@ -5753,7 +5757,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Configurer les échéances",
         "vi": "Cấu hình hạn chót",
         "zh": "配置截止日期",
-        "hi": "समय सीमाएं कॉन्फ़िगर करें",
+        "hi": "समय सीमाएं कॉन्फ़िगर करें", "pl": "Konfiguruj terminy",
     },
     "AI Plan Generator": {
         "de": "KI-Plan-Generator",
@@ -5763,7 +5767,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Générateur de plan IA",
         "vi": "Trình tạo kế hoạch AI",
         "zh": "AI 计划生成器",
-        "hi": "AI योजना जेनरेटर",
+        "hi": "AI योजना जेनरेटर", "pl": "Generator planu AI",
     },
     "Create a full schedule using ChatGPT.": {
         "de": "Erstelle einen vollständigen Zeitplan mit ChatGPT.",
@@ -5773,7 +5777,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Créez un calendrier complet avec ChatGPT.",
         "vi": "Tạo lịch học đầy đủ bằng ChatGPT.",
         "zh": "使用 ChatGPT 创建完整的学习计划。",
-        "hi": "ChatGPT से पूरा शेड्यूल बनाएं।",
+        "hi": "ChatGPT से पूरा शेड्यूल बनाएं।", "pl": "Utwórz pełny harmonogram za pomocą ChatGPT.",
     },
     "Open AI Assistant": {
         "de": "KI-Assistent öffnen",
@@ -5783,7 +5787,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Ouvrir l\'assistant IA",
         "vi": "Mở trợ lý AI",
         "zh": "打开 AI 助手",
-        "hi": "AI असिस्टेंट खोलें",
+        "hi": "AI असिस्टेंट खोलें", "pl": "Otwórz Asystenta AI",
     },
 
     # ================================================================= #
@@ -5797,7 +5801,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Chronologie du plan d\'étude",
         "vi": "Dòng thời gian kế hoạch học tập",
         "zh": "学习计划时间轴",
-        "hi": "अध्ययन योजना टाइमलाइन",
+        "hi": "अध्ययन योजना टाइमलाइन", "pl": "Oś czasu planu nauki",
     },
 
     # ================================================================= #
@@ -5811,7 +5815,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Si aucune échéance n\'est définie par défaut, la plus proche est affichée automatiquement.",
         "vi": "Nếu không có hạn chót nào được đặt làm mặc định, hạn chót sắp tới gần nhất sẽ được hiển thị tự động.",
         "zh": "如果没有设置默认截止日期，将自动显示最近的截止日期。",
-        "hi": "यदि कोई समय सीमा डिफ़ॉल्ट के रूप में सेट नहीं है, तो निकटतम आगामी समय सीमा स्वचालित रूप से दिखाई जाती है।",
+        "hi": "यदि कोई समय सीमा डिफ़ॉल्ट के रूप में सेट नहीं है, तो निकटतम आगामी समय सीमा स्वचालित रूप से दिखाई जाती है।", "pl": "Jeśli żaden termin nie jest ustawiony jako domyślny, automatycznie wyświetlany jest najbliższy nadchodzący.",
     },
     "Name": {
         "de": "Name",
@@ -5821,7 +5825,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Nom",
         "vi": "Tên",
         "zh": "名称",
-        "hi": "नाम",
+        "hi": "नाम", "pl": "Nazwa",
     },
     "+ Add": {
         "de": "+ Hinzufügen",
@@ -5831,7 +5835,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "+ Ajouter",
         "vi": "+ Thêm",
         "zh": "+ 添加",
-        "hi": "+ जोड़ें",
+        "hi": "+ जोड़ें", "pl": "+ Dodaj",
     },
     "Start:": {
         "de": "Start:",
@@ -5841,7 +5845,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Début :",
         "vi": "Bắt đầu:",
         "zh": "开始：",
-        "hi": "शुरू:",
+        "hi": "शुरू:", "pl": "Początek:",
     },
     "End:": {
         "de": "Ende:",
@@ -5851,7 +5855,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Fin :",
         "vi": "Kết thúc:",
         "zh": "结束：",
-        "hi": "अंत:",
+        "hi": "अंत:", "pl": "Koniec:",
     },
     "Always show this deadline (uncheck = auto-select nearest upcoming)": {
         "de": "Diese Frist immer anzeigen (deaktivieren = nächste bevorstehende automatisch wählen)",
@@ -5861,7 +5865,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Toujours afficher cette échéance (décocher = sélection automatique de la plus proche)",
         "vi": "Luôn hiển thị hạn chót này (bỏ chọn = tự động chọn hạn chót sắp tới gần nhất)",
         "zh": "始终显示此截止日期（取消勾选 = 自动选择最近的截止日期）",
-        "hi": "इस समय सीमा को हमेशा दिखाएं (अनचेक = निकटतम आगामी स्वचालित रूप से चुनें)",
+        "hi": "इस समय सीमा को हमेशा दिखाएं (अनचेक = निकटतम आगामी स्वचालित रूप से चुनें)", "pl": "Zawsze pokazuj ten termin (odznacz = automatyczny wybór najbliższego nadchodzącego)",
     },
     # ================================================================= #
     # configuration.py – DeadlineViewDialog
@@ -5874,7 +5878,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Vos échéances",
         "vi": "Hạn chót của bạn",
         "zh": "你的截止日期",
-        "hi": "आपकी समय सीमाएं",
+        "hi": "आपकी समय सीमाएं", "pl": "Twoje terminy",
     },
     "No deadlines configured yet.\nUse \'Configure Deadlines\' to add one.": {
         "de": "Noch keine Fristen konfiguriert.\nVerwende \'Fristen konfigurieren\', um eine hinzuzufügen.",
@@ -5884,7 +5888,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Aucune échéance configurée.\nUtilisez \'Configurer les échéances\' pour en ajouter une.",
         "vi": "Chưa có hạn chót nào được cấu hình.\nDùng \'Cấu hình hạn chót\' để thêm.",
         "zh": "尚未配置截止日期。\n使用\'配置截止日期\'添加一个。",
-        "hi": "अभी तक कोई समय सीमा कॉन्फ़िगर नहीं की गई।\n\'समय सीमाएं कॉन्फ़िगर करें\' का उपयोग करके एक जोड़ें।",
+        "hi": "अभी तक कोई समय सीमा कॉन्फ़िगर नहीं की गई।\n\'समय सीमाएं कॉन्फ़िगर करें\' का उपयोग करके एक जोड़ें।", "pl": "Nie skonfigurowano jeszcze żadnych terminów.\nUżyj opcji „Konfiguruj terminy”, aby dodać jeden.",
     },
     "Close": {
         "de": "Schließen",
@@ -5894,7 +5898,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Fermer",
         "vi": "Đóng",
         "zh": "关闭",
-        "hi": "बंद करें",
+        "hi": "बंद करें", "pl": "Zamknij",
     },
 
     # ================================================================= #
@@ -5908,7 +5912,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Importer une piste",
         "vi": "Nhập bản nhạc",
         "zh": "导入音轨",
-        "hi": "ट्रैक आयात करें",
+        "hi": "ट्रैक आयात करें", "pl": "Importuj utwór",
     },
     "Title:": {
         "de": "Titel:",
@@ -5918,7 +5922,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Titre :",
         "vi": "Tiêu đề:",
         "zh": "标题：",
-        "hi": "शीर्षक:",
+        "hi": "शीर्षक:", "pl": "Tytuł:",
     },
     "Track name\u2026": {
         "de": "Trackname\u2026",
@@ -5928,7 +5932,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Nom de la piste\u2026",
         "vi": "Tên bản nhạc\u2026",
         "zh": "音轨名称\u2026",
-        "hi": "ट्रैक नाम\u2026",
+        "hi": "ट्रैक नाम\u2026", "pl": "Nazwa utworu…",
     },
     "File:": {
         "de": "Datei:",
@@ -5938,7 +5942,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Fichier :",
         "vi": "Tệp:",
         "zh": "文件：",
-        "hi": "फ़ाइल:",
+        "hi": "फ़ाइल:", "pl": "Plik:",
     },
     "No file selected": {
         "de": "Keine Datei ausgewählt",
@@ -5948,7 +5952,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Aucun fichier sélectionné",
         "vi": "Chưa chọn tệp",
         "zh": "未选择文件",
-        "hi": "कोई फ़ाइल नहीं चुनी",
+        "hi": "कोई फ़ाइल नहीं चुनी", "pl": "Nie wybrano pliku",
     },
     "Browse\u2026": {
         "de": "Durchsuchen\u2026",
@@ -5958,7 +5962,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Parcourir\u2026",
         "vi": "Duyệt\u2026",
         "zh": "浏览\u2026",
-        "hi": "ब्राउज़ करें\u2026",
+        "hi": "ब्राउज़ करें\u2026", "pl": "Przeglądaj…",
     },
     "Import": {
         "de": "Importieren",
@@ -5968,7 +5972,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Importer",
         "vi": "Nhập",
         "zh": "导入",
-        "hi": "आयात करें",
+        "hi": "आयात करें", "pl": "Importuj",
     },
     "Import your own audio file": {
         "de": "Eigene Audiodatei importieren",
@@ -5978,7 +5982,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Importer votre propre fichier audio",
         "vi": "Nhập tệp âm thanh của bạn",
         "zh": "导入你自己的音频文件",
-        "hi": "अपनी ऑडियो फ़ाइल आयात करें",
+        "hi": "अपनी ऑडियो फ़ाइल आयात करें", "pl": "Zaimportuj własny plik audio",
     },
     "Remove this user track": {
         "de": "Diesen Benutzer-Track entfernen",
@@ -5988,7 +5992,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Supprimer cette piste utilisateur",
         "vi": "Xóa bản nhạc người dùng này",
         "zh": "删除此用户音轨",
-        "hi": "यह यूज़र ट्रैक हटाएं",
+        "hi": "यह यूज़र ट्रैक हटाएं", "pl": "Usuń ten utwór użytkownika",
     },
 
     # ================================================================= #
@@ -6002,7 +6006,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Super \!",
         "vi": "Tuyệt vời\!",
         "zh": "太棒了！",
-        "hi": "शानदार\!",
+        "hi": "शानदार\!", "pl": "Super\\!",
     },
 
     # ================================================================= #
@@ -6016,7 +6020,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Carte mentale – Plein écran",
         "vi": "Bản đồ tư duy – Toàn màn hình",
         "zh": "思维导图 – 全屏",
-        "hi": "माइंड मैप – फ़ुल स्क्रीन",
+        "hi": "माइंड मैप – फ़ुल स्क्रीन", "pl": "Mind Map - Pełny ekran",
     },
     "Open Fullscreen": {
         "de": "Vollbild öffnen",
@@ -6026,7 +6030,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Ouvrir en plein écran",
         "vi": "Mở toàn màn hình",
         "zh": "打开全屏",
-        "hi": "फ़ुल स्क्रीन खोलें",
+        "hi": "फ़ुल स्क्रीन खोलें", "pl": "Otwórz na pełnym ekranie",
     },
     "Error: QtWebEngine not available.": {
         "de": "Fehler: QtWebEngine nicht verfügbar.",
@@ -6036,7 +6040,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Erreur : QtWebEngine non disponible.",
         "vi": "Lỗi: QtWebEngine không khả dụng.",
         "zh": "错误：QtWebEngine 不可用。",
-        "hi": "त्रुटि: QtWebEngine उपलब्ध नहीं है।",
+        "hi": "त्रुटि: QtWebEngine उपलब्ध नहीं है।", "pl": "Błąd: QtWebEngine niedostępny.",
     },
 
     # ================================================================= #
@@ -6050,7 +6054,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "SynapsePro \u2013 Carnet",
         "vi": "SynapsePro \u2013 Sổ tay",
         "zh": "SynapsePro \u2013 笔记本",
-        "hi": "SynapsePro \u2013 नोटबुक",
+        "hi": "SynapsePro \u2013 नोटबुक", "pl": "SynapsePro – Notatnik",
     },
 
     # ================================================================= #
@@ -6064,7 +6068,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "SynapsePro",
         "vi": "SynapsePro",
         "zh": "SynapsePro",
-        "hi": "SynapsePro",
+        "hi": "SynapsePro", "pl": "SynapsePro",
     },
 
     # ================================================================= #
@@ -6078,7 +6082,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Vérification de version Anki – SynapsePro",
         "vi": "Kiểm tra phiên bản Anki – SynapsePro",
         "zh": "Anki 版本检查 – SynapsePro",
-        "hi": "Anki संस्करण जाँच – SynapsePro",
+        "hi": "Anki संस्करण जाँच – SynapsePro", "pl": "Sprawdzanie wersji Anki - SynapsePro",
     },
     "Download a Tested Version": {
         "de": "Getestete Version herunterladen",
@@ -6088,7 +6092,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Télécharger une version testée",
         "vi": "Tải xuống phiên bản đã kiểm tra",
         "zh": "下载经过测试的版本",
-        "hi": "परीक्षित संस्करण डाउनलोड करें",
+        "hi": "परीक्षित संस्करण डाउनलोड करें", "pl": "Pobierz sprawdzoną wersję",
     },
     "Continue Anyway": {
         "de": "Trotzdem fortfahren",
@@ -6098,7 +6102,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Continuer quand même",
         "vi": "Tiếp tục dù sao",
         "zh": "继续",
-        "hi": "फिर भी जारी रखें",
+        "hi": "फिर भी जारी रखें", "pl": "Kontynuuj mimo to",
     },
 
     # ================================================================= #
@@ -6112,7 +6116,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Rechercher dans cette page...",
         "vi": "Tìm kiếm trong trang này...",
         "zh": "在此页面搜索...",
-        "hi": "इस पृष्ठ पर खोजें...",
+        "hi": "इस पृष्ठ पर खोजें...", "pl": "Szukaj na tej stronie...",
     },
     "New Page": {
         "de": "Neue Seite",
@@ -6122,7 +6126,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Nouvelle page",
         "vi": "Trang mới",
         "zh": "新页面",
-        "hi": "नया पृष्ठ",
+        "hi": "नया पृष्ठ", "pl": "Nowa strona",
     },
     "Delete": {
         "de": "Löschen",
@@ -6132,7 +6136,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Supprimer",
         "vi": "Xóa",
         "zh": "删除",
-        "hi": "हटाएं",
+        "hi": "हटाएं", "pl": "Usuń",
     },
     "Duplicate": {
         "de": "Duplizieren",
@@ -6142,7 +6146,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Dupliquer",
         "vi": "Nhân đôi",
         "zh": "复制",
-        "hi": "डुप्लिकेट करें",
+        "hi": "डुप्लिकेट करें", "pl": "Duplikuj",
     },
     "Convert": {
         "de": "Konvertieren",
@@ -6152,7 +6156,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Convertir",
         "vi": "Chuyển đổi",
         "zh": "转换",
-        "hi": "रूपांतरित करें",
+        "hi": "रूपांतरित करें", "pl": "Konwertuj",
     },
     "Add Icon": {
         "de": "Symbol hinzufügen",
@@ -6162,7 +6166,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Ajouter une icône",
         "vi": "Thêm biểu tượng",
         "zh": "添加图标",
-        "hi": "आइकन जोड़ें",
+        "hi": "आइकन जोड़ें", "pl": "Dodaj ikonę",
     },
     "Remove Icon": {
         "de": "Symbol entfernen",
@@ -6172,7 +6176,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Supprimer l'icône",
         "vi": "Xóa biểu tượng",
         "zh": "删除图标",
-        "hi": "आइकन हटाएं",
+        "hi": "आइकन हटाएं", "pl": "Usuń ikonę",
     },
     "Text": {
         "de": "Text",
@@ -6182,7 +6186,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Texte",
         "vi": "Văn bản",
         "zh": "文字",
-        "hi": "पाठ",
+        "hi": "पाठ", "pl": "Tekst",
     },
     "Heading 1": {
         "de": "Überschrift 1",
@@ -6192,7 +6196,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Titre 1",
         "vi": "Tiêu đề 1",
         "zh": "标题 1",
-        "hi": "शीर्षक 1",
+        "hi": "शीर्षक 1", "pl": "Nagłówek 1",
     },
     "Heading 2": {
         "de": "Überschrift 2",
@@ -6202,7 +6206,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Titre 2",
         "vi": "Tiêu đề 2",
         "zh": "标题 2",
-        "hi": "शीर्षक 2",
+        "hi": "शीर्षक 2", "pl": "Nagłówek 2",
     },
     "List": {
         "de": "Liste",
@@ -6212,7 +6216,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Liste",
         "vi": "Danh sách",
         "zh": "列表",
-        "hi": "सूची",
+        "hi": "सूची", "pl": "Lista",
     },
     "To-Do": {
         "de": "Aufgabe",
@@ -6222,7 +6226,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "À faire",
         "vi": "Việc cần làm",
         "zh": "待办",
-        "hi": "टू-डू",
+        "hi": "टू-डू", "pl": "Lista zadań",
     },
     "Quote": {
         "de": "Zitat",
@@ -6232,7 +6236,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Citation",
         "vi": "Trích dẫn",
         "zh": "引用",
-        "hi": "उद्धरण",
+        "hi": "उद्धरण", "pl": "Cytat",
     },
     "Callout": {
         "de": "Hervorhebung",
@@ -6242,7 +6246,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Encart",
         "vi": "Chú thích",
         "zh": "标注",
-        "hi": "कॉलआउट",
+        "hi": "कॉलआउट", "pl": "Wyróżnienie",
     },
     "Code": {
         "de": "Code",
@@ -6252,7 +6256,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Code",
         "vi": "Mã",
         "zh": "代码",
-        "hi": "कोड",
+        "hi": "कोड", "pl": "Kod",
     },
     "Toggle": {
         "de": "Ausklappen",
@@ -6262,7 +6266,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Déroulant",
         "vi": "Thu gọn",
         "zh": "折叠",
-        "hi": "टॉगल",
+        "hi": "टॉगल", "pl": "Przełącz",
     },
     "Divider": {
         "de": "Trennlinie",
@@ -6272,7 +6276,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Séparateur",
         "vi": "Đường phân cách",
         "zh": "分隔线",
-        "hi": "विभाजक",
+        "hi": "विभाजक", "pl": "Separator",
     },
     "Table": {
         "de": "Tabelle",
@@ -6282,7 +6286,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Tableau",
         "vi": "Bảng",
         "zh": "表格",
-        "hi": "तालिका",
+        "hi": "तालिका", "pl": "Tabela",
     },
     "Tip: Paste images (Ctrl+V) supported": {
         "de": "Tipp: Bilder einfügen (Strg+V) wird unterstützt",
@@ -6292,7 +6296,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Astuce : Coller des images (Ctrl+V) supporté",
         "vi": "Mẹo: Dán ảnh (Ctrl+V) được hỗ trợ",
         "zh": "提示：支持粘贴图片（Ctrl+V）",
-        "hi": "सुझाव: छवियाँ पेस्ट करें (Ctrl+V) समर्थित",
+        "hi": "सुझाव: छवियाँ पेस्ट करें (Ctrl+V) समर्थित", "pl": "Wskazówka: Obsługiwane jest wklejanie obrazów (Ctrl+V)",
     },
     "Saved": {
         "de": "Gespeichert",
@@ -6302,7 +6306,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Enregistré",
         "vi": "Đã lưu",
         "zh": "已保存",
-        "hi": "सहेजा गया",
+        "hi": "सहेजा गया", "pl": "Zapisano",
     },
     "Saving...": {
         "de": "Speichern...",
@@ -6312,7 +6316,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Enregistrement...",
         "vi": "Đang lưu...",
         "zh": "保存中...",
-        "hi": "सहेज रहा है...",
+        "hi": "सहेज रहा है...", "pl": "Zapisywanie...",
     },
     "Untitled": {
         "de": "Ohne Titel",
@@ -6322,7 +6326,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Sans titre",
         "vi": "Chưa đặt tên",
         "zh": "无标题",
-        "hi": "बिना शीर्षक",
+        "hi": "बिना शीर्षक", "pl": "Bez tytułu",
     },
     "Delete this page?": {
         "de": "Diese Seite löschen?",
@@ -6332,7 +6336,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Supprimer cette page ?",
         "vi": "Xóa trang này?",
         "zh": "删除此页面？",
-        "hi": "यह पृष्ठ हटाएं?",
+        "hi": "यह पृष्ठ हटाएं?", "pl": "Usunąć tę stronę?",
     },
     "Delete table?": {
         "de": "Tabelle löschen?",
@@ -6342,7 +6346,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Supprimer le tableau ?",
         "vi": "Xóa bảng?",
         "zh": "删除表格？",
-        "hi": "तालिका हटाएं?",
+        "hi": "तालिका हटाएं?", "pl": "Usunąć tabelę?",
     },
     "+ Row": {
         "de": "+ Zeile",
@@ -6352,7 +6356,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "+ Ligne",
         "vi": "+ Hàng",
         "zh": "+ 行",
-        "hi": "+ पंक्ति",
+        "hi": "+ पंक्ति", "pl": "+ Wiersz",
     },
     "+ Col": {
         "de": "+ Spalte",
@@ -6362,7 +6366,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "+ Colonne",
         "vi": "+ Cột",
         "zh": "+ 列",
-        "hi": "+ स्तंभ",
+        "hi": "+ स्तंभ", "pl": "+ Kolumna",
     },
     "Type '/' for commands": {
         "de": "'/' für Befehle eingeben",
@@ -6372,7 +6376,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Tapez '/' pour les commandes",
         "vi": "Nhập '/' để xem lệnh",
         "zh": "输入 '/' 使用命令",
-        "hi": "कमांड के लिए '/' टाइप करें",
+        "hi": "कमांड के लिए '/' टाइप करें", "pl": "Wpisz '/', aby użyć poleceń",
     },
     "Type something...": {
         "de": "Etwas eingeben...",
@@ -6382,7 +6386,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Tapez quelque chose...",
         "vi": "Nhập gì đó...",
         "zh": "输入内容...",
-        "hi": "कुछ लिखें...",
+        "hi": "कुछ लिखें...", "pl": "Wpisz coś...",
     },
     "Toggle title": {
         "de": "Ausklapp-Titel",
@@ -6392,7 +6396,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Titre déroulant",
         "vi": "Tiêu đề thu gọn",
         "zh": "折叠标题",
-        "hi": "टॉगल शीर्षक",
+        "hi": "टॉगल शीर्षक", "pl": "Przełącz tytuł",
     },
     "Add content here...": {
         "de": "Inhalt hier einfügen...",
@@ -6402,7 +6406,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Ajoutez du contenu ici...",
         "vi": "Thêm nội dung tại đây...",
         "zh": "在此添加内容...",
-        "hi": "यहाँ सामग्री जोड़ें...",
+        "hi": "यहाँ सामग्री जोड़ें...", "pl": "Dodaj treść tutaj...",
     },
     "just now": {
         "de": "gerade eben",
@@ -6412,7 +6416,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "à l'instant",
         "vi": "vừa xong",
         "zh": "刚刚",
-        "hi": "अभी-अभी",
+        "hi": "अभी-अभी", "pl": "przed chwilą",
     },
     "m ago": {
         "de": "Min. vor",
@@ -6422,7 +6426,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "min",
         "vi": "phút trước",
         "zh": "分钟前",
-        "hi": "मिनट पहले",
+        "hi": "मिनट पहले", "pl": " min temu",
     },
     "h ago": {
         "de": "Std. vor",
@@ -6432,7 +6436,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "h",
         "vi": "giờ trước",
         "zh": "小时前",
-        "hi": "घंटे पहले",
+        "hi": "घंटे पहले", "pl": " godz. temu",
     },
     "d ago": {
         "de": "Tage vor",
@@ -6442,7 +6446,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "j",
         "vi": "ngày trước",
         "zh": "天前",
-        "hi": "दिन पहले",
+        "hi": "दिन पहले", "pl": " dni temu",
     },
     "No results for": {
         "de": "Keine Ergebnisse für",
@@ -6452,7 +6456,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Aucun résultat pour",
         "vi": "Không có kết quả cho",
         "zh": "没有找到",
-        "hi": "कोई परिणाम नहीं मिला",
+        "hi": "कोई परिणाम नहीं मिला", "pl": "Brak wyników dla",
     },
 
     # ================================================================= #
@@ -6466,7 +6470,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Tâches",
         "vi": "Công việc",
         "zh": "待办事项",
-        "hi": "टू-डू",
+        "hi": "टू-डू", "pl": "Lista zadań",
     },
     "All": {
         "de": "Alle",
@@ -6476,7 +6480,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Tout",
         "vi": "Tất cả",
         "zh": "全部",
-        "hi": "सभी",
+        "hi": "सभी", "pl": "Wszystkie",
     },
     "Open": {
         "de": "Offen",
@@ -6486,7 +6490,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "En cours",
         "vi": "Chưa xong",
         "zh": "未完成",
-        "hi": "खुले",
+        "hi": "खुले", "pl": "Otwarte",
     },
     "Add a task\u2026": {
         "de": "Aufgabe hinzufügen\u2026",
@@ -6496,7 +6500,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Ajouter une tâche\u2026",
         "vi": "Thêm công việc\u2026",
         "zh": "添加任务\u2026",
-        "hi": "कार्य जोड़ें\u2026",
+        "hi": "कार्य जोड़ें\u2026", "pl": "Dodaj zadanie…",
     },
     "Tag (optional)": {
         "de": "Tag (optional)",
@@ -6506,7 +6510,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Étiquette (optionnel)",
         "vi": "Nhãn (tùy chọn)",
         "zh": "标签（可选）",
-        "hi": "टैग (वैकल्पिक)",
+        "hi": "टैग (वैकल्पिक)", "pl": "Tag (opcjonalnie)",
     },
     "No tasks yet.": {
         "de": "Noch keine Aufgaben.",
@@ -6516,7 +6520,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Aucune tâche pour l'instant.",
         "vi": "Chưa có công việc nào.",
         "zh": "暂无任务。",
-        "hi": "अभी कोई कार्य नहीं।",
+        "hi": "अभी कोई कार्य नहीं।", "pl": "Brak zadań.",
     },
     "Add one above!": {
         "de": "Füge oben eine hinzu!",
@@ -6526,7 +6530,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Ajoutez-en une ci-dessus !",
         "vi": "Thêm một ở trên!",
         "zh": "在上方添加一个！",
-        "hi": "ऊपर एक जोड़ें!",
+        "hi": "ऊपर एक जोड़ें!", "pl": "Dodaj jedno powyżej!",
     },
     "{done} / {total} done": {
         "de": "{done} / {total} erledigt",
@@ -6536,7 +6540,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "{done} / {total} terminées",
         "vi": "{done} / {total} hoàn thành",
         "zh": "{done} / {total} 已完成",
-        "hi": "{done} / {total} पूर्ण",
+        "hi": "{done} / {total} पूर्ण", "pl": "{done} / {total} ukończono",
     },
 
     # ================================================================= #
@@ -6550,7 +6554,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Rechercher des PDFs\u2026",
         "vi": "Tìm kiếm PDF\u2026",
         "zh": "搜索 PDF\u2026",
-        "hi": "PDF खोजें\u2026",
+        "hi": "PDF खोजें\u2026", "pl": "Szukaj PDF…",
     },
     "Add PDF": {
         "de": "PDF hinzufügen",
@@ -6560,7 +6564,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Ajouter un PDF",
         "vi": "Thêm PDF",
         "zh": "添加 PDF",
-        "hi": "PDF जोड़ें",
+        "hi": "PDF जोड़ें", "pl": "Dodaj PDF",
     },
     "Back": {
         "de": "Zurück",
@@ -6570,7 +6574,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Retour",
         "vi": "Quay lại",
         "zh": "返回",
-        "hi": "वापस",
+        "hi": "वापस", "pl": "Wstecz",
     },
     "Loading PDF\u2026": {
         "de": "PDF wird geladen\u2026",
@@ -6580,7 +6584,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Chargement du PDF\u2026",
         "vi": "Đang tải PDF\u2026",
         "zh": "正在加载 PDF\u2026",
-        "hi": "PDF लोड हो रहा है\u2026",
+        "hi": "PDF लोड हो रहा है\u2026", "pl": "Wczytywanie pliku PDF…",
     },
     "Could not render PDF.": {
         "de": "PDF konnte nicht gerendert werden.",
@@ -6590,7 +6594,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Impossible d'afficher le PDF.",
         "vi": "Không thể hiển thị PDF.",
         "zh": "无法渲染 PDF。",
-        "hi": "PDF रेंडर नहीं हो सका।",
+        "hi": "PDF रेंडर नहीं हो सका।", "pl": "Nie udało się wyrenderować pliku PDF.",
     },
     "Open in system viewer": {
         "de": "Im Systembetrachter öffnen",
@@ -6600,7 +6604,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Ouvrir dans la visionneuse système",
         "vi": "Mở trong trình xem hệ thống",
         "zh": "在系统查看器中打开",
-        "hi": "सिस्टम व्यूअर में खोलें",
+        "hi": "सिस्टम व्यूअर में खोलें", "pl": "Otwórz w przeglądarce systemowej",
     },
     "No PDFs yet.": {
         "de": "Noch keine PDFs.",
@@ -6610,7 +6614,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Aucun PDF pour l'instant.",
         "vi": "Chưa có PDF nào.",
         "zh": "暂无 PDF。",
-        "hi": "अभी कोई PDF नहीं।",
+        "hi": "अभी कोई PDF नहीं।", "pl": "Brak plików PDF.",
     },
     "Add one to get started.": {
         "de": "Füge eine hinzu, um anzufangen.",
@@ -6620,7 +6624,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Ajoutez-en un pour commencer.",
         "vi": "Thêm một cái để bắt đầu.",
         "zh": "添加一个以开始。",
-        "hi": "शुरू करने के लिए एक जोड़ें।",
+        "hi": "शुरू करने के लिए एक जोड़ें।", "pl": "Dodaj jeden, aby zacząć.",
     },
     "Already in list": {
         "de": "Bereits in der Liste",
@@ -6630,7 +6634,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Déjà dans la liste",
         "vi": "Đã có trong danh sách",
         "zh": "已在列表中",
-        "hi": "पहले से सूची में है",
+        "hi": "पहले से सूची में है", "pl": "Już na liście",
     },
     "PDF added": {
         "de": "PDF hinzugefügt",
@@ -6640,7 +6644,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "PDF ajouté",
         "vi": "Đã thêm PDF",
         "zh": "已添加 PDF",
-        "hi": "PDF जोड़ा गया",
+        "hi": "PDF जोड़ा गया", "pl": "Dodano PDF",
     },
     "Removed": {
         "de": "Entfernt",
@@ -6650,7 +6654,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Supprimé",
         "vi": "Đã xóa",
         "zh": "已移除",
-        "hi": "हटाया गया",
+        "hi": "हटाया गया", "pl": "Usunięto",
     },
     "Moved to folder": {
         "de": "In Ordner verschoben",
@@ -6660,7 +6664,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Déplacé dans le dossier",
         "vi": "Đã chuyển vào thư mục",
         "zh": "已移至文件夹",
-        "hi": "फ़ोल्डर में ले जाया गया",
+        "hi": "फ़ोल्डर में ले जाया गया", "pl": "Przeniesiono do folderu",
     },
     "Removed from folder": {
         "de": "Aus Ordner entfernt",
@@ -6670,7 +6674,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Retiré du dossier",
         "vi": "Đã xóa khỏi thư mục",
         "zh": "已从文件夹中移除",
-        "hi": "फ़ोल्डर से हटाया गया",
+        "hi": "फ़ोल्डर से हटाया गया", "pl": "Usunięto z folderu",
     },
     "PDF Viewer only": {
         "de": "Nur PDF-Betrachter",
@@ -6680,7 +6684,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Visionneuse PDF uniquement",
         "vi": "Chỉ xem PDF",
         "zh": "仅 PDF 查看器",
-        "hi": "केवल PDF व्यूअर",
+        "hi": "केवल PDF व्यूअर", "pl": "Tylko przeglądarka PDF",
     },
     "PDFs can be viewed but not edited here. Keep your files at their original paths; moving or deleting them will break the link.": {
         "de": "PDFs können hier angesehen, aber nicht bearbeitet werden. Belasse deine Dateien an ihrem ursprünglichen Speicherort; das Verschieben oder Löschen bricht die Verknüpfung.",
@@ -6690,7 +6694,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Les PDFs peuvent être visualisés mais pas modifiés ici. Conservez vos fichiers à leurs chemins d'origine ; les déplacer ou les supprimer brisera le lien.",
         "vi": "PDF có thể xem nhưng không thể chỉnh sửa tại đây. Giữ nguyên vị trí tệp gốc; di chuyển hoặc xóa sẽ làm mất liên kết.",
         "zh": "PDF 只能在此查看，不能编辑。请保持文件在原路径；移动或删除将断开链接。",
-        "hi": "PDF यहाँ केवल देखे जा सकते हैं, संपादित नहीं किए जा सकते। अपनी फ़ाइलें मूल पथ पर रखें; उन्हें हटाने या स्थानांतरित करने से लिंक टूट जाएगा।",
+        "hi": "PDF यहाँ केवल देखे जा सकते हैं, संपादित नहीं किए जा सकते। अपनी फ़ाइलें मूल पथ पर रखें; उन्हें हटाने या स्थानांतरित करने से लिंक टूट जाएगा।", "pl": "Pliki PDF można tu przeglądać, ale nie edytować. Przechowuj pliki w ich pierwotnej lokalizacji; przeniesienie lub usunięcie ich przerwie połączenie.",
     },
     "PDF study viewer": {
         "de": "PDF-Lernansicht",
@@ -6700,7 +6704,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Visionneuse PDF d’étude",
         "vi": "Trình xem PDF học tập",
         "zh": "PDF 学习查看器",
-        "hi": "PDF अध्ययन व्यूअर",
+        "hi": "PDF अध्ययन व्यूअर", "pl": "Przeglądarka PDF do nauki",
     },
     "Select text in text-based PDFs to copy it or prepare an Anki card. Scanned PDFs require OCR.": {
         "de": "Markiere Text in textbasierten PDFs, um ihn zu kopieren oder eine Anki-Karte vorzubereiten. Eingescannte PDFs benötigen OCR.",
@@ -6710,7 +6714,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Sélectionnez du texte dans les PDF textuels pour le copier ou préparer une carte Anki. Les PDF numérisés nécessitent l’OCR.",
         "vi": "Chọn văn bản trong PDF có lớp chữ để sao chép hoặc chuẩn bị thẻ Anki. PDF quét cần OCR.",
         "zh": "在含文本的 PDF 中选择文字，即可复制或准备 Anki 卡片。扫描版 PDF 需要 OCR。",
-        "hi": "टेक्स्ट वाले PDF में पाठ चुनकर उसे कॉपी करें या Anki कार्ड तैयार करें। स्कैन किए गए PDF के लिए OCR आवश्यक है।",
+        "hi": "टेक्स्ट वाले PDF में पाठ चुनकर उसे कॉपी करें या Anki कार्ड तैयार करें। स्कैन किए गए PDF के लिए OCR आवश्यक है।", "pl": "Zaznacz tekst w plikach PDF opartych na tekście, aby go skopiować lub przygotować kartę Anki. Zeskanowane pliki PDF wymagają OCR.",
     },
     "Card front": {
         "de": "Kartenvorderseite",
@@ -6720,7 +6724,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Recto de la carte",
         "vi": "Mặt trước thẻ",
         "zh": "卡片正面",
-        "hi": "कार्ड का सामने वाला भाग",
+        "hi": "कार्ड का सामने वाला भाग", "pl": "Przód karty",
     },
     "Card back": {
         "de": "Kartenrückseite",
@@ -6730,7 +6734,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Verso de la carte",
         "vi": "Mặt sau thẻ",
         "zh": "卡片背面",
-        "hi": "कार्ड का पिछला भाग",
+        "hi": "कार्ड का पिछला भाग", "pl": "Tył karty",
     },
     "Open in Anki": {
         "de": "In Anki öffnen",
@@ -6740,7 +6744,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Ouvrir dans Anki",
         "vi": "Mở trong Anki",
         "zh": "在 Anki 中打开",
-        "hi": "Anki में खोलें",
+        "hi": "Anki में खोलें", "pl": "Otwórz w Anki",
     },
     "Clear": {
         "de": "Leeren",
@@ -6750,7 +6754,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Effacer",
         "vi": "Xóa",
         "zh": "清空",
-        "hi": "साफ़ करें",
+        "hi": "साफ़ करें", "pl": "Wyczyść",
     },
     "Front saved": {
         "de": "Vorderseite gespeichert",
@@ -6760,7 +6764,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Recto enregistré",
         "vi": "Đã lưu mặt trước",
         "zh": "正面已保存",
-        "hi": "सामने वाला भाग सहेजा गया",
+        "hi": "सामने वाला भाग सहेजा गया", "pl": "Przód zapisany",
     },
     "Back saved": {
         "de": "Rückseite gespeichert",
@@ -6770,7 +6774,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Verso enregistré",
         "vi": "Đã lưu mặt sau",
         "zh": "背面已保存",
-        "hi": "पिछला भाग सहेजा गया",
+        "hi": "पिछला भाग सहेजा गया", "pl": "Zapisano tył",
     },
     "Front": {
         "de": "Vorderseite",
@@ -6780,7 +6784,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Recto",
         "vi": "Mặt trước",
         "zh": "正面",
-        "hi": "सामने",
+        "hi": "सामने", "pl": "Przód",
     },
     "Back side": {
         "de": "Rückseite",
@@ -6790,7 +6794,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Verso",
         "vi": "Mặt sau",
         "zh": "背面",
-        "hi": "पीछे",
+        "hi": "पीछे", "pl": "Tył",
     },
     "Select some PDF text first.": {
         "de": "Markiere zuerst Text in der PDF.",
@@ -6800,7 +6804,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Sélectionnez d’abord du texte dans le PDF.",
         "vi": "Hãy chọn văn bản PDF trước.",
         "zh": "请先选择 PDF 文本。",
-        "hi": "पहले PDF का कुछ पाठ चुनें।",
+        "hi": "पहले PDF का कुछ पाठ चुनें।", "pl": "Najpierw zaznacz tekst w PDF.",
     },
     "Discard the unfinished card draft?": {
         "de": "Den unfertigen Kartenentwurf verwerfen?",
@@ -6810,7 +6814,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Supprimer le brouillon de carte inachevé ?",
         "vi": "Hủy bản nháp thẻ chưa hoàn thành?",
         "zh": "放弃未完成的卡片草稿吗？",
-        "hi": "अधूरा कार्ड ड्राफ़्ट छोड़ दें?",
+        "hi": "अधूरा कार्ड ड्राफ़्ट छोड़ दें?", "pl": "Odrzucić niedokończony szkic karty?",
     },
     "Selected text copied": {
         "de": "Markierter Text kopiert",
@@ -6820,7 +6824,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Texte sélectionné copié",
         "vi": "Đã sao chép văn bản đã chọn",
         "zh": "已复制所选文本",
-        "hi": "चुना हुआ पाठ कॉपी किया गया",
+        "hi": "चुना हुआ पाठ कॉपी किया गया", "pl": "Skopiowano zaznaczony tekst",
     },
     "Source": {
         "de": "Quelle",
@@ -6830,7 +6834,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Source",
         "vi": "Nguồn",
         "zh": "来源",
-        "hi": "स्रोत",
+        "hi": "स्रोत", "pl": "Źródło",
     },
     "Page": {
         "de": "Seite",
@@ -6840,7 +6844,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Page",
         "vi": "Trang",
         "zh": "页",
-        "hi": "पृष्ठ",
+        "hi": "पृष्ठ", "pl": "Strona",
     },
     "Pages": {
         "de": "Seiten",
@@ -6850,7 +6854,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Pages",
         "vi": "Trang",
         "zh": "页",
-        "hi": "पृष्ठ",
+        "hi": "पृष्ठ", "pl": "Strony",
     },
     "Card draft opened in Anki": {
         "de": "Kartenentwurf in Anki geöffnet",
@@ -6860,7 +6864,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Brouillon de carte ouvert dans Anki",
         "vi": "Đã mở bản nháp thẻ trong Anki",
         "zh": "已在 Anki 中打开卡片草稿",
-        "hi": "कार्ड ड्राफ़्ट Anki में खोला गया",
+        "hi": "कार्ड ड्राफ़्ट Anki में खोला गया", "pl": "Szkic karty otwarty w Anki",
     },
     "Select text for the card front first.": {
         "de": "Markiere zuerst Text für die Kartenvorderseite.",
@@ -6870,7 +6874,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Sélectionnez d’abord le texte du recto de la carte.",
         "vi": "Hãy chọn văn bản cho mặt trước của thẻ trước.",
         "zh": "请先选择卡片正面的文本。",
-        "hi": "पहले कार्ड के सामने के लिए पाठ चुनें।",
+        "hi": "पहले कार्ड के सामने के लिए पाठ चुनें।", "pl": "Najpierw zaznacz tekst dla przodu karty.",
     },
     "The selected text is too long for a card.": {
         "de": "Der markierte Text ist zu lang für eine Karte.",
@@ -6880,7 +6884,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Le texte sélectionné est trop long pour une carte.",
         "vi": "Văn bản đã chọn quá dài cho một thẻ.",
         "zh": "所选文本太长，无法用于一张卡片。",
-        "hi": "चुना हुआ पाठ एक कार्ड के लिए बहुत लंबा है।",
+        "hi": "चुना हुआ पाठ एक कार्ड के लिए बहुत लंबा है।", "pl": "Zaznaczony tekst jest zbyt długi dla karty.",
     },
     "The Add Cards window already contains an unfinished note. Finish or clear it, then try again.": {
         "de": "Im Hinzufügen-Fenster befindet sich bereits eine unfertige Notiz. Schließe sie ab oder leere sie und versuche es erneut.",
@@ -6890,7 +6894,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "La fenêtre Ajouter contient déjà une note inachevée. Terminez-la ou effacez-la, puis réessayez.",
         "vi": "Cửa sổ Thêm thẻ đã có một ghi chú chưa hoàn thành. Hãy hoàn tất hoặc xóa nó rồi thử lại.",
         "zh": "“添加卡片”窗口中已有未完成的笔记。请先完成或清空它，然后重试。",
-        "hi": "कार्ड जोड़ें विंडो में पहले से एक अधूरा नोट है। उसे पूरा या साफ़ करके फिर प्रयास करें।",
+        "hi": "कार्ड जोड़ें विंडो में पहले से एक अधूरा नोट है। उसे पूरा या साफ़ करके फिर प्रयास करें।", "pl": "Okno Dodawania kart zawiera już niedokończoną notatkę. Zakończ ją lub wyczyść, a następnie spróbuj ponownie.",
     },
     "Could not copy the selected text.": {
         "de": "Der markierte Text konnte nicht kopiert werden.",
@@ -6900,7 +6904,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Impossible de copier le texte sélectionné.",
         "vi": "Không thể sao chép văn bản đã chọn.",
         "zh": "无法复制所选文本。",
-        "hi": "चुना हुआ पाठ कॉपी नहीं किया जा सका।",
+        "hi": "चुना हुआ पाठ कॉपी नहीं किया जा सका।", "pl": "Nie udało się skopiować zaznaczonego tekstu.",
     },
     "The selected text is too long to copy at once.": {
         "de": "Der markierte Text ist zu lang, um ihn auf einmal zu kopieren.",
@@ -6910,7 +6914,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Le texte sélectionné est trop long pour être copié en une seule fois.",
         "vi": "Văn bản đã chọn quá dài để sao chép cùng một lúc.",
         "zh": "所选文本太长，无法一次复制。",
-        "hi": "चुना हुआ पाठ एक बार में कॉपी करने के लिए बहुत लंबा है।",
+        "hi": "चुना हुआ पाठ एक बार में कॉपी करने के लिए बहुत लंबा है।", "pl": "Zaznaczony tekst jest zbyt długi, aby skopiować go za jednym razem.",
     },
     "Could not open the card draft in Anki.": {
         "de": "Der Kartenentwurf konnte nicht in Anki geöffnet werden.",
@@ -6920,7 +6924,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Impossible d’ouvrir le brouillon de carte dans Anki.",
         "vi": "Không thể mở bản nháp thẻ trong Anki.",
         "zh": "无法在 Anki 中打开卡片草稿。",
-        "hi": "कार्ड ड्राफ़्ट Anki में नहीं खोला जा सका।",
+        "hi": "कार्ड ड्राफ़्ट Anki में नहीं खोला जा सका।", "pl": "Nie udało się otworzyć szkicu karty w Anki.",
     },
 
     # ================================================================= #
@@ -6934,7 +6938,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Relier le PDF",
         "vi": "Liên kết lại PDF",
         "zh": "重新链接 PDF",
-        "hi": "PDF पुनः लिंक करें",
+        "hi": "PDF पुनः लिंक करें", "pl": "Połącz PDF ponownie",
     },
     "Relink file": {
         "de": "Datei neu verknüpfen",
@@ -6944,7 +6948,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Relier le fichier",
         "vi": "Liên kết lại tệp",
         "zh": "重新链接文件",
-        "hi": "फ़ाइल पुनः लिंक करें",
+        "hi": "फ़ाइल पुनः लिंक करें", "pl": "Połącz plik ponownie",
     },
     "File relinked": {
         "de": "Datei neu verknüpft",
@@ -6954,7 +6958,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Fichier relié",
         "vi": "Đã liên kết lại tệp",
         "zh": "文件已重新链接",
-        "hi": "फ़ाइल पुनः लिंक हो गई",
+        "hi": "फ़ाइल पुनः लिंक हो गई", "pl": "Plik połączono ponownie",
     },
     "View inline": {
         "de": "Inline anzeigen",
@@ -6964,7 +6968,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Voir en ligne",
         "vi": "Xem nội tuyến",
         "zh": "内嵌查看",
-        "hi": "इनलाइन देखें",
+        "hi": "इनलाइन देखें", "pl": "Podgląd wbudowany",
     },
     "Open externally": {
         "de": "Extern öffnen",
@@ -6974,7 +6978,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Ouvrir en externe",
         "vi": "Mở bên ngoài",
         "zh": "外部打开",
-        "hi": "बाहर खोलें",
+        "hi": "बाहर खोलें", "pl": "Otwórz zewnętrznie",
     },
     "Remove": {
         "de": "Entfernen",
@@ -6984,7 +6988,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Supprimer",
         "vi": "Xóa",
         "zh": "移除",
-        "hi": "हटाएं",
+        "hi": "हटाएं", "pl": "Usuń",
     },
 
     # ================================================================= #
@@ -6998,7 +7002,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Chargement de l'assistant IA\u2026",
         "vi": "Đang tải trợ lý AI\u2026",
         "zh": "正在加载 AI 助手\u2026",
-        "hi": "AI असिस्टेंट लोड हो रहा है\u2026",
+        "hi": "AI असिस्टेंट लोड हो रहा है\u2026", "pl": "Wczytywanie Asystenta AI…",
     },
     "Connection failed": {
         "de": "Verbindung fehlgeschlagen",
@@ -7008,7 +7012,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Connexion échouée",
         "vi": "Kết nối thất bại",
         "zh": "连接失败",
-        "hi": "कनेक्शन विफल",
+        "hi": "कनेक्शन विफल", "pl": "Połączenie nie powiodło się",
     },
     "The AI Assistant could not be reached.\nPlease check your internet connection and try again.": {
         "de": "Der KI-Assistent konnte nicht erreicht werden.\nBitte Internetverbindung prüfen und erneut versuchen.",
@@ -7018,7 +7022,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "L'assistant IA n'a pas pu être atteint.\nVérifiez votre connexion internet et réessayez.",
         "vi": "Không thể kết nối với trợ lý AI.\nVui lòng kiểm tra kết nối internet và thử lại.",
         "zh": "无法连接到 AI 助手。\n请检查您的网络连接并重试。",
-        "hi": "AI असिस्टेंट से कनेक्ट नहीं हो सका।\nकृपया अपना इंटरनेट कनेक्शन जांचें और पुनः प्रयास करें।",
+        "hi": "AI असिस्टेंट से कनेक्ट नहीं हो सका।\nकृपया अपना इंटरनेट कनेक्शन जांचें और पुनः प्रयास करें।", "pl": "Nie udało się połączyć z Asystentem AI.\nSprawdź połączenie z internetem i spróbuj ponownie.",
     },
     "Retry": {
         "de": "Erneut versuchen",
@@ -7028,7 +7032,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Réessayer",
         "vi": "Thử lại",
         "zh": "重试",
-        "hi": "पुनः प्रयास करें",
+        "hi": "पुनः प्रयास करें", "pl": "Ponów",
     },
 
     # ================================================================= #
@@ -7042,7 +7046,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "La lecture audio n'est pas disponible sur ce système.\nSous Linux, installez les plugins GStreamer :\n  gstreamer1.0-plugins-good\n  gstreamer1.0-plugins-bad",
         "vi": "Phát âm thanh không khả dụng trên hệ thống này.\nTrên Linux, hãy cài đặt các plugin GStreamer:\n  gstreamer1.0-plugins-good\n  gstreamer1.0-plugins-bad",
         "zh": "此系统不支持音频播放。\n在 Linux 上，请安装 GStreamer 插件：\n  gstreamer1.0-plugins-good\n  gstreamer1.0-plugins-bad",
-        "hi": "इस सिस्टम पर ऑडियो प्लेबैक उपलब्ध नहीं है।\nLinux पर GStreamer प्लगइन इंस्टॉल करें:\n  gstreamer1.0-plugins-good\n  gstreamer1.0-plugins-bad",
+        "hi": "इस सिस्टम पर ऑडियो प्लेबैक उपलब्ध नहीं है।\nLinux पर GStreamer प्लगइन इंस्टॉल करें:\n  gstreamer1.0-plugins-good\n  gstreamer1.0-plugins-bad", "pl": "Odtwarzanie dźwięku nie jest dostępne w tym systemie.\nW systemie Linux zainstaluj wtyczki GStreamer:\n  gstreamer1.0-plugins-good\n  gstreamer1.0-plugins-bad",
     },
 
     # ================================================================= #
@@ -7050,107 +7054,107 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
     # ================================================================= #
     "New": {
         "de": "Neu", "es": "Nuevo", "ko": "새로 만들기", "pt": "Novo",
-        "fr": "Nouveau", "vi": "Mới", "zh": "新建", "hi": "नया",
+        "fr": "Nouveau", "vi": "Mới", "zh": "新建", "hi": "नया", "pl": "Nowa",
     },
     "Menu": {
         "de": "Menü", "es": "Menú", "ko": "메뉴", "pt": "Menu",
-        "fr": "Menu", "vi": "Menu", "zh": "菜单", "hi": "मेनू",
+        "fr": "Menu", "vi": "Menu", "zh": "菜单", "hi": "मेनू", "pl": "Menu",
     },
     "Start Learning": {
         "de": "Lernen starten", "es": "Empezar a aprender", "ko": "학습 시작", "pt": "Começar a aprender",
-        "fr": "Commencer l'apprentissage", "vi": "Bắt đầu học", "zh": "开始学习", "hi": "सीखना शुरू करें",
+        "fr": "Commencer l'apprentissage", "vi": "Bắt đầu học", "zh": "开始学习", "hi": "सीखना शुरू करें", "pl": "Rozpocznij naukę",
     },
     "Create with AI": {
         "de": "Mit KI erstellen", "es": "Crear con IA", "ko": "AI로 만들기", "pt": "Criar com IA",
-        "fr": "Créer avec IA", "vi": "Tạo bằng AI", "zh": "用AI创建", "hi": "AI से बनाएं",
+        "fr": "Créer avec IA", "vi": "Tạo bằng AI", "zh": "用AI创建", "hi": "AI से बनाएं", "pl": "Utwórz z AI",
     },
     "Export": {
         "de": "Exportieren", "es": "Exportar", "ko": "내보내기", "pt": "Exportar",
-        "fr": "Exporter", "vi": "Xuất", "zh": "导出", "hi": "निर्यात करें",
+        "fr": "Exporter", "vi": "Xuất", "zh": "导出", "hi": "निर्यात करें", "pl": "Eksportuj",
     },
     "Delete Map": {
         "de": "Karte löschen", "es": "Eliminar mapa", "ko": "맵 삭제", "pt": "Excluir mapa",
-        "fr": "Supprimer la carte", "vi": "Xóa bản đồ", "zh": "删除思维导图", "hi": "मैप हटाएं",
+        "fr": "Supprimer la carte", "vi": "Xóa bản đồ", "zh": "删除思维导图", "hi": "मैप हटाएं", "pl": "Usuń mapę",
     },
     "Information": {
         "de": "Informationen", "es": "Información", "ko": "정보", "pt": "Informação",
-        "fr": "Informations", "vi": "Thông tin", "zh": "信息", "hi": "जानकारी",
+        "fr": "Informations", "vi": "Thông tin", "zh": "信息", "hi": "जानकारी", "pl": "Informacje",
     },
     "Fullscreen": {
         "de": "Vollbild", "es": "Pantalla completa", "ko": "전체 화면", "pt": "Tela cheia",
-        "fr": "Plein écran", "vi": "Toàn màn hình", "zh": "全屏", "hi": "पूर्ण स्क्रीन",
+        "fr": "Plein écran", "vi": "Toàn màn hình", "zh": "全屏", "hi": "पूर्ण स्क्रीन", "pl": "Pełny ekran",
     },
     "Exit Fullscreen": {
         "de": "Vollbild beenden", "es": "Salir de pantalla completa", "ko": "전체 화면 종료", "pt": "Sair da tela cheia",
-        "fr": "Quitter le plein écran", "vi": "Thoát toàn màn hình", "zh": "退出全屏", "hi": "पूर्ण स्क्रीन से बाहर",
+        "fr": "Quitter le plein écran", "vi": "Thoát toàn màn hình", "zh": "退出全屏", "hi": "पूर्ण स्क्रीन से बाहर", "pl": "Wyjdź z pełnego ekranu",
     },
     "Center View": {
         "de": "Ansicht zentrieren", "es": "Centrar vista", "ko": "뷰 중앙 맞춤", "pt": "Centralizar vista",
-        "fr": "Centrer la vue", "vi": "Căn giữa", "zh": "居中视图", "hi": "दृश्य केंद्रित करें",
+        "fr": "Centrer la vue", "vi": "Căn giữa", "zh": "居中视图", "hi": "दृश्य केंद्रित करें", "pl": "Wyśrodkuj widok",
     },
     "Reveal": {
         "de": "Aufdecken", "es": "Revelar", "ko": "공개", "pt": "Revelar",
-        "fr": "Révéler", "vi": "Hiện đáp án", "zh": "显示答案", "hi": "उत्तर दिखाएं",
+        "fr": "Révéler", "vi": "Hiện đáp án", "zh": "显示答案", "hi": "उत्तर दिखाएं", "pl": "Odkryj",
     },
     "Didn't know": {
         "de": "Nicht gewusst", "es": "No lo sabía", "ko": "몰랐어요", "pt": "Não sabia",
-        "fr": "Je ne savais pas", "vi": "Không biết", "zh": "不知道", "hi": "नहीं जानता था",
+        "fr": "Je ne savais pas", "vi": "Không biết", "zh": "不知道", "hi": "नहीं जानता था", "pl": "Nie pamiętam",
     },
     "I knew it!": {
         "de": "Ich wusste es!", "es": "¡Lo sabía!", "ko": "알고 있었어요!", "pt": "Eu sabia!",
-        "fr": "Je le savais !", "vi": "Tôi biết rồi!", "zh": "我知道了！", "hi": "मैं जानता था!",
+        "fr": "Je le savais !", "vi": "Tôi biết rồi!", "zh": "我知道了！", "hi": "मैं जानता था!", "pl": "Pamiętam!",
     },
     "Stop": {
         "de": "Stopp", "es": "Parar", "ko": "정지", "pt": "Parar",
-        "fr": "Arrêter", "vi": "Dừng", "zh": "停止", "hi": "रोकें",
+        "fr": "Arrêter", "vi": "Dừng", "zh": "停止", "hi": "रोकें", "pl": "Stop",
     },
     "Learning Setup": {
         "de": "Lerneinstellungen", "es": "Configuración de aprendizaje", "ko": "학습 설정", "pt": "Configuração de aprendizado",
-        "fr": "Configuration d'apprentissage", "vi": "Cài đặt học tập", "zh": "学习设置", "hi": "सीखने की सेटअप",
+        "fr": "Configuration d'apprentissage", "vi": "Cài đặt học tập", "zh": "学习设置", "hi": "सीखने की सेटअप", "pl": "Ustawienia nauki",
     },
     "Scope": {
         "de": "Umfang", "es": "Alcance", "ko": "범위", "pt": "Escopo",
-        "fr": "Portée", "vi": "Phạm vi", "zh": "范围", "hi": "दायरा",
+        "fr": "Portée", "vi": "Phạm vi", "zh": "范围", "hi": "दायरा", "pl": "Zakres",
     },
     "Entire Map": {
         "de": "Gesamte Karte", "es": "Mapa completo", "ko": "전체 맵", "pt": "Mapa inteiro",
-        "fr": "Carte entière", "vi": "Toàn bộ bản đồ", "zh": "整个思维导图", "hi": "पूरा मैप",
+        "fr": "Carte entière", "vi": "Toàn bộ bản đồ", "zh": "整个思维导图", "hi": "पूरा मैप", "pl": "Cała mapa",
     },
     "Select Nodes": {
         "de": "Knoten auswählen", "es": "Seleccionar nodos", "ko": "노드 선택", "pt": "Selecionar nós",
-        "fr": "Sélectionner les nœuds", "vi": "Chọn nút", "zh": "选择节点", "hi": "नोड चुनें",
+        "fr": "Sélectionner les nœuds", "vi": "Chọn nút", "zh": "选择节点", "hi": "नोड चुनें", "pl": "Zaznaczanie węzłów",
     },
     "Order": {
         "de": "Reihenfolge", "es": "Orden", "ko": "순서", "pt": "Ordem",
-        "fr": "Ordre", "vi": "Thứ tự", "zh": "顺序", "hi": "क्रम",
+        "fr": "Ordre", "vi": "Thứ tự", "zh": "顺序", "hi": "क्रम", "pl": "Kolejność",
     },
     "Top-Down": {
         "de": "Von oben nach unten", "es": "De arriba a abajo", "ko": "위에서 아래로", "pt": "De cima para baixo",
-        "fr": "Du haut vers le bas", "vi": "Từ trên xuống", "zh": "从上到下", "hi": "ऊपर से नीचे",
+        "fr": "Du haut vers le bas", "vi": "Từ trên xuống", "zh": "从上到下", "hi": "ऊपर से नीचे", "pl": "Od góry w dół",
     },
     "Random": {
         "de": "Zufällig", "es": "Aleatorio", "ko": "무작위", "pt": "Aleatório",
-        "fr": "Aléatoire", "vi": "Ngẫu nhiên", "zh": "随机", "hi": "यादृच्छिक",
+        "fr": "Aléatoire", "vi": "Ngẫu nhiên", "zh": "随机", "hi": "यादृच्छिक", "pl": "Losowo",
     },
     "Wrong Answer Penalty": {
         "de": "Strafe bei falscher Antwort", "es": "Penalización por respuesta incorrecta", "ko": "오답 패널티", "pt": "Penalidade por resposta errada",
-        "fr": "Pénalité pour mauvaise réponse", "vi": "Hình phạt trả lời sai", "zh": "错误答案惩罚", "hi": "गलत उत्तर दंड",
+        "fr": "Pénalité pour mauvaise réponse", "vi": "Hình phạt trả lời sai", "zh": "错误答案惩罚", "hi": "गलत उत्तर दंड", "pl": "Kara za błędną odpowiedź",
     },
     "Skip": {
         "de": "Überspringen", "es": "Saltar", "ko": "건너뛰기", "pt": "Pular",
-        "fr": "Ignorer", "vi": "Bỏ qua", "zh": "跳过", "hi": "छोड़ें",
+        "fr": "Ignorer", "vi": "Bỏ qua", "zh": "跳过", "hi": "छोड़ें", "pl": "Pomiń",
     },
     "Retry Soon": {
         "de": "Bald wiederholen", "es": "Reintentar pronto", "ko": "곧 다시 시도", "pt": "Tentar em breve",
-        "fr": "Réessayer bientôt", "vi": "Thử lại sớm", "zh": "马上重试", "hi": "जल्द पुनः प्रयास",
+        "fr": "Réessayer bientôt", "vi": "Thử lại sớm", "zh": "马上重试", "hi": "जल्द पुनः प्रयास", "pl": "Ponów wkrótce",
     },
     "Revisit Later": {
         "de": "Später erneut ansehen", "es": "Revisar más tarde", "ko": "나중에 다시 보기", "pt": "Revisitar depois",
-        "fr": "Revoir plus tard", "vi": "Xem lại sau", "zh": "稍后复习", "hi": "बाद में दोबारा देखें",
+        "fr": "Revoir plus tard", "vi": "Xem lại sau", "zh": "稍后复习", "hi": "बाद में दोबारा देखें", "pl": "Wróć później",
     },
     "Tap nodes to select:": {
         "de": "Knoten antippen zum Auswählen:", "es": "Toca nodos para seleccionar:", "ko": "선택하려면 노드를 탭하세요:", "pt": "Toque nos nós para selecionar:",
-        "fr": "Appuyez sur les nœuds pour sélectionner :", "vi": "Nhấn vào nút để chọn:", "zh": "点击节点以选择：", "hi": "चुनने के लिए नोड टैप करें:",
+        "fr": "Appuyez sur les nœuds pour sélectionner :", "vi": "Nhấn vào nút để chọn:", "zh": "点击节点以选择：", "hi": "चुनने के लिए नोड टैप करें:", "pl": "Dotknij węzłów, aby je zaznaczyć:",
     },
     "Right-click on a node for options. Drag the blue dot to create new nodes.": {
         "de": "Rechtsklick auf einen Knoten für Optionen. Blauen Punkt ziehen, um neue Knoten zu erstellen.",
@@ -7160,66 +7164,66 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Clic droit sur un nœud pour les options. Faites glisser le point bleu pour créer de nouveaux nœuds.",
         "vi": "Nhấp chuột phải vào nút để xem tùy chọn. Kéo chấm xanh để tạo nút mới.",
         "zh": "右键点击节点查看选项。拖动蓝色点创建新节点。",
-        "hi": "विकल्पों के लिए नोड पर राइट-क्लिक करें। नए नोड बनाने के लिए नीले बिंदु को खींचें।",
+        "hi": "विकल्पों के लिए नोड पर राइट-क्लिक करें। नए नोड बनाने के लिए नीले बिंदु को खींचें।", "pl": "Kliknij węzeł prawym przyciskiem myszy, aby zobaczyć opcje. Przeciągnij niebieską kropkę, aby utworzyć nowe węzły.",
     },
 
     # ── Measurable daily challenges (gamification) ─────────────────────────
     "Review {} cards today.": {
         "de": "Wiederhole heute {} Karten.", "es": "Repasa {} tarjetas hoy.", "ko": "오늘 카드 {}장을 복습하세요.", "pt": "Revise {} cartões hoje.",
-        "fr": "Révisez {} cartes aujourd'hui.", "vi": "Ôn {} thẻ hôm nay.", "zh": "今天复习 {} 张卡片。", "hi": "आज {} कार्ड दोहराएं।",
+        "fr": "Révisez {} cartes aujourd'hui.", "vi": "Ôn {} thẻ hôm nay.", "zh": "今天复习 {} 张卡片。", "hi": "आज {} कार्ड दोहराएं।", "pl": "Dziś powtórz {} kart.",
     },
     "Learn {} new cards today.": {
         "de": "Lerne heute {} neue Karten.", "es": "Aprende {} tarjetas nuevas hoy.", "ko": "오늘 새 카드 {}장을 학습하세요.", "pt": "Aprenda {} cartões novos hoje.",
-        "fr": "Apprenez {} nouvelles cartes aujourd'hui.", "vi": "Học {} thẻ mới hôm nay.", "zh": "今天学习 {} 张新卡片。", "hi": "आज {} नए कार्ड सीखें।",
+        "fr": "Apprenez {} nouvelles cartes aujourd'hui.", "vi": "Học {} thẻ mới hôm nay.", "zh": "今天学习 {} 张新卡片。", "hi": "आज {} नए कार्ड सीखें।", "pl": "Naucz się dziś {} nowych kart.",
     },
     "Study for {} minutes today.": {
         "de": "Lerne heute {} Minuten.", "es": "Estudia {} minutos hoy.", "ko": "오늘 {}분 동안 공부하세요.", "pt": "Estude por {} minutos hoje.",
-        "fr": "Étudiez {} minutes aujourd'hui.", "vi": "Học {} phút hôm nay.", "zh": "今天学习 {} 分钟。", "hi": "आज {} मिनट पढ़ाई करें।",
+        "fr": "Étudiez {} minutes aujourd'hui.", "vi": "Học {} phút hôm nay.", "zh": "今天学习 {} 分钟。", "hi": "आज {} मिनट पढ़ाई करें।", "pl": "Ucz się dziś przez {} minut.",
     },
     "Review cards from {} different decks today.": {
         "de": "Wiederhole heute Karten aus {} verschiedenen Stapeln.", "es": "Repasa hoy tarjetas de {} mazos diferentes.",
         "ko": "오늘 서로 다른 덱 {}개의 카드를 복습하세요.", "pt": "Revise hoje cartões de {} baralhos diferentes.",
         "fr": "Révisez aujourd'hui des cartes de {} paquets différents.", "vi": "Hôm nay ôn thẻ từ {} bộ thẻ khác nhau.",
-        "zh": "今天复习来自 {} 个不同牌组的卡片。", "hi": "आज {} अलग-अलग डेक के कार्ड दोहराएं।",
+        "zh": "今天复习来自 {} 个不同牌组的卡片。", "hi": "आज {} अलग-अलग डेक के कार्ड दोहराएं।", "pl": "Dziś powtórz karty z {} różnych talii.",
     },
     "Challenge not completed yet ({}/{}).": {
         "de": "Challenge noch nicht geschafft ({}/{}).", "es": "Desafío aún no completado ({}/{}).", "ko": "아직 챌린지를 완료하지 못했습니다 ({}/{}).",
         "pt": "Desafio ainda não concluído ({}/{}).", "fr": "Défi pas encore accompli ({}/{}).", "vi": "Thử thách chưa hoàn thành ({}/{}).",
-        "zh": "挑战尚未完成（{}/{}）。", "hi": "चुनौती अभी पूरी नहीं हुई ({}/{})।",
+        "zh": "挑战尚未完成（{}/{}）。", "hi": "चुनौती अभी पूरी नहीं हुई ({}/{})।", "pl": "Wyzwanie jeszcze nieukończone ({}/{}).",
     },
     "Claim +{} XP": {
         "de": "+{} XP abholen", "es": "Reclamar +{} XP", "ko": "+{} XP 받기", "pt": "Resgatar +{} XP",
-        "fr": "Récupérer +{} XP", "vi": "Nhận +{} XP", "zh": "领取 +{} XP", "hi": "+{} XP प्राप्त करें",
+        "fr": "Récupérer +{} XP", "vi": "Nhận +{} XP", "zh": "领取 +{} XP", "hi": "+{} XP प्राप्त करें", "pl": "Odbierz +{} XP",
     },
 
     # ── Focus Music player ────────────────────────────────────────────────
     "Previous track": {
         "de": "Vorheriger Titel", "es": "Pista anterior", "ko": "이전 트랙", "pt": "Faixa anterior",
-        "fr": "Piste précédente", "vi": "Bản trước", "zh": "上一曲", "hi": "पिछला ट्रैक",
+        "fr": "Piste précédente", "vi": "Bản trước", "zh": "上一曲", "hi": "पिछला ट्रैक", "pl": "Poprzedni utwór",
     },
     "Next track": {
         "de": "Nächster Titel", "es": "Pista siguiente", "ko": "다음 트랙", "pt": "Próxima faixa",
-        "fr": "Piste suivante", "vi": "Bản tiếp theo", "zh": "下一曲", "hi": "अगला ट्रैक",
+        "fr": "Piste suivante", "vi": "Bản tiếp theo", "zh": "下一曲", "hi": "अगला ट्रैक", "pl": "Następny utwór",
     },
 
     # ── Pomodoro (single-page dialog) ─────────────────────────────────────
     "sessions": {
         "de": "Einheiten", "es": "sesiones", "ko": "세션", "pt": "sessões",
-        "fr": "sessions", "vi": "phiên", "zh": "次", "hi": "सत्र",
+        "fr": "sessions", "vi": "phiên", "zh": "次", "hi": "सत्र", "pl": "sesje",
     },
 
     # ── Ollama setup assistant (AI Assistant) ─────────────────────────────
     "Set up Ollama – Local AI": {
         "de": "Ollama einrichten – Lokale KI", "es": "Configurar Ollama – IA local", "ko": "Ollama 설정 – 로컬 AI", "pt": "Configurar Ollama – IA local",
-        "fr": "Configurer Ollama – IA locale", "vi": "Thiết lập Ollama – AI cục bộ", "zh": "设置 Ollama – 本地 AI", "hi": "Ollama सेटअप – लोकल AI",
+        "fr": "Configurer Ollama – IA locale", "vi": "Thiết lập Ollama – AI cục bộ", "zh": "设置 Ollama – 本地 AI", "hi": "Ollama सेटअप – लोकल AI", "pl": "Skonfiguruj Ollama – lokalna AI",
     },
     "Checking Ollama status…": {
         "de": "Prüfe Ollama-Status…", "es": "Comprobando el estado de Ollama…", "ko": "Ollama 상태 확인 중…", "pt": "Verificando o status do Ollama…",
-        "fr": "Vérification du statut d'Ollama…", "vi": "Đang kiểm tra trạng thái Ollama…", "zh": "正在检查 Ollama 状态…", "hi": "Ollama स्थिति जाँची जा रही है…",
+        "fr": "Vérification du statut d'Ollama…", "vi": "Đang kiểm tra trạng thái Ollama…", "zh": "正在检查 Ollama 状态…", "hi": "Ollama स्थिति जाँची जा रही है…", "pl": "Sprawdzanie stanu Ollama…",
     },
     "Ollama is not running": {
         "de": "Ollama läuft nicht", "es": "Ollama no se está ejecutando", "ko": "Ollama가 실행되고 있지 않습니다", "pt": "O Ollama não está em execução",
-        "fr": "Ollama n'est pas lancé", "vi": "Ollama chưa chạy", "zh": "Ollama 未运行", "hi": "Ollama नहीं चल रहा है",
+        "fr": "Ollama n'est pas lancé", "vi": "Ollama chưa chạy", "zh": "Ollama 未运行", "hi": "Ollama नहीं चल रहा है", "pl": "Ollama nie jest uruchomiona",
     },
     "Ollama lets you run AI models locally — free, private, no API key needed. Nothing you type ever leaves your computer.": {
         "de": "Mit Ollama laufen KI-Modelle lokal auf deinem Rechner — kostenlos, privat, ohne API-Key. Nichts, was du eingibst, verlässt deinen Computer.",
@@ -7229,7 +7233,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Ollama exécute des modèles d'IA localement — gratuit, privé, sans clé API. Rien de ce que vous tapez ne quitte votre ordinateur.",
         "vi": "Ollama chạy các mô hình AI ngay trên máy của bạn — miễn phí, riêng tư, không cần khóa API. Những gì bạn nhập không rời khỏi máy tính.",
         "zh": "Ollama 让 AI 模型完全在本地运行——免费、私密、无需 API 密钥。您输入的内容不会离开您的电脑。",
-        "hi": "Ollama AI मॉडल को आपके कंप्यूटर पर लोकल रूप से चलाता है — मुफ़्त, निजी, बिना API कुंजी। आपका टाइप किया कुछ भी कंप्यूटर से बाहर नहीं जाता।",
+        "hi": "Ollama AI मॉडल को आपके कंप्यूटर पर लोकल रूप से चलाता है — मुफ़्त, निजी, बिना API कुंजी। आपका टाइप किया कुछ भी कंप्यूटर से बाहर नहीं जाता।", "pl": "Ollama pozwala uruchamiać modele AI lokalnie — bezpłatnie, prywatnie, bez potrzeby klucza API. Nic, co wpiszesz, nigdy nie opuszcza twojego komputera.",
     },
     "<b>Step 1:</b> Click <i>Download Ollama</i> below and choose the macOS version.<br><b>Step 2:</b> Open the downloaded file and drag Ollama into your Applications folder.<br><b>Step 3:</b> Launch Ollama once — a small icon appears in the menu bar. That means it is running in the background.<br><b>Step 4:</b> Come back here and click <i>Check again</i>.": {
         "de": "<b>Schritt 1:</b> Klicke unten auf <i>Ollama herunterladen</i> und wähle die macOS-Version.<br><b>Schritt 2:</b> Öffne die heruntergeladene Datei und ziehe Ollama in deinen Programme-Ordner.<br><b>Schritt 3:</b> Starte Ollama einmal — ein kleines Symbol erscheint in der Menüleiste. Das heißt, es läuft im Hintergrund.<br><b>Schritt 4:</b> Komm hierher zurück und klicke auf <i>Erneut prüfen</i>.",
@@ -7239,7 +7243,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "<b>Étape 1 :</b> Cliquez sur <i>Télécharger Ollama</i> ci-dessous et choisissez la version macOS.<br><b>Étape 2 :</b> Ouvrez le fichier téléchargé et faites glisser Ollama dans votre dossier Applications.<br><b>Étape 3 :</b> Lancez Ollama une fois — une petite icône apparaît dans la barre de menus. Cela signifie qu'il tourne en arrière-plan.<br><b>Étape 4 :</b> Revenez ici et cliquez sur <i>Vérifier à nouveau</i>.",
         "vi": "<b>Bước 1:</b> Nhấn <i>Tải Ollama</i> bên dưới và chọn phiên bản macOS.<br><b>Bước 2:</b> Mở tệp đã tải và kéo Ollama vào thư mục Applications.<br><b>Bước 3:</b> Khởi động Ollama một lần — một biểu tượng nhỏ xuất hiện trên thanh menu, nghĩa là nó đang chạy nền.<br><b>Bước 4:</b> Quay lại đây và nhấn <i>Kiểm tra lại</i>.",
         "zh": "<b>第 1 步：</b>点击下方的<i>下载 Ollama</i>并选择 macOS 版本。<br><b>第 2 步：</b>打开下载的文件，将 Ollama 拖入“应用程序”文件夹。<br><b>第 3 步：</b>启动一次 Ollama — 菜单栏会出现一个小图标，表示它正在后台运行。<br><b>第 4 步：</b>回到这里并点击<i>重新检查</i>。",
-        "hi": "<b>चरण 1:</b> नीचे <i>Ollama डाउनलोड करें</i> पर क्लिक करें और macOS संस्करण चुनें।<br><b>चरण 2:</b> डाउनलोड की गई फ़ाइल खोलें और Ollama को Applications फ़ोल्डर में खींचें।<br><b>चरण 3:</b> Ollama एक बार चलाएँ — मेनू बार में एक छोटा आइकन दिखेगा, यानी यह बैकग्राउंड में चल रहा है।<br><b>चरण 4:</b> यहाँ वापस आएँ और <i>फिर से जाँचें</i> पर क्लिक करें।",
+        "hi": "<b>चरण 1:</b> नीचे <i>Ollama डाउनलोड करें</i> पर क्लिक करें और macOS संस्करण चुनें।<br><b>चरण 2:</b> डाउनलोड की गई फ़ाइल खोलें और Ollama को Applications फ़ोल्डर में खींचें।<br><b>चरण 3:</b> Ollama एक बार चलाएँ — मेनू बार में एक छोटा आइकन दिखेगा, यानी यह बैकग्राउंड में चल रहा है।<br><b>चरण 4:</b> यहाँ वापस आएँ और <i>फिर से जाँचें</i> पर क्लिक करें।", "pl": "<b>Krok 1:</b> Kliknij poniżej <i>Pobierz Ollama</i> i wybierz wersję dla macOS.<br><b>Krok 2:</b> Otwórz pobrany plik i przeciągnij Ollama do folderu Aplikacje.<br><b>Krok 3:</b> Uruchom Ollama jeden raz — w pasku menu pojawi się mała ikona. Oznacza to, że działa ona w tle.<br><b>Krok 4:</b> Wróć tutaj i kliknij <i>Sprawdź ponownie</i>.",
     },
     "<b>Step 1:</b> Click <i>Download Ollama</i> below and choose the Windows version.<br><b>Step 2:</b> Run the downloaded installer (OllamaSetup.exe) and follow the steps.<br><b>Step 3:</b> After installation Ollama starts automatically and keeps running in the background (look for its icon in the system tray).<br><b>Step 4:</b> Come back here and click <i>Check again</i>.": {
         "de": "<b>Schritt 1:</b> Klicke unten auf <i>Ollama herunterladen</i> und wähle die Windows-Version.<br><b>Schritt 2:</b> Führe den heruntergeladenen Installer (OllamaSetup.exe) aus und folge den Schritten.<br><b>Schritt 3:</b> Nach der Installation startet Ollama automatisch und läuft im Hintergrund weiter (achte auf das Symbol im Infobereich).<br><b>Schritt 4:</b> Komm hierher zurück und klicke auf <i>Erneut prüfen</i>.",
@@ -7249,7 +7253,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "<b>Étape 1 :</b> Cliquez sur <i>Télécharger Ollama</i> ci-dessous et choisissez la version Windows.<br><b>Étape 2 :</b> Lancez l'installateur téléchargé (OllamaSetup.exe) et suivez les étapes.<br><b>Étape 3 :</b> Après l'installation, Ollama démarre automatiquement et reste actif en arrière-plan (cherchez son icône dans la zone de notification).<br><b>Étape 4 :</b> Revenez ici et cliquez sur <i>Vérifier à nouveau</i>.",
         "vi": "<b>Bước 1:</b> Nhấn <i>Tải Ollama</i> bên dưới và chọn phiên bản Windows.<br><b>Bước 2:</b> Chạy trình cài đặt đã tải (OllamaSetup.exe) và làm theo các bước.<br><b>Bước 3:</b> Sau khi cài đặt, Ollama tự khởi động và chạy nền (tìm biểu tượng ở khay hệ thống).<br><b>Bước 4:</b> Quay lại đây và nhấn <i>Kiểm tra lại</i>.",
         "zh": "<b>第 1 步：</b>点击下方的<i>下载 Ollama</i>并选择 Windows 版本。<br><b>第 2 步：</b>运行下载的安装程序（OllamaSetup.exe）并按步骤操作。<br><b>第 3 步：</b>安装后 Ollama 会自动启动并在后台持续运行（可在系统托盘中找到它的图标）。<br><b>第 4 步：</b>回到这里并点击<i>重新检查</i>。",
-        "hi": "<b>चरण 1:</b> नीचे <i>Ollama डाउनलोड करें</i> पर क्लिक करें और Windows संस्करण चुनें।<br><b>चरण 2:</b> डाउनलोड किया इंस्टॉलर (OllamaSetup.exe) चलाएँ और चरणों का पालन करें।<br><b>चरण 3:</b> इंस्टॉल के बाद Ollama अपने आप शुरू होता है और बैकग्राउंड में चलता रहता है (सिस्टम ट्रे में इसका आइकन देखें)।<br><b>चरण 4:</b> यहाँ वापस आएँ और <i>फिर से जाँचें</i> पर क्लिक करें।",
+        "hi": "<b>चरण 1:</b> नीचे <i>Ollama डाउनलोड करें</i> पर क्लिक करें और Windows संस्करण चुनें।<br><b>चरण 2:</b> डाउनलोड किया इंस्टॉलर (OllamaSetup.exe) चलाएँ और चरणों का पालन करें।<br><b>चरण 3:</b> इंस्टॉल के बाद Ollama अपने आप शुरू होता है और बैकग्राउंड में चलता रहता है (सिस्टम ट्रे में इसका आइकन देखें)।<br><b>चरण 4:</b> यहाँ वापस आएँ और <i>फिर से जाँचें</i> पर क्लिक करें।", "pl": "<b>Krok 1:</b> Kliknij poniżej <i>Pobierz Ollama</i> i wybierz wersję dla Windows.<br><b>Krok 2:</b> Uruchom pobrany instalator (OllamaSetup.exe) i postępuj zgodnie z instrukcjami.<br><b>Krok 3:</b> Po instalacji Ollama uruchamia się automatycznie i działa w tle (szukaj jej ikony w zasobniku systemowym).<br><b>Krok 4:</b> Wróć tutaj i kliknij <i>Sprawdź ponownie</i>.",
     },
     "<b>Step 1:</b> Open a terminal window.<br><b>Step 2:</b> Run this command:<br><code>curl -fsSL https://ollama.com/install.sh | sh</code><br><b>Step 3:</b> Start it with <code>ollama serve</code> (on most systems it starts automatically).<br><b>Step 4:</b> Come back here and click <i>Check again</i>.": {
         "de": "<b>Schritt 1:</b> Öffne ein Terminal-Fenster.<br><b>Schritt 2:</b> Führe diesen Befehl aus:<br><code>curl -fsSL https://ollama.com/install.sh | sh</code><br><b>Schritt 3:</b> Starte es mit <code>ollama serve</code> (auf den meisten Systemen startet es automatisch).<br><b>Schritt 4:</b> Komm hierher zurück und klicke auf <i>Erneut prüfen</i>.",
@@ -7259,111 +7263,111 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "<b>Étape 1 :</b> Ouvrez une fenêtre de terminal.<br><b>Étape 2 :</b> Exécutez cette commande :<br><code>curl -fsSL https://ollama.com/install.sh | sh</code><br><b>Étape 3 :</b> Démarrez-le avec <code>ollama serve</code> (sur la plupart des systèmes, il démarre automatiquement).<br><b>Étape 4 :</b> Revenez ici et cliquez sur <i>Vérifier à nouveau</i>.",
         "vi": "<b>Bước 1:</b> Mở cửa sổ terminal.<br><b>Bước 2:</b> Chạy lệnh này:<br><code>curl -fsSL https://ollama.com/install.sh | sh</code><br><b>Bước 3:</b> Khởi động bằng <code>ollama serve</code> (đa số hệ thống sẽ tự khởi động).<br><b>Bước 4:</b> Quay lại đây và nhấn <i>Kiểm tra lại</i>.",
         "zh": "<b>第 1 步：</b>打开终端窗口。<br><b>第 2 步：</b>运行此命令：<br><code>curl -fsSL https://ollama.com/install.sh | sh</code><br><b>第 3 步：</b>用 <code>ollama serve</code> 启动（大多数系统会自动启动）。<br><b>第 4 步：</b>回到这里并点击<i>重新检查</i>。",
-        "hi": "<b>चरण 1:</b> टर्मिनल विंडो खोलें।<br><b>चरण 2:</b> यह कमांड चलाएँ:<br><code>curl -fsSL https://ollama.com/install.sh | sh</code><br><b>चरण 3:</b> <code>ollama serve</code> से शुरू करें (अधिकांश सिस्टम पर यह अपने आप शुरू होता है)।<br><b>चरण 4:</b> यहाँ वापस आएँ और <i>फिर से जाँचें</i> पर क्लिक करें।",
+        "hi": "<b>चरण 1:</b> टर्मिनल विंडो खोलें।<br><b>चरण 2:</b> यह कमांड चलाएँ:<br><code>curl -fsSL https://ollama.com/install.sh | sh</code><br><b>चरण 3:</b> <code>ollama serve</code> से शुरू करें (अधिकांश सिस्टम पर यह अपने आप शुरू होता है)।<br><b>चरण 4:</b> यहाँ वापस आएँ और <i>फिर से जाँचें</i> पर क्लिक करें।", "pl": "<b>Krok 1:</b> Otwórz okno terminala.<br><b>Krok 2:</b> Uruchom to polecenie:<br><code>curl -fsSL https://ollama.com/install.sh | sh</code><br><b>Krok 3:</b> Uruchom ją poleceniem <code>ollama serve</code> (na większości systemów uruchamia się automatycznie).<br><b>Krok 4:</b> Wróć tutaj i kliknij <i>Sprawdź ponownie</i>.",
     },
     "Download Ollama": {
         "de": "Ollama herunterladen", "es": "Descargar Ollama", "ko": "Ollama 다운로드", "pt": "Baixar Ollama",
-        "fr": "Télécharger Ollama", "vi": "Tải Ollama", "zh": "下载 Ollama", "hi": "Ollama डाउनलोड करें",
+        "fr": "Télécharger Ollama", "vi": "Tải Ollama", "zh": "下载 Ollama", "hi": "Ollama डाउनलोड करें", "pl": "Pobierz Ollama",
     },
     "Check again": {
         "de": "Erneut prüfen", "es": "Comprobar de nuevo", "ko": "다시 확인", "pt": "Verificar novamente",
-        "fr": "Vérifier à nouveau", "vi": "Kiểm tra lại", "zh": "重新检查", "hi": "फिर से जाँचें",
+        "fr": "Vérifier à nouveau", "vi": "Kiểm tra lại", "zh": "重新检查", "hi": "फिर से जाँचें", "pl": "Sprawdź ponownie",
     },
     "Choose a Model": {
         "de": "Modell auswählen", "es": "Elige un modelo", "ko": "모델 선택", "pt": "Escolha um modelo",
-        "fr": "Choisissez un modèle", "vi": "Chọn mô hình", "zh": "选择模型", "hi": "मॉडल चुनें",
+        "fr": "Choisissez un modèle", "vi": "Chọn mô hình", "zh": "选择模型", "hi": "मॉडल चुनें", "pl": "Wybierz model",
     },
     "Installed models:": {
         "de": "Installierte Modelle:", "es": "Modelos instalados:", "ko": "설치된 모델:", "pt": "Modelos instalados:",
-        "fr": "Modèles installés :", "vi": "Mô hình đã cài:", "zh": "已安装的模型：", "hi": "इंस्टॉल किए गए मॉडल:",
+        "fr": "Modèles installés :", "vi": "Mô hình đã cài:", "zh": "已安装的模型：", "hi": "इंस्टॉल किए गए मॉडल:", "pl": "Zainstalowane modele:",
     },
     "Recommended models to download:": {
         "de": "Empfohlene Modelle zum Download:", "es": "Modelos recomendados para descargar:", "ko": "다운로드 추천 모델:", "pt": "Modelos recomendados para baixar:",
-        "fr": "Modèles recommandés à télécharger :", "vi": "Mô hình đề xuất để tải:", "zh": "推荐下载的模型：", "hi": "डाउनलोड हेतु अनुशंसित मॉडल:",
+        "fr": "Modèles recommandés à télécharger :", "vi": "Mô hình đề xuất để tải:", "zh": "推荐下载的模型：", "hi": "डाउनलोड हेतु अनुशंसित मॉडल:", "pl": "Polecane modele do pobrania:",
     },
     "Pull": {
         "de": "Laden", "es": "Descargar", "ko": "받기", "pt": "Baixar",
-        "fr": "Télécharger", "vi": "Tải", "zh": "拉取", "hi": "डाउनलोड",
+        "fr": "Télécharger", "vi": "Tải", "zh": "拉取", "hi": "डाउनलोड", "pl": "Pobierz",
     },
     "Use Selected Model": {
         "de": "Ausgewähltes Modell verwenden", "es": "Usar el modelo seleccionado", "ko": "선택한 모델 사용", "pt": "Usar o modelo selecionado",
-        "fr": "Utiliser le modèle sélectionné", "vi": "Dùng mô hình đã chọn", "zh": "使用所选模型", "hi": "चयनित मॉडल उपयोग करें",
+        "fr": "Utiliser le modèle sélectionné", "vi": "Dùng mô hình đã chọn", "zh": "使用所选模型", "hi": "चयनित मॉडल उपयोग करें", "pl": "Użyj wybranego modelu",
     },
     "Pulling {}…": {
         "de": "Lade {} herunter…", "es": "Descargando {}…", "ko": "{} 다운로드 중…", "pt": "Baixando {}…",
-        "fr": "Téléchargement de {}…", "vi": "Đang tải {}…", "zh": "正在下载 {}…", "hi": "{} डाउनलोड हो रहा है…",
+        "fr": "Téléchargement de {}…", "vi": "Đang tải {}…", "zh": "正在下载 {}…", "hi": "{} डाउनलोड हो रहा है…", "pl": "Pobieranie {}…",
     },
     "✓ {} downloaded": {
         "de": "✓ {} heruntergeladen", "es": "✓ {} descargado", "ko": "✓ {} 다운로드 완료", "pt": "✓ {} baixado",
-        "fr": "✓ {} téléchargé", "vi": "✓ Đã tải {}", "zh": "✓ {} 已下载", "hi": "✓ {} डाउनलोड हुआ",
+        "fr": "✓ {} téléchargé", "vi": "✓ Đã tải {}", "zh": "✓ {} 已下载", "hi": "✓ {} डाउनलोड हुआ", "pl": "✓ Pobrano {}",
     },
     "Using Ollama model: {}": {
         "de": "Verwende Ollama-Modell: {}", "es": "Usando el modelo de Ollama: {}", "ko": "Ollama 모델 사용 중: {}", "pt": "Usando o modelo Ollama: {}",
-        "fr": "Modèle Ollama utilisé : {}", "vi": "Đang dùng mô hình Ollama: {}", "zh": "正在使用 Ollama 模型：{}", "hi": "Ollama मॉडल उपयोग में: {}",
+        "fr": "Modèle Ollama utilisé : {}", "vi": "Đang dùng mô hình Ollama: {}", "zh": "正在使用 Ollama 模型：{}", "hi": "Ollama मॉडल उपयोग में: {}", "pl": "Używany model Ollama: {}",
     },
     "AI settings saved.": {
         "de": "KI-Einstellungen gespeichert.", "es": "Ajustes de IA guardados.", "ko": "AI 설정이 저장되었습니다.", "pt": "Configurações de IA salvas.",
-        "fr": "Paramètres d'IA enregistrés.", "vi": "Đã lưu cài đặt AI.", "zh": "AI 设置已保存。", "hi": "AI सेटिंग्स सहेजी गईं।",
+        "fr": "Paramètres d'IA enregistrés.", "vi": "Đã lưu cài đặt AI.", "zh": "AI 设置已保存。", "hi": "AI सेटिंग्स सहेजी गईं।", "pl": "Ustawienia AI zapisane.",
     },
     "AI Assistant is not available (missing Qt/Anki components).": {
         "de": "KI-Assistent ist nicht verfügbar (fehlende Qt-/Anki-Komponenten).", "es": "El asistente de IA no está disponible (faltan componentes de Qt/Anki).",
         "ko": "AI 어시스턴트를 사용할 수 없습니다 (Qt/Anki 구성 요소 없음).", "pt": "O assistente de IA não está disponível (componentes Qt/Anki ausentes).",
         "fr": "L'assistant IA n'est pas disponible (composants Qt/Anki manquants).", "vi": "Trợ lý AI không khả dụng (thiếu thành phần Qt/Anki).",
-        "zh": "AI 助手不可用（缺少 Qt/Anki 组件）。", "hi": "AI असिस्टेंट उपलब्ध नहीं है (Qt/Anki घटक अनुपलब्ध)।",
+        "zh": "AI 助手不可用（缺少 Qt/Anki 组件）。", "hi": "AI असिस्टेंट उपलब्ध नहीं है (Qt/Anki घटक अनुपलब्ध)।", "pl": "Asystent AI jest niedostępny (brak komponentów Qt/Anki).",
     },
     "AI Assistant setup error: {}": {
         "de": "Fehler beim Einrichten des KI-Assistenten: {}", "es": "Error al configurar el asistente de IA: {}",
         "ko": "AI 어시스턴트 설정 오류: {}", "pt": "Erro na configuração do assistente de IA: {}",
         "fr": "Erreur de configuration de l'assistant IA : {}", "vi": "Lỗi thiết lập trợ lý AI: {}",
-        "zh": "AI 助手设置错误：{}", "hi": "AI असिस्टेंट सेटअप त्रुटि: {}",
+        "zh": "AI 助手设置错误：{}", "hi": "AI असिस्टेंट सेटअप त्रुटि: {}", "pl": "Błąd konfiguracji asystenta AI: {}",
     },
     "Local": {
         "de": "Lokal", "es": "Local", "ko": "로컬", "pt": "Local",
-        "fr": "Local", "vi": "Cục bộ", "zh": "本地", "hi": "लोकल",
+        "fr": "Local", "vi": "Cục bộ", "zh": "本地", "hi": "लोकल", "pl": "Lokalny",
     },
     "Load": {
         "de": "Laden", "es": "Cargar", "ko": "불러오기", "pt": "Carregar",
-        "fr": "Charger", "vi": "Tải", "zh": "加载", "hi": "लोड करें",
+        "fr": "Charger", "vi": "Tải", "zh": "加载", "hi": "लोड करें", "pl": "Wczytaj",
     },
     "Custom URL…": {
         "de": "Eigene URL…", "es": "URL personalizada…", "ko": "사용자 지정 URL…", "pt": "URL personalizada…",
-        "fr": "URL personnalisée…", "vi": "URL tùy chỉnh…", "zh": "自定义 URL…", "hi": "कस्टम URL…",
+        "fr": "URL personnalisée…", "vi": "URL tùy chỉnh…", "zh": "自定义 URL…", "hi": "कस्टम URL…", "pl": "Własny URL…",
     },
     "Please paste a valid SoundCloud URL.": {
         "de": "Bitte füge eine gültige SoundCloud-URL ein.", "es": "Pega una URL válida de SoundCloud.",
         "ko": "유효한 SoundCloud URL을 붙여넣으세요.", "pt": "Cole uma URL válida do SoundCloud.",
         "fr": "Veuillez coller une URL SoundCloud valide.", "vi": "Vui lòng dán URL SoundCloud hợp lệ.",
-        "zh": "请粘贴有效的 SoundCloud 链接。", "hi": "कृपया एक मान्य SoundCloud URL पेस्ट करें।",
+        "zh": "请粘贴有效的 SoundCloud 链接。", "hi": "कृपया एक मान्य SoundCloud URL पेस्ट करें।", "pl": "Wklej prawidłowy URL SoundCloud.",
     },
     "You can save up to {count} custom SoundCloud URLs.": {
         "de": "Du kannst bis zu {count} eigene SoundCloud-URLs speichern.", "es": "Puedes guardar hasta {count} URL personalizadas de SoundCloud.",
         "ko": "사용자 지정 SoundCloud URL은 최대 {count}개까지 저장할 수 있습니다.", "pt": "Você pode salvar até {count} URLs personalizadas do SoundCloud.",
         "fr": "Vous pouvez enregistrer jusqu’à {count} URL SoundCloud personnalisées.", "vi": "Bạn có thể lưu tối đa {count} URL SoundCloud tùy chỉnh.",
-        "zh": "最多可以保存 {count} 个自定义 SoundCloud 链接。", "hi": "आप अधिकतम {count} कस्टम SoundCloud URL सहेज सकते हैं।",
+        "zh": "最多可以保存 {count} 个自定义 SoundCloud 链接。", "hi": "आप अधिकतम {count} कस्टम SoundCloud URL सहेज सकते हैं।", "pl": "Możesz zapisać do {count} własnych adresów URL SoundCloud.",
     },
     "SoundCloud could not load this URL.": {
         "de": "SoundCloud konnte diese URL nicht laden.", "es": "SoundCloud no pudo cargar esta URL.",
         "ko": "SoundCloud에서 이 URL을 불러올 수 없습니다.", "pt": "O SoundCloud não conseguiu carregar esta URL.",
         "fr": "SoundCloud n’a pas pu charger cette URL.", "vi": "SoundCloud không thể tải URL này.",
-        "zh": "SoundCloud 无法加载此链接。", "hi": "SoundCloud इस URL को लोड नहीं कर सका।",
+        "zh": "SoundCloud 无法加载此链接。", "hi": "SoundCloud इस URL को लोड नहीं कर सका।", "pl": "SoundCloud nie mógł załadować tego adresu URL.",
     },
     "Requires QtWebEngine (not available in this Anki build).": {
         "de": "Benötigt QtWebEngine (in dieser Anki-Version nicht verfügbar).", "es": "Requiere QtWebEngine (no disponible en esta versión de Anki).",
         "ko": "QtWebEngine이 필요합니다 (이 Anki 빌드에서는 사용 불가).", "pt": "Requer QtWebEngine (não disponível nesta versão do Anki).",
         "fr": "Nécessite QtWebEngine (indisponible dans cette version d'Anki).", "vi": "Cần QtWebEngine (không có trong bản Anki này).",
-        "zh": "需要 QtWebEngine（此 Anki 版本不可用）。", "hi": "QtWebEngine आवश्यक है (इस Anki बिल्ड में उपलब्ध नहीं)।",
+        "zh": "需要 QtWebEngine（此 Anki 版本不可用）。", "hi": "QtWebEngine आवश्यक है (इस Anki बिल्ड में उपलब्ध नहीं)।", "pl": "Wymaga QtWebEngine (niedostępne w tej wersji Anki).",
     },
     "SoundCloud player could not be initialised.": {
         "de": "SoundCloud-Player konnte nicht initialisiert werden.", "es": "No se pudo inicializar el reproductor de SoundCloud.",
         "ko": "SoundCloud 플레이어를 초기화할 수 없습니다.", "pt": "Não foi possível inicializar o player do SoundCloud.",
         "fr": "Le lecteur SoundCloud n'a pas pu être initialisé.", "vi": "Không thể khởi tạo trình phát SoundCloud.",
-        "zh": "无法初始化 SoundCloud 播放器。", "hi": "SoundCloud प्लेयर प्रारंभ नहीं हो सका।",
+        "zh": "无法初始化 SoundCloud 播放器。", "hi": "SoundCloud प्लेयर प्रारंभ नहीं हो सका।", "pl": "Nie udało się zainicjować odtwarzacza SoundCloud.",
     },
     "SoundCloud player file is missing.": {
         "de": "SoundCloud-Player-Datei fehlt.", "es": "Falta el archivo del reproductor de SoundCloud.",
         "ko": "SoundCloud 플레이어 파일이 없습니다.", "pt": "O arquivo do player do SoundCloud está ausente.",
         "fr": "Le fichier du lecteur SoundCloud est manquant.", "vi": "Thiếu tệp trình phát SoundCloud.",
-        "zh": "缺少 SoundCloud 播放器文件。", "hi": "SoundCloud प्लेयर फ़ाइल गायब है।",
+        "zh": "缺少 SoundCloud 播放器文件。", "hi": "SoundCloud प्लेयर फ़ाइल गायब है।", "pl": "Brak pliku odtwarzacza SoundCloud.",
     },
     "SoundCloud streaming needs QtWebEngine, which isn't available in this Anki build.": {
         "de": "SoundCloud-Streaming benötigt QtWebEngine, das in dieser Anki-Version nicht verfügbar ist.",
@@ -7373,57 +7377,57 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Le streaming SoundCloud nécessite QtWebEngine, indisponible dans cette version d'Anki.",
         "vi": "Phát SoundCloud cần QtWebEngine, không có trong bản Anki này.",
         "zh": "SoundCloud 流媒体需要 QtWebEngine，此 Anki 版本不可用。",
-        "hi": "SoundCloud स्ट्रीमिंग के लिए QtWebEngine चाहिए, जो इस Anki बिल्ड में उपलब्ध नहीं है।",
+        "hi": "SoundCloud स्ट्रीमिंग के लिए QtWebEngine चाहिए, जो इस Anki बिल्ड में उपलब्ध नहीं है।", "pl": "Strumieniowanie SoundCloud wymaga QtWebEngine, które nie jest dostępne w tej wersji Anki.",
     },
 
     # ── Misc previously untranslated UI strings ────────────────────────────
     "Time's up — finished studying: %s": {
         "de": "Zeit um — Lernen beendet: %s", "es": "Se acabó el tiempo — estudio terminado: %s", "ko": "시간 종료 — 학습 완료: %s", "pt": "Tempo esgotado — estudo concluído: %s",
-        "fr": "Temps écoulé — étude terminée : %s", "vi": "Hết giờ — đã học xong: %s", "zh": "时间到 — 学习完成：%s", "hi": "समय समाप्त — पढ़ाई पूरी: %s",
+        "fr": "Temps écoulé — étude terminée : %s", "vi": "Hết giờ — đã học xong: %s", "zh": "时间到 — 学习完成：%s", "hi": "समय समाप्त — पढ़ाई पूरी: %s", "pl": "Czas minął — zakończono naukę: %s",
     },
     "Mark as done": {
         "de": "Als erledigt markieren", "es": "Marcar como hecho", "ko": "완료로 표시", "pt": "Marcar como concluído",
-        "fr": "Marquer comme terminé", "vi": "Đánh dấu đã xong", "zh": "标记为完成", "hi": "पूर्ण चिह्नित करें",
+        "fr": "Marquer comme terminé", "vi": "Đánh dấu đã xong", "zh": "标记为完成", "hi": "पूर्ण चिह्नित करें", "pl": "Oznacz jako wykonane",
     },
     "My Deadline": {
         "de": "Meine Deadline", "es": "Mi fecha límite", "ko": "내 마감일", "pt": "Meu prazo",
-        "fr": "Mon échéance", "vi": "Hạn chót của tôi", "zh": "我的截止日期", "hi": "मेरी समय-सीमा",
+        "fr": "Mon échéance", "vi": "Hạn chót của tôi", "zh": "我的截止日期", "hi": "मेरी समय-सीमा", "pl": "Mój termin",
     },
     "Next deadline": {
         "de": "Nächste Deadline", "es": "Próxima fecha límite", "ko": "다음 마감일", "pt": "Próximo prazo",
-        "fr": "Échéance suivante", "vi": "Hạn chót tiếp theo", "zh": "下一个截止日期", "hi": "अगली समय-सीमा",
+        "fr": "Échéance suivante", "vi": "Hạn chót tiếp theo", "zh": "下一个截止日期", "hi": "अगली समय-सीमा", "pl": "Następny termin",
     },
     "Learn": {
         "de": "Lernen", "es": "Aprender", "ko": "학습", "pt": "Aprender",
-        "fr": "Apprendre", "vi": "Học", "zh": "学习", "hi": "सीखें",
+        "fr": "Apprendre", "vi": "Học", "zh": "学习", "hi": "सीखें", "pl": "Nauka",
     },
     "Review": {
         "de": "Wiederholen", "es": "Repasar", "ko": "복습", "pt": "Revisar",
-        "fr": "Réviser", "vi": "Ôn tập", "zh": "复习", "hi": "दोहराएं",
+        "fr": "Réviser", "vi": "Ôn tập", "zh": "复习", "hi": "दोहराएं", "pl": "Powtórka",
     },
     "Back to Anki": {
         "de": "Zurück zu Anki", "es": "Volver a Anki", "ko": "Anki로 돌아가기", "pt": "Voltar ao Anki",
-        "fr": "Retour à Anki", "vi": "Quay lại Anki", "zh": "返回 Anki", "hi": "Anki पर वापस",
+        "fr": "Retour à Anki", "vi": "Quay lại Anki", "zh": "返回 Anki", "hi": "Anki पर वापस", "pl": "Powrót do Anki",
     },
     "Close Window": {
         "de": "Fenster schließen", "es": "Cerrar ventana", "ko": "창 닫기", "pt": "Fechar janela",
-        "fr": "Fermer la fenêtre", "vi": "Đóng cửa sổ", "zh": "关闭窗口", "hi": "विंडो बंद करें",
+        "fr": "Fermer la fenêtre", "vi": "Đóng cửa sổ", "zh": "关闭窗口", "hi": "विंडो बंद करें", "pl": "Zamknij okno",
     },
     "New Window": {
         "de": "Neues Fenster", "es": "Nueva ventana", "ko": "새 창", "pt": "Nova janela",
-        "fr": "Nouvelle fenêtre", "vi": "Cửa sổ mới", "zh": "新窗口", "hi": "नई विंडो",
+        "fr": "Nouvelle fenêtre", "vi": "Cửa sổ mới", "zh": "新窗口", "hi": "नई विंडो", "pl": "Nowe okno",
     },
     "Start": {
         "de": "Start", "es": "Iniciar", "ko": "시작", "pt": "Iniciar",
-        "fr": "Démarrer", "vi": "Bắt đầu", "zh": "开始", "hi": "शुरू करें",
+        "fr": "Démarrer", "vi": "Bắt đầu", "zh": "开始", "hi": "शुरू करें", "pl": "Start",
     },
     "Could not open file: {}": {
         "de": "Datei konnte nicht geöffnet werden: {}", "es": "No se pudo abrir el archivo: {}", "ko": "파일을 열 수 없습니다: {}", "pt": "Não foi possível abrir o arquivo: {}",
-        "fr": "Impossible d'ouvrir le fichier : {}", "vi": "Không thể mở tệp: {}", "zh": "无法打开文件：{}", "hi": "फ़ाइल नहीं खुल सकी: {}",
+        "fr": "Impossible d'ouvrir le fichier : {}", "vi": "Không thể mở tệp: {}", "zh": "无法打开文件：{}", "hi": "फ़ाइल नहीं खुल सकी: {}", "pl": "Nie udało się otworzyć pliku: {}",
     },
     "Could not read PDF: {}": {
         "de": "PDF konnte nicht gelesen werden: {}", "es": "No se pudo leer el PDF: {}", "ko": "PDF를 읽을 수 없습니다: {}", "pt": "Não foi possível ler o PDF: {}",
-        "fr": "Impossible de lire le PDF : {}", "vi": "Không thể đọc PDF: {}", "zh": "无法读取 PDF：{}", "hi": "PDF नहीं पढ़ा जा सका: {}",
+        "fr": "Impossible de lire le PDF : {}", "vi": "Không thể đọc PDF: {}", "zh": "无法读取 PDF：{}", "hi": "PDF नहीं पढ़ा जा सका: {}", "pl": "Nie udało się odczytać pliku PDF: {}",
     },
     "File not found – it may have been moved or deleted:\n{}": {
         "de": "Datei nicht gefunden – sie wurde eventuell verschoben oder gelöscht:\n{}",
@@ -7433,35 +7437,35 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Fichier introuvable – il a peut-être été déplacé ou supprimé :\n{}",
         "vi": "Không tìm thấy tệp – có thể đã bị di chuyển hoặc xóa:\n{}",
         "zh": "找不到文件 – 可能已被移动或删除：\n{}",
-        "hi": "फ़ाइल नहीं मिली – शायद स्थानांतरित या हटा दी गई है:\n{}",
+        "hi": "फ़ाइल नहीं मिली – शायद स्थानांतरित या हटा दी गई है:\n{}", "pl": "Nie znaleziono pliku – mógł zostać przeniesiony lub usunięty:\n{}",
     },
     "Move to folder": {
         "de": "In Ordner verschieben", "es": "Mover a carpeta", "ko": "폴더로 이동", "pt": "Mover para pasta",
-        "fr": "Déplacer vers un dossier", "vi": "Chuyển vào thư mục", "zh": "移动到文件夹", "hi": "फ़ोल्डर में ले जाएँ",
+        "fr": "Déplacer vers un dossier", "vi": "Chuyển vào thư mục", "zh": "移动到文件夹", "hi": "फ़ोल्डर में ले जाएँ", "pl": "Przenieś do folderu",
     },
     "Pinned": {
         "de": "Angepinnt", "es": "Fijadas", "ko": "고정됨", "pt": "Fixadas",
-        "fr": "Épinglées", "vi": "Đã ghim", "zh": "已固定", "hi": "पिन की गई",
+        "fr": "Épinglées", "vi": "Đã ghim", "zh": "已固定", "hi": "पिन की गई", "pl": "Przypięte",
     },
     "Pin": {
         "de": "Anpinnen", "es": "Fijar", "ko": "고정", "pt": "Fixar",
-        "fr": "Épingler", "vi": "Ghim", "zh": "固定", "hi": "पिन करें",
+        "fr": "Épingler", "vi": "Ghim", "zh": "固定", "hi": "पिन करें", "pl": "Przypnij",
     },
     "Unpin": {
         "de": "Loslösen", "es": "Desfijar", "ko": "고정 해제", "pt": "Desafixar",
-        "fr": "Désépingler", "vi": "Bỏ ghim", "zh": "取消固定", "hi": "अनपिन करें",
+        "fr": "Désépingler", "vi": "Bỏ ghim", "zh": "取消固定", "hi": "अनपिन करें", "pl": "Odepnij",
     },
     "New Folder": {
         "de": "Neuer Ordner", "es": "Nueva carpeta", "ko": "새 폴더", "pt": "Nova pasta",
-        "fr": "Nouveau dossier", "vi": "Thư mục mới", "zh": "新建文件夹", "hi": "नया फ़ोल्डर",
+        "fr": "Nouveau dossier", "vi": "Thư mục mới", "zh": "新建文件夹", "hi": "नया फ़ोल्डर", "pl": "Nowy folder",
     },
     "Folder name:": {
         "de": "Ordnername:", "es": "Nombre de la carpeta:", "ko": "폴더 이름:", "pt": "Nome da pasta:",
-        "fr": "Nom du dossier :", "vi": "Tên thư mục:", "zh": "文件夹名称：", "hi": "फ़ोल्डर का नाम:",
+        "fr": "Nom du dossier :", "vi": "Tên thư mục:", "zh": "文件夹名称：", "hi": "फ़ोल्डर का नाम:", "pl": "Nazwa folderu:",
     },
     "Rename folder:": {
         "de": "Ordner umbenennen:", "es": "Renombrar carpeta:", "ko": "폴더 이름 변경:", "pt": "Renomear pasta:",
-        "fr": "Renommer le dossier :", "vi": "Đổi tên thư mục:", "zh": "重命名文件夹：", "hi": "फ़ोल्डर का नाम बदलें:",
+        "fr": "Renommer le dossier :", "vi": "Đổi tên thư mục:", "zh": "重命名文件夹：", "hi": "फ़ोल्डर का नाम बदलें:", "pl": "Zmień nazwę folderu:",
     },
     "Delete folder? Pages inside will be kept.": {
         "de": "Ordner löschen? Die Seiten darin bleiben erhalten.",
@@ -7471,19 +7475,19 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Supprimer le dossier ? Les pages seront conservées.",
         "vi": "Xóa thư mục? Các trang bên trong sẽ được giữ lại.",
         "zh": "删除文件夹？其中的页面将保留。",
-        "hi": "फ़ोल्डर हटाएँ? अंदर के पृष्ठ रखे जाएँगे।",
+        "hi": "फ़ोल्डर हटाएँ? अंदर के पृष्ठ रखे जाएँगे।", "pl": "Usunąć folder? Strony wewnątrz zostaną zachowane.",
     },
     "No folder": {
         "de": "Kein Ordner", "es": "Sin carpeta", "ko": "폴더 없음", "pt": "Sem pasta",
-        "fr": "Aucun dossier", "vi": "Không có thư mục", "zh": "无文件夹", "hi": "कोई फ़ोल्डर नहीं",
+        "fr": "Aucun dossier", "vi": "Không có thư mục", "zh": "无文件夹", "hi": "कोई फ़ोल्डर नहीं", "pl": "Brak folderu",
     },
     "PDF Files (*.pdf)": {
         "de": "PDF-Dateien (*.pdf)", "es": "Archivos PDF (*.pdf)", "ko": "PDF 파일 (*.pdf)", "pt": "Arquivos PDF (*.pdf)",
-        "fr": "Fichiers PDF (*.pdf)", "vi": "Tệp PDF (*.pdf)", "zh": "PDF 文件 (*.pdf)", "hi": "PDF फ़ाइलें (*.pdf)",
+        "fr": "Fichiers PDF (*.pdf)", "vi": "Tệp PDF (*.pdf)", "zh": "PDF 文件 (*.pdf)", "hi": "PDF फ़ाइलें (*.pdf)", "pl": "Pliki PDF (*.pdf)",
     },
     "Select PDF": {
         "de": "PDF auswählen", "es": "Seleccionar PDF", "ko": "PDF 선택", "pt": "Selecionar PDF",
-        "fr": "Sélectionner un PDF", "vi": "Chọn PDF", "zh": "选择 PDF", "hi": "PDF चुनें",
+        "fr": "Sélectionner un PDF", "vi": "Chọn PDF", "zh": "选择 PDF", "hi": "PDF चुनें", "pl": "Wybierz PDF",
     },
     "This PDF is {size:.1f} MB. Loading it into the sidebar may be slow or use a lot of memory.\n\nContinue anyway?": {
         "de": "Dieses PDF ist {size:.1f} MB groß. Das Laden in die Seitenleiste kann langsam sein oder viel Speicher belegen.\n\nTrotzdem fortfahren?",
@@ -7493,33 +7497,33 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Ce PDF fait {size:.1f} Mo. Le charger dans la barre latérale peut être lent ou consommer beaucoup de mémoire.\n\nContinuer quand même ?",
         "vi": "PDF này nặng {size:.1f} MB. Tải vào thanh bên có thể chậm hoặc tốn nhiều bộ nhớ.\n\nVẫn tiếp tục?",
         "zh": "此 PDF 大小为 {size:.1f} MB。加载到侧边栏可能较慢或占用大量内存。\n\n仍要继续吗？",
-        "hi": "यह PDF {size:.1f} MB का है। साइडबार में लोड करना धीमा हो सकता है या बहुत मेमोरी ले सकता है।\n\nफिर भी जारी रखें?",
+        "hi": "यह PDF {size:.1f} MB का है। साइडबार में लोड करना धीमा हो सकता है या बहुत मेमोरी ले सकता है।\n\nफिर भी जारी रखें?", "pl": "Ten plik PDF ma {size:.1f} MB. Wczytanie go do panelu bocznego może być wolne lub zużyć dużo pamięci.\n\nKontynuować mimo to?",
     },
     "Back to sidebar": {
         "de": "Zurück zur Seitenleiste", "es": "Volver a la barra lateral", "ko": "사이드바로 돌아가기", "pt": "Voltar à barra lateral",
-        "fr": "Retour à la barre latérale", "vi": "Quay lại thanh bên", "zh": "返回侧边栏", "hi": "साइडबार पर वापस",
+        "fr": "Retour à la barre latérale", "vi": "Quay lại thanh bên", "zh": "返回侧边栏", "hi": "साइडबार पर वापस", "pl": "Powrót do panelu bocznego",
     },
     "Open in main window": {
         "de": "Im Hauptfenster öffnen", "es": "Abrir en la ventana principal", "ko": "메인 창에서 열기", "pt": "Abrir na janela principal",
-        "fr": "Ouvrir dans la fenêtre principale", "vi": "Mở trong cửa sổ chính", "zh": "在主窗口中打开", "hi": "मुख्य विंडो में खोलें",
+        "fr": "Ouvrir dans la fenêtre principale", "vi": "Mở trong cửa sổ chính", "zh": "在主窗口中打开", "hi": "मुख्य विंडो में खोलें", "pl": "Otwórz w oknie głównym",
     },
     "Web": {
         "de": "Web", "es": "Web", "ko": "웹", "pt": "Web",
-        "fr": "Web", "vi": "Web", "zh": "网页", "hi": "वेब",
+        "fr": "Web", "vi": "Web", "zh": "网页", "hi": "वेब", "pl": "Web",
     },
 
     # ── Native settings dialog (fallback without WebEngine) ────────────────
     "Appearance": {
         "de": "Erscheinungsbild", "es": "Apariencia", "ko": "모양", "pt": "Aparência",
-        "fr": "Apparence", "vi": "Giao diện", "zh": "外观", "hi": "रूप-रंग",
+        "fr": "Apparence", "vi": "Giao diện", "zh": "外观", "hi": "रूप-रंग", "pl": "Wygląd",
     },
     "Dashboard": {
         "de": "Dashboard", "es": "Panel", "ko": "대시보드", "pt": "Painel",
-        "fr": "Tableau de bord", "vi": "Bảng điều khiển", "zh": "仪表板", "hi": "डैशबोर्ड",
+        "fr": "Tableau de bord", "vi": "Bảng điều khiển", "zh": "仪表板", "hi": "डैशबोर्ड", "pl": "Pulpit",
     },
     "Minimalist Dashboard": {
         "de": "Minimalistisches Dashboard", "es": "Panel minimalista", "ko": "미니멀 대시보드", "pt": "Painel minimalista",
-        "fr": "Tableau de bord minimaliste", "vi": "Bảng điều khiển tối giản", "zh": "极简仪表板", "hi": "मिनिमल डैशबोर्ड",
+        "fr": "Tableau de bord minimaliste", "vi": "Bảng điều khiển tối giản", "zh": "极简仪表板", "hi": "मिनिमल डैशबोर्ड", "pl": "Minimalistyczny pulpit",
     },
     "Shows level, streak, challenge, study plan, deadline and key statistics in one compact panel.": {
         "de": "Zeigt Level, Streak, Challenge, Lernplan, Deadline und die wichtigsten Statistiken in einem kompakten Panel.",
@@ -7529,45 +7533,45 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Affiche le niveau, la série, le défi, le plan d’étude, l’échéance et les statistiques clés dans un panneau compact.",
         "vi": "Hiển thị cấp độ, chuỗi ngày, thử thách, kế hoạch học, thời hạn và thống kê chính trong một bảng gọn.",
         "zh": "在一个紧凑面板中显示等级、连续学习、挑战、学习计划、截止日期和关键统计。",
-        "hi": "स्तर, स्ट्रीक, चुनौती, अध्ययन योजना, समयसीमा और मुख्य आँकड़े एक कॉम्पैक्ट पैनल में दिखाता है।",
+        "hi": "स्तर, स्ट्रीक, चुनौती, अध्ययन योजना, समयसीमा और मुख्य आँकड़े एक कॉम्पैक्ट पैनल में दिखाता है।", "pl": "Pokazuje poziom, serię, wyzwanie, plan nauki, termin i najważniejsze statystyki w jednym kompaktowym panelu.",
     },
     "Language": {
         "de": "Sprache", "es": "Idioma", "ko": "언어", "pt": "Idioma",
-        "fr": "Langue", "vi": "Ngôn ngữ", "zh": "语言", "hi": "भाषा",
+        "fr": "Langue", "vi": "Ngôn ngữ", "zh": "语言", "hi": "भाषा", "pl": "Język",
     },
     "Color Theme": {
         "de": "Farbschema", "es": "Tema de color", "ko": "색상 테마", "pt": "Tema de cores",
-        "fr": "Thème de couleur", "vi": "Chủ đề màu", "zh": "颜色主题", "hi": "रंग थीम",
+        "fr": "Thème de couleur", "vi": "Chủ đề màu", "zh": "颜色主题", "hi": "रंग थीम", "pl": "Motyw kolorystyczny",
     },
     "Background Style": {
         "de": "Hintergrund-Stil", "es": "Estilo de fondo", "ko": "배경 스타일", "pt": "Estilo de fundo",
-        "fr": "Style d'arrière-plan", "vi": "Kiểu nền", "zh": "背景样式", "hi": "पृष्ठभूमि शैली",
+        "fr": "Style d'arrière-plan", "vi": "Kiểu nền", "zh": "背景样式", "hi": "पृष्ठभूमि शैली", "pl": "Styl tła",
     },
     "Daily Fact Topic": {
         "de": "Thema des täglichen Fakts", "es": "Tema del dato diario", "ko": "오늘의 상식 주제", "pt": "Tema do fato diário",
-        "fr": "Thème du fait du jour", "vi": "Chủ đề sự thật hằng ngày", "zh": "每日知识主题", "hi": "दैनिक तथ्य विषय",
+        "fr": "Thème du fait du jour", "vi": "Chủ đề sự thật hằng ngày", "zh": "每日知识主题", "hi": "दैनिक तथ्य विषय", "pl": "Temat codziennej ciekawostki",
     },
     "Daily Widgets": {
         "de": "Tägliche Widgets", "es": "Widgets diarios", "ko": "데일리 위젯", "pt": "Widgets diários",
-        "fr": "Widgets quotidiens", "vi": "Widget hằng ngày", "zh": "每日小部件", "hi": "दैनिक विजेट",
+        "fr": "Widgets quotidiens", "vi": "Widget hằng ngày", "zh": "每日小部件", "hi": "दैनिक विजेट", "pl": "Widżety dnia",
     },
     "Study Plan Widget": {
         "de": "Lernplan-Widget", "es": "Widget del plan de estudio",
         "ko": "학습 계획 위젯", "pt": "Widget do plano de estudos",
         "fr": "Widget du plan d’étude", "vi": "Widget kế hoạch học tập",
-        "zh": "学习计划小部件", "hi": "अध्ययन योजना विजेट",
+        "zh": "学习计划小部件", "hi": "अध्ययन योजना विजेट", "pl": "Widżet planu nauki",
     },
     "Your daily study plan.": {
         "de": "Dein täglicher Lernplan.", "es": "Tu plan de estudio diario.",
         "ko": "오늘의 학습 계획입니다.", "pt": "Seu plano de estudos diário.",
         "fr": "Votre plan d’étude quotidien.", "vi": "Kế hoạch học tập hằng ngày của bạn.",
-        "zh": "你的每日学习计划。", "hi": "आपकी दैनिक अध्ययन योजना।",
+        "zh": "你的每日学习计划。", "hi": "आपकी दैनिक अध्ययन योजना।", "pl": "Twój codzienny plan nauki.",
     },
     "Daily Fact Widget": {
         "de": "Widget für den täglichen Fakt", "es": "Widget del dato diario",
         "ko": "오늘의 상식 위젯", "pt": "Widget do fato diário",
         "fr": "Widget du fait du jour", "vi": "Widget sự thật hằng ngày",
-        "zh": "每日知识小部件", "hi": "दैनिक तथ्य विजेट",
+        "zh": "每日知识小部件", "hi": "दैनिक तथ्य विजेट", "pl": "Widżet codziennej ciekawostki",
     },
     "A new fact on your Anki home screen each day.": {
         "de": "Jeden Tag ein neuer Fakt auf deiner Anki-Startseite.",
@@ -7577,19 +7581,19 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Chaque jour, un nouveau fait sur l’écran d’accueil d’Anki.",
         "vi": "Mỗi ngày một sự thật mới trên màn hình chính Anki.",
         "zh": "每天在 Anki 主屏幕上显示一条新知识。",
-        "hi": "हर दिन Anki होम स्क्रीन पर एक नया तथ्य।",
+        "hi": "हर दिन Anki होम स्क्रीन पर एक नया तथ्य।", "pl": "Nowa ciekawostka na ekranie głównym Anki każdego dnia.",
     },
     "Gamification Widgets": {
         "de": "Gamification-Widgets", "es": "Widgets de gamificación", "ko": "게이미피케이션 위젯", "pt": "Widgets de gamificação",
-        "fr": "Widgets de gamification", "vi": "Widget trò chơi hóa", "zh": "游戏化小部件", "hi": "गेमिफ़िकेशन विजेट",
+        "fr": "Widgets de gamification", "vi": "Widget trò chơi hóa", "zh": "游戏化小部件", "hi": "गेमिफ़िकेशन विजेट", "pl": "Widżety grywalizacji",
     },
     "Sidebar Visibility": {
         "de": "Sichtbarkeit der Seitenleiste", "es": "Visibilidad de la barra lateral", "ko": "사이드바 표시", "pt": "Visibilidade da barra lateral",
-        "fr": "Visibilité de la barre latérale", "vi": "Hiển thị thanh bên", "zh": "侧边栏可见性", "hi": "साइडबार दृश्यता",
+        "fr": "Visibilité de la barre latérale", "vi": "Hiển thị thanh bên", "zh": "侧边栏可见性", "hi": "साइडबार दृश्यता", "pl": "Widoczność panelu bocznego",
     },
     "Statistics Time Range": {
         "de": "Zeitraum der Statistiken", "es": "Rango de tiempo de estadísticas", "ko": "통계 기간", "pt": "Período das estatísticas",
-        "fr": "Période des statistiques", "vi": "Khoảng thời gian thống kê", "zh": "统计时间范围", "hi": "आंकड़ों की समय-सीमा",
+        "fr": "Période des statistiques", "vi": "Khoảng thời gian thống kê", "zh": "统计时间范围", "hi": "आंकड़ों की समय-सीमा", "pl": "Zakres czasowy statystyk",
     },
     "Language, daily facts, the statistics range and when the sidebar is shown.": {
         "de": "Sprache, tägliche Fakten, der Statistik-Zeitraum und wann die Seitenleiste angezeigt wird.",
@@ -7599,7 +7603,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Langue, faits quotidiens, période des statistiques et affichage de la barre latérale.",
         "vi": "Ngôn ngữ, sự thật hằng ngày, khoảng thống kê và khi nào hiển thị thanh bên.",
         "zh": "语言、每日知识、统计范围以及何时显示侧边栏。",
-        "hi": "भाषा, दैनिक तथ्य, आंकड़ों की सीमा और साइडबार कब दिखे।",
+        "hi": "भाषा, दैनिक तथ्य, आंकड़ों की सीमा और साइडबार कब दिखे।", "pl": "Język, codzienne fakty, zakres statystyk oraz to, kiedy wyświetlany jest panel boczny.",
     },
     "Interface language. \"Auto\" follows your Anki language.": {
         "de": "Sprache der Oberfläche. \"Auto\" folgt deiner Anki-Sprache.",
@@ -7609,7 +7613,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Langue de l'interface. \"Auto\" suit la langue d'Anki.",
         "vi": "Ngôn ngữ giao diện. \"Auto\" theo ngôn ngữ Anki của bạn.",
         "zh": "界面语言。\"Auto\"跟随您的 Anki 语言。",
-        "hi": "इंटरफ़ेस भाषा। \"Auto\" आपकी Anki भाषा का अनुसरण करता है।",
+        "hi": "इंटरफ़ेस भाषा। \"Auto\" आपकी Anki भाषा का अनुसरण करता है।", "pl": "Język interfejsu. „Automatyczny” podąża za językiem Anki.",
     },
     "Subject the daily fact on the home screen is drawn from.": {
         "de": "Fachgebiet, aus dem der tägliche Fakt auf dem Startbildschirm stammt.",
@@ -7619,13 +7623,13 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Sujet dont provient le fait du jour de l'écran d'accueil.",
         "vi": "Chủ đề mà sự thật hằng ngày trên màn hình chính được lấy từ đó.",
         "zh": "主屏幕每日知识的来源主题。",
-        "hi": "जिस विषय से होम स्क्रीन का दैनिक तथ्य लिया जाता है।",
+        "hi": "जिस विषय से होम स्क्रीन का दैनिक तथ्य लिया जाता है।", "pl": "Dziedzina, z której pochodzi codzienna ciekawostka na ekranie głównym.",
     },
     "Period covered by the statistics widget.": {
         "de": "Zeitraum, den das Statistik-Widget abdeckt.", "es": "Período que cubre el widget de estadísticas.",
         "ko": "통계 위젯이 다루는 기간.", "pt": "Período coberto pelo widget de estatísticas.",
         "fr": "Période couverte par le widget de statistiques.", "vi": "Khoảng thời gian widget thống kê bao phủ.",
-        "zh": "统计小部件涵盖的时间段。", "hi": "आंकड़े विजेट द्वारा कवर की गई अवधि।",
+        "zh": "统计小部件涵盖的时间段。", "hi": "आंकड़े विजेट द्वारा कवर की गई अवधि।", "pl": "Okres obejmowany przez widżet statystyk.",
     },
     "Show the launcher always, or hide it while you review.": {
         "de": "Launcher immer anzeigen oder beim Wiederholen ausblenden.",
@@ -7635,7 +7639,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Toujours afficher le lanceur, ou le masquer pendant la révision.",
         "vi": "Luôn hiển thị thanh khởi chạy, hoặc ẩn khi bạn ôn tập.",
         "zh": "始终显示启动器，或在复习时隐藏。",
-        "hi": "लॉन्चर हमेशा दिखाएँ, या दोहराते समय छिपाएँ।",
+        "hi": "लॉन्चर हमेशा दिखाएँ, या दोहराते समय छिपाएँ।", "pl": "Pokazuje launcher zawsze lub ukrywa go podczas powtórek.",
     },
     "Choose the accent colour used across SynapsePro and the background style.": {
         "de": "Wähle die Akzentfarbe für SynapsePro und den Hintergrund-Stil.",
@@ -7645,7 +7649,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Choisissez la couleur d'accent de SynapsePro et le style d'arrière-plan.",
         "vi": "Chọn màu nhấn dùng trong SynapsePro và kiểu nền.",
         "zh": "选择 SynapsePro 使用的强调色和背景样式。",
-        "hi": "SynapsePro में उपयोग होने वाला एक्सेंट रंग और पृष्ठभूमि शैली चुनें।",
+        "hi": "SynapsePro में उपयोग होने वाला एक्सेंट रंग और पृष्ठभूमि शैली चुनें।", "pl": "Wybierz kolor akcentu używany w całym SynapsePro oraz styl tła.",
     },
     "Accent colour for buttons, highlights and widgets.": {
         "de": "Akzentfarbe für Buttons, Hervorhebungen und Widgets.",
@@ -7655,7 +7659,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Couleur d'accent pour les boutons, surlignages et widgets.",
         "vi": "Màu nhấn cho nút, phần tô sáng và widget.",
         "zh": "按钮、高亮和小部件的强调色。",
-        "hi": "बटन, हाइलाइट और विजेट के लिए एक्सेंट रंग।",
+        "hi": "बटन, हाइलाइट और विजेट के लिए एक्सेंट रंग।", "pl": "Kolor akcentu dla przycisków, wyróżnień i widżetów.",
     },
     "Overall background of the add-on screens.": {
         "de": "Gesamter Hintergrund der Add-on-Bildschirme.",
@@ -7665,7 +7669,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Arrière-plan général des écrans du module.",
         "vi": "Nền tổng thể của các màn hình tiện ích.",
         "zh": "插件界面的整体背景。",
-        "hi": "ऐड-ऑन स्क्रीन की समग्र पृष्ठभूमि।",
+        "hi": "ऐड-ऑन स्क्रीन की समग्र पृष्ठभूमि।", "pl": "Ogólne tło ekranów dodatku.",
     },
     "Widgets shown on the Anki home screen (the deck list).": {
         "de": "Widgets auf dem Anki-Startbildschirm (der Stapelliste).",
@@ -7675,7 +7679,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Widgets affichés sur l'écran d'accueil d'Anki (la liste des paquets).",
         "vi": "Widget hiển thị trên màn hình chính Anki (danh sách bộ thẻ).",
         "zh": "显示在 Anki 主屏幕（牌组列表）上的小部件。",
-        "hi": "Anki होम स्क्रीन (डेक सूची) पर दिखने वाले विजेट।",
+        "hi": "Anki होम स्क्रीन (डेक सूची) पर दिखने वाले विजेट।", "pl": "Widżety wyświetlane na ekranie głównym Anki (liście talii).",
     },
     "The screen shown after you click a deck, before studying.": {
         "de": "Der Bildschirm nach dem Klick auf einen Stapel, vor dem Lernen.",
@@ -7685,7 +7689,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "L'écran affiché après un clic sur un paquet, avant l'étude.",
         "vi": "Màn hình hiện ra sau khi bạn nhấn vào bộ thẻ, trước khi học.",
         "zh": "点击牌组后、学习前显示的界面。",
-        "hi": "डेक पर क्लिक करने के बाद, पढ़ाई से पहले दिखने वाली स्क्रीन।",
+        "hi": "डेक पर क्लिक करने के बाद, पढ़ाई से पहले दिखने वाली स्क्रीन।", "pl": "Ekran wyświetlany po kliknięciu talii, przed rozpoczęciem nauki.",
     },
     "Tools available in the launcher bar on the side of Anki.": {
         "de": "Werkzeuge in der Launcher-Leiste an der Seite von Anki.",
@@ -7695,7 +7699,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Outils disponibles dans la barre latérale d'Anki.",
         "vi": "Công cụ có trong thanh khởi chạy bên cạnh Anki.",
         "zh": "Anki 侧边启动栏中可用的工具。",
-        "hi": "Anki के किनारे लॉन्चर बार में उपलब्ध उपकरण।",
+        "hi": "Anki के किनारे लॉन्चर बार में उपलब्ध उपकरण।", "pl": "Narzędzia dostępne na pasku launchera z boku Anki.",
     },
     "You need to restart Anki to apply changes to the sidebar tools.": {
         "de": "Starte Anki neu, um Änderungen an den Seitenleisten-Werkzeugen zu übernehmen.",
@@ -7705,31 +7709,31 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Redémarrez Anki pour appliquer les modifications des outils de la barre latérale.",
         "vi": "Bạn cần khởi động lại Anki để áp dụng thay đổi cho công cụ thanh bên.",
         "zh": "需要重启 Anki 才能应用侧边栏工具的更改。",
-        "hi": "साइडबार टूल में बदलाव लागू करने के लिए Anki पुनः प्रारंभ करें।",
+        "hi": "साइडबार टूल में बदलाव लागू करने के लिए Anki पुनः प्रारंभ करें।", "pl": "Uruchom ponownie Anki, aby zastosować zmiany w narzędziach panelu bocznego.",
     },
     "Your level, XP and daily streak.": {
         "de": "Dein Level, XP und deine tägliche Serie.", "es": "Tu nivel, XP y racha diaria.",
         "ko": "내 레벨, XP, 일일 스트릭.", "pt": "Seu nível, XP e sequência diária.",
         "fr": "Votre niveau, XP et série quotidienne.", "vi": "Cấp độ, XP và chuỗi ngày của bạn.",
-        "zh": "您的等级、XP 和每日连击。", "hi": "आपका स्तर, XP और दैनिक स्ट्रीक।",
+        "zh": "您的等级、XP 和每日连击。", "hi": "आपका स्तर, XP और दैनिक स्ट्रीक।", "pl": "Twój poziom, XP i seria dni.",
     },
     "Your study plan and the daily fact.": {
         "de": "Dein Lernplan und der tägliche Fakt.", "es": "Tu plan de estudio y el dato diario.",
         "ko": "학습 계획과 오늘의 상식.", "pt": "Seu plano de estudos e o fato diário.",
         "fr": "Votre plan d'étude et le fait du jour.", "vi": "Kế hoạch học và sự thật hằng ngày.",
-        "zh": "您的学习计划和每日知识。", "hi": "आपकी अध्ययन योजना और दैनिक तथ्य।",
+        "zh": "您的学习计划和每日知识。", "hi": "आपकी अध्ययन योजना और दैनिक तथ्य।", "pl": "Twój plan nauki i codzienna ciekawostka.",
     },
     "A countdown bar towards your exam or deadline.": {
         "de": "Ein Countdown-Balken bis zu deiner Prüfung oder Deadline.", "es": "Una barra de cuenta regresiva hacia tu examen o fecha límite.",
         "ko": "시험이나 마감일까지의 카운트다운 바.", "pt": "Uma barra de contagem regressiva até sua prova ou prazo.",
         "fr": "Une barre de compte à rebours vers votre examen ou échéance.", "vi": "Thanh đếm ngược đến kỳ thi hoặc hạn chót của bạn.",
-        "zh": "距离考试或截止日期的倒计时条。", "hi": "आपकी परीक्षा या समय-सीमा तक की उलटी गिनती पट्टी।",
+        "zh": "距离考试或截止日期的倒计时条。", "hi": "आपकी परीक्षा या समय-सीमा तक की उलटी गिनती पट्टी।", "pl": "Pasek odliczający czas do egzaminu lub terminu.",
     },
     "An extra panel with detailed review statistics.": {
         "de": "Ein zusätzliches Panel mit detaillierten Wiederholungsstatistiken.", "es": "Un panel adicional con estadísticas detalladas de repaso.",
         "ko": "자세한 복습 통계가 있는 추가 패널.", "pt": "Um painel extra com estatísticas detalhadas de revisão.",
         "fr": "Un panneau supplémentaire avec des statistiques de révision détaillées.", "vi": "Bảng bổ sung với thống kê ôn tập chi tiết.",
-        "zh": "包含详细复习统计的额外面板。", "hi": "विस्तृत रिव्यू आंकड़ों वाला अतिरिक्त पैनल।",
+        "zh": "包含详细复习统计的额外面板。", "hi": "विस्तृत रिव्यू आंकड़ों वाला अतिरिक्त पैनल।", "pl": "Dodatkowy panel ze szczegółowymi statystykami powtórek.",
     },
     "Replaces the standard overview with a modern dashboard showing retention, hard cards and more.": {
         "de": "Ersetzt die Standard-Übersicht durch ein modernes Dashboard mit Retention, schweren Karten und mehr.",
@@ -7739,397 +7743,397 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "Remplace l'aperçu standard par un tableau de bord moderne avec rétention, cartes difficiles et plus.",
         "vi": "Thay thế màn hình tổng quan chuẩn bằng bảng điều khiển hiện đại với tỷ lệ ghi nhớ, thẻ khó và hơn thế.",
         "zh": "用显示记忆保持率、难卡等的现代仪表板替换标准概览。",
-        "hi": "मानक ओवरव्यू को रिटेंशन, कठिन कार्ड आदि दिखाने वाले आधुनिक डैशबोर्ड से बदलता है।",
+        "hi": "मानक ओवरव्यू को रिटेंशन, कठिन कार्ड आदि दिखाने वाले आधुनिक डैशबोर्ड से बदलता है।", "pl": "Zastępuje standardowy przegląd nowoczesnym pulpitem pokazującym zapamiętywanie, trudne karty i więcej.",
     },
     "A visual mind-mapping panel.": {
         "de": "Ein visuelles Mindmap-Panel.", "es": "Un panel visual de mapas mentales.", "ko": "시각적 마인드맵 패널.", "pt": "Um painel visual de mapas mentais.",
-        "fr": "Un panneau visuel de cartes mentales.", "vi": "Bảng sơ đồ tư duy trực quan.", "zh": "可视化思维导图面板。", "hi": "एक विज़ुअल माइंड-मैप पैनल।",
+        "fr": "Un panneau visuel de cartes mentales.", "vi": "Bảng sơ đồ tư duy trực quan.", "zh": "可视化思维导图面板。", "hi": "एक विज़ुअल माइंड-मैप पैनल।", "pl": "Wizualny panel do tworzenia map myśli.",
     },
     "Progress, rewards and motivation panel.": {
         "de": "Panel für Fortschritt, Belohnungen und Motivation.", "es": "Panel de progreso, recompensas y motivación.",
         "ko": "진행 상황, 보상, 동기 부여 패널.", "pt": "Painel de progresso, recompensas e motivação.",
         "fr": "Panneau de progression, récompenses et motivation.", "vi": "Bảng tiến độ, phần thưởng và động lực.",
-        "zh": "进度、奖励和激励面板。", "hi": "प्रगति, पुरस्कार और प्रेरणा पैनल।",
+        "zh": "进度、奖励和激励面板。", "hi": "प्रगति, पुरस्कार और प्रेरणा पैनल।", "pl": "Panel postępu, nagród i motywacji.",
     },
     "Background music while you study.": {
         "de": "Hintergrundmusik beim Lernen.", "es": "Música de fondo mientras estudias.", "ko": "공부할 때 듣는 배경 음악.", "pt": "Música de fundo enquanto você estuda.",
-        "fr": "Musique de fond pendant vos études.", "vi": "Nhạc nền khi bạn học.", "zh": "学习时的背景音乐。", "hi": "पढ़ाई के दौरान पृष्ठभूमि संगीत।",
+        "fr": "Musique de fond pendant vos études.", "vi": "Nhạc nền khi bạn học.", "zh": "学习时的背景音乐。", "hi": "पढ़ाई के दौरान पृष्ठभूमि संगीत।", "pl": "Muzyka w tle podczas nauki.",
     },
     "A focus timer with work and break intervals.": {
         "de": "Ein Fokus-Timer mit Arbeits- und Pausenintervallen.", "es": "Un temporizador de concentración con intervalos de trabajo y descanso.",
         "ko": "작업과 휴식 간격이 있는 집중 타이머.", "pt": "Um cronômetro de foco com intervalos de trabalho e pausa.",
         "fr": "Un minuteur de concentration avec intervalles de travail et de pause.", "vi": "Bộ đếm giờ tập trung với các khoảng làm việc và nghỉ.",
-        "zh": "带工作和休息间隔的专注计时器。", "hi": "कार्य और विराम अंतराल वाला फोकस टाइमर।",
+        "zh": "带工作和休息间隔的专注计时器。", "hi": "कार्य और विराम अंतराल वाला फोकस टाइमर।", "pl": "Timer skupienia z okresami pracy i przerwami.",
     },
     "Chat assistant that can explain your cards.": {
         "de": "Chat-Assistent, der deine Karten erklären kann.", "es": "Asistente de chat que puede explicar tus tarjetas.",
         "ko": "카드를 설명해 주는 채팅 어시스턴트.", "pt": "Assistente de chat que pode explicar seus cartões.",
         "fr": "Assistant de chat capable d'expliquer vos cartes.", "vi": "Trợ lý trò chuyện có thể giải thích thẻ của bạn.",
-        "zh": "可以讲解您卡片的聊天助手。", "hi": "चैट असिस्टेंट जो आपके कार्ड समझा सकता है।",
+        "zh": "可以讲解您卡片的聊天助手。", "hi": "चैट असिस्टेंट जो आपके कार्ड समझा सकता है।", "pl": "Asystent czatu, objaśniający karty.",
     },
     "Open websites in a panel without leaving Anki.": {
         "de": "Webseiten in einem Panel öffnen, ohne Anki zu verlassen.", "es": "Abre sitios web en un panel sin salir de Anki.",
         "ko": "Anki를 떠나지 않고 패널에서 웹사이트 열기.", "pt": "Abra sites em um painel sem sair do Anki.",
         "fr": "Ouvrez des sites web dans un panneau sans quitter Anki.", "vi": "Mở trang web trong bảng mà không rời Anki.",
-        "zh": "无需离开 Anki 即可在面板中打开网站。", "hi": "Anki छोड़े बिना पैनल में वेबसाइटें खोलें।",
+        "zh": "无需离开 Anki 即可在面板中打开网站。", "hi": "Anki छोड़े बिना पैनल में वेबसाइटें खोलें।", "pl": "Otwieraj strony internetowe w panelu, bez opuszczania Anki.",
     },
     "Notes, to-dos and PDFs alongside your cards.": {
         "de": "Notizen, To-dos und PDFs neben deinen Karten.", "es": "Notas, tareas y PDF junto a tus tarjetas.",
         "ko": "카드 옆에 메모, 할 일, PDF.", "pt": "Notas, tarefas e PDFs ao lado dos seus cartões.",
         "fr": "Notes, tâches et PDF à côté de vos cartes.", "vi": "Ghi chú, việc cần làm và PDF cạnh thẻ của bạn.",
-        "zh": "在卡片旁查看笔记、待办和 PDF。", "hi": "आपके कार्ड के साथ नोट्स, टू-डू और PDF।",
+        "zh": "在卡片旁查看笔记、待办和 PDF。", "hi": "आपके कार्ड के साथ नोट्स, टू-डू और PDF।", "pl": "Notatki, listy zadań i pliki PDF obok kart.",
     },
     "Ocean": {
         "de": "Ozean", "es": "Océano", "ko": "오션", "pt": "Oceano",
-        "fr": "Océan", "vi": "Đại dương", "zh": "海洋", "hi": "महासागर",
+        "fr": "Océan", "vi": "Đại dương", "zh": "海洋", "hi": "महासागर", "pl": "Ocean",
     },
     "Orchid": {
         "de": "Orchidee", "es": "Orquídea", "ko": "오키드", "pt": "Orquídea",
-        "fr": "Orchidée", "vi": "Phong lan", "zh": "兰花", "hi": "ऑर्किड",
+        "fr": "Orchidée", "vi": "Phong lan", "zh": "兰花", "hi": "ऑर्किड", "pl": "Orchidea",
     },
     "Forest": {
         "de": "Wald", "es": "Bosque", "ko": "포레스트", "pt": "Floresta",
-        "fr": "Forêt", "vi": "Rừng", "zh": "森林", "hi": "वन",
+        "fr": "Forêt", "vi": "Rừng", "zh": "森林", "hi": "वन", "pl": "Las",
     },
     "Deluge": {
         "de": "Deluge", "es": "Diluvio", "ko": "델루지", "pt": "Dilúvio",
-        "fr": "Déluge", "vi": "Deluge", "zh": "深紫", "hi": "डेल्यूज",
+        "fr": "Déluge", "vi": "Deluge", "zh": "深紫", "hi": "डेल्यूज", "pl": "Deluge",
     },
     "Horizon": {
         "de": "Horizont", "es": "Horizonte", "ko": "허라이즌", "pt": "Horizonte",
-        "fr": "Horizon", "vi": "Chân trời", "zh": "地平线", "hi": "क्षितिज",
+        "fr": "Horizon", "vi": "Chân trời", "zh": "地平线", "hi": "क्षितिज", "pl": "Horyzont",
     },
     "Dusty": {
         "de": "Dusty", "es": "Dusty", "ko": "더스티", "pt": "Dusty",
-        "fr": "Dusty", "vi": "Dusty", "zh": "灰青", "hi": "डस्टी",
+        "fr": "Dusty", "vi": "Dusty", "zh": "灰青", "hi": "डस्टी", "pl": "Dusty",
     },
     "Custom Color…": {
         "de": "Eigene Farbe…", "es": "Color personalizado…", "ko": "사용자 지정 색상…", "pt": "Cor personalizada…",
-        "fr": "Couleur personnalisée…", "vi": "Màu tùy chỉnh…", "zh": "自定义颜色…", "hi": "कस्टम रंग…",
+        "fr": "Couleur personnalisée…", "vi": "Màu tùy chỉnh…", "zh": "自定义颜色…", "hi": "कस्टम रंग…", "pl": "Własny kolor…",
     },
     "Card Creator": {
         "de": "Kartenersteller", "es": "Creador de tarjetas", "ko": "카드 만들기", "pt": "Criador de cartões",
-        "fr": "Créateur de cartes", "vi": "Trình tạo thẻ", "zh": "卡片创建器", "hi": "कार्ड क्रिएटर",
+        "fr": "Créateur de cartes", "vi": "Trình tạo thẻ", "zh": "卡片创建器", "hi": "कार्ड क्रिएटर", "pl": "Kreator kart",
     },
     "Build multiple cards while reading": {
         "de": "Erstelle beim Lesen mehrere Karten", "es": "Crea varias tarjetas mientras lees", "ko": "읽으면서 여러 카드를 만드세요", "pt": "Crie vários cartões durante a leitura",
-        "fr": "Créez plusieurs cartes pendant la lecture", "vi": "Tạo nhiều thẻ trong khi đọc", "zh": "边阅读边创建多张卡片", "hi": "पढ़ते समय कई कार्ड बनाएँ",
+        "fr": "Créez plusieurs cartes pendant la lecture", "vi": "Tạo nhiều thẻ trong khi đọc", "zh": "边阅读边创建多张卡片", "hi": "पढ़ते समय कई कार्ड बनाएँ", "pl": "Twórz wiele kart podczas czytania",
     },
     "Tip: Card Creator works best in fullscreen.": {
         "de": "Tipp: Im Vollbild funktioniert der Kartenersteller am besten.", "es": "Consejo: el creador de tarjetas funciona mejor en pantalla completa.", "ko": "팁: 카드 만들기는 전체 화면에서 가장 편리합니다.", "pt": "Dica: o Criador de cartões funciona melhor em tela cheia.",
-        "fr": "Astuce : le créateur de cartes fonctionne mieux en plein écran.", "vi": "Mẹo: Trình tạo thẻ hoạt động tốt nhất ở chế độ toàn màn hình.", "zh": "提示：卡片创建器在全屏模式下效果最佳。", "hi": "सुझाव: कार्ड क्रिएटर फ़ुलस्क्रीन में सबसे अच्छा काम करता है।",
+        "fr": "Astuce : le créateur de cartes fonctionne mieux en plein écran.", "vi": "Mẹo: Trình tạo thẻ hoạt động tốt nhất ở chế độ toàn màn hình.", "zh": "提示：卡片创建器在全屏模式下效果最佳。", "hi": "सुझाव: कार्ड क्रिएटर फ़ुलस्क्रीन में सबसे अच्छा काम करता है।", "pl": "Wskazówka: Kreator kart działa najlepiej w trybie pełnoekranowym.",
     },
     "Question or prompt": {
         "de": "Frage oder Aufgabenstellung", "es": "Pregunta o indicación", "ko": "질문 또는 프롬프트", "pt": "Pergunta ou enunciado",
-        "fr": "Question ou consigne", "vi": "Câu hỏi hoặc gợi ý", "zh": "问题或提示", "hi": "प्रश्न या संकेत",
+        "fr": "Question ou consigne", "vi": "Câu hỏi hoặc gợi ý", "zh": "问题或提示", "hi": "प्रश्न या संकेत", "pl": "Pytanie lub polecenie",
     },
     "Answer or explanation": {
         "de": "Antwort oder Erklärung", "es": "Respuesta o explicación", "ko": "답변 또는 설명", "pt": "Resposta ou explicação",
-        "fr": "Réponse ou explication", "vi": "Câu trả lời hoặc giải thích", "zh": "答案或解释", "hi": "उत्तर या व्याख्या",
+        "fr": "Réponse ou explication", "vi": "Câu trả lời hoặc giải thích", "zh": "答案或解释", "hi": "उत्तर या व्याख्या", "pl": "Odpowiedź lub wyjaśnienie",
     },
     "Add card": {
         "de": "Karte hinzufügen", "es": "Añadir tarjeta", "ko": "카드 추가", "pt": "Adicionar cartão",
-        "fr": "Ajouter la carte", "vi": "Thêm thẻ", "zh": "添加卡片", "hi": "कार्ड जोड़ें",
+        "fr": "Ajouter la carte", "vi": "Thêm thẻ", "zh": "添加卡片", "hi": "कार्ड जोड़ें", "pl": "Dodaj kartę",
     },
     "Update card": {
         "de": "Karte aktualisieren", "es": "Actualizar tarjeta", "ko": "카드 업데이트", "pt": "Atualizar cartão",
-        "fr": "Mettre à jour la carte", "vi": "Cập nhật thẻ", "zh": "更新卡片", "hi": "कार्ड अपडेट करें",
+        "fr": "Mettre à jour la carte", "vi": "Cập nhật thẻ", "zh": "更新卡片", "hi": "कार्ड अपडेट करें", "pl": "Aktualizuj kartę",
     },
     "New card": {
         "de": "Neue Karte", "es": "Nueva tarjeta", "ko": "새 카드", "pt": "Novo cartão",
-        "fr": "Nouvelle carte", "vi": "Thẻ mới", "zh": "新卡片", "hi": "नया कार्ड",
+        "fr": "Nouvelle carte", "vi": "Thẻ mới", "zh": "新卡片", "hi": "नया कार्ड", "pl": "Nowa karta",
     },
     "Add PDF source to the back": {
         "de": "PDF-Quelle auf der Rückseite ergänzen", "es": "Añadir la fuente PDF al reverso", "ko": "뒷면에 PDF 출처 추가", "pt": "Adicionar a fonte do PDF ao verso",
-        "fr": "Ajouter la source PDF au verso", "vi": "Thêm nguồn PDF vào mặt sau", "zh": "在背面添加 PDF 来源", "hi": "पीछे PDF स्रोत जोड़ें",
+        "fr": "Ajouter la source PDF au verso", "vi": "Thêm nguồn PDF vào mặt sau", "zh": "在背面添加 PDF 来源", "hi": "पीछे PDF स्रोत जोड़ें", "pl": "Dodaj źródło PDF na tył",
     },
     "Adds the file name and selected page numbers in small text.": {
         "de": "Fügt Dateiname und ausgewählte Seitenzahlen klein hinzu.", "es": "Añade el nombre del archivo y las páginas seleccionadas en texto pequeño.", "ko": "파일 이름과 선택한 페이지 번호를 작은 글씨로 추가합니다.", "pt": "Adiciona o nome do arquivo e as páginas selecionadas em texto pequeno.",
-        "fr": "Ajoute le nom du fichier et les pages sélectionnées en petit.", "vi": "Thêm tên tệp và số trang đã chọn bằng chữ nhỏ.", "zh": "以小字添加文件名和所选页码。", "hi": "फ़ाइल नाम और चुने गए पृष्ठ नंबर छोटे अक्षरों में जोड़ता है।",
+        "fr": "Ajoute le nom du fichier et les pages sélectionnées en petit.", "vi": "Thêm tên tệp và số trang đã chọn bằng chữ nhỏ.", "zh": "以小字添加文件名和所选页码。", "hi": "फ़ाइल नाम और चुने गए पृष्ठ नंबर छोटे अक्षरों में जोड़ता है।", "pl": "Dodaje nazwę pliku i numery wybranych stron małym tekstem.",
     },
     "{count} cards ready": {
         "de": "{count} Karten bereit", "es": "{count} tarjetas listas", "ko": "카드 {count}개 준비됨", "pt": "{count} cartões prontos",
-        "fr": "{count} cartes prêtes", "vi": "{count} thẻ đã sẵn sàng", "zh": "已准备 {count} 张卡片", "hi": "{count} कार्ड तैयार",
+        "fr": "{count} cartes prêtes", "vi": "{count} thẻ đã sẵn sàng", "zh": "已准备 {count} 张卡片", "hi": "{count} कार्ड तैयार", "pl": "{count} kart gotowych",
     },
     "Cards": {
         "de": "Karten", "es": "Tarjetas", "ko": "카드", "pt": "Cartões",
-        "fr": "Cartes", "vi": "Thẻ", "zh": "卡片", "hi": "कार्ड",
+        "fr": "Cartes", "vi": "Thẻ", "zh": "卡片", "hi": "कार्ड", "pl": "Karty",
     },
     "Deck name": {
         "de": "Stapelname", "es": "Nombre del mazo", "ko": "덱 이름", "pt": "Nome do baralho",
-        "fr": "Nom du paquet", "vi": "Tên bộ thẻ", "zh": "牌组名称", "hi": "डेक का नाम",
+        "fr": "Nom du paquet", "vi": "Tên bộ thẻ", "zh": "牌组名称", "hi": "डेक का नाम", "pl": "Nazwa talii",
     },
     "Choose an existing deck or enter a new name": {
         "de": "Vorhandenen Stapel wählen oder neuen Namen eingeben", "es": "Elige un mazo existente o introduce un nombre nuevo", "ko": "기존 덱을 선택하거나 새 이름을 입력하세요", "pt": "Escolha um baralho existente ou digite um novo nome",
-        "fr": "Choisissez un paquet existant ou saisissez un nouveau nom", "vi": "Chọn bộ thẻ hiện có hoặc nhập tên mới", "zh": "选择现有牌组或输入新名称", "hi": "मौजूदा डेक चुनें या नया नाम दर्ज करें",
+        "fr": "Choisissez un paquet existant ou saisissez un nouveau nom", "vi": "Chọn bộ thẻ hiện có hoặc nhập tên mới", "zh": "选择现有牌组或输入新名称", "hi": "मौजूदा डेक चुनें या नया नाम दर्ज करें", "pl": "Wybierz istniejącą talię lub wpisz nową nazwę",
     },
     "Create cards": {
         "de": "Karten erstellen", "es": "Crear tarjetas", "ko": "카드 만들기", "pt": "Criar cartões",
-        "fr": "Créer les cartes", "vi": "Tạo thẻ", "zh": "创建卡片", "hi": "कार्ड बनाएँ",
+        "fr": "Créer les cartes", "vi": "Tạo thẻ", "zh": "创建卡片", "hi": "कार्ड बनाएँ", "pl": "Utwórz karty",
     },
     "Finish · Create {count} cards": {
         "de": "Fertig · {count} Karten erstellen", "es": "Finalizar · Crear {count} tarjetas", "ko": "완료 · 카드 {count}개 만들기", "pt": "Concluir · Criar {count} cartões",
-        "fr": "Terminer · Créer {count} cartes", "vi": "Hoàn tất · Tạo {count} thẻ", "zh": "完成 · 创建 {count} 张卡片", "hi": "पूरा करें · {count} कार्ड बनाएँ",
+        "fr": "Terminer · Créer {count} cartes", "vi": "Hoàn tất · Tạo {count} thẻ", "zh": "完成 · 创建 {count} 张卡片", "hi": "पूरा करें · {count} कार्ड बनाएँ", "pl": "Zakończ · Utwórz {count} kart",
     },
     "Discard session": {
         "de": "Sitzung verwerfen", "es": "Descartar sesión", "ko": "세션 버리기", "pt": "Descartar sessão",
-        "fr": "Supprimer la session", "vi": "Hủy phiên", "zh": "放弃会话", "hi": "सत्र छोड़ें",
+        "fr": "Supprimer la session", "vi": "Hủy phiên", "zh": "放弃会话", "hi": "सत्र छोड़ें", "pl": "Odrzuć sesję",
     },
     "Discard this unfinished Card Creator session?": {
         "de": "Diese unfertige Kartenersteller-Sitzung verwerfen?", "es": "¿Descartar esta sesión inacabada del creador de tarjetas?", "ko": "완료되지 않은 카드 만들기 세션을 버릴까요?", "pt": "Descartar esta sessão inacabada do criador de cartões?",
-        "fr": "Supprimer cette session inachevée du créateur de cartes ?", "vi": "Hủy phiên tạo thẻ chưa hoàn thành này?", "zh": "放弃此未完成的卡片创建会话吗？", "hi": "इस अधूरे कार्ड क्रिएटर सत्र को छोड़ दें?",
+        "fr": "Supprimer cette session inachevée du créateur de cartes ?", "vi": "Hủy phiên tạo thẻ chưa hoàn thành này?", "zh": "放弃此未完成的卡片创建会话吗？", "hi": "इस अधूरे कार्ड क्रिएटर सत्र को छोड़ दें?", "pl": "Odrzucić tę niedokończoną sesję Kreatora kart?",
     },
     "Edit": {
         "de": "Bearbeiten", "es": "Editar", "ko": "편집", "pt": "Editar",
-        "fr": "Modifier", "vi": "Chỉnh sửa", "zh": "编辑", "hi": "संपादित करें",
+        "fr": "Modifier", "vi": "Chỉnh sửa", "zh": "编辑", "hi": "संपादित करें", "pl": "Edytuj",
     },
     "Remove card": {
         "de": "Karte entfernen", "es": "Eliminar tarjeta", "ko": "카드 제거", "pt": "Remover cartão",
-        "fr": "Supprimer la carte", "vi": "Xóa thẻ", "zh": "移除卡片", "hi": "कार्ड हटाएँ",
+        "fr": "Supprimer la carte", "vi": "Xóa thẻ", "zh": "移除卡片", "hi": "कार्ड हटाएँ", "pl": "Usuń kartę",
     },
     "No cards collected yet.": {
         "de": "Noch keine Karten gesammelt.", "es": "Aún no hay tarjetas recopiladas.", "ko": "아직 모은 카드가 없습니다.", "pt": "Nenhum cartão coletado ainda.",
-        "fr": "Aucune carte collectée pour le moment.", "vi": "Chưa có thẻ nào được thu thập.", "zh": "尚未收集卡片。", "hi": "अभी तक कोई कार्ड एकत्र नहीं हुआ।",
+        "fr": "Aucune carte collectée pour le moment.", "vi": "Chưa có thẻ nào được thu thập.", "zh": "尚未收集卡片。", "hi": "अभी तक कोई कार्ड एकत्र नहीं हुआ।", "pl": "Nie zebrano jeszcze żadnych kart.",
     },
     "Enter text manually or select text in the PDF.": {
         "de": "Gib Text manuell ein oder markiere ihn in der PDF.", "es": "Escribe texto manualmente o selecciónalo en el PDF.", "ko": "직접 입력하거나 PDF에서 텍스트를 선택하세요.", "pt": "Digite o texto manualmente ou selecione-o no PDF.",
-        "fr": "Saisissez du texte ou sélectionnez-le dans le PDF.", "vi": "Nhập văn bản thủ công hoặc chọn văn bản trong PDF.", "zh": "手动输入文字或在 PDF 中选择文字。", "hi": "टेक्स्ट मैन्युअल रूप से लिखें या PDF में चुनें।",
+        "fr": "Saisissez du texte ou sélectionnez-le dans le PDF.", "vi": "Nhập văn bản thủ công hoặc chọn văn bản trong PDF.", "zh": "手动输入文字或在 PDF 中选择文字。", "hi": "टेक्स्ट मैन्युअल रूप से लिखें या PDF में चुनें।", "pl": "Wpisz tekst ręcznie lub zaznacz go w pliku PDF.",
     },
     "Enter a front side first.": {
         "de": "Gib zuerst eine Vorderseite ein.", "es": "Introduce primero un anverso.", "ko": "먼저 앞면을 입력하세요.", "pt": "Digite primeiro a frente.",
-        "fr": "Saisissez d’abord un recto.", "vi": "Hãy nhập mặt trước trước.", "zh": "请先输入正面内容。", "hi": "पहले सामने वाला भाग दर्ज करें।",
+        "fr": "Saisissez d’abord un recto.", "vi": "Hãy nhập mặt trước trước.", "zh": "请先输入正面内容。", "hi": "पहले सामने वाला भाग दर्ज करें।", "pl": "Najpierw wpisz przód karty.",
     },
     "Choose or enter a deck name.": {
         "de": "Wähle einen Stapel oder gib einen Stapelnamen ein.", "es": "Elige o introduce un nombre de mazo.", "ko": "덱을 선택하거나 이름을 입력하세요.", "pt": "Escolha ou digite um nome de baralho.",
-        "fr": "Choisissez ou saisissez un nom de paquet.", "vi": "Chọn hoặc nhập tên bộ thẻ.", "zh": "请选择或输入牌组名称。", "hi": "डेक चुनें या उसका नाम दर्ज करें।",
+        "fr": "Choisissez ou saisissez un nom de paquet.", "vi": "Chọn hoặc nhập tên bộ thẻ.", "zh": "请选择或输入牌组名称。", "hi": "डेक चुनें या उसका नाम दर्ज करें।", "pl": "Wybierz lub wpisz nazwę talii.",
     },
     "Creating cards…": {
         "de": "Karten werden erstellt…", "es": "Creando tarjetas…", "ko": "카드 만드는 중…", "pt": "Criando cartões…",
-        "fr": "Création des cartes…", "vi": "Đang tạo thẻ…", "zh": "正在创建卡片…", "hi": "कार्ड बनाए जा रहे हैं…",
+        "fr": "Création des cartes…", "vi": "Đang tạo thẻ…", "zh": "正在创建卡片…", "hi": "कार्ड बनाए जा रहे हैं…", "pl": "Tworzenie kart…",
     },
     "This card is already in the session.": {
         "de": "Diese Karte befindet sich bereits in der Sitzung.", "es": "Esta tarjeta ya está en la sesión.", "ko": "이 카드는 이미 세션에 있습니다.", "pt": "Este cartão já está na sessão.",
-        "fr": "Cette carte est déjà dans la session.", "vi": "Thẻ này đã có trong phiên.", "zh": "此卡片已在会话中。", "hi": "यह कार्ड सत्र में पहले से है।",
+        "fr": "Cette carte est déjà dans la session.", "vi": "Thẻ này đã có trong phiên.", "zh": "此卡片已在会话中。", "hi": "यह कार्ड सत्र में पहले से है।", "pl": "Ta karta znajduje się już w sesji.",
     },
     "This card contains too much text.": {
         "de": "Diese Karte enthält zu viel Text.", "es": "Esta tarjeta contiene demasiado texto.", "ko": "이 카드에는 텍스트가 너무 많습니다.", "pt": "Este cartão contém texto demais.",
-        "fr": "Cette carte contient trop de texte.", "vi": "Thẻ này chứa quá nhiều văn bản.", "zh": "此卡片文字过多。", "hi": "इस कार्ड में बहुत अधिक टेक्स्ट है।",
+        "fr": "Cette carte contient trop de texte.", "vi": "Thẻ này chứa quá nhiều văn bản.", "zh": "此卡片文字过多。", "hi": "इस कार्ड में बहुत अधिक टेक्स्ट है।", "pl": "Ta karta zawiera zbyt dużo tekstu.",
     },
     "This session already contains 500 cards.": {
         "de": "Diese Sitzung enthält bereits 500 Karten.", "es": "Esta sesión ya contiene 500 tarjetas.", "ko": "이 세션에는 이미 카드가 500개 있습니다.", "pt": "Esta sessão já contém 500 cartões.",
-        "fr": "Cette session contient déjà 500 cartes.", "vi": "Phiên này đã chứa 500 thẻ.", "zh": "此会话已包含 500 张卡片。", "hi": "इस सत्र में पहले से 500 कार्ड हैं।",
+        "fr": "Cette session contient déjà 500 cartes.", "vi": "Phiên này đã chứa 500 thẻ.", "zh": "此会话已包含 500 张卡片。", "hi": "इस सत्र में पहले से 500 कार्ड हैं।", "pl": "Ta sesja zawiera już 500 kart.",
     },
     "Choose or enter a valid deck name.": {
         "de": "Wähle einen gültigen Stapelnamen oder gib ihn ein.", "es": "Elige o introduce un nombre de mazo válido.", "ko": "유효한 덱 이름을 선택하거나 입력하세요.", "pt": "Escolha ou digite um nome de baralho válido.",
-        "fr": "Choisissez ou saisissez un nom de paquet valide.", "vi": "Chọn hoặc nhập tên bộ thẻ hợp lệ.", "zh": "请选择或输入有效的牌组名称。", "hi": "मान्य डेक नाम चुनें या दर्ज करें।",
+        "fr": "Choisissez ou saisissez un nom de paquet valide.", "vi": "Chọn hoặc nhập tên bộ thẻ hợp lệ.", "zh": "请选择或输入有效的牌组名称。", "hi": "मान्य डेक नाम चुनें या दर्ज करें।", "pl": "Wybierz lub wpisz prawidłową nazwę talii.",
     },
     "Add at least one card first.": {
         "de": "Füge zuerst mindestens eine Karte hinzu.", "es": "Añade primero al menos una tarjeta.", "ko": "먼저 카드를 하나 이상 추가하세요.", "pt": "Adicione primeiro pelo menos um cartão.",
-        "fr": "Ajoutez d’abord au moins une carte.", "vi": "Hãy thêm ít nhất một thẻ trước.", "zh": "请先添加至少一张卡片。", "hi": "पहले कम से कम एक कार्ड जोड़ें।",
+        "fr": "Ajoutez d’abord au moins une carte.", "vi": "Hãy thêm ít nhất một thẻ trước.", "zh": "请先添加至少一张卡片。", "hi": "पहले कम से कम एक कार्ड जोड़ें।", "pl": "Najpierw dodaj co najmniej jedną kartę.",
     },
     "A PDF Card Creator session can contain at most {count} cards.": {
         "de": "Eine PDF-Kartenersteller-Sitzung kann höchstens {count} Karten enthalten.", "es": "Una sesión del creador de tarjetas PDF puede contener como máximo {count} tarjetas.", "ko": "PDF 카드 만들기 세션에는 최대 {count}개의 카드를 넣을 수 있습니다.", "pt": "Uma sessão do Criador de Cartões PDF pode conter no máximo {count} cartões.",
-        "fr": "Une session du créateur de cartes PDF peut contenir au maximum {count} cartes.", "vi": "Một phiên tạo thẻ PDF có thể chứa tối đa {count} thẻ.", "zh": "PDF 卡片创建会话最多可包含 {count} 张卡片。", "hi": "PDF कार्ड क्रिएटर सत्र में अधिकतम {count} कार्ड हो सकते हैं।",
+        "fr": "Une session du créateur de cartes PDF peut contenir au maximum {count} cartes.", "vi": "Một phiên tạo thẻ PDF có thể chứa tối đa {count} thẻ.", "zh": "PDF 卡片创建会话最多可包含 {count} 张卡片。", "hi": "PDF कार्ड क्रिएटर सत्र में अधिकतम {count} कार्ड हो सकते हैं।", "pl": "Sesja Kreatora kart PDF może zawierać maksymalnie {count} kart.",
     },
     "Every card needs a front side.": {
         "de": "Jede Karte benötigt eine Vorderseite.", "es": "Cada tarjeta necesita un anverso.", "ko": "모든 카드에는 앞면이 필요합니다.", "pt": "Todo cartão precisa de uma frente.",
-        "fr": "Chaque carte doit avoir un recto.", "vi": "Mỗi thẻ cần có mặt trước.", "zh": "每张卡片都需要正面内容。", "hi": "हर कार्ड का सामने वाला भाग होना चाहिए।",
+        "fr": "Chaque carte doit avoir un recto.", "vi": "Mỗi thẻ cần có mặt trước.", "zh": "每张卡片都需要正面内容。", "hi": "हर कार्ड का सामने वाला भाग होना चाहिए।", "pl": "Każda karta musi mieć przód.",
     },
     "One of the PDF cards is too long.": {
         "de": "Eine der PDF-Karten ist zu lang.", "es": "Una de las tarjetas PDF es demasiado larga.", "ko": "PDF 카드 중 하나가 너무 깁니다.", "pt": "Um dos cartões PDF é longo demais.",
-        "fr": "L’une des cartes PDF est trop longue.", "vi": "Một trong các thẻ PDF quá dài.", "zh": "其中一张 PDF 卡片过长。", "hi": "PDF कार्डों में से एक बहुत लंबा है।",
+        "fr": "L’une des cartes PDF est trop longue.", "vi": "Một trong các thẻ PDF quá dài.", "zh": "其中一张 PDF 卡片过长。", "hi": "PDF कार्डों में से एक बहुत लंबा है।", "pl": "Jedna z kart PDF jest zbyt długa.",
     },
     "This Card Creator session contains too much text.": {
         "de": "Diese Kartenersteller-Sitzung enthält zu viel Text.", "es": "Esta sesión del creador de tarjetas contiene demasiado texto.", "ko": "이 카드 만들기 세션에는 텍스트가 너무 많습니다.", "pt": "Esta sessão do criador de cartões contém texto demais.",
-        "fr": "Cette session du créateur de cartes contient trop de texte.", "vi": "Phiên tạo thẻ này chứa quá nhiều văn bản.", "zh": "此卡片创建会话文字过多。", "hi": "इस कार्ड क्रिएटर सत्र में बहुत अधिक टेक्स्ट है।",
+        "fr": "Cette session du créateur de cartes contient trop de texte.", "vi": "Phiên tạo thẻ này chứa quá nhiều văn bản.", "zh": "此卡片创建会话文字过多。", "hi": "इस कार्ड क्रिएटर सत्र में बहुत अधिक टेक्स्ट है।", "pl": "Ta sesja Kreatora kart zawiera zbyt dużo tekstu.",
     },
     "Create PDF cards": {
         "de": "PDF-Karten erstellen", "es": "Crear tarjetas PDF", "ko": "PDF 카드 만들기", "pt": "Criar cartões PDF",
-        "fr": "Créer les cartes PDF", "vi": "Tạo thẻ PDF", "zh": "创建 PDF 卡片", "hi": "PDF कार्ड बनाएँ",
+        "fr": "Créer les cartes PDF", "vi": "Tạo thẻ PDF", "zh": "创建 PDF 卡片", "hi": "PDF कार्ड बनाएँ", "pl": "Utwórz karty PDF",
     },
     "Created {count} cards in “{deck}”.": {
         "de": "{count} Karten wurden in „{deck}“ erstellt.", "es": "Se crearon {count} tarjetas en «{deck}».", "ko": "‘{deck}’에 카드 {count}개를 만들었습니다.", "pt": "{count} cartões foram criados em “{deck}”.",
-        "fr": "{count} cartes ont été créées dans « {deck} ».", "vi": "Đã tạo {count} thẻ trong “{deck}”.", "zh": "已在“{deck}”中创建 {count} 张卡片。", "hi": "“{deck}” में {count} कार्ड बनाए गए।",
+        "fr": "{count} cartes ont été créées dans « {deck} ».", "vi": "Đã tạo {count} thẻ trong “{deck}”.", "zh": "已在“{deck}”中创建 {count} 张卡片。", "hi": "“{deck}” में {count} कार्ड बनाए गए।", "pl": "Utworzono {count} kart w „{deck}”.",
     },
     "Could not create the PDF cards.": {
         "de": "Die PDF-Karten konnten nicht erstellt werden.", "es": "No se pudieron crear las tarjetas PDF.", "ko": "PDF 카드를 만들 수 없습니다.", "pt": "Não foi possível criar os cartões PDF.",
-        "fr": "Impossible de créer les cartes PDF.", "vi": "Không thể tạo các thẻ PDF.", "zh": "无法创建 PDF 卡片。", "hi": "PDF कार्ड नहीं बनाए जा सके।",
+        "fr": "Impossible de créer les cartes PDF.", "vi": "Không thể tạo các thẻ PDF.", "zh": "无法创建 PDF 卡片。", "hi": "PDF कार्ड नहीं बनाए जा सके।", "pl": "Nie udało się utworzyć kart PDF.",
     },
 
     # ── Sidebar keyboard shortcuts ─────────────────────────────────────────
     "Keyboard Shortcut": {
         "de": "Tastenkürzel", "es": "Atajo de teclado", "ko": "키보드 단축키", "pt": "Atalho de teclado",
-        "fr": "Raccourci clavier", "vi": "Phím tắt", "zh": "键盘快捷键", "hi": "कीबोर्ड शॉर्टकट",
+        "fr": "Raccourci clavier", "vi": "Phím tắt", "zh": "键盘快捷键", "hi": "कीबोर्ड शॉर्टकट", "pl": "Skrót klawiszowy",
     },
     "Press the desired key combination.": {
         "de": "Drücke die gewünschte Tastenkombination.", "es": "Pulsa la combinación de teclas deseada.", "ko": "원하는 키 조합을 누르세요.", "pt": "Pressione a combinação de teclas desejada.",
-        "fr": "Appuyez sur la combinaison de touches souhaitée.", "vi": "Nhấn tổ hợp phím mong muốn.", "zh": "请按下所需的组合键。", "hi": "अपना इच्छित कुंजी संयोजन दबाएँ।",
+        "fr": "Appuyez sur la combinaison de touches souhaitée.", "vi": "Nhấn tổ hợp phím mong muốn.", "zh": "请按下所需的组合键。", "hi": "अपना इच्छित कुंजी संयोजन दबाएँ।", "pl": "Naciśnij żądaną kombinację klawiszy.",
     },
     "Use Ctrl, Alt, Command or a function key.": {
         "de": "Verwende Strg, Alt, Command oder eine Funktionstaste.", "es": "Usa Ctrl, Alt, Comando o una tecla de función.", "ko": "Ctrl, Alt, Command 또는 기능 키를 사용하세요.", "pt": "Use Ctrl, Alt, Command ou uma tecla de função.",
-        "fr": "Utilisez Ctrl, Alt, Commande ou une touche de fonction.", "vi": "Sử dụng Ctrl, Alt, Command hoặc một phím chức năng.", "zh": "请使用 Ctrl、Alt、Command 或功能键。", "hi": "Ctrl, Alt, Command या फ़ंक्शन कुंजी का उपयोग करें।",
+        "fr": "Utilisez Ctrl, Alt, Commande ou une touche de fonction.", "vi": "Sử dụng Ctrl, Alt, Command hoặc một phím chức năng.", "zh": "请使用 Ctrl、Alt、Command 或功能键。", "hi": "Ctrl, Alt, Command या फ़ंक्शन कुंजी का उपयोग करें।", "pl": "Użyj Ctrl, Alt, Command lub klawisza funkcyjnego.",
     },
     "Clear Shortcut": {
         "de": "Tastenkürzel entfernen", "es": "Borrar atajo", "ko": "단축키 지우기", "pt": "Limpar atalho",
-        "fr": "Effacer le raccourci", "vi": "Xóa phím tắt", "zh": "清除快捷键", "hi": "शॉर्टकट हटाएँ",
+        "fr": "Effacer le raccourci", "vi": "Xóa phím tắt", "zh": "清除快捷键", "hi": "शॉर्टकट हटाएँ", "pl": "Wyczyść skrót klawiszowy",
     },
     "This shortcut is already assigned to {feature}.": {
         "de": "Dieses Tastenkürzel ist bereits {feature} zugewiesen.", "es": "Este atajo ya está asignado a {feature}.", "ko": "이 단축키는 이미 {feature}에 지정되어 있습니다.", "pt": "Este atalho já está atribuído a {feature}.",
-        "fr": "Ce raccourci est déjà attribué à {feature}.", "vi": "Phím tắt này đã được gán cho {feature}.", "zh": "此快捷键已分配给 {feature}。", "hi": "यह शॉर्टकट पहले से {feature} को दिया गया है।",
+        "fr": "Ce raccourci est déjà attribué à {feature}.", "vi": "Phím tắt này đã được gán cho {feature}.", "zh": "此快捷键已分配给 {feature}。", "hi": "यह शॉर्टकट पहले से {feature} को दिया गया है।", "pl": "Ten skrót jest już przypisany do {feature}.",
     },
     "This shortcut is already used by Anki: {action}.": {
         "de": "Dieses Tastenkürzel wird bereits von Anki verwendet: {action}.", "es": "Anki ya usa este atajo: {action}.", "ko": "이 단축키는 Anki에서 이미 사용 중입니다: {action}.", "pt": "Este atalho já é usado pelo Anki: {action}.",
-        "fr": "Ce raccourci est déjà utilisé par Anki : {action}.", "vi": "Phím tắt này đã được Anki sử dụng: {action}.", "zh": "Anki 已使用此快捷键：{action}。", "hi": "यह शॉर्टकट Anki पहले से उपयोग कर रहा है: {action}।",
+        "fr": "Ce raccourci est déjà utilisé par Anki : {action}.", "vi": "Phím tắt này đã được Anki sử dụng: {action}.", "zh": "Anki 已使用此快捷键：{action}。", "hi": "यह शॉर्टकट Anki पहले से उपयोग कर रहा है: {action}।", "pl": "Ten skrót jest już używany przez Anki: {action}.",
     },
     "Shortcut {shortcut} for {feature} conflicts with another Anki shortcut.": {
         "de": "Das Tastenkürzel {shortcut} für {feature} kollidiert mit einem anderen Anki-Tastenkürzel.", "es": "El atajo {shortcut} de {feature} entra en conflicto con otro atajo de Anki.", "ko": "{feature}의 단축키 {shortcut}이 다른 Anki 단축키와 충돌합니다.", "pt": "O atalho {shortcut} de {feature} entra em conflito com outro atalho do Anki.",
-        "fr": "Le raccourci {shortcut} de {feature} entre en conflit avec un autre raccourci Anki.", "vi": "Phím tắt {shortcut} cho {feature} xung đột với một phím tắt Anki khác.", "zh": "{feature} 的快捷键 {shortcut} 与另一个 Anki 快捷键冲突。", "hi": "{feature} का शॉर्टकट {shortcut} किसी अन्य Anki शॉर्टकट से टकराता है।",
+        "fr": "Le raccourci {shortcut} de {feature} entre en conflit avec un autre raccourci Anki.", "vi": "Phím tắt {shortcut} cho {feature} xung đột với một phím tắt Anki khác.", "zh": "{feature} 的快捷键 {shortcut} 与另一个 Anki 快捷键冲突。", "hi": "{feature} का शॉर्टकट {shortcut} किसी अन्य Anki शॉर्टकट से टकराता है।", "pl": "Skrót {shortcut} dla {feature} koliduje z innym skrótem Anki.",
     },
     "Could not open this sidebar tool.": {
         "de": "Dieses Sidebar-Werkzeug konnte nicht geöffnet werden.", "es": "No se pudo abrir esta herramienta de la barra lateral.", "ko": "이 사이드바 도구를 열 수 없습니다.", "pt": "Não foi possível abrir esta ferramenta da barra lateral.",
-        "fr": "Impossible d’ouvrir cet outil de la barre latérale.", "vi": "Không thể mở công cụ thanh bên này.", "zh": "无法打开此侧边栏工具。", "hi": "यह साइडबार टूल नहीं खुल सका।",
+        "fr": "Impossible d’ouvrir cet outil de la barre latérale.", "vi": "Không thể mở công cụ thanh bên này.", "zh": "无法打开此侧边栏工具。", "hi": "यह साइडबार टूल नहीं खुल सका।", "pl": "Nie udało się otworzyć tego narzędzia panelu bocznego.",
     },
     "Enable or disable this sidebar tool.": {
         "de": "Dieses Sidebar-Werkzeug ein- oder ausschalten.", "es": "Activa o desactiva esta herramienta de la barra lateral.", "ko": "이 사이드바 도구를 켜거나 끕니다.", "pt": "Ative ou desative esta ferramenta da barra lateral.",
-        "fr": "Activez ou désactivez cet outil de la barre latérale.", "vi": "Bật hoặc tắt công cụ thanh bên này.", "zh": "启用或禁用此侧边栏工具。", "hi": "इस साइडबार टूल को चालू या बंद करें।",
+        "fr": "Activez ou désactivez cet outil de la barre latérale.", "vi": "Bật hoặc tắt công cụ thanh bên này.", "zh": "启用或禁用此侧边栏工具。", "hi": "इस साइडबार टूल को चालू या बंद करें।", "pl": "Włącza lub wyłącza to narzędzie panelu bocznego.",
     },
     "Click and press a keyboard shortcut.": {
         "de": "Klicke hier und drücke ein Tastenkürzel.", "es": "Haz clic y pulsa un atajo de teclado.", "ko": "클릭한 다음 키보드 단축키를 누르세요.", "pt": "Clique e pressione um atalho de teclado.",
-        "fr": "Cliquez puis appuyez sur un raccourci clavier.", "vi": "Nhấp rồi nhấn một phím tắt.", "zh": "点击后按下键盘快捷键。", "hi": "क्लिक करें और कीबोर्ड शॉर्टकट दबाएँ।",
+        "fr": "Cliquez puis appuyez sur un raccourci clavier.", "vi": "Nhấp rồi nhấn một phím tắt.", "zh": "点击后按下键盘快捷键。", "hi": "क्लिक करें और कीबोर्ड शॉर्टकट दबाएँ।", "pl": "Kliknij i naciśnij skrót klawiszowy.",
     },
     "Shortcuts apply immediately after saving. Restart Anki after enabling or disabling sidebar tools.": {
         "de": "Tastenkürzel gelten direkt nach dem Speichern. Starte Anki neu, nachdem du Sidebar-Werkzeuge ein- oder ausgeschaltet hast.", "es": "Los atajos se aplican inmediatamente después de guardar. Reinicia Anki tras activar o desactivar herramientas de la barra lateral.", "ko": "단축키는 저장 후 즉시 적용됩니다. 사이드바 도구를 켜거나 끈 뒤에는 Anki를 다시 시작하세요.", "pt": "Os atalhos são aplicados imediatamente após salvar. Reinicie o Anki depois de ativar ou desativar ferramentas da barra lateral.",
-        "fr": "Les raccourcis s’appliquent dès l’enregistrement. Redémarrez Anki après avoir activé ou désactivé des outils de la barre latérale.", "vi": "Phím tắt được áp dụng ngay sau khi lưu. Hãy khởi động lại Anki sau khi bật hoặc tắt các công cụ thanh bên.", "zh": "快捷键保存后立即生效。启用或禁用侧边栏工具后请重启 Anki。", "hi": "शॉर्टकट सेव करने के तुरंत बाद लागू होते हैं। साइडबार टूल चालू या बंद करने के बाद Anki पुनः शुरू करें।",
+        "fr": "Les raccourcis s’appliquent dès l’enregistrement. Redémarrez Anki après avoir activé ou désactivé des outils de la barre latérale.", "vi": "Phím tắt được áp dụng ngay sau khi lưu. Hãy khởi động lại Anki sau khi bật hoặc tắt các công cụ thanh bên.", "zh": "快捷键保存后立即生效。启用或禁用侧边栏工具后请重启 Anki。", "hi": "शॉर्टकट सेव करने के तुरंत बाद लागू होते हैं। साइडबार टूल चालू या बंद करने के बाद Anki पुनः शुरू करें।", "pl": "Skróty klawiszowe zaczynają obowiązywać od razu po zapisaniu. Uruchom Anki ponownie po włączeniu lub wyłączeniu narzędzi panelu bocznego.",
     },
     "Anki action": {
         "de": "Anki-Aktion", "es": "acción de Anki", "ko": "Anki 작업", "pt": "ação do Anki",
-        "fr": "action Anki", "vi": "tác vụ Anki", "zh": "Anki 操作", "hi": "Anki क्रिया",
+        "fr": "action Anki", "vi": "tác vụ Anki", "zh": "Anki 操作", "hi": "Anki क्रिया", "pl": "Akcja Anki",
     },
     "Anki shortcut": {
         "de": "Anki-Tastenkürzel", "es": "atajo de Anki", "ko": "Anki 단축키", "pt": "atalho do Anki",
-        "fr": "raccourci Anki", "vi": "phím tắt Anki", "zh": "Anki 快捷键", "hi": "Anki शॉर्टकट",
+        "fr": "raccourci Anki", "vi": "phím tắt Anki", "zh": "Anki 快捷键", "hi": "Anki शॉर्टकट", "pl": "Skrót Anki",
     },
     "No current card content was found. Open a card in the reviewer or turn off card context.": {
         "de": "Es wurde kein Inhalt der aktuellen Karte gefunden. Öffne eine Karte im Lernmodus oder schalte den Kartenkontext aus.", "es": "No se encontró contenido de la tarjeta actual. Abre una tarjeta en el repaso o desactiva el contexto de tarjeta.",
         "ko": "현재 카드 내용을 찾을 수 없습니다. 복습 화면에서 카드를 열거나 카드 컨텍스트를 끄세요.", "pt": "Nenhum conteúdo do cartão atual foi encontrado. Abra um cartão no revisor ou desative o contexto do cartão.",
         "fr": "Aucun contenu n’a été trouvé pour la carte actuelle. Ouvrez une carte dans le réviseur ou désactivez le contexte de la carte.", "vi": "Không tìm thấy nội dung của thẻ hiện tại. Hãy mở một thẻ trong trình ôn tập hoặc tắt ngữ cảnh thẻ.",
-        "zh": "未找到当前卡片的内容。请在复习界面打开一张卡片，或关闭卡片上下文。", "hi": "वर्तमान कार्ड की सामग्री नहीं मिली। रिव्यूअर में कार्ड खोलें या कार्ड संदर्भ बंद करें।",
+        "zh": "未找到当前卡片的内容。请在复习界面打开一张卡片，或关闭卡片上下文。", "hi": "वर्तमान कार्ड की सामग्री नहीं मिली। रिव्यूअर में कार्ड खोलें या कार्ड संदर्भ बंद करें।", "pl": "Nie znaleziono treści bieżącej karty. Otwórz kartę w widoku powtórki lub wyłącz kontekst karty.",
     },
 
     # ── Release 1.3 UI additions ──────────────────────────────────────────
     "+{} XP earned": {
         "de": "+{} XP verdient", "es": "+{} XP obtenidos", "ko": "+{} XP 획득", "pt": "+{} XP ganhos",
-        "fr": "+{} XP gagnés", "vi": "Đã nhận +{} XP", "zh": "已获得 +{} XP", "hi": "+{} XP अर्जित",
+        "fr": "+{} XP gagnés", "vi": "Đã nhận +{} XP", "zh": "已获得 +{} XP", "hi": "+{} XP अर्जित", "pl": "Zdobyto +{} XP",
     },
     "Add your own track": {
         "de": "Eigenen Titel hinzufügen", "es": "Añadir tu propia pista", "ko": "내 트랙 추가", "pt": "Adicionar sua própria faixa",
-        "fr": "Ajouter votre propre piste", "vi": "Thêm bản nhạc của bạn", "zh": "添加自己的曲目", "hi": "अपना ट्रैक जोड़ें",
+        "fr": "Ajouter votre propre piste", "vi": "Thêm bản nhạc của bạn", "zh": "添加自己的曲目", "hi": "अपना ट्रैक जोड़ें", "pl": "Dodaj własny utwór",
     },
     "Celebration popups": {
         "de": "Erfolgs-Pop-ups", "es": "Ventanas de celebración", "ko": "축하 팝업", "pt": "Pop-ups de comemoração",
-        "fr": "Fenêtres de célébration", "vi": "Cửa sổ chúc mừng", "zh": "庆祝弹窗", "hi": "उपलब्धि पॉप-अप",
+        "fr": "Fenêtres de célébration", "vi": "Cửa sổ chúc mừng", "zh": "庆祝弹窗", "hi": "उपलब्धि पॉप-अप", "pl": "Wyskakujące okna z gratulacjami",
     },
     "Claim your +{} XP in the sidebar.": {
         "de": "Hole deine +{} XP in der Seitenleiste ab.", "es": "Reclama tus +{} XP en la barra lateral.", "ko": "사이드바에서 +{} XP를 받으세요.", "pt": "Resgate seus +{} XP na barra lateral.",
-        "fr": "Récupérez vos +{} XP dans la barre latérale.", "vi": "Nhận +{} XP trong thanh bên.", "zh": "在侧边栏领取 +{} XP。", "hi": "साइडबार में अपने +{} XP प्राप्त करें।",
+        "fr": "Récupérez vos +{} XP dans la barre latérale.", "vi": "Nhận +{} XP trong thanh bên.", "zh": "在侧边栏领取 +{} XP。", "hi": "साइडबार में अपने +{} XP प्राप्त करें।", "pl": "Odbierz swoje +{} XP w panelu bocznym.",
     },
     "Daily Challenge completed!": {
         "de": "Tages-Challenge geschafft!", "es": "¡Desafío diario completado!", "ko": "일일 챌린지 완료!", "pt": "Desafio diário concluído!",
-        "fr": "Défi quotidien terminé !", "vi": "Đã hoàn thành thử thách hằng ngày!", "zh": "每日挑战已完成！", "hi": "दैनिक चुनौती पूरी हुई!",
+        "fr": "Défi quotidien terminé !", "vi": "Đã hoàn thành thử thách hằng ngày!", "zh": "每日挑战已完成！", "hi": "दैनिक चुनौती पूरी हुई!", "pl": "Wyzwanie dnia ukończone!",
     },
     "Don't show this again": {
         "de": "Nicht mehr anzeigen", "es": "No volver a mostrar", "ko": "다시 표시하지 않기", "pt": "Não mostrar novamente",
-        "fr": "Ne plus afficher", "vi": "Không hiển thị lại", "zh": "不再显示", "hi": "इसे फिर न दिखाएँ",
+        "fr": "Ne plus afficher", "vi": "Không hiển thị lại", "zh": "不再显示", "hi": "इसे फिर न दिखाएँ", "pl": "Nie pokazuj tego ponownie",
     },
     "Level Up!": {
         "de": "Levelaufstieg!", "es": "¡Subida de nivel!", "ko": "레벨 업!", "pt": "Subiu de nível!",
-        "fr": "Niveau supérieur !", "vi": "Lên cấp!", "zh": "升级了！", "hi": "लेवल बढ़ा!",
+        "fr": "Niveau supérieur !", "vi": "Lên cấp!", "zh": "升级了！", "hi": "लेवल बढ़ा!", "pl": "Awans!",
     },
     "Level {} reached": {
         "de": "Level {} erreicht", "es": "Nivel {} alcanzado", "ko": "레벨 {} 달성", "pt": "Nível {} alcançado",
-        "fr": "Niveau {} atteint", "vi": "Đã đạt cấp {}", "zh": "已达到 {} 级", "hi": "लेवल {} प्राप्त",
+        "fr": "Niveau {} atteint", "vi": "Đã đạt cấp {}", "zh": "已达到 {} 级", "hi": "लेवल {} प्राप्त", "pl": "Osiągnięto poziom {}",
     },
     "My Tracks": {
         "de": "Meine Titel", "es": "Mis pistas", "ko": "내 트랙", "pt": "Minhas faixas",
-        "fr": "Mes pistes", "vi": "Nhạc của tôi", "zh": "我的曲目", "hi": "मेरे ट्रैक",
+        "fr": "Mes pistes", "vi": "Nhạc của tôi", "zh": "我的曲目", "hi": "मेरे ट्रैक", "pl": "Moje utwory",
     },
     "New Rank!": {
         "de": "Neuer Rang!", "es": "¡Nuevo rango!", "ko": "새 랭크!", "pt": "Novo ranking!",
-        "fr": "Nouveau rang !", "vi": "Hạng mới!", "zh": "新段位！", "hi": "नई रैंक!",
+        "fr": "Nouveau rang !", "vi": "Hạng mới!", "zh": "新段位！", "hi": "नई रैंक!", "pl": "Nowa ranga!",
     },
     "Nice!": {
         "de": "Klasse!", "es": "¡Genial!", "ko": "좋아요!", "pt": "Muito bem!",
-        "fr": "Bravo !", "vi": "Tuyệt!", "zh": "真棒！", "hi": "बहुत बढ़िया!",
+        "fr": "Bravo !", "vi": "Tuyệt!", "zh": "真棒！", "hi": "बहुत बढ़िया!", "pl": "Świetnie!",
     },
     "PDF": {
-        "de": "PDF", "es": "PDF", "ko": "PDF", "pt": "PDF", "fr": "PDF", "vi": "PDF", "zh": "PDF", "hi": "PDF",
+        "de": "PDF", "es": "PDF", "ko": "PDF", "pt": "PDF", "fr": "PDF", "vi": "PDF", "zh": "PDF", "hi": "PDF", "pl": "PDF",
     },
     "Play / Pause": {
         "de": "Wiedergabe / Pause", "es": "Reproducir / Pausar", "ko": "재생 / 일시정지", "pt": "Reproduzir / Pausar",
-        "fr": "Lecture / Pause", "vi": "Phát / Tạm dừng", "zh": "播放 / 暂停", "hi": "चलाएँ / रोकें",
+        "fr": "Lecture / Pause", "vi": "Phát / Tạm dừng", "zh": "播放 / 暂停", "hi": "चलाएँ / रोकें", "pl": "Odtwórz / Pauza",
     },
     "Player loads below": {
         "de": "Player wird unten geladen", "es": "El reproductor se carga abajo", "ko": "아래에 플레이어가 로드됩니다", "pt": "O player carrega abaixo",
-        "fr": "Le lecteur se charge ci-dessous", "vi": "Trình phát tải ở bên dưới", "zh": "播放器将在下方加载", "hi": "प्लेयर नीचे लोड होगा",
+        "fr": "Le lecteur se charge ci-dessous", "vi": "Trình phát tải ở bên dưới", "zh": "播放器将在下方加载", "hi": "प्लेयर नीचे लोड होगा", "pl": "Odtwarzacz ładuje się poniżej",
     },
     "QtWebEngine is required for the music player.": {
         "de": "Für den Musikplayer wird QtWebEngine benötigt.", "es": "El reproductor de música requiere QtWebEngine.", "ko": "음악 플레이어에는 QtWebEngine이 필요합니다.", "pt": "O player de música requer QtWebEngine.",
-        "fr": "QtWebEngine est requis pour le lecteur de musique.", "vi": "Trình phát nhạc yêu cầu QtWebEngine.", "zh": "音乐播放器需要 QtWebEngine。", "hi": "म्यूज़िक प्लेयर के लिए QtWebEngine आवश्यक है।",
+        "fr": "QtWebEngine est requis pour le lecteur de musique.", "vi": "Trình phát nhạc yêu cầu QtWebEngine.", "zh": "音乐播放器需要 QtWebEngine。", "hi": "म्यूज़िक प्लेयर के लिए QtWebEngine आवश्यक है।", "pl": "Odtwarzacz muzyki wymaga QtWebEngine.",
     },
     "Reddit": {
-        "de": "Reddit", "es": "Reddit", "ko": "Reddit", "pt": "Reddit", "fr": "Reddit", "vi": "Reddit", "zh": "Reddit", "hi": "Reddit",
+        "de": "Reddit", "es": "Reddit", "ko": "Reddit", "pt": "Reddit", "fr": "Reddit", "vi": "Reddit", "zh": "Reddit", "hi": "Reddit", "pl": "Reddit",
     },
     "Remove this track": {
         "de": "Diesen Titel entfernen", "es": "Eliminar esta pista", "ko": "이 트랙 제거", "pt": "Remover esta faixa",
-        "fr": "Supprimer cette piste", "vi": "Xóa bản nhạc này", "zh": "移除此曲目", "hi": "यह ट्रैक हटाएँ",
+        "fr": "Supprimer cette piste", "vi": "Xóa bản nhạc này", "zh": "移除此曲目", "hi": "यह ट्रैक हटाएँ", "pl": "Usuń ten utwór",
     },
     "Resume playback on startup": {
         "de": "Wiedergabe beim Start fortsetzen", "es": "Reanudar al iniciar", "ko": "시작할 때 재생 재개", "pt": "Retomar reprodução ao iniciar",
-        "fr": "Reprendre la lecture au démarrage", "vi": "Tiếp tục phát khi khởi động", "zh": "启动时继续播放", "hi": "शुरू होने पर प्लेबैक जारी रखें",
+        "fr": "Reprendre la lecture au démarrage", "vi": "Tiếp tục phát khi khởi động", "zh": "启动时继续播放", "hi": "शुरू होने पर प्लेबैक जारी रखें", "pl": "Wznów odtwarzanie po uruchomieniu",
     },
     "Save failed — your changes are still open.": {
         "de": "Speichern fehlgeschlagen — deine Änderungen sind noch geöffnet.", "es": "Error al guardar; tus cambios siguen abiertos.", "ko": "저장에 실패했습니다. 변경 사항은 아직 열려 있습니다.", "pt": "Falha ao salvar — suas alterações ainda estão abertas.",
-        "fr": "Échec de l’enregistrement — vos modifications sont toujours ouvertes.", "vi": "Lưu thất bại — các thay đổi vẫn đang mở.", "zh": "保存失败——你的更改仍处于打开状态。", "hi": "सेव नहीं हुआ — आपके बदलाव अभी खुले हैं।",
+        "fr": "Échec de l’enregistrement — vos modifications sont toujours ouvertes.", "vi": "Lưu thất bại — các thay đổi vẫn đang mở.", "zh": "保存失败——你的更改仍处于打开状态。", "hi": "सेव नहीं हुआ — आपके बदलाव अभी खुले हैं।", "pl": "Zapis nie powiódł się — wprowadzone zmiany są nadal otwarte.",
     },
     "Session Summary": {
         "de": "Sitzungsübersicht", "es": "Resumen de la sesión", "ko": "세션 요약", "pt": "Resumo da sessão",
-        "fr": "Résumé de la session", "vi": "Tóm tắt phiên", "zh": "学习总结", "hi": "सत्र सारांश",
+        "fr": "Résumé de la session", "vi": "Tóm tắt phiên", "zh": "学习总结", "hi": "सत्र सारांश", "pl": "Podsumowanie sesji",
     },
     "Show a popup on the home screen for new ranks, level-ups and completed challenges.": {
         "de": "Zeige auf der Startseite ein Pop-up für neue Ränge, Levelaufstiege und abgeschlossene Challenges.", "es": "Muestra una ventana en la pantalla principal para nuevos rangos, niveles y desafíos completados.", "ko": "새 랭크, 레벨 업, 완료한 챌린지를 홈 화면 팝업으로 표시합니다.", "pt": "Mostra um pop-up na tela inicial para novos rankings, níveis e desafios concluídos.",
-        "fr": "Affiche une fenêtre d’accueil pour les nouveaux rangs, niveaux et défis terminés.", "vi": "Hiện cửa sổ trên màn hình chính cho hạng mới, lên cấp và thử thách đã hoàn thành.", "zh": "在主屏幕显示新段位、升级和完成挑战的弹窗。", "hi": "नई रैंक, लेवल और पूरी चुनौतियों के लिए होम स्क्रीन पर पॉप-अप दिखाएँ।",
+        "fr": "Affiche une fenêtre d’accueil pour les nouveaux rangs, niveaux et défis terminés.", "vi": "Hiện cửa sổ trên màn hình chính cho hạng mới, lên cấp và thử thách đã hoàn thành.", "zh": "在主屏幕显示新段位、升级和完成挑战的弹窗。", "hi": "नई रैंक, लेवल और पूरी चुनौतियों के लिए होम स्क्रीन पर पॉप-अप दिखाएँ।", "pl": "Wyświetla wyskakujące okienko na ekranie głównym przy nowych rangach, awansach na wyższy poziom i ukończonych wyzwaniach.",
     },
     "Sounds": {
-        "de": "Klänge", "es": "Sonidos", "ko": "소리", "pt": "Sons", "fr": "Sons", "vi": "Âm thanh", "zh": "声音", "hi": "ध्वनियाँ",
+        "de": "Klänge", "es": "Sonidos", "ko": "소리", "pt": "Sons", "fr": "Sons", "vi": "Âm thanh", "zh": "声音", "hi": "ध्वनियाँ", "pl": "Dźwięki",
     },
     "The deadline dates are invalid: {}": {
         "de": "Die Deadline-Daten sind ungültig: {}", "es": "Las fechas del plazo no son válidas: {}", "ko": "마감 날짜가 올바르지 않습니다: {}", "pt": "As datas do prazo são inválidas: {}",
-        "fr": "Les dates de l’échéance sont invalides : {}", "vi": "Ngày hạn chót không hợp lệ: {}", "zh": "截止日期无效：{}", "hi": "समय-सीमा की तारीखें अमान्य हैं: {}",
+        "fr": "Les dates de l’échéance sont invalides : {}", "vi": "Ngày hạn chót không hợp lệ: {}", "zh": "截止日期无效：{}", "hi": "समय-सीमा की तारीखें अमान्य हैं: {}", "pl": "Nieprawidłowe daty terminów: {}",
     },
     "The start date must not be after the end date.": {
         "de": "Das Startdatum darf nicht nach dem Enddatum liegen.", "es": "La fecha de inicio no puede ser posterior a la fecha final.", "ko": "시작 날짜는 종료 날짜보다 늦을 수 없습니다.", "pt": "A data inicial não pode ser posterior à data final.",
-        "fr": "La date de début ne peut pas être postérieure à la date de fin.", "vi": "Ngày bắt đầu không được sau ngày kết thúc.", "zh": "开始日期不能晚于结束日期。", "hi": "शुरुआत की तारीख समाप्ति की तारीख के बाद नहीं हो सकती।",
+        "fr": "La date de début ne peut pas être postérieure à la date de fin.", "vi": "Ngày bắt đầu không được sau ngày kết thúc.", "zh": "开始日期不能晚于结束日期。", "hi": "शुरुआत की तारीख समाप्ति की तारीख के बाद नहीं हो सकती।", "pl": "Data początkowa nie może być późniejsza niż data końcowa.",
     },
     "This PDF is {size:.1f} MB and is too large for the inline viewer. Open it in the system PDF viewer instead.": {
         "de": "Dieses PDF ist {size:.1f} MB groß und zu groß für die interne Ansicht. Öffne es stattdessen im System-PDF-Programm.", "es": "Este PDF ocupa {size:.1f} MB y es demasiado grande para el visor integrado. Ábrelo en el visor PDF del sistema.", "ko": "이 PDF는 {size:.1f}MB로 인라인 뷰어에서 열기에는 너무 큽니다. 시스템 PDF 뷰어에서 여세요.", "pt": "Este PDF tem {size:.1f} MB e é grande demais para o visualizador interno. Abra-o no visualizador de PDF do sistema.",
-        "fr": "Ce PDF fait {size:.1f} Mo et est trop volumineux pour le lecteur intégré. Ouvrez-le dans le lecteur PDF du système.", "vi": "PDF này có dung lượng {size:.1f} MB và quá lớn cho trình xem nội tuyến. Hãy mở bằng trình xem PDF của hệ thống.", "zh": "此 PDF 大小为 {size:.1f} MB，无法在内嵌查看器中打开。请改用系统 PDF 查看器。", "hi": "यह PDF {size:.1f} MB का है और इनलाइन व्यूअर के लिए बहुत बड़ा है। इसे सिस्टम PDF व्यूअर में खोलें।",
+        "fr": "Ce PDF fait {size:.1f} Mo et est trop volumineux pour le lecteur intégré. Ouvrez-le dans le lecteur PDF du système.", "vi": "PDF này có dung lượng {size:.1f} MB và quá lớn cho trình xem nội tuyến. Hãy mở bằng trình xem PDF của hệ thống.", "zh": "此 PDF 大小为 {size:.1f} MB，无法在内嵌查看器中打开。请改用系统 PDF 查看器。", "hi": "यह PDF {size:.1f} MB का है और इनलाइन व्यूअर के लिए बहुत बड़ा है। इसे सिस्टम PDF व्यूअर में खोलें।", "pl": "Ten plik PDF ma {size:.1f} MB i jest zbyt duży dla wbudowanej przeglądarki. Otwórz go zamiast tego w systemowej przeglądarce PDF.",
     },
     "Volume": {
-        "de": "Lautstärke", "es": "Volumen", "ko": "볼륨", "pt": "Volume", "fr": "Volume", "vi": "Âm lượng", "zh": "音量", "hi": "आवाज़",
+        "de": "Lautstärke", "es": "Volumen", "ko": "볼륨", "pt": "Volume", "fr": "Volume", "vi": "Âm lượng", "zh": "音量", "hi": "आवाज़", "pl": "Głośność",
     },
     "in {}": {
-        "de": "in {}", "es": "en {}", "ko": "{} 후", "pt": "em {}", "fr": "dans {}", "vi": "trong {}", "zh": "{}后", "hi": "{} में",
+        "de": "in {}", "es": "en {}", "ko": "{} 후", "pt": "em {}", "fr": "dans {}", "vi": "trong {}", "zh": "{}后", "hi": "{} में", "pl": "za {}",
     },
     "{} XP to next level": {
         "de": "{} XP bis zum nächsten Level", "es": "{} XP para el siguiente nivel", "ko": "다음 레벨까지 {} XP", "pt": "{} XP para o próximo nível",
-        "fr": "{} XP avant le niveau suivant", "vi": "Còn {} XP đến cấp tiếp theo", "zh": "距离下一级还需 {} XP", "hi": "अगले लेवल तक {} XP",
+        "fr": "{} XP avant le niveau suivant", "vi": "Còn {} XP đến cấp tiếp theo", "zh": "距离下一级还需 {} XP", "hi": "अगले लेवल तक {} XP", "pl": "{} XP do następnego poziomu",
     },
     "{} cards": {
-        "de": "{} Karten", "es": "{} tarjetas", "ko": "카드 {}장", "pt": "{} cartões", "fr": "{} cartes", "vi": "{} thẻ", "zh": "{} 张卡片", "hi": "{} कार्ड",
+        "de": "{} Karten", "es": "{} tarjetas", "ko": "카드 {}장", "pt": "{} cartões", "fr": "{} cartes", "vi": "{} thẻ", "zh": "{} 张卡片", "hi": "{} कार्ड", "pl": "{} kart",
     },
     "Reviews per day (last 30 days). The best day in this period is the top of the curve.": {
         "de": "Wiederholungen pro Tag (letzte 30 Tage). Der beste Tag dieses Zeitraums bildet die Kurvenspitze.", "es": "Repasos por día (últimos 30 días). El mejor día del periodo marca la parte superior de la curva.", "ko": "일별 복습 수(최근 30일). 이 기간의 최고 기록이 곡선의 최댓값입니다.", "pt": "Revisões por dia (últimos 30 dias). O melhor dia do período define o topo da curva.",
-        "fr": "Révisions par jour (30 derniers jours). Le meilleur jour de la période définit le sommet de la courbe.", "vi": "Số lượt ôn mỗi ngày (30 ngày qua). Ngày tốt nhất trong giai đoạn là đỉnh của đường cong.", "zh": "每日复习量（最近 30 天）。此期间表现最好的一天对应曲线顶点。", "hi": "प्रतिदिन रिव्यू (पिछले 30 दिन)। इस अवधि का सबसे अच्छा दिन वक्र का शीर्ष है।",
+        "fr": "Révisions par jour (30 derniers jours). Le meilleur jour de la période définit le sommet de la courbe.", "vi": "Số lượt ôn mỗi ngày (30 ngày qua). Ngày tốt nhất trong giai đoạn là đỉnh của đường cong.", "zh": "每日复习量（最近 30 天）。此期间表现最好的一天对应曲线顶点。", "hi": "प्रतिदिन रिव्यू (पिछले 30 दिन)। इस अवधि का सबसे अच्छा दिन वक्र का शीर्ष है।", "pl": "Powtórki dziennie (ostatnie 30 dni). Najlepszy dzień w tym okresie to szczyt krzywej.",
     },
     "<p>Earn XP, level up, and climb the ranks while studying!</p><p><b>How to Earn XP</b></p><ul><li><b>Study Time:</b> 10 XP per minute.</li><li><b>Daily Challenge:</b> Bonus XP based on level.</li><li><b>Streak:</b> 20 XP × current streak day.</li></ul><p><b>Leveling &amp; Ranks</b></p><ul><li>Max Level: 100.</li><li>New Rank every 5 levels.</li></ul><p class=\"tip\">Tip: Consistency is key!</p>": {
         "de": "<p>Sammle beim Lernen XP, steige Level auf und erreiche neue Ränge!</p><p><b>So verdienst du XP</b></p><ul><li><b>Lernzeit:</b> 10 XP pro Minute.</li><li><b>Tages-Challenge:</b> Bonus-XP abhängig vom Level.</li><li><b>Streak:</b> 20 XP × aktueller Streak-Tag.</li></ul><p><b>Level &amp; Ränge</b></p><ul><li>Maximales Level: 100.</li><li>Alle 5 Level ein neuer Rang.</li></ul><p class=\"tip\">Tipp: Regelmäßigkeit ist entscheidend!</p>",
@@ -8139,47 +8143,47 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "fr": "<p>Gagnez de l’XP, montez de niveau et progressez dans les rangs en étudiant !</p><p><b>Comment gagner de l’XP</b></p><ul><li><b>Temps d’étude :</b> 10 XP par minute.</li><li><b>Défi quotidien :</b> XP bonus selon le niveau.</li><li><b>Série :</b> 20 XP × jour actuel de la série.</li></ul><p><b>Niveaux et rangs</b></p><ul><li>Niveau maximal : 100.</li><li>Nouveau rang tous les 5 niveaux.</li></ul><p class=\"tip\">Conseil : la régularité est essentielle !</p>",
         "vi": "<p>Kiếm XP, lên cấp và tăng hạng trong khi học!</p><p><b>Cách kiếm XP</b></p><ul><li><b>Thời gian học:</b> 10 XP mỗi phút.</li><li><b>Thử thách hằng ngày:</b> XP thưởng theo cấp.</li><li><b>Chuỗi:</b> 20 XP × ngày chuỗi hiện tại.</li></ul><p><b>Cấp &amp; hạng</b></p><ul><li>Cấp tối đa: 100.</li><li>Hạng mới mỗi 5 cấp.</li></ul><p class=\"tip\">Mẹo: sự đều đặn là chìa khóa!</p>",
         "zh": "<p>学习时赚取 XP、升级并提升段位！</p><p><b>如何赚取 XP</b></p><ul><li><b>学习时间：</b>每分钟 10 XP。</li><li><b>每日挑战：</b>根据等级获得额外 XP。</li><li><b>连续学习：</b>20 XP × 当前连续天数。</li></ul><p><b>等级与段位</b></p><ul><li>最高等级：100。</li><li>每 5 级获得新段位。</li></ul><p class=\"tip\">提示：坚持最重要！</p>",
-        "hi": "<p>पढ़ते समय XP कमाएँ, लेवल बढ़ाएँ और नई रैंक पाएँ!</p><p><b>XP कैसे कमाएँ</b></p><ul><li><b>अध्ययन समय:</b> प्रति मिनट 10 XP.</li><li><b>दैनिक चुनौती:</b> लेवल के आधार पर बोनस XP.</li><li><b>स्ट्रीक:</b> 20 XP × वर्तमान स्ट्रीक दिन.</li></ul><p><b>लेवल और रैंक</b></p><ul><li>अधिकतम लेवल: 100.</li><li>हर 5 लेवल पर नई रैंक.</li></ul><p class=\"tip\">सुझाव: निरंतरता सबसे महत्वपूर्ण है!</p>",
+        "hi": "<p>पढ़ते समय XP कमाएँ, लेवल बढ़ाएँ और नई रैंक पाएँ!</p><p><b>XP कैसे कमाएँ</b></p><ul><li><b>अध्ययन समय:</b> प्रति मिनट 10 XP.</li><li><b>दैनिक चुनौती:</b> लेवल के आधार पर बोनस XP.</li><li><b>स्ट्रीक:</b> 20 XP × वर्तमान स्ट्रीक दिन.</li></ul><p><b>लेवल और रैंक</b></p><ul><li>अधिकतम लेवल: 100.</li><li>हर 5 लेवल पर नई रैंक.</li></ul><p class=\"tip\">सुझाव: निरंतरता सबसे महत्वपूर्ण है!</p>", "pl": "<p>Zdobywaj XP, awansuj na wyższe poziomy i wspinaj się w rankingu podczas nauki!</p><p><b>Jak zdobywać XP</b></p><ul><li><b>Czas nauki:</b> 10 XP za minutę.</li><li><b>Codzienne wyzwanie:</b> Dodatkowe XP zależne od poziomu.</li><li><b>Seria:</b> 20 XP × liczba dni serii.</li></ul><p><b>Poziomy i rangi</b></p><ul><li>Maksymalny poziom: 100.</li><li>Nowa ranga co 5 poziomów.</li></ul><p class=\"tip\">Wskazówka: Konsekwencja to podstawa!</p>",
     },
 
     # Statistics widget and its dedicated settings dialog
-    "Statistics Settings": {"de":"Statistik-Einstellungen","es":"Ajustes de estadísticas","ko":"통계 설정","pt":"Configurações de estatísticas","fr":"Paramètres des statistiques","vi":"Cài đặt thống kê","zh":"统计设置","hi":"सांख्यिकी सेटिंग्स"},
-    "Choose the periods and decide which insights appear on your dashboard.": {"de":"Wähle die Zeiträume und entscheide, welche Werte im Dashboard erscheinen.","es":"Elige los períodos y decide qué datos aparecen en el panel.","ko":"기간과 대시보드에 표시할 지표를 선택하세요.","pt":"Escolha os períodos e quais dados aparecem no painel.","fr":"Choisissez les périodes et les données affichées sur le tableau de bord.","vi":"Chọn khoảng thời gian và dữ liệu hiển thị trên bảng điều khiển.","zh":"选择时间范围以及仪表板中显示的指标。","hi":"अवधि चुनें और तय करें कि डैशबोर्ड पर कौन-से आँकड़े दिखें।"},
-    "Time ranges": {"de":"Zeiträume","es":"Períodos","ko":"기간","pt":"Períodos","fr":"Périodes","vi":"Khoảng thời gian","zh":"时间范围","hi":"समय अवधि"},
-    "Statistics period": {"de":"Statistikzeitraum","es":"Período de estadísticas","ko":"통계 기간","pt":"Período das estatísticas","fr":"Période des statistiques","vi":"Khoảng thống kê","zh":"统计周期","hi":"सांख्यिकी अवधि"},
-    "Used for Efficiency, Accuracy and Retention.": {"de":"Wird für Effizienz, Genauigkeit und Retention verwendet.","es":"Se usa para eficiencia, precisión y retención.","ko":"효율성, 정확도 및 기억률에 사용됩니다.","pt":"Usado para eficiência, precisão e retenção.","fr":"Utilisée pour l’efficacité, la précision et la rétention.","vi":"Dùng cho hiệu suất, độ chính xác và khả năng ghi nhớ.","zh":"用于效率、准确率和记忆保持率。","hi":"दक्षता, सटीकता और प्रतिधारण के लिए उपयोग होता है।"},
-    "Consistency period": {"de":"Consistency-Zeitraum","es":"Período de constancia","ko":"일관성 기간","pt":"Período de consistência","fr":"Période de régularité","vi":"Khoảng nhất quán","zh":"一致性周期","hi":"निरंतरता अवधि"},
-    "Controls only the review activity graph.": {"de":"Steuert nur den Graphen der Wiederholungsaktivität.","es":"Controla solo el gráfico de actividad de repaso.","ko":"복습 활동 그래프에만 적용됩니다.","pt":"Controla apenas o gráfico de atividade de revisão.","fr":"Contrôle uniquement le graphique d’activité de révision.","vi":"Chỉ điều khiển biểu đồ hoạt động ôn tập.","zh":"仅控制复习活动图表。","hi":"केवल समीक्षा गतिविधि ग्राफ़ को नियंत्रित करता है।"},
-    "Visible insights": {"de":"Sichtbare Werte","es":"Datos visibles","ko":"표시할 지표","pt":"Dados visíveis","fr":"Données visibles","vi":"Dữ liệu hiển thị","zh":"显示的指标","hi":"दिखने वाले आँकड़े"},
-    "Review activity graph.": {"de":"Graph der Wiederholungsaktivität.","es":"Gráfico de actividad de repaso.","ko":"복습 활동 그래프입니다.","pt":"Gráfico de atividade de revisão.","fr":"Graphique d’activité de révision.","vi":"Biểu đồ hoạt động ôn tập.","zh":"复习活动图表。","hi":"समीक्षा गतिविधि ग्राफ़।"},
-    "Efficiency and Accuracy bars.": {"de":"Balken für Effizienz und Genauigkeit.","es":"Barras de eficiencia y precisión.","ko":"효율성과 정확도 막대입니다.","pt":"Barras de eficiência e precisão.","fr":"Barres d’efficacité et de précision.","vi":"Thanh hiệu suất và độ chính xác.","zh":"效率和准确率条形图。","hi":"दक्षता और सटीकता बार।"},
-    "Retention percentage circle.": {"de":"Kreis für die prozentuale Retention.","es":"Círculo del porcentaje de retención.","ko":"기억률 원형 표시입니다.","pt":"Círculo da porcentagem de retenção.","fr":"Cercle du pourcentage de rétention.","vi":"Vòng tròn phần trăm ghi nhớ.","zh":"记忆保持率圆环。","hi":"प्रतिधारण प्रतिशत वृत्त।"},
-    "Unseen cards percentage circle.": {"de":"Kreis für den Anteil ungesehener Karten.","es":"Círculo del porcentaje de tarjetas sin ver.","ko":"보지 않은 카드 비율 원형 표시입니다.","pt":"Círculo da porcentagem de cartões não vistos.","fr":"Cercle du pourcentage de cartes non vues.","vi":"Vòng tròn tỷ lệ thẻ chưa xem.","zh":"未学习卡片比例圆环。","hi":"अनदेखे कार्डों के प्रतिशत का वृत्त।"},
-    "Customize statistics": {"de":"Statistiken anpassen","es":"Personalizar estadísticas","ko":"통계 맞춤 설정","pt":"Personalizar estatísticas","fr":"Personnaliser les statistiques","vi":"Tùy chỉnh thống kê","zh":"自定义统计","hi":"सांख्यिकी अनुकूलित करें"},
-    "What do these statistics show?": {"de":"Was zeigen diese Statistiken?","es":"¿Qué muestran estas estadísticas?","ko":"이 통계는 무엇을 보여 주나요?","pt":"O que mostram estas estatísticas?","fr":"Que montrent ces statistiques ?","vi":"Các thống kê này thể hiện điều gì?","zh":"这些统计数据显示什么？","hi":"ये आँकड़े क्या दिखाते हैं?"},
-    "Last year": {"de":"Letztes Jahr","es":"Último año","ko":"지난 1년","pt":"Último ano","fr":"Année écoulée","vi":"Năm qua","zh":"过去一年","hi":"पिछला वर्ष"},
-    "the last year": {"de":"das letzte Jahr","es":"el último año","ko":"지난 1년","pt":"o último ano","fr":"l’année écoulée","vi":"năm qua","zh":"过去一年","hi":"पिछले वर्ष"},
-    "the last {} days": {"de":"die letzten {} Tage","es":"los últimos {} días","ko":"최근 {}일","pt":"os últimos {} dias","fr":"les {} derniers jours","vi":"{} ngày qua","zh":"过去 {} 天","hi":"पिछले {} दिन"},
-    "Reviews per day ({}). The best day in this period is the top of the curve.": {"de":"Wiederholungen pro Tag ({}). Der beste Tag dieses Zeitraums bildet die Kurvenspitze.","es":"Repasos por día ({}). El mejor día del período marca la parte superior de la curva.","ko":"일별 복습 수({}). 이 기간의 최고 기록이 곡선의 최댓값입니다.","pt":"Revisões por dia ({}). O melhor dia do período define o topo da curva.","fr":"Révisions par jour ({}). Le meilleur jour de la période définit le sommet de la courbe.","vi":"Số lượt ôn mỗi ngày ({}). Ngày tốt nhất trong giai đoạn là đỉnh đường cong.","zh":"每日复习量（{}）。此期间表现最好的一天对应曲线顶点。","hi":"प्रतिदिन समीक्षा ({}). इस अवधि का सबसे अच्छा दिन वक्र का शीर्ष है।"},
-    "Efficiency (Eff.)": {"de":"Effizienz (Eff.)","es":"Eficiencia (Efic.)","ko":"효율성 (효율)","pt":"Eficiência (Efic.)","fr":"Efficacité (Eff.)","vi":"Hiệu suất (Hq.)","zh":"效率（效率）","hi":"दक्षता (दक्ष.)"},
-    "Accuracy (Acc.)": {"de":"Genauigkeit (Gen.)","es":"Precisión (Prec.)","ko":"정확도 (정확)","pt":"Precisão (Prec.)","fr":"Précision (Préc.)","vi":"Độ chính xác (Độ cx.)","zh":"准确率（准确）","hi":"सटीकता (सटी.)"},
-    "How many cards you answer correctly per minute of study time ({}). A full bar equals 7.5 correct cards per minute. Time per card is capped at 45 seconds so breaks don't distort the value.": {"de":"Wie viele Karten du pro Lernminute richtig beantwortest ({}). Ein voller Balken entspricht 7,5 richtigen Karten pro Minute. Die Zeit pro Karte ist auf 45 Sekunden begrenzt, damit Pausen den Wert nicht verfälschen.","es":"Cuántas tarjetas respondes correctamente por minuto de estudio ({}). Una barra completa equivale a 7,5 tarjetas correctas por minuto. El tiempo por tarjeta se limita a 45 segundos para que las pausas no distorsionen el valor.","ko":"학습 시간 1분당 정답 카드 수({})입니다. 막대가 가득 차면 분당 7.5개 정답을 뜻합니다. 휴식이 값을 왜곡하지 않도록 카드당 시간은 45초로 제한됩니다.","pt":"Quantos cartões você responde corretamente por minuto de estudo ({}). Uma barra cheia equivale a 7,5 cartões corretos por minuto. O tempo por cartão é limitado a 45 segundos para que pausas não distorçam o valor.","fr":"Nombre de cartes correctement répondues par minute d’étude ({}). Une barre pleine correspond à 7,5 cartes correctes par minute. Le temps par carte est limité à 45 secondes afin que les pauses ne faussent pas la valeur.","vi":"Số thẻ bạn trả lời đúng mỗi phút học ({}). Thanh đầy tương ứng 7,5 thẻ đúng mỗi phút. Thời gian mỗi thẻ được giới hạn ở 45 giây để thời gian nghỉ không làm sai lệch kết quả.","zh":"每分钟学习时间内正确回答的卡片数（{}）。满条代表每分钟正确回答 7.5 张卡片。每张卡片的用时上限为 45 秒，避免休息时间影响数值。","hi":"प्रति अध्ययन मिनट सही उत्तर दिए गए कार्डों की संख्या ({}). पूरा बार प्रति मिनट 7.5 सही कार्ड के बराबर है। विराम से मान प्रभावित न हो, इसलिए प्रति कार्ड समय 45 सेकंड तक सीमित है।"},
-    "The percentage of all answered cards you got right ({}). The bar is scaled for readability — hover over it to see the exact value.": {"de":"Der Anteil aller richtig beantworteten Karten ({}). Der Balken ist zur besseren Lesbarkeit skaliert – fahre darüber, um den exakten Wert zu sehen.","es":"El porcentaje de todas las tarjetas respondidas correctamente ({}). La barra está escalada para facilitar la lectura; pasa el cursor para ver el valor exacto.","ko":"전체 응답 카드 중 정답 비율({})입니다. 읽기 쉽도록 막대가 조정되어 있으며 마우스를 올리면 정확한 값을 볼 수 있습니다.","pt":"A porcentagem de todos os cartões respondidos corretamente ({}). A barra é dimensionada para facilitar a leitura; passe o cursor para ver o valor exato.","fr":"Le pourcentage de toutes les cartes correctement répondues ({}). La barre est mise à l’échelle pour rester lisible ; survolez-la pour voir la valeur exacte.","vi":"Tỷ lệ tất cả thẻ được trả lời đúng ({}). Thanh được điều chỉnh để dễ đọc; di chuột để xem giá trị chính xác.","zh":"所有已回答卡片中的正确率（{}）。条形图为便于阅读进行了缩放；悬停可查看精确值。","hi":"सभी उत्तर दिए कार्डों में सही उत्तरों का प्रतिशत ({}). पढ़ने में आसानी के लिए बार का पैमाना बदला गया है—सटीक मान देखने के लिए उस पर होवर करें।"},
-    "The percentage of correct answers on review cards ({}) — cards you had already learned. This shows how well you retain content long-term.": {"de":"Der Anteil richtiger Antworten bei Wiederholungskarten ({}) – also bereits gelernten Karten. Dies zeigt, wie gut du Inhalte langfristig behältst.","es":"El porcentaje de respuestas correctas en tarjetas de repaso ({}) —tarjetas que ya habías aprendido—. Muestra qué tan bien retienes el contenido a largo plazo.","ko":"이미 학습한 복습 카드의 정답 비율({})입니다. 내용을 장기적으로 얼마나 잘 기억하는지 보여 줍니다.","pt":"A porcentagem de respostas corretas em cartões de revisão ({}) — cartões já aprendidos. Mostra como você retém o conteúdo a longo prazo.","fr":"Le pourcentage de bonnes réponses aux cartes de révision ({}) — des cartes déjà apprises. Cela indique la qualité de la mémorisation à long terme.","vi":"Tỷ lệ trả lời đúng trên các thẻ ôn tập ({}) — những thẻ đã học. Chỉ số này cho biết khả năng ghi nhớ lâu dài.","zh":"复习卡片（已学习过的卡片）的正确率（{}）。这反映了长期记忆效果。","hi":"समीक्षा कार्डों—यानी पहले सीखे कार्डों—पर सही उत्तरों का प्रतिशत ({}). यह दीर्घकालीन याददाश्त दर्शाता है।"},
-    "The percentage of cards in your active collection that you have never studied.": {"de":"Der Anteil der Karten in deiner aktiven Sammlung, die du noch nie gelernt hast.","es":"El porcentaje de tarjetas de tu colección activa que nunca has estudiado.","ko":"활성 컬렉션에서 아직 한 번도 학습하지 않은 카드의 비율입니다.","pt":"A porcentagem de cartões da coleção ativa que você nunca estudou.","fr":"Le pourcentage de cartes de votre collection active que vous n’avez jamais étudiées.","vi":"Tỷ lệ thẻ trong bộ sưu tập đang hoạt động mà bạn chưa từng học.","zh":"活动集合中从未学习过的卡片比例。","hi":"आपके सक्रिय संग्रह में उन कार्डों का प्रतिशत जिन्हें आपने कभी नहीं पढ़ा।"},
-    "Your reviews per day over {}. The curve is relative to this period: the day with the most reviews forms the peak, days without reviews sit on the baseline. The dot marks today.": {"de":"Deine Wiederholungen pro Tag über {}. Die Kurve ist relativ zu diesem Zeitraum: Der Tag mit den meisten Wiederholungen bildet die Spitze, Tage ohne Wiederholungen liegen auf der Grundlinie. Der Punkt markiert heute.","es":"Tus repasos diarios durante {}. La curva es relativa a este período: el día con más repasos forma el pico y los días sin repasos quedan en la línea base. El punto marca hoy.","ko":"{} 동안의 일별 복습 수입니다. 곡선은 이 기간을 기준으로 하며 복습이 가장 많은 날이 정점, 복습이 없는 날은 기준선에 놓입니다. 점은 오늘을 표시합니다.","pt":"Suas revisões por dia durante {}. A curva é relativa a esse período: o dia com mais revisões forma o pico e dias sem revisões ficam na linha de base. O ponto marca hoje.","fr":"Vos révisions quotidiennes sur {}. La courbe est relative à cette période : le jour avec le plus de révisions forme le sommet et les jours sans révision restent sur la ligne de base. Le point indique aujourd’hui.","vi":"Số lượt ôn mỗi ngày trong {}. Đường cong tương đối với giai đoạn này: ngày ôn nhiều nhất tạo đỉnh, ngày không ôn nằm trên đường cơ sở. Chấm tròn đánh dấu hôm nay.","zh":"{}内的每日复习量。曲线相对于该时间段：复习最多的一天形成峰值，无复习的日期位于基线，圆点表示今天。","hi":"{} में आपकी प्रतिदिन समीक्षाएँ। वक्र इस अवधि के सापेक्ष है: सबसे अधिक समीक्षाओं वाला दिन शिखर बनता है, बिना समीक्षा वाले दिन आधार रेखा पर रहते हैं। बिंदु आज को दर्शाता है।"},
-    "Use the gear button on the statistics widget to change periods and visible insights.": {"de":"Mit dem Zahnrad im Statistik-Widget kannst du Zeiträume und sichtbare Werte ändern.","es":"Usa el engranaje del widget de estadísticas para cambiar los períodos y los datos visibles.","ko":"통계 위젯의 톱니바퀴 버튼으로 기간과 표시할 지표를 변경하세요.","pt":"Use a engrenagem no widget de estatísticas para alterar períodos e dados visíveis.","fr":"Utilisez le bouton en forme d’engrenage du widget pour modifier les périodes et les données visibles.","vi":"Dùng nút bánh răng trên tiện ích thống kê để đổi khoảng thời gian và dữ liệu hiển thị.","zh":"使用统计组件上的齿轮按钮更改时间范围和显示的指标。","hi":"अवधि और दिखने वाले आँकड़े बदलने के लिए सांख्यिकी विजेट का गियर बटन उपयोग करें।"},
-    "SynapsePro - Statistics": {"de":"SynapsePro – Statistiken","es":"SynapsePro - Estadísticas","ko":"SynapsePro - 통계","pt":"SynapsePro - Estatísticas","fr":"SynapsePro – Statistiques","vi":"SynapsePro - Thống kê","zh":"SynapsePro - 统计","hi":"SynapsePro - सांख्यिकी"},
-    "Next": {"de":"Weiter","es":"Siguiente","ko":"다음","pt":"Próximo","fr":"Suivant","vi":"Tiếp theo","zh":"下一步","hi":"अगला"},
-    "More": {"de":"Mehr","es":"Más","ko":"더 보기","pt":"Mais","fr":"Plus","vi":"Thêm","zh":"更多","hi":"अधिक"},
-    "Choose Background Image": {"de":"Hintergrundbild auswählen","es":"Elegir imagen de fondo","ko":"배경 이미지 선택","pt":"Escolher imagem de fundo","fr":"Choisir une image d’arrière-plan","vi":"Chọn ảnh nền","zh":"选择背景图片","hi":"पृष्ठभूमि चित्र चुनें"},
-    "Images (*.jpg *.jpeg *.png *.webp)": {"de":"Bilder (*.jpg *.jpeg *.png *.webp)","es":"Imágenes (*.jpg *.jpeg *.png *.webp)","ko":"이미지 (*.jpg *.jpeg *.png *.webp)","pt":"Imagens (*.jpg *.jpeg *.png *.webp)","fr":"Images (*.jpg *.jpeg *.png *.webp)","vi":"Hình ảnh (*.jpg *.jpeg *.png *.webp)","zh":"图片 (*.jpg *.jpeg *.png *.webp)","hi":"चित्र (*.jpg *.jpeg *.png *.webp)"},
-    "The image must be smaller than 20 MB.": {"de":"Das Bild muss kleiner als 20 MB sein.","es":"La imagen debe tener menos de 20 MB.","ko":"이미지는 20MB보다 작아야 합니다.","pt":"A imagem deve ter menos de 20 MB.","fr":"L’image doit faire moins de 20 Mo.","vi":"Ảnh phải nhỏ hơn 20 MB.","zh":"图片必须小于 20 MB。","hi":"चित्र 20 MB से छोटा होना चाहिए।"},
-    "Please choose a valid PNG, JPEG or WebP image.": {"de":"Bitte wähle ein gültiges PNG-, JPEG- oder WebP-Bild.","es":"Elige una imagen PNG, JPEG o WebP válida.","ko":"유효한 PNG, JPEG 또는 WebP 이미지를 선택하세요.","pt":"Escolha uma imagem PNG, JPEG ou WebP válida.","fr":"Choisissez une image PNG, JPEG ou WebP valide.","vi":"Hãy chọn ảnh PNG, JPEG hoặc WebP hợp lệ.","zh":"请选择有效的 PNG、JPEG 或 WebP 图片。","hi":"मान्य PNG, JPEG या WebP चित्र चुनें।"},
-    "Animated images are not supported.": {"de":"Animierte Bilder werden nicht unterstützt.","es":"Las imágenes animadas no son compatibles.","ko":"애니메이션 이미지는 지원되지 않습니다.","pt":"Imagens animadas não são suportadas.","fr":"Les images animées ne sont pas prises en charge.","vi":"Không hỗ trợ ảnh động.","zh":"不支持动画图片。","hi":"एनिमेटेड चित्र समर्थित नहीं हैं।"},
-    "The image dimensions could not be read.": {"de":"Die Bildabmessungen konnten nicht gelesen werden.","es":"No se pudieron leer las dimensiones de la imagen.","ko":"이미지 크기를 읽을 수 없습니다.","pt":"Não foi possível ler as dimensões da imagem.","fr":"Les dimensions de l’image n’ont pas pu être lues.","vi":"Không thể đọc kích thước ảnh.","zh":"无法读取图片尺寸。","hi":"चित्र के आयाम पढ़े नहीं जा सके।"},
-    "The image is too large. Use an image below 40 megapixels.": {"de":"Das Bild ist zu groß. Verwende ein Bild unter 40 Megapixeln.","es":"La imagen es demasiado grande. Usa una imagen de menos de 40 megapíxeles.","ko":"이미지가 너무 큽니다. 4천만 화소 미만 이미지를 사용하세요.","pt":"A imagem é grande demais. Use uma imagem com menos de 40 megapixels.","fr":"L’image est trop grande. Utilisez une image de moins de 40 mégapixels.","vi":"Ảnh quá lớn. Hãy dùng ảnh dưới 40 megapixel.","zh":"图片过大。请使用低于 4000 万像素的图片。","hi":"चित्र बहुत बड़ा है। 40 मेगापिक्सेल से छोटा चित्र उपयोग करें।"},
-    "The image could not be decoded.": {"de":"Das Bild konnte nicht dekodiert werden.","es":"No se pudo decodificar la imagen.","ko":"이미지를 디코딩할 수 없습니다.","pt":"Não foi possível decodificar a imagem.","fr":"L’image n’a pas pu être décodée.","vi":"Không thể giải mã ảnh.","zh":"无法解码图片。","hi":"चित्र डिकोड नहीं किया जा सका।"},
-    "The optimized background could not be saved.": {"de":"Der optimierte Hintergrund konnte nicht gespeichert werden.","es":"No se pudo guardar el fondo optimizado.","ko":"최적화된 배경을 저장할 수 없습니다.","pt":"Não foi possível salvar o fundo otimizado.","fr":"L’arrière-plan optimisé n’a pas pu être enregistré.","vi":"Không thể lưu nền đã tối ưu.","zh":"无法保存优化后的背景。","hi":"अनुकूलित पृष्ठभूमि सहेजी नहीं जा सकी।"},
+    "Statistics Settings": {"de":"Statistik-Einstellungen","es":"Ajustes de estadísticas","ko":"통계 설정","pt":"Configurações de estatísticas","fr":"Paramètres des statistiques","vi":"Cài đặt thống kê","zh":"统计设置","hi":"सांख्यिकी सेटिंग्स", "pl": "Ustawienia statystyk"},
+    "Choose the periods and decide which insights appear on your dashboard.": {"de":"Wähle die Zeiträume und entscheide, welche Werte im Dashboard erscheinen.","es":"Elige los períodos y decide qué datos aparecen en el panel.","ko":"기간과 대시보드에 표시할 지표를 선택하세요.","pt":"Escolha os períodos e quais dados aparecem no painel.","fr":"Choisissez les périodes et les données affichées sur le tableau de bord.","vi":"Chọn khoảng thời gian và dữ liệu hiển thị trên bảng điều khiển.","zh":"选择时间范围以及仪表板中显示的指标。","hi":"अवधि चुनें और तय करें कि डैशबोर्ड पर कौन-से आँकड़े दिखें।", "pl": "Wybierz okresy i zdecyduj, które informacje pojawią się na pulpicie."},
+    "Time ranges": {"de":"Zeiträume","es":"Períodos","ko":"기간","pt":"Períodos","fr":"Périodes","vi":"Khoảng thời gian","zh":"时间范围","hi":"समय अवधि", "pl": "Zakresy czasu"},
+    "Statistics period": {"de":"Statistikzeitraum","es":"Período de estadísticas","ko":"통계 기간","pt":"Período das estatísticas","fr":"Période des statistiques","vi":"Khoảng thống kê","zh":"统计周期","hi":"सांख्यिकी अवधि", "pl": "Okres statystyk"},
+    "Used for Efficiency, Accuracy and Retention.": {"de":"Wird für Effizienz, Genauigkeit und Retention verwendet.","es":"Se usa para eficiencia, precisión y retención.","ko":"효율성, 정확도 및 기억률에 사용됩니다.","pt":"Usado para eficiência, precisão e retenção.","fr":"Utilisée pour l’efficacité, la précision et la rétention.","vi":"Dùng cho hiệu suất, độ chính xác và khả năng ghi nhớ.","zh":"用于效率、准确率和记忆保持率。","hi":"दक्षता, सटीकता और प्रतिधारण के लिए उपयोग होता है।", "pl": "Używane do obliczania Efektywności, Dokładności i Zapamiętywania."},
+    "Consistency period": {"de":"Consistency-Zeitraum","es":"Período de constancia","ko":"일관성 기간","pt":"Período de consistência","fr":"Période de régularité","vi":"Khoảng nhất quán","zh":"一致性周期","hi":"निरंतरता अवधि", "pl": "Okres regularności"},
+    "Controls only the review activity graph.": {"de":"Steuert nur den Graphen der Wiederholungsaktivität.","es":"Controla solo el gráfico de actividad de repaso.","ko":"복습 활동 그래프에만 적용됩니다.","pt":"Controla apenas o gráfico de atividade de revisão.","fr":"Contrôle uniquement le graphique d’activité de révision.","vi":"Chỉ điều khiển biểu đồ hoạt động ôn tập.","zh":"仅控制复习活动图表。","hi":"केवल समीक्षा गतिविधि ग्राफ़ को नियंत्रित करता है।", "pl": "Dotyczy tylko wykresu aktywności powtórek."},
+    "Visible insights": {"de":"Sichtbare Werte","es":"Datos visibles","ko":"표시할 지표","pt":"Dados visíveis","fr":"Données visibles","vi":"Dữ liệu hiển thị","zh":"显示的指标","hi":"दिखने वाले आँकड़े", "pl": "Widoczne wskaźniki"},
+    "Review activity graph.": {"de":"Graph der Wiederholungsaktivität.","es":"Gráfico de actividad de repaso.","ko":"복습 활동 그래프입니다.","pt":"Gráfico de atividade de revisão.","fr":"Graphique d’activité de révision.","vi":"Biểu đồ hoạt động ôn tập.","zh":"复习活动图表。","hi":"समीक्षा गतिविधि ग्राफ़।", "pl": "Wykres aktywności powtórek."},
+    "Efficiency and Accuracy bars.": {"de":"Balken für Effizienz und Genauigkeit.","es":"Barras de eficiencia y precisión.","ko":"효율성과 정확도 막대입니다.","pt":"Barras de eficiência e precisão.","fr":"Barres d’efficacité et de précision.","vi":"Thanh hiệu suất và độ chính xác.","zh":"效率和准确率条形图。","hi":"दक्षता और सटीकता बार।", "pl": "Paski efektywności i dokładności."},
+    "Retention percentage circle.": {"de":"Kreis für die prozentuale Retention.","es":"Círculo del porcentaje de retención.","ko":"기억률 원형 표시입니다.","pt":"Círculo da porcentagem de retenção.","fr":"Cercle du pourcentage de rétention.","vi":"Vòng tròn phần trăm ghi nhớ.","zh":"记忆保持率圆环。","hi":"प्रतिधारण प्रतिशत वृत्त।", "pl": "Okrąg procentowy zapamiętywania."},
+    "Unseen cards percentage circle.": {"de":"Kreis für den Anteil ungesehener Karten.","es":"Círculo del porcentaje de tarjetas sin ver.","ko":"보지 않은 카드 비율 원형 표시입니다.","pt":"Círculo da porcentagem de cartões não vistos.","fr":"Cercle du pourcentage de cartes non vues.","vi":"Vòng tròn tỷ lệ thẻ chưa xem.","zh":"未学习卡片比例圆环。","hi":"अनदेखे कार्डों के प्रतिशत का वृत्त।", "pl": "Okrąg procentowy nieobejrzanych kart."},
+    "Customize statistics": {"de":"Statistiken anpassen","es":"Personalizar estadísticas","ko":"통계 맞춤 설정","pt":"Personalizar estatísticas","fr":"Personnaliser les statistiques","vi":"Tùy chỉnh thống kê","zh":"自定义统计","hi":"सांख्यिकी अनुकूलित करें", "pl": "Dostosuj statystyki"},
+    "What do these statistics show?": {"de":"Was zeigen diese Statistiken?","es":"¿Qué muestran estas estadísticas?","ko":"이 통계는 무엇을 보여 주나요?","pt":"O que mostram estas estatísticas?","fr":"Que montrent ces statistiques ?","vi":"Các thống kê này thể hiện điều gì?","zh":"这些统计数据显示什么？","hi":"ये आँकड़े क्या दिखाते हैं?", "pl": "Co pokazują te statystyki?"},
+    "Last year": {"de":"Letztes Jahr","es":"Último año","ko":"지난 1년","pt":"Último ano","fr":"Année écoulée","vi":"Năm qua","zh":"过去一年","hi":"पिछला वर्ष", "pl": "Ostatni rok"},
+    "the last year": {"de":"das letzte Jahr","es":"el último año","ko":"지난 1년","pt":"o último ano","fr":"l’année écoulée","vi":"năm qua","zh":"过去一年","hi":"पिछले वर्ष", "pl": "ostatni rok"},
+    "the last {} days": {"de":"die letzten {} Tage","es":"los últimos {} días","ko":"최근 {}일","pt":"os últimos {} dias","fr":"les {} derniers jours","vi":"{} ngày qua","zh":"过去 {} 天","hi":"पिछले {} दिन", "pl": "ostatnie {} dni"},
+    "Reviews per day ({}). The best day in this period is the top of the curve.": {"de":"Wiederholungen pro Tag ({}). Der beste Tag dieses Zeitraums bildet die Kurvenspitze.","es":"Repasos por día ({}). El mejor día del período marca la parte superior de la curva.","ko":"일별 복습 수({}). 이 기간의 최고 기록이 곡선의 최댓값입니다.","pt":"Revisões por dia ({}). O melhor dia do período define o topo da curva.","fr":"Révisions par jour ({}). Le meilleur jour de la période définit le sommet de la courbe.","vi":"Số lượt ôn mỗi ngày ({}). Ngày tốt nhất trong giai đoạn là đỉnh đường cong.","zh":"每日复习量（{}）。此期间表现最好的一天对应曲线顶点。","hi":"प्रतिदिन समीक्षा ({}). इस अवधि का सबसे अच्छा दिन वक्र का शीर्ष है।", "pl": "Powtórki dziennie ({}). Najlepszy dzień w tym okresie to szczyt krzywej."},
+    "Efficiency (Eff.)": {"de":"Effizienz (Eff.)","es":"Eficiencia (Efic.)","ko":"효율성 (효율)","pt":"Eficiência (Efic.)","fr":"Efficacité (Eff.)","vi":"Hiệu suất (Hq.)","zh":"效率（效率）","hi":"दक्षता (दक्ष.)", "pl": "Efektywność (Efekt.)"},
+    "Accuracy (Acc.)": {"de":"Genauigkeit (Gen.)","es":"Precisión (Prec.)","ko":"정확도 (정확)","pt":"Precisão (Prec.)","fr":"Précision (Préc.)","vi":"Độ chính xác (Độ cx.)","zh":"准确率（准确）","hi":"सटीकता (सटी.)", "pl": "Poprawność (Popr.)"},
+    "How many cards you answer correctly per minute of study time ({}). A full bar equals 7.5 correct cards per minute. Time per card is capped at 45 seconds so breaks don't distort the value.": {"de":"Wie viele Karten du pro Lernminute richtig beantwortest ({}). Ein voller Balken entspricht 7,5 richtigen Karten pro Minute. Die Zeit pro Karte ist auf 45 Sekunden begrenzt, damit Pausen den Wert nicht verfälschen.","es":"Cuántas tarjetas respondes correctamente por minuto de estudio ({}). Una barra completa equivale a 7,5 tarjetas correctas por minuto. El tiempo por tarjeta se limita a 45 segundos para que las pausas no distorsionen el valor.","ko":"학습 시간 1분당 정답 카드 수({})입니다. 막대가 가득 차면 분당 7.5개 정답을 뜻합니다. 휴식이 값을 왜곡하지 않도록 카드당 시간은 45초로 제한됩니다.","pt":"Quantos cartões você responde corretamente por minuto de estudo ({}). Uma barra cheia equivale a 7,5 cartões corretos por minuto. O tempo por cartão é limitado a 45 segundos para que pausas não distorçam o valor.","fr":"Nombre de cartes correctement répondues par minute d’étude ({}). Une barre pleine correspond à 7,5 cartes correctes par minute. Le temps par carte est limité à 45 secondes afin que les pauses ne faussent pas la valeur.","vi":"Số thẻ bạn trả lời đúng mỗi phút học ({}). Thanh đầy tương ứng 7,5 thẻ đúng mỗi phút. Thời gian mỗi thẻ được giới hạn ở 45 giây để thời gian nghỉ không làm sai lệch kết quả.","zh":"每分钟学习时间内正确回答的卡片数（{}）。满条代表每分钟正确回答 7.5 张卡片。每张卡片的用时上限为 45 秒，避免休息时间影响数值。","hi":"प्रति अध्ययन मिनट सही उत्तर दिए गए कार्डों की संख्या ({}). पूरा बार प्रति मिनट 7.5 सही कार्ड के बराबर है। विराम से मान प्रभावित न हो, इसलिए प्रति कार्ड समय 45 सेकंड तक सीमित है।", "pl": "Ile kart odpowiadasz poprawnie na minutę nauki ({}). Pełny pasek odpowiada 7,5 poprawnej karcie na minutę. Czas na kartę jest ograniczony do 45 sekund, aby przerwy nie zniekształcały wartości."},
+    "The percentage of all answered cards you got right ({}). The bar is scaled for readability — hover over it to see the exact value.": {"de":"Der Anteil aller richtig beantworteten Karten ({}). Der Balken ist zur besseren Lesbarkeit skaliert – fahre darüber, um den exakten Wert zu sehen.","es":"El porcentaje de todas las tarjetas respondidas correctamente ({}). La barra está escalada para facilitar la lectura; pasa el cursor para ver el valor exacto.","ko":"전체 응답 카드 중 정답 비율({})입니다. 읽기 쉽도록 막대가 조정되어 있으며 마우스를 올리면 정확한 값을 볼 수 있습니다.","pt":"A porcentagem de todos os cartões respondidos corretamente ({}). A barra é dimensionada para facilitar a leitura; passe o cursor para ver o valor exato.","fr":"Le pourcentage de toutes les cartes correctement répondues ({}). La barre est mise à l’échelle pour rester lisible ; survolez-la pour voir la valeur exacte.","vi":"Tỷ lệ tất cả thẻ được trả lời đúng ({}). Thanh được điều chỉnh để dễ đọc; di chuột để xem giá trị chính xác.","zh":"所有已回答卡片中的正确率（{}）。条形图为便于阅读进行了缩放；悬停可查看精确值。","hi":"सभी उत्तर दिए कार्डों में सही उत्तरों का प्रतिशत ({}). पढ़ने में आसानी के लिए बार का पैमाना बदला गया है—सटीक मान देखने के लिए उस पर होवर करें।", "pl": "Odsetek wszystkich udzielonych poprawnych odpowiedzi na karty ({}). Pasek jest przeskalowany dla czytelności — najedź na niego, aby zobaczyć dokładną wartość."},
+    "The percentage of correct answers on review cards ({}) — cards you had already learned. This shows how well you retain content long-term.": {"de":"Der Anteil richtiger Antworten bei Wiederholungskarten ({}) – also bereits gelernten Karten. Dies zeigt, wie gut du Inhalte langfristig behältst.","es":"El porcentaje de respuestas correctas en tarjetas de repaso ({}) —tarjetas que ya habías aprendido—. Muestra qué tan bien retienes el contenido a largo plazo.","ko":"이미 학습한 복습 카드의 정답 비율({})입니다. 내용을 장기적으로 얼마나 잘 기억하는지 보여 줍니다.","pt":"A porcentagem de respostas corretas em cartões de revisão ({}) — cartões já aprendidos. Mostra como você retém o conteúdo a longo prazo.","fr":"Le pourcentage de bonnes réponses aux cartes de révision ({}) — des cartes déjà apprises. Cela indique la qualité de la mémorisation à long terme.","vi":"Tỷ lệ trả lời đúng trên các thẻ ôn tập ({}) — những thẻ đã học. Chỉ số này cho biết khả năng ghi nhớ lâu dài.","zh":"复习卡片（已学习过的卡片）的正确率（{}）。这反映了长期记忆效果。","hi":"समीक्षा कार्डों—यानी पहले सीखे कार्डों—पर सही उत्तरों का प्रतिशत ({}). यह दीर्घकालीन याददाश्त दर्शाता है।", "pl": "Odsetek poprawnych odpowiedzi na kartach powtórkowych ({}) — kartach, które zostały już wcześniej nauczone. Pokazuje to, jak dobrze zapamiętywane są treści w dłuższej perspektywie."},
+    "The percentage of cards in your active collection that you have never studied.": {"de":"Der Anteil der Karten in deiner aktiven Sammlung, die du noch nie gelernt hast.","es":"El porcentaje de tarjetas de tu colección activa que nunca has estudiado.","ko":"활성 컬렉션에서 아직 한 번도 학습하지 않은 카드의 비율입니다.","pt":"A porcentagem de cartões da coleção ativa que você nunca estudou.","fr":"Le pourcentage de cartes de votre collection active que vous n’avez jamais étudiées.","vi":"Tỷ lệ thẻ trong bộ sưu tập đang hoạt động mà bạn chưa từng học.","zh":"活动集合中从未学习过的卡片比例。","hi":"आपके सक्रिय संग्रह में उन कार्डों का प्रतिशत जिन्हें आपने कभी नहीं पढ़ा।", "pl": "Odsetek kart w aktywnej kolekcji, które nie zostały jeszcze przejrzane."},
+    "Your reviews per day over {}. The curve is relative to this period: the day with the most reviews forms the peak, days without reviews sit on the baseline. The dot marks today.": {"de":"Deine Wiederholungen pro Tag über {}. Die Kurve ist relativ zu diesem Zeitraum: Der Tag mit den meisten Wiederholungen bildet die Spitze, Tage ohne Wiederholungen liegen auf der Grundlinie. Der Punkt markiert heute.","es":"Tus repasos diarios durante {}. La curva es relativa a este período: el día con más repasos forma el pico y los días sin repasos quedan en la línea base. El punto marca hoy.","ko":"{} 동안의 일별 복습 수입니다. 곡선은 이 기간을 기준으로 하며 복습이 가장 많은 날이 정점, 복습이 없는 날은 기준선에 놓입니다. 점은 오늘을 표시합니다.","pt":"Suas revisões por dia durante {}. A curva é relativa a esse período: o dia com mais revisões forma o pico e dias sem revisões ficam na linha de base. O ponto marca hoje.","fr":"Vos révisions quotidiennes sur {}. La courbe est relative à cette période : le jour avec le plus de révisions forme le sommet et les jours sans révision restent sur la ligne de base. Le point indique aujourd’hui.","vi":"Số lượt ôn mỗi ngày trong {}. Đường cong tương đối với giai đoạn này: ngày ôn nhiều nhất tạo đỉnh, ngày không ôn nằm trên đường cơ sở. Chấm tròn đánh dấu hôm nay.","zh":"{}内的每日复习量。曲线相对于该时间段：复习最多的一天形成峰值，无复习的日期位于基线，圆点表示今天。","hi":"{} में आपकी प्रतिदिन समीक्षाएँ। वक्र इस अवधि के सापेक्ष है: सबसे अधिक समीक्षाओं वाला दिन शिखर बनता है, बिना समीक्षा वाले दिन आधार रेखा पर रहते हैं। बिंदु आज को दर्शाता है।", "pl": "Twoje powtórki dziennie w okresie {}. Krzywa jest przedstawiona względem tego okresu: dzień z największą liczbą powtórek tworzy szczyt, a dni bez powtórek leżą na linii podstawowej. Kropka oznacza dzisiaj."},
+    "Use the gear button on the statistics widget to change periods and visible insights.": {"de":"Mit dem Zahnrad im Statistik-Widget kannst du Zeiträume und sichtbare Werte ändern.","es":"Usa el engranaje del widget de estadísticas para cambiar los períodos y los datos visibles.","ko":"통계 위젯의 톱니바퀴 버튼으로 기간과 표시할 지표를 변경하세요.","pt":"Use a engrenagem no widget de estatísticas para alterar períodos e dados visíveis.","fr":"Utilisez le bouton en forme d’engrenage du widget pour modifier les périodes et les données visibles.","vi":"Dùng nút bánh răng trên tiện ích thống kê để đổi khoảng thời gian và dữ liệu hiển thị.","zh":"使用统计组件上的齿轮按钮更改时间范围和显示的指标。","hi":"अवधि और दिखने वाले आँकड़े बदलने के लिए सांख्यिकी विजेट का गियर बटन उपयोग करें।", "pl": "Użyj przycisku koła zębatego na widżecie statystyk, aby zmienić okresy i widoczne wskaźniki."},
+    "SynapsePro - Statistics": {"de":"SynapsePro – Statistiken","es":"SynapsePro - Estadísticas","ko":"SynapsePro - 통계","pt":"SynapsePro - Estatísticas","fr":"SynapsePro – Statistiques","vi":"SynapsePro - Thống kê","zh":"SynapsePro - 统计","hi":"SynapsePro - सांख्यिकी", "pl": "SynapsePro - Statystyki"},
+    "Next": {"de":"Weiter","es":"Siguiente","ko":"다음","pt":"Próximo","fr":"Suivant","vi":"Tiếp theo","zh":"下一步","hi":"अगला", "pl": "Dalej"},
+    "More": {"de":"Mehr","es":"Más","ko":"더 보기","pt":"Mais","fr":"Plus","vi":"Thêm","zh":"更多","hi":"अधिक", "pl": "Więcej"},
+    "Choose Background Image": {"de":"Hintergrundbild auswählen","es":"Elegir imagen de fondo","ko":"배경 이미지 선택","pt":"Escolher imagem de fundo","fr":"Choisir une image d’arrière-plan","vi":"Chọn ảnh nền","zh":"选择背景图片","hi":"पृष्ठभूमि चित्र चुनें", "pl": "Wybierz obraz tła"},
+    "Images (*.jpg *.jpeg *.png *.webp)": {"de":"Bilder (*.jpg *.jpeg *.png *.webp)","es":"Imágenes (*.jpg *.jpeg *.png *.webp)","ko":"이미지 (*.jpg *.jpeg *.png *.webp)","pt":"Imagens (*.jpg *.jpeg *.png *.webp)","fr":"Images (*.jpg *.jpeg *.png *.webp)","vi":"Hình ảnh (*.jpg *.jpeg *.png *.webp)","zh":"图片 (*.jpg *.jpeg *.png *.webp)","hi":"चित्र (*.jpg *.jpeg *.png *.webp)", "pl": "Obrazy (*.jpg *.jpeg *.png *.webp)"},
+    "The image must be smaller than 20 MB.": {"de":"Das Bild muss kleiner als 20 MB sein.","es":"La imagen debe tener menos de 20 MB.","ko":"이미지는 20MB보다 작아야 합니다.","pt":"A imagem deve ter menos de 20 MB.","fr":"L’image doit faire moins de 20 Mo.","vi":"Ảnh phải nhỏ hơn 20 MB.","zh":"图片必须小于 20 MB。","hi":"चित्र 20 MB से छोटा होना चाहिए।", "pl": "Obraz musi być mniejszy niż 20 MB."},
+    "Please choose a valid PNG, JPEG or WebP image.": {"de":"Bitte wähle ein gültiges PNG-, JPEG- oder WebP-Bild.","es":"Elige una imagen PNG, JPEG o WebP válida.","ko":"유효한 PNG, JPEG 또는 WebP 이미지를 선택하세요.","pt":"Escolha uma imagem PNG, JPEG ou WebP válida.","fr":"Choisissez une image PNG, JPEG ou WebP valide.","vi":"Hãy chọn ảnh PNG, JPEG hoặc WebP hợp lệ.","zh":"请选择有效的 PNG、JPEG 或 WebP 图片。","hi":"मान्य PNG, JPEG या WebP चित्र चुनें।", "pl": "Wybierz prawidłowy obraz w formacie PNG, JPEG lub WebP."},
+    "Animated images are not supported.": {"de":"Animierte Bilder werden nicht unterstützt.","es":"Las imágenes animadas no son compatibles.","ko":"애니메이션 이미지는 지원되지 않습니다.","pt":"Imagens animadas não são suportadas.","fr":"Les images animées ne sont pas prises en charge.","vi":"Không hỗ trợ ảnh động.","zh":"不支持动画图片。","hi":"एनिमेटेड चित्र समर्थित नहीं हैं।", "pl": "Animowane obrazy nie są obsługiwane."},
+    "The image dimensions could not be read.": {"de":"Die Bildabmessungen konnten nicht gelesen werden.","es":"No se pudieron leer las dimensiones de la imagen.","ko":"이미지 크기를 읽을 수 없습니다.","pt":"Não foi possível ler as dimensões da imagem.","fr":"Les dimensions de l’image n’ont pas pu être lues.","vi":"Không thể đọc kích thước ảnh.","zh":"无法读取图片尺寸。","hi":"चित्र के आयाम पढ़े नहीं जा सके।", "pl": "Nie udało się odczytać wymiarów obrazu."},
+    "The image is too large. Use an image below 40 megapixels.": {"de":"Das Bild ist zu groß. Verwende ein Bild unter 40 Megapixeln.","es":"La imagen es demasiado grande. Usa una imagen de menos de 40 megapíxeles.","ko":"이미지가 너무 큽니다. 4천만 화소 미만 이미지를 사용하세요.","pt":"A imagem é grande demais. Use uma imagem com menos de 40 megapixels.","fr":"L’image est trop grande. Utilisez une image de moins de 40 mégapixels.","vi":"Ảnh quá lớn. Hãy dùng ảnh dưới 40 megapixel.","zh":"图片过大。请使用低于 4000 万像素的图片。","hi":"चित्र बहुत बड़ा है। 40 मेगापिक्सेल से छोटा चित्र उपयोग करें।", "pl": "Obraz jest zbyt duży. Użyj obrazu poniżej 40 megapikseli."},
+    "The image could not be decoded.": {"de":"Das Bild konnte nicht dekodiert werden.","es":"No se pudo decodificar la imagen.","ko":"이미지를 디코딩할 수 없습니다.","pt":"Não foi possível decodificar a imagem.","fr":"L’image n’a pas pu être décodée.","vi":"Không thể giải mã ảnh.","zh":"无法解码图片。","hi":"चित्र डिकोड नहीं किया जा सका।", "pl": "Nie udało się zdekodować obrazu."},
+    "The optimized background could not be saved.": {"de":"Der optimierte Hintergrund konnte nicht gespeichert werden.","es":"No se pudo guardar el fondo optimizado.","ko":"최적화된 배경을 저장할 수 없습니다.","pt":"Não foi possível salvar o fundo otimizado.","fr":"L’arrière-plan optimisé n’a pas pu être enregistré.","vi":"Không thể lưu nền đã tối ưu.","zh":"无法保存优化后的背景。","hi":"अनुकूलित पृष्ठभूमि सहेजी नहीं जा सकी।", "pl": "Nie udało się zapisać zoptymalizowanego tła."},
 
 }
