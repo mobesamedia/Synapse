@@ -375,6 +375,7 @@ class SettingsDialog(QDialog):
         self.language_combo.addItem("한국어", "ko")
         self.language_combo.addItem("中文", "zh")
         self.language_combo.addItem("हिन्दी", "hi")
+        self.language_combo.addItem("Polski", "pl")
         lang_val = self.current_config.get("language", "auto")
         idx = self.language_combo.findData(lang_val)
         self.language_combo.setCurrentIndex(idx if idx != -1 else 0)

@@ -160,7 +160,7 @@ if _QT_AVAILABLE:
                     source: source if lang == "en" else WEB_TRANSLATIONS[source][lang]
                     for source in error_sources
                 }
-                for lang in ("en", "de", "es", "ko", "pt", "fr", "vi", "zh", "hi")
+                for lang in ("en", "de", "es", "ko", "pt", "fr", "vi", "zh", "hi", "pl")
             }
             theme_sources = ("Ocean", "Horizon", "Forest", "Dusty", "Deluge", "Orchid")
             themes = {
@@ -168,7 +168,7 @@ if _QT_AVAILABLE:
                     source if lang == "en" else TRANSLATIONS.get(source, {}).get(lang, source)
                     for source in theme_sources
                 ]
-                for lang in ("en", "de", "es", "ko", "pt", "fr", "vi", "zh", "hi")
+                for lang in ("en", "de", "es", "ko", "pt", "fr", "vi", "zh", "hi", "pl")
             }
             try:
                 dark = bool(self.parent() and self.parent().pm and self.parent().pm.night_mode())

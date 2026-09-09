@@ -233,4 +233,29 @@ TERMS_TRANSLATIONS = {
 <h4>8. 联系方式</h4>
 <p>如有问题或疑虑，可通过官方 Anki 插件页面或页面中提供的联系方式提出。</p>""",
     },
+    "pl": {
+        "title": "Regulamin i informacja o prywatności",
+        "updated": "Ostatnia aktualizacja: lipiec 2026",
+        "html": """
+<h4>1. Akceptacja regulaminu</h4>
+<p>Instalując i używając SynapsePro („Dodatek”), akceptujesz niniejszy regulamin. Jeśli się na niego nie zgadzasz, odinstaluj Dodatek.</p>
+<h4>2. Oprogramowanie dostarczane „tak jak jest”</h4>
+<p>SynapsePro to bezpłatny, niezależnie tworzony dodatek udostępniany bez jakichkolwiek gwarancji, wyraźnych ani dorozumianych. Autor nie gwarantuje jego funkcjonalności, niezawodności, poprawności ani przydatności do określonego celu.</p>
+<p>Autor nie ponosi odpowiedzialności za utratę danych, błędy, usterki, awarie, przerwy w działaniu ani inne szkody wynikające z korzystania z oprogramowania. <strong>Korzystasz z niego na własne ryzyko.</strong></p>
+<h4>3. Informacje zbierane podczas konfiguracji</h4>
+<p>Podczas pierwszej konfiguracji SynapsePro prosi o poniższe informacje. Odpowiedzi te są niezbędne do skonfigurowania i spersonalizowania Dodatku:</p>
+<ul><li>Wybrany język interfejsu</li><li>Kategoria użytkownika (na przykład student medycyny lub programista)</li><li>Skąd znasz SynapsePro</li><li>Wybrany motyw kolorystyczny</li><li>Numery wersji Dodatku i Anki</li></ul>
+<p>Informacje te są także wysyłane do autora i przechowywane w bazie danych hostowanej przez Supabase, która przetwarza je w imieniu autora. Służą utrzymaniu Dodatku, zrozumieniu sposobu, w jaki jest używany, oraz ustalaniu priorytetów ulepszeń.</p>
+<p>Nie są zbierane ani łączone z tymi odpowiedziami żadne dane bezpośrednio identyfikujące, takie jak imię i nazwisko, adres e-mail, treść kart Anki, statystyki nauki, dane logowania czy identyfikatory urządzenia.</p>
+<h4>4. Jak wykorzystywane są Twoje dane</h4>
+<p>Twoje odpowiedzi służą do skonfigurowania SynapsePro oraz do ustalania priorytetów funkcji i języków. <strong>Twoje dane nigdy nie są sprzedawane ani udostępniane osobom trzecim do ich własnych celów.</strong> Supabase pełni wyłącznie rolę technicznego dostawcy hostingu.</p>
+<h4>5. Konto nie jest wymagane</h4>
+<p>SynapsePro nie wymaga konta i nie zbiera danych logowania, adresów e-mail ani identyfikatorów osobowych.</p>
+<h4>6. Otwarty kod źródłowy i przejrzystość</h4>
+<p>Kod źródłowy Dodatku możesz sprawdzić w dowolnym momencie. Nie odbywa się żadne ukryte zbieranie danych wykraczające poza to, co opisano powyżej.</p>
+<h4>7. Zmiany regulaminu</h4>
+<p>Niniejszy regulamin może być aktualizowany wraz ze zmianami w Dodatku. Dalsze korzystanie po aktualizacji oznacza akceptację zmienionej wersji.</p>
+<h4>8. Kontakt</h4>
+<p>Pytania i uwagi można przesyłać przez oficjalną stronę dodatku w Anki lub na podany tam adres kontaktowy.</p>""",
+    },
 }
