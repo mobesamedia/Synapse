@@ -1,0 +1,1633 @@
+{
+  "heart": {
+    "categories": [
+      "Medicine",
+      "Symbols"
+    ],
+    "keywords": [
+      "anatomy",
+      "organ",
+      "cardiac",
+      "cardiology",
+      "circulation",
+      "love",
+      "emotion"
+    ]
+  },
+  "heart-pulse": {
+    "categories": [
+      "Medicine"
+    ],
+    "keywords": [
+      "cardiology",
+      "cardiac",
+      "pulse",
+      "blood",
+      "circulation",
+      "ECG",
+      "EKG",
+      "electrocardiogram",
+      "heartbeat"
+    ]
+  },
+  "heart-crack": {
+    "categories": [
+      "Medicine"
+    ],
+    "keywords": []
+  },
+  "brain": {
+    "categories": [
+      "Medicine",
+      "Learning"
+    ],
+    "keywords": [
+      "anatomy",
+      "organ",
+      "neurology",
+      "neuroscience",
+      "nervous",
+      "memory",
+      "cognition",
+      "thinking",
+      "psychology"
+    ]
+  },
+  "brain-circuit": {
+    "categories": [
+      "Medicine"
+    ],
+    "keywords": [
+      "neurons",
+      "synapse",
+      "neurology",
+      "neuroscience",
+      "intelligence",
+      "learning"
+    ]
+  },
+  "bone": {
+    "categories": [
+      "Medicine"
+    ],
+    "keywords": [
+      "anatomy",
+      "skeleton",
+      "skeletal",
+      "orthopedics",
+      "osteology"
+    ]
+  },
+  "bone-fracture": {
+    "categories": [
+      "Medicine"
+    ],
+    "keywords": [
+      "fracture",
+      "trauma",
+      "injury",
+      "orthopedics"
+    ]
+  },
+  "stethoscope": {
+    "categories": [
+      "Medicine"
+    ],
+    "keywords": []
+  },
+  "syringe": {
+    "categories": [
+      "Medicine"
+    ],
+    "keywords": [
+      "injection",
+      "vaccination",
+      "vaccine",
+      "immunology",
+      "immunization",
+      "insulin",
+      "anesthesia"
+    ]
+  },
+  "pill": {
+    "categories": [
+      "Medicine"
+    ],
+    "keywords": [
+      "pharmacology",
+      "medication",
+      "drug",
+      "tablet",
+      "treatment",
+      "prescription"
+    ]
+  },
+  "pill-bottle": {
+    "categories": [
+      "Medicine"
+    ],
+    "keywords": [
+      "pharmacy",
+      "pharmacology",
+      "medicine",
+      "drug",
+      "prescription",
+      "medication"
+    ]
+  },
+  "hospital": {
+    "categories": [
+      "Medicine",
+      "Everyday"
+    ],
+    "keywords": []
+  },
+  "ambulance": {
+    "categories": [
+      "Medicine"
+    ],
+    "keywords": []
+  },
+  "bandage": {
+    "categories": [
+      "Medicine"
+    ],
+    "keywords": []
+  },
+  "cross": {
+    "categories": [
+      "Medicine"
+    ],
+    "keywords": []
+  },
+  "activity": {
+    "categories": [
+      "Medicine"
+    ],
+    "keywords": [
+      "physiology",
+      "vital",
+      "signs",
+      "monitoring",
+      "ECG",
+      "EKG",
+      "fitness"
+    ]
+  },
+  "thermometer": {
+    "categories": [
+      "Medicine",
+      "Science"
+    ],
+    "keywords": []
+  },
+  "ear": {
+    "categories": [
+      "Medicine",
+      "People & Communication"
+    ],
+    "keywords": [
+      "anatomy",
+      "hearing",
+      "auditory",
+      "ENT",
+      "audiology"
+    ]
+  },
+  "eye": {
+    "categories": [
+      "Medicine",
+      "People & Communication"
+    ],
+    "keywords": [
+      "anatomy",
+      "vision",
+      "visual",
+      "ophthalmology",
+      "sensory"
+    ]
+  },
+  "hand": {
+    "categories": [
+      "Medicine"
+    ],
+    "keywords": []
+  },
+  "accessibility": {
+    "categories": [
+      "Medicine",
+      "People & Communication"
+    ],
+    "keywords": []
+  },
+  "person-standing": {
+    "categories": [
+      "Medicine",
+      "People & Communication"
+    ],
+    "keywords": []
+  },
+  "droplet": {
+    "categories": [
+      "Medicine",
+      "Science"
+    ],
+    "keywords": [
+      "water",
+      "blood",
+      "fluid",
+      "liquid",
+      "hydration",
+      "hematology"
+    ]
+  },
+  "dna": {
+    "categories": [
+      "Medicine",
+      "Science"
+    ],
+    "keywords": [
+      "genetics",
+      "genome",
+      "biology",
+      "cell",
+      "chromosome",
+      "heredity",
+      "molecular",
+      "mutation"
+    ],
+    "name": "DNA"
+  },
+  "microscope": {
+    "categories": [
+      "Medicine",
+      "Science"
+    ],
+    "keywords": [
+      "biology",
+      "cells",
+      "histology",
+      "pathology",
+      "microbiology",
+      "laboratory",
+      "lab",
+      "research"
+    ]
+  },
+  "test-tube": {
+    "categories": [
+      "Medicine",
+      "Science"
+    ],
+    "keywords": [
+      "chemistry",
+      "laboratory",
+      "blood",
+      "sample",
+      "assay",
+      "diagnostics",
+      "lab"
+    ]
+  },
+  "test-tubes": {
+    "categories": [
+      "Medicine",
+      "Science"
+    ],
+    "keywords": []
+  },
+  "scan-heart": {
+    "categories": [
+      "Medicine"
+    ],
+    "keywords": []
+  },
+  "hand-heart": {
+    "categories": [
+      "Medicine",
+      "People & Communication"
+    ],
+    "keywords": [
+      "care",
+      "nursing",
+      "health",
+      "support",
+      "compassion"
+    ]
+  },
+  "heart-handshake": {
+    "categories": [
+      "Medicine",
+      "People & Communication"
+    ],
+    "keywords": [
+      "care",
+      "support",
+      "relationship",
+      "empathy",
+      "health"
+    ]
+  },
+  "atom": {
+    "categories": [
+      "Science"
+    ],
+    "keywords": [
+      "physics",
+      "particle",
+      "proton",
+      "electron",
+      "neutron",
+      "chemistry"
+    ]
+  },
+  "flask-conical": {
+    "categories": [
+      "Science"
+    ],
+    "keywords": [
+      "chemistry",
+      "reaction",
+      "laboratory",
+      "experiment",
+      "lab",
+      "research",
+      "solution"
+    ],
+    "name": "Lab Flask"
+  },
+  "flask-round": {
+    "categories": [
+      "Science"
+    ],
+    "keywords": [],
+    "name": "Round Flask"
+  },
+  "biohazard": {
+    "categories": [
+      "Science"
+    ],
+    "keywords": []
+  },
+  "radiation": {
+    "categories": [
+      "Science"
+    ],
+    "keywords": []
+  },
+  "magnet": {
+    "categories": [
+      "Science"
+    ],
+    "keywords": []
+  },
+  "orbit": {
+    "categories": [
+      "Science"
+    ],
+    "keywords": []
+  },
+  "telescope": {
+    "categories": [
+      "Science"
+    ],
+    "keywords": []
+  },
+  "satellite": {
+    "categories": [
+      "Science"
+    ],
+    "keywords": []
+  },
+  "rocket": {
+    "categories": [
+      "Science"
+    ],
+    "keywords": []
+  },
+  "earth": {
+    "categories": [
+      "Science"
+    ],
+    "keywords": []
+  },
+  "globe": {
+    "categories": [
+      "Science"
+    ],
+    "keywords": []
+  },
+  "leaf": {
+    "categories": [
+      "Science"
+    ],
+    "keywords": [
+      "biology",
+      "botany",
+      "plant",
+      "photosynthesis",
+      "ecology"
+    ]
+  },
+  "sprout": {
+    "categories": [
+      "Science"
+    ],
+    "keywords": [
+      "biology",
+      "botany",
+      "plant",
+      "growth",
+      "germination"
+    ]
+  },
+  "tree-deciduous": {
+    "categories": [
+      "Science"
+    ],
+    "keywords": []
+  },
+  "flower": {
+    "categories": [
+      "Science"
+    ],
+    "keywords": []
+  },
+  "sun": {
+    "categories": [
+      "Science"
+    ],
+    "keywords": []
+  },
+  "moon": {
+    "categories": [
+      "Science"
+    ],
+    "keywords": []
+  },
+  "cloud": {
+    "categories": [
+      "Science"
+    ],
+    "keywords": []
+  },
+  "cloud-rain": {
+    "categories": [
+      "Science"
+    ],
+    "keywords": []
+  },
+  "snowflake": {
+    "categories": [
+      "Science"
+    ],
+    "keywords": []
+  },
+  "wind": {
+    "categories": [
+      "Science"
+    ],
+    "keywords": []
+  },
+  "flame": {
+    "categories": [
+      "Science"
+    ],
+    "keywords": [
+      "heat",
+      "energy",
+      "combustion",
+      "temperature"
+    ]
+  },
+  "zap": {
+    "categories": [
+      "Science"
+    ],
+    "keywords": [
+      "electricity",
+      "electrical",
+      "energy",
+      "voltage",
+      "neuron",
+      "signal"
+    ]
+  },
+  "ruler": {
+    "categories": [
+      "Science",
+      "Learning"
+    ],
+    "keywords": []
+  },
+  "scale": {
+    "categories": [
+      "Science"
+    ],
+    "keywords": [
+      "balance",
+      "justice",
+      "law",
+      "legal",
+      "weight",
+      "measurement"
+    ]
+  },
+  "weight": {
+    "categories": [
+      "Science"
+    ],
+    "keywords": []
+  },
+  "calculator": {
+    "categories": [
+      "Science",
+      "Learning"
+    ],
+    "keywords": []
+  },
+  "infinity": {
+    "categories": [
+      "Science",
+      "Symbols"
+    ],
+    "keywords": []
+  },
+  "sigma": {
+    "categories": [
+      "Science"
+    ],
+    "keywords": []
+  },
+  "pi": {
+    "categories": [
+      "Science"
+    ],
+    "keywords": []
+  },
+  "ratio": {
+    "categories": [
+      "Science"
+    ],
+    "keywords": []
+  },
+  "tangent": {
+    "categories": [
+      "Science"
+    ],
+    "keywords": []
+  },
+  "triangle-right": {
+    "categories": [
+      "Science"
+    ],
+    "keywords": []
+  },
+  "lightbulb": {
+    "categories": [
+      "Science",
+      "Learning",
+      "Planning"
+    ],
+    "keywords": [
+      "idea",
+      "insight",
+      "understanding",
+      "inspiration"
+    ]
+  },
+  "book-open": {
+    "categories": [
+      "Learning"
+    ],
+    "keywords": [
+      "reading",
+      "textbook",
+      "education",
+      "knowledge",
+      "study"
+    ]
+  },
+  "book-open-text": {
+    "categories": [
+      "Learning"
+    ],
+    "keywords": []
+  },
+  "book-text": {
+    "categories": [
+      "Learning"
+    ],
+    "keywords": [
+      "reading",
+      "textbook",
+      "education",
+      "knowledge",
+      "reference"
+    ]
+  },
+  "library-big": {
+    "categories": [
+      "Learning"
+    ],
+    "keywords": []
+  },
+  "notebook": {
+    "categories": [
+      "Learning"
+    ],
+    "keywords": []
+  },
+  "notebook-pen": {
+    "categories": [
+      "Learning",
+      "Planning"
+    ],
+    "keywords": []
+  },
+  "graduation-cap": {
+    "categories": [
+      "Learning"
+    ],
+    "keywords": [
+      "education",
+      "university",
+      "college",
+      "student",
+      "degree"
+    ]
+  },
+  "school": {
+    "categories": [
+      "Learning",
+      "Everyday"
+    ],
+    "keywords": []
+  },
+  "backpack": {
+    "categories": [
+      "Learning"
+    ],
+    "keywords": []
+  },
+  "pencil": {
+    "categories": [
+      "Learning"
+    ],
+    "keywords": []
+  },
+  "pen-tool": {
+    "categories": [
+      "Learning"
+    ],
+    "keywords": []
+  },
+  "highlighter": {
+    "categories": [
+      "Learning"
+    ],
+    "keywords": []
+  },
+  "puzzle": {
+    "categories": [
+      "Learning",
+      "Planning"
+    ],
+    "keywords": [
+      "problem",
+      "solution",
+      "understanding",
+      "challenge"
+    ]
+  },
+  "target": {
+    "categories": [
+      "Learning",
+      "Planning"
+    ],
+    "keywords": [
+      "goal",
+      "objective",
+      "focus",
+      "aim"
+    ]
+  },
+  "trophy": {
+    "categories": [
+      "Learning"
+    ],
+    "keywords": []
+  },
+  "award": {
+    "categories": [
+      "Learning"
+    ],
+    "keywords": []
+  },
+  "medal": {
+    "categories": [
+      "Learning"
+    ],
+    "keywords": []
+  },
+  "bookmark": {
+    "categories": [
+      "Learning"
+    ],
+    "keywords": []
+  },
+  "languages": {
+    "categories": [
+      "Learning"
+    ],
+    "keywords": []
+  },
+  "spell-check": {
+    "categories": [
+      "Learning"
+    ],
+    "keywords": []
+  },
+  "music": {
+    "categories": [
+      "Learning"
+    ],
+    "keywords": []
+  },
+  "palette": {
+    "categories": [
+      "Learning"
+    ],
+    "keywords": []
+  },
+  "presentation": {
+    "categories": [
+      "Learning"
+    ],
+    "keywords": []
+  },
+  "chart-no-axes-combined": {
+    "categories": [
+      "Learning",
+      "Planning"
+    ],
+    "keywords": [],
+    "name": "Trend Chart"
+  },
+  "user": {
+    "categories": [
+      "People & Communication"
+    ],
+    "keywords": []
+  },
+  "users": {
+    "categories": [
+      "People & Communication"
+    ],
+    "keywords": []
+  },
+  "contact": {
+    "categories": [
+      "People & Communication"
+    ],
+    "keywords": []
+  },
+  "baby": {
+    "categories": [
+      "People & Communication"
+    ],
+    "keywords": [
+      "pediatrics",
+      "newborn",
+      "child",
+      "development",
+      "reproduction"
+    ]
+  },
+  "message-circle": {
+    "categories": [
+      "People & Communication"
+    ],
+    "keywords": []
+  },
+  "messages-square": {
+    "categories": [
+      "People & Communication"
+    ],
+    "keywords": []
+  },
+  "speech": {
+    "categories": [
+      "People & Communication"
+    ],
+    "keywords": []
+  },
+  "mail": {
+    "categories": [
+      "People & Communication"
+    ],
+    "keywords": []
+  },
+  "phone": {
+    "categories": [
+      "People & Communication"
+    ],
+    "keywords": []
+  },
+  "video": {
+    "categories": [
+      "People & Communication"
+    ],
+    "keywords": []
+  },
+  "megaphone": {
+    "categories": [
+      "People & Communication"
+    ],
+    "keywords": []
+  },
+  "handshake": {
+    "categories": [
+      "People & Communication"
+    ],
+    "keywords": []
+  },
+  "hand-helping": {
+    "categories": [
+      "People & Communication"
+    ],
+    "keywords": [],
+    "name": "Helping Hand"
+  },
+  "network": {
+    "categories": [
+      "People & Communication"
+    ],
+    "keywords": [
+      "system",
+      "connection",
+      "relationship",
+      "structure",
+      "organization"
+    ]
+  },
+  "share-2": {
+    "categories": [
+      "People & Communication"
+    ],
+    "keywords": []
+  },
+  "radio": {
+    "categories": [
+      "People & Communication"
+    ],
+    "keywords": []
+  },
+  "calendar": {
+    "categories": [
+      "Planning"
+    ],
+    "keywords": [
+      "schedule",
+      "date",
+      "deadline",
+      "time",
+      "planning"
+    ]
+  },
+  "calendar-days": {
+    "categories": [
+      "Planning"
+    ],
+    "keywords": []
+  },
+  "calendar-check": {
+    "categories": [
+      "Planning"
+    ],
+    "keywords": []
+  },
+  "clock": {
+    "categories": [
+      "Planning"
+    ],
+    "keywords": [
+      "time",
+      "duration",
+      "schedule"
+    ]
+  },
+  "alarm-clock": {
+    "categories": [
+      "Planning"
+    ],
+    "keywords": []
+  },
+  "timer": {
+    "categories": [
+      "Planning"
+    ],
+    "keywords": []
+  },
+  "hourglass": {
+    "categories": [
+      "Planning"
+    ],
+    "keywords": []
+  },
+  "list-checks": {
+    "categories": [
+      "Planning"
+    ],
+    "keywords": []
+  },
+  "clipboard-check": {
+    "categories": [
+      "Planning"
+    ],
+    "keywords": []
+  },
+  "clipboard-list": {
+    "categories": [
+      "Planning"
+    ],
+    "keywords": []
+  },
+  "goal": {
+    "categories": [
+      "Planning"
+    ],
+    "keywords": []
+  },
+  "flag": {
+    "categories": [
+      "Planning"
+    ],
+    "keywords": []
+  },
+  "milestone": {
+    "categories": [
+      "Planning"
+    ],
+    "keywords": []
+  },
+  "map": {
+    "categories": [
+      "Planning"
+    ],
+    "keywords": []
+  },
+  "route": {
+    "categories": [
+      "Planning"
+    ],
+    "keywords": []
+  },
+  "map-pin": {
+    "categories": [
+      "Planning"
+    ],
+    "keywords": []
+  },
+  "compass": {
+    "categories": [
+      "Planning"
+    ],
+    "keywords": []
+  },
+  "footprints": {
+    "categories": [
+      "Planning"
+    ],
+    "keywords": []
+  },
+  "layers": {
+    "categories": [
+      "Planning"
+    ],
+    "keywords": []
+  },
+  "folder": {
+    "categories": [
+      "Planning"
+    ],
+    "keywords": [
+      "group",
+      "topic",
+      "collection",
+      "organize"
+    ]
+  },
+  "archive": {
+    "categories": [
+      "Planning"
+    ],
+    "keywords": []
+  },
+  "briefcase": {
+    "categories": [
+      "Planning"
+    ],
+    "keywords": []
+  },
+  "kanban": {
+    "categories": [
+      "Planning"
+    ],
+    "keywords": []
+  },
+  "chart-pie": {
+    "categories": [
+      "Planning"
+    ],
+    "keywords": [],
+    "name": "Pie Chart"
+  },
+  "chart-column": {
+    "categories": [
+      "Planning"
+    ],
+    "keywords": [],
+    "name": "Bar Chart"
+  },
+  "workflow": {
+    "categories": [
+      "Planning"
+    ],
+    "keywords": [
+      "process",
+      "flow",
+      "steps",
+      "sequence",
+      "diagram"
+    ]
+  },
+  "git-branch": {
+    "categories": [
+      "Planning"
+    ],
+    "keywords": []
+  },
+  "house": {
+    "categories": [
+      "Everyday"
+    ],
+    "keywords": []
+  },
+  "building": {
+    "categories": [
+      "Everyday"
+    ],
+    "keywords": []
+  },
+  "landmark": {
+    "categories": [
+      "Everyday"
+    ],
+    "keywords": [
+      "law",
+      "legal",
+      "government",
+      "institution",
+      "politics",
+      "history"
+    ]
+  },
+  "store": {
+    "categories": [
+      "Everyday"
+    ],
+    "keywords": []
+  },
+  "wallet": {
+    "categories": [
+      "Everyday"
+    ],
+    "keywords": []
+  },
+  "banknote": {
+    "categories": [
+      "Everyday"
+    ],
+    "keywords": []
+  },
+  "coins": {
+    "categories": [
+      "Everyday"
+    ],
+    "keywords": []
+  },
+  "shopping-basket": {
+    "categories": [
+      "Everyday"
+    ],
+    "keywords": []
+  },
+  "coffee": {
+    "categories": [
+      "Everyday"
+    ],
+    "keywords": []
+  },
+  "cup-soda": {
+    "categories": [
+      "Everyday"
+    ],
+    "keywords": []
+  },
+  "utensils": {
+    "categories": [
+      "Everyday"
+    ],
+    "keywords": []
+  },
+  "cooking-pot": {
+    "categories": [
+      "Everyday"
+    ],
+    "keywords": []
+  },
+  "apple": {
+    "categories": [
+      "Everyday"
+    ],
+    "keywords": []
+  },
+  "carrot": {
+    "categories": [
+      "Everyday"
+    ],
+    "keywords": []
+  },
+  "fish": {
+    "categories": [
+      "Everyday"
+    ],
+    "keywords": [
+      "biology",
+      "zoology",
+      "animal",
+      "aquatic",
+      "ecology"
+    ]
+  },
+  "egg": {
+    "categories": [
+      "Everyday"
+    ],
+    "keywords": [
+      "biology",
+      "reproduction",
+      "nutrition",
+      "protein"
+    ]
+  },
+  "milk": {
+    "categories": [
+      "Everyday"
+    ],
+    "keywords": []
+  },
+  "wheat": {
+    "categories": [
+      "Everyday"
+    ],
+    "keywords": []
+  },
+  "dumbbell": {
+    "categories": [
+      "Everyday"
+    ],
+    "keywords": []
+  },
+  "bike": {
+    "categories": [
+      "Everyday"
+    ],
+    "keywords": []
+  },
+  "car": {
+    "categories": [
+      "Everyday"
+    ],
+    "keywords": []
+  },
+  "bus": {
+    "categories": [
+      "Everyday"
+    ],
+    "keywords": []
+  },
+  "train-front": {
+    "categories": [
+      "Everyday"
+    ],
+    "keywords": []
+  },
+  "plane": {
+    "categories": [
+      "Everyday"
+    ],
+    "keywords": []
+  },
+  "ship": {
+    "categories": [
+      "Everyday"
+    ],
+    "keywords": []
+  },
+  "bed": {
+    "categories": [
+      "Everyday"
+    ],
+    "keywords": []
+  },
+  "bath": {
+    "categories": [
+      "Everyday"
+    ],
+    "keywords": []
+  },
+  "shower-head": {
+    "categories": [
+      "Everyday"
+    ],
+    "keywords": []
+  },
+  "shirt": {
+    "categories": [
+      "Everyday"
+    ],
+    "keywords": []
+  },
+  "key": {
+    "categories": [
+      "Everyday"
+    ],
+    "keywords": []
+  },
+  "lock": {
+    "categories": [
+      "Everyday"
+    ],
+    "keywords": []
+  },
+  "shield": {
+    "categories": [
+      "Everyday"
+    ],
+    "keywords": [
+      "protection",
+      "immunity",
+      "immune",
+      "defense",
+      "safety"
+    ]
+  },
+  "umbrella": {
+    "categories": [
+      "Everyday"
+    ],
+    "keywords": []
+  },
+  "watch": {
+    "categories": [
+      "Everyday"
+    ],
+    "keywords": []
+  },
+  "battery": {
+    "categories": [
+      "Everyday"
+    ],
+    "keywords": []
+  },
+  "plug": {
+    "categories": [
+      "Everyday"
+    ],
+    "keywords": []
+  },
+  "laptop": {
+    "categories": [
+      "Everyday"
+    ],
+    "keywords": []
+  },
+  "smartphone": {
+    "categories": [
+      "Everyday"
+    ],
+    "keywords": []
+  },
+  "camera": {
+    "categories": [
+      "Everyday"
+    ],
+    "keywords": []
+  },
+  "headphones": {
+    "categories": [
+      "Everyday"
+    ],
+    "keywords": []
+  },
+  "circle": {
+    "categories": [
+      "Symbols"
+    ],
+    "keywords": []
+  },
+  "square": {
+    "categories": [
+      "Symbols"
+    ],
+    "keywords": []
+  },
+  "triangle": {
+    "categories": [
+      "Symbols"
+    ],
+    "keywords": []
+  },
+  "diamond": {
+    "categories": [
+      "Symbols"
+    ],
+    "keywords": []
+  },
+  "hexagon": {
+    "categories": [
+      "Symbols"
+    ],
+    "keywords": []
+  },
+  "star": {
+    "categories": [
+      "Symbols"
+    ],
+    "keywords": []
+  },
+  "check": {
+    "categories": [
+      "Symbols"
+    ],
+    "keywords": [
+      "correct",
+      "yes",
+      "complete",
+      "done",
+      "success"
+    ]
+  },
+  "x": {
+    "categories": [
+      "Symbols"
+    ],
+    "keywords": [
+      "incorrect",
+      "no",
+      "false",
+      "wrong"
+    ]
+  },
+  "plus": {
+    "categories": [
+      "Symbols"
+    ],
+    "keywords": []
+  },
+  "minus": {
+    "categories": [
+      "Symbols"
+    ],
+    "keywords": []
+  },
+  "equal": {
+    "categories": [
+      "Symbols"
+    ],
+    "keywords": []
+  },
+  "equal-not": {
+    "categories": [
+      "Symbols"
+    ],
+    "keywords": []
+  },
+  "percent": {
+    "categories": [
+      "Symbols"
+    ],
+    "keywords": []
+  },
+  "asterisk": {
+    "categories": [
+      "Symbols"
+    ],
+    "keywords": []
+  },
+  "circle-alert": {
+    "categories": [
+      "Symbols"
+    ],
+    "keywords": [],
+    "name": "Alert"
+  },
+  "triangle-alert": {
+    "categories": [
+      "Symbols"
+    ],
+    "keywords": [
+      "warning",
+      "risk",
+      "caution",
+      "danger"
+    ],
+    "name": "Warning"
+  },
+  "ban": {
+    "categories": [
+      "Symbols"
+    ],
+    "keywords": []
+  },
+  "circle-check": {
+    "categories": [
+      "Symbols"
+    ],
+    "keywords": [],
+    "name": "Success"
+  },
+  "circle-x": {
+    "categories": [
+      "Symbols"
+    ],
+    "keywords": [],
+    "name": "Error"
+  },
+  "arrow-right": {
+    "categories": [
+      "Symbols"
+    ],
+    "keywords": []
+  },
+  "arrows-up-from-line": {
+    "categories": [
+      "Symbols"
+    ],
+    "keywords": []
+  },
+  "repeat": {
+    "categories": [
+      "Symbols"
+    ],
+    "keywords": [
+      "cycle",
+      "recurring",
+      "feedback",
+      "repetition",
+      "revision"
+    ]
+  },
+  "link": {
+    "categories": [
+      "Symbols"
+    ],
+    "keywords": []
+  },
+  "unlink": {
+    "categories": [
+      "Symbols"
+    ],
+    "keywords": []
+  },
+  "split": {
+    "categories": [
+      "Symbols"
+    ],
+    "keywords": []
+  },
+  "merge": {
+    "categories": [
+      "Symbols"
+    ],
+    "keywords": []
+  },
+  "face-angry": {
+    "categories": [
+      "People & Communication"
+    ],
+    "keywords": [
+      "angry",
+      "emotion",
+      "feeling",
+      "anger"
+    ],
+    "name": "Angry"
+  },
+  "face-slightly-frowning": {
+    "categories": [
+      "People & Communication"
+    ],
+    "keywords": [
+      "sad",
+      "unhappy",
+      "emotion",
+      "frown"
+    ],
+    "name": "Sad"
+  },
+  "face-grinning": {
+    "categories": [
+      "People & Communication"
+    ],
+    "keywords": [
+      "happy",
+      "laughter",
+      "emotion",
+      "joy"
+    ],
+    "name": "Laughing"
+  },
+  "face-neutral": {
+    "categories": [
+      "People & Communication"
+    ],
+    "keywords": [
+      "neutral",
+      "emotion",
+      "feeling"
+    ],
+    "name": "Neutral"
+  },
+  "face-slightly-smiling": {
+    "categories": [
+      "People & Communication"
+    ],
+    "keywords": [
+      "smile",
+      "happy",
+      "emotion"
+    ],
+    "name": "Smile"
+  },
+  "mic": {
+    "categories": [
+      "People & Communication"
+    ],
+    "keywords": [
+      "microphone",
+      "speaking",
+      "voice"
+    ]
+  },
+  "circle-question-mark": {
+    "categories": [
+      "Symbols"
+    ],
+    "keywords": [
+      "question",
+      "unknown",
+      "uncertainty",
+      "help"
+    ],
+    "name": "Question"
+  },
+  "equal-approximately": {
+    "categories": [
+      "Symbols"
+    ],
+    "keywords": [
+      "approximately",
+      "estimate",
+      "nearly",
+      "equal"
+    ],
+    "name": "Approximately Equal"
+  },
+  "square-function": {
+    "categories": [
+      "Science"
+    ],
+    "keywords": [
+      "math",
+      "function",
+      "algebra"
+    ],
+    "name": "Function"
+  },
+  "waves-horizontal": {
+    "categories": [
+      "Science"
+    ],
+    "keywords": [
+      "waves",
+      "water",
+      "fluid",
+      "sea",
+      "ocean"
+    ],
+    "name": "Waves"
+  }
+}

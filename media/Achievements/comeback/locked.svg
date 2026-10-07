@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Ebene_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 120 120">
+  <!-- Generator: Adobe Illustrator 30.8.1, SVG Export Plug-In . SVG Version: 2.1.4 Build 1)  -->
+  <defs>
+    <style>
+      .st0 {
+        fill: #76717e;
+      }
+
+      .st1 {
+        fill: url(#Unbenannter_Verlauf);
+      }
+
+      .st2 {
+        fill: url(#Unbenannter_Verlauf1);
+        stroke: #76717e;
+        stroke-miterlimit: 10;
+        stroke-width: .5px;
+      }
+
+      .st3 {
+        fill: #d8d8d8;
+      }
+
+      .st4 {
+        fill: none;
+        stroke: #c2c0c5;
+        stroke-opacity: .55;
+      }
+
+      .st5 {
+        fill: #abc7a5;
+      }
+    </style>
+    <linearGradient id="Unbenannter_Verlauf" data-name="Unbenannter Verlauf" x1="-356.63" y1="356.19" x2="-355.93" y2="355.19" gradientTransform="translate(39245 39178.3131) scale(110 -110)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#c2c0c5"/>
+      <stop offset=".48" stop-color="#94909b"/>
+      <stop offset="1" stop-color="#76717e"/>
+    </linearGradient>
+    <linearGradient id="Unbenannter_Verlauf1" data-name="Unbenannter Verlauf" x1="36.6" y1="61.32" x2="88.71" y2="61.32" gradientTransform="matrix(1,0,0,1,0,0)" xlink:href="#Unbenannter_Verlauf"/>
+  </defs>
+  <g id="rim">
+    <circle class="st1" cx="60" cy="60" r="55"/>
+    <circle class="st4" cx="60" cy="60" r="53.5"/>
+  </g>
+  <g id="center">
+    <circle class="st0" cx="60" cy="60" r="44.5"/>
+    <circle class="st5" cx="60" cy="60" r="43"/>
+  </g>
+  <g id="center1" data-name="center">
+    <circle class="st3" cx="59.98" cy="59.93" r="43"/>
+  </g>
+  <path class="st2" d="M58.5,49.79v-15.28c0-2.6-2.13-4.89-4.73-4.79-2.46.09-4.37,2.06-4.37,4.55v15.28c0,2.6,2.13,4.89,4.73,4.79,2.46-.09,4.37-2.06,4.37-4.55ZM74.94,34.25v10.95s.02.04.04.04h9.09s.04-.02.04-.04v-10.95c0-2.55-2-4.55-4.55-4.55-2.61-.06-4.61,2-4.61,4.55ZM45.7,49.79v-10.73c0-2.6-2.13-4.89-4.73-4.79-2.46.09-4.37,2.06-4.37,4.55v10.98c0,2.55,2,4.55,4.55,4.55,2.55.06,4.55-2,4.55-4.55ZM73.12,83.65s0-.02.01-.02l14.19-14.19h0c.85-.85,1.4-2,1.4-3.22v-12.77c0-2.53-2.05-4.59-4.59-4.59h-17.13c-2.6,0-4.89,2.13-4.79,4.73.09,2.46,2.06,4.37,4.55,4.37h10.01c1.03,0,1.82.85,1.82,1.82s-.85,1.82-1.82,1.82h0c-11.04,0-20.14,9.04-20.14,20.14,0,1.37-1.5,2.31-2.79,1.54-.55-.33-.85-.97-.85-1.62.03-8.62,4.66-16.15,11.58-20.27.03-.02.02-.05,0-.06-1.9-.55-3.51-1.75-4.59-3.36,0,0-.02-.01-.03-.01h-18.73c-1.62,0-3.23-.53-4.5-1.36-.02-.02-.05,0-.05.03v13.28c0,5.64,2.91,10.67,7.33,13.7,0,0,.01.02.01.03l.16,5.97c.05,1.73,1.45,3.11,3.18,3.13l22.49.19c1.81.02,3.29-1.45,3.29-3.26v-6.03ZM62.14,34.57v12s.03.04.05.03c1.27-.89,2.88-1.36,4.5-1.36h4.58s.04-.02.04-.04v-10.95c0-2.5-1.92-4.47-4.4-4.55-2.62-.08-4.76,2.24-4.76,4.86Z"/>
+</svg>

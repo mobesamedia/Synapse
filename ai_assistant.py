@@ -123,6 +123,7 @@ LANG_SUFFIX: Dict[str, str] = {
     "Japanese":             "in Japanese",
     "Chinese (Simplified)": "in Simplified Chinese",
     "Korean":               "in Korean",
+    "Polish":               "in Polish",
 }
 DEFAULT_OWN_PROMPT = "Explain the key aspects of {content} in simple terms."
 MAX_CARD_CONTEXT_CHARS = 12000
@@ -136,6 +137,7 @@ CK_KEY_OPENAI = _PFX + "key_openai"
 CK_KEY_GEMINI = _PFX + "key_gemini"
 CK_KEY_OR     = _PFX + "key_openrouter"
 CK_KEY_ANTH   = _PFX + "key_anthropic"
+CK_KEY_DEEPSEEK = _PFX + "key_deepseek"
 CK_OLLAMA_EP  = _PFX + "ollama_endpoint"
 CK_OLLAMA_MDL = _PFX + "ollama_model"
 CK_LLAMA_EP   = _PFX + "llama_endpoint"
@@ -146,6 +148,8 @@ CK_SOURCE     = _PFX + "source"
 CK_OWN_PROMPT = _PFX + "own_prompt"
 CK_CHIPS      = _PFX + "chips_config"
 CK_FONT_SIZE  = _PFX + "font_size"
+CK_LINE_HEIGHT = _PFX + "line_height"
+CK_MESSAGE_GAP = _PFX + "message_gap"
 CK_CARD_CONTEXT = _PFX + "card_context_enabled"
 
 _DEFAULT_CHIPS: Dict[str, Any] = {
@@ -201,7 +205,7 @@ else:
 # ══════════════════════════════════════════════════════════════════════════════
 
 _SECRET_KEYS = frozenset({
-    CK_KEY_OPENAI, CK_KEY_GEMINI, CK_KEY_OR, CK_KEY_ANTH, CK_KEY_LLAMA,
+    CK_KEY_OPENAI, CK_KEY_GEMINI, CK_KEY_OR, CK_KEY_ANTH, CK_KEY_LLAMA, CK_KEY_DEEPSEEK,
 })
 
 
@@ -232,19 +236,23 @@ def _load_secret_map() -> Dict[str, str]:
     return {}
 
 
-def _save_secret_map(values: Dict[str, str]) -> None:
+def _save_secret_map(values: Dict[str, str]) -> bool:
     path = _secret_path()
     if not path:
-        return
+        return False
     tmp = path + ".tmp"
     try:
         with open(tmp, "w", encoding="utf-8") as handle:
             json.dump(values, handle, indent=2)
+            handle.flush()
+            os.fsync(handle.fileno())
         try:
             os.chmod(tmp, 0o600)
         except OSError:
             pass
         os.replace(tmp, path)
+        with open(path, "r", encoding="utf-8") as handle:
+            return json.load(handle) == values
     except Exception as exc:
         print(f"AI Assistant: secret file write error: {exc}")
         try:
@@ -252,6 +260,7 @@ def _save_secret_map(values: Dict[str, str]) -> None:
                 os.remove(tmp)
         except OSError:
             pass
+        return False
 
 
 def _secret_get(key: str, default: Any = "") -> Any:
@@ -266,7 +275,10 @@ def _secret_get(key: str, default: Any = "") -> Any:
             legacy = mw.col.get_config(key, "")
             if isinstance(legacy, str) and legacy:
                 values[key] = legacy[:16384]
-                _save_secret_map(values)
+                if not _save_secret_map(values):
+                    # Continue using the legacy value; leave it available for
+                    # the next migration attempt instead of losing the key.
+                    return values[key]
                 remover = getattr(mw.col, "remove_config", None)
                 if callable(remover):
                     remover(key)
@@ -314,6 +326,7 @@ def _load_settings() -> Dict[str, Any]:
         "gemini":     _cfg_get(CK_KEY_GEMINI, ""),
         "openrouter": _cfg_get(CK_KEY_OR,     ""),
         "anthropic":  _cfg_get(CK_KEY_ANTH,   ""),
+        "deepseek":   _cfg_get(CK_KEY_DEEPSEEK, ""),
     }
     current_key    = key_map.get(provider, "")
     ollama_ep      = _cfg_get(CK_OLLAMA_EP, OLLAMA_EP_DEFAULT)
@@ -341,6 +354,8 @@ def _load_settings() -> Dict[str, Any]:
         "chipsConfig":    _cfg_get(CK_CHIPS, _DEFAULT_CHIPS),
         "accentColor":    _get_theme_accent(_detect_night_mode()),
         "fontSize":       _cfg_get(CK_FONT_SIZE, "13px"),
+        "lineHeight":     _cfg_get(CK_LINE_HEIGHT, 1.6),
+        "messageGap":     _cfg_get(CK_MESSAGE_GAP, 12),
         "cardContextEnabled": bool(_cfg_get(CK_CARD_CONTEXT, False)),
         "translations":   _web_translations("ai"),
     }
@@ -360,8 +375,14 @@ def _save_settings_dict(data: Dict[str, Any]) -> None:
     _cfg_set(CK_LANGUAGE,   data.get("language",  "English"))
     _cfg_set(CK_SOURCE,     data.get("source",    "Front & Back"))
     font_size = data.get("fontSize", "13px").strip()
-    if font_size:
+    if font_size in ('11px', '13px', '15px', '17px'):
         _cfg_set(CK_FONT_SIZE, font_size)
+    for key, field, choices, default in (
+        (CK_LINE_HEIGHT, 'lineHeight', (1.35, 1.6, 1.85), 1.6),
+        (CK_MESSAGE_GAP, 'messageGap', (6, 12, 20), 12),
+    ):
+        value = data.get(field, default)
+        _cfg_set(key, value if type(value) in (int, float) and value in choices else default)
     _cfg_set(CK_OWN_PROMPT, data.get("ownPrompt", DEFAULT_OWN_PROMPT))
     _cfg_set(CK_OLLAMA_EP,  ollama_ep)
     _cfg_set(CK_LLAMA_EP,   llama_ep)
@@ -382,6 +403,7 @@ def _save_settings_dict(data: Dict[str, Any]) -> None:
             "gemini":     CK_KEY_GEMINI,
             "openrouter": CK_KEY_OR,
             "anthropic":  CK_KEY_ANTH,
+            "deepseek":   CK_KEY_DEEPSEEK,
         }
         if provider in key_cfg:
             _cfg_set(key_cfg[provider], api_key)
@@ -398,114 +420,36 @@ def _save_settings_dict(data: Dict[str, Any]) -> None:
 # ══════════════════════════════════════════════════════════════════════════════
 
 def _classify_error(exc: Exception, provider: str = "") -> str:
-    """Return a clear, user-facing error message."""
+    """Localize guidance; preserve provider diagnostics as technical details."""
     if isinstance(exc, urllib.error.HTTPError):
         code = exc.code
-        body = ""
         try:
             body = exc.read().decode("utf-8", errors="replace")[:300]
         except Exception:
-            pass
-
+            body = ""
         if code in (401, 403):
-            return (
-                f"Invalid API key (HTTP {code}). "
-                "Please check your key in Settings → API Key. "
-                "Note: a chat subscription (ChatGPT Plus, Claude Pro, Gemini "
-                "Advanced) does NOT include API access — API keys are a separate "
-                "product with separate billing."
-            )
-        elif code == 429:
-            body_l = body.lower()
-            # OpenAI (and some others) return 429 with "insufficient_quota" when
-            # the account simply has NO credit — that's a billing issue, not
-            # "too many requests", and hits even on the very first message.
-            if any(x in body_l for x in ("insufficient_quota", "exceeded your current quota",
-                                          "billing", "purchase credits", "credit balance")):
-                return (
-                    "Your account has no available credit (HTTP 429, quota). "
-                    "This is a billing issue, not too many requests — even a first "
-                    "message triggers it. Open your provider's billing page and add "
-                    "a small credit balance, then try again. "
-                    "Note: a ChatGPT Plus / Claude Pro / Gemini Advanced subscription "
-                    "does NOT include API credit — the API is billed separately."
-                )
-            if provider == "openrouter":
-                return (
-                    "Rate limit exceeded (HTTP 429) from OpenRouter. "
-                    "If you selected a model ending in ':free', those models are rate-limited "
-                    "for everyone, even with a paid key. "
-                    "Open Settings and switch to a paid model such as "
-                    "'openai/gpt-5.4-mini' or 'google/gemini-3.5-flash'."
-                )
-            if provider == "gemini":
-                return (
-                    "Rate limit or free-tier quota exceeded (HTTP 429). "
-                    "The Gemini free tier has per-minute and per-day limits — wait a "
-                    "moment and try again, or switch to a lighter model like "
-                    "'gemini-2.5-flash-lite'."
-                )
-            return (
-                "Rate limit exceeded (HTTP 429). "
-                "You've sent too many requests — please wait a moment and try again. "
-                "If this happens on your very first message, check your account's "
-                "credit/billing status with the provider."
-            )
-        elif code == 400:
-            detail = body or exc.reason or "bad request"
-            return f"Bad request (HTTP 400): {detail}"
-        elif code == 404:
-            return (
-                "Model not found (HTTP 404). "
-                "The selected model may have been renamed or retired by the provider — "
-                "open Settings and choose a current model."
-            )
-        elif code >= 500:
-            return (
-                f"Server error (HTTP {code}). "
-                f"The {provider or 'API'} service may be temporarily down. Try again later."
-            )
-        else:
-            return f"API error (HTTP {code}): {exc.reason or body}"
-
-    elif isinstance(exc, urllib.error.URLError):
-        reason = getattr(exc, "reason", exc)
-        reason_str = str(reason)
-        if isinstance(reason, ConnectionRefusedError):
-            if provider == "ollama":
-                return (
-                    "Cannot connect to Ollama (connection refused). "
-                    "Make sure Ollama is running on your computer."
-                )
-            return f"Connection refused by {provider or 'server'}."
-        elif isinstance(reason, (TimeoutError, socket.timeout)):
-            return (
-                "Request timed out. "
-                "Check your internet connection or try a smaller model."
-            )
-        elif any(x in reason_str for x in ("Name or service not known",
-                                            "nodename nor servname",
-                                            "Temporary failure in name resolution",
-                                            "getaddrinfo failed")):
-            return (
-                "Cannot reach server. "
-                "Please check your internet connection."
-            )
-        elif "Connection refused" in reason_str:
-            if provider == "ollama":
-                return "Ollama is not running. Start Ollama and try again."
-            return f"Connection refused: {reason_str}"
-        else:
-            return f"Network error: {reason_str}"
-
-    elif isinstance(exc, (TimeoutError, socket.timeout)):
-        return "Request timed out. Check your internet connection."
-
-    elif isinstance(exc, json.JSONDecodeError):
-        return f"Unexpected response from server (not valid JSON): {exc.msg}"
-
-    else:
-        return str(exc)
+            return _("Invalid API key (HTTP {}). Check your key in Settings. A chat subscription does not include API access.").format(code)
+        if code == 402 and provider == "deepseek":
+            return _("No API credit available. Check your provider's billing settings. Chat subscriptions do not include API credit.")
+        if code == 429:
+            if any(x in body.lower() for x in ("insufficient_quota", "exceeded your current quota", "billing", "purchase credits", "credit balance")):
+                return _("No API credit available. Check your provider's billing settings. Chat subscriptions do not include API credit.")
+            return _("Request limit reached. Wait a moment or choose another model. Free models may have stricter limits.")
+        if code == 404:
+            return _("Model not found. Choose another model in Settings.")
+        if code >= 500:
+            return _("Server error (HTTP {}). Please try again later.").format(code)
+        return _("API error (HTTP {}): {}").format(code, body or exc.reason or "")
+    reason = getattr(exc, "reason", exc)
+    if isinstance(exc, (TimeoutError, socket.timeout)) or isinstance(reason, (TimeoutError, socket.timeout)):
+        return _("Request timed out. Check your connection or try a smaller model.")
+    if isinstance(exc, urllib.error.URLError):
+        if provider == "ollama" and (isinstance(reason, ConnectionRefusedError) or "Connection refused" in str(reason)):
+            return _("Ollama is not running. Start Ollama and try again.")
+        return _("Connection failed. Check your connection and server address. Details: {}").format(reason)
+    if isinstance(exc, json.JSONDecodeError):
+        return _("The server returned an unreadable response. Please try again.")
+    return _("Error: {}").format(str(exc))
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -523,6 +467,7 @@ def _stream_openai_compat(
     timeout: int = 60,
     on_reasoning: Optional[Callable[[str], None]] = None,
     token_param: str = "max_tokens",
+    max_tokens: Optional[int] = 2048,
 ) -> None:
     """OpenAI-compatible streaming (also used for OpenRouter & llama.cpp server).
 
@@ -531,9 +476,10 @@ def _stream_openai_compat(
     deprecated there), while OpenRouter and llama.cpp keep ``max_tokens``.
     """
     print(f"AI Assistant: streaming OpenAI-compat url={url.split('/')[2]}, model={model}")
-    payload = json.dumps({
-        "model": model, "messages": messages, token_param: 2048, "stream": True,
-    }).encode("utf-8")
+    body = {"model": model, "messages": messages, "stream": True}
+    if max_tokens is not None:
+        body[token_param] = max_tokens
+    payload = json.dumps(body).encode("utf-8")
     headers: Dict[str, str] = {"Content-Type": "application/json"}
     # API key is optional for self-hosted OpenAI-compatible servers (e.g. a
     # llama.cpp server started without --api-key). Only send auth when present.
@@ -766,7 +712,7 @@ def _run_api_in_thread(settings: Dict[str, Any], messages: List[Dict]) -> None:
         full_text: List[str] = []
 
         if not model:
-            err = "No model selected. Please configure a model in Settings."
+            err = _("Model not found. Choose another model in Settings.")
             _js_on_main(f"receiveResponse({json.dumps(err)}, true);", request_generation)
             return
 
@@ -794,6 +740,14 @@ def _run_api_in_thread(settings: Dict[str, Any], messages: List[Dict]) -> None:
                     # Official OpenAI endpoint: o-series/reasoning models reject
                     # "max_tokens"; "max_completion_tokens" works for all models.
                     token_param="max_completion_tokens",
+                )
+            elif provider == "deepseek":
+                _stream_openai_compat(
+                    "https://api.deepseek.com/chat/completions",
+                    api_key, model, messages, on_chunk,
+                    timeout=180, on_reasoning=on_reasoning,
+                    # Use DeepSeek's default budget: thinking and answer share it.
+                    max_tokens=None,
                 )
             elif provider == "gemini":
                 _stream_gemini(api_key, model, messages, on_chunk)
@@ -873,7 +827,9 @@ _SYSTEM_MSG: Dict[str, str] = {
         "You are a helpful study assistant integrated into the Anki flashcard app. "
         "Provide clear, educational responses. Be concise unless the user asks for detail. "
         "When explaining flashcard content, go beyond rephrasing — add context, "
-        "examples, or analogies to deepen understanding."
+        "examples, or analogies to deepen understanding. "
+        r"Format mathematics using LaTeX: \( ... \) inline and \[ ... \] for display equations. "
+        "Do not put formulas in code blocks unless showing source code."
     ),
 }
 
@@ -1099,6 +1055,7 @@ def _handle_action(action: str, data: Dict[str, Any]) -> None:
     dispatch = {
         "page_ready":    _action_page_ready,
         "send_message":  _action_send_message,
+        "copy_response": _action_copy_response,
         "set_card_context": _action_set_card_context,
         "chip_action":   _action_chip,
         "save_settings": _action_save_settings,
@@ -1114,6 +1071,21 @@ def _handle_action(action: str, data: Dict[str, Any]) -> None:
         handler(data)
     else:
         print(f"AI Assistant: unknown action '{action}'")
+
+
+def _action_copy_response(data: Dict[str, Any]) -> None:
+    """Copy on explicit click through Qt; no browser clipboard permission needed."""
+    text = data.get("text")
+    button_id = data.get("buttonId")
+    if not isinstance(text, str) or not isinstance(button_id, str):
+        return
+    success = False
+    try:
+        mw.app.clipboard().setText(text)
+        success = True
+    except Exception:
+        pass
+    _run_js(f"responseCopied({json.dumps(button_id)}, {json.dumps(success)});")
 
 
 def _action_page_ready(_data: Dict[str, Any]) -> None:
@@ -1143,7 +1115,7 @@ def _action_send_message(data: Dict[str, Any]) -> None:
 
     if not _is_configured(provider, api_key):
         print("AI Assistant: not configured – showing error")
-        _run_js('receiveResponse("No API key configured. Open Settings (⚙) and enter your API key.", true);')
+        _run_js(f"receiveResponse({json.dumps(_('No API key configured. Open Settings to get started.'))}, true);")
         return
 
     use_card_context = data.get("useCardContext") is True
@@ -1179,7 +1151,7 @@ def _action_chip(data: Dict[str, Any]) -> None:
     content = _get_card_content()
 
     if not content:
-        _run_js('receiveResponse("No card content found. Make sure you are reviewing a card.", true);')
+        _run_js(f"receiveResponse({json.dumps(_('No card content found.'))}, true);")
         return
 
     settings = _load_settings()
@@ -1187,7 +1159,7 @@ def _action_chip(data: Dict[str, Any]) -> None:
     api_key  = settings["apiKey"]
 
     if not _is_configured(provider, api_key):
-        _run_js('receiveResponse("No API key configured. Open Settings (⚙) and enter your API key.", true);')
+        _run_js(f"receiveResponse({json.dumps(_('No API key configured. Open Settings to get started.'))}, true);")
         return
 
     if action == "custom":
@@ -1290,6 +1262,7 @@ def _action_clear_history(_data: Optional[Dict] = None) -> None:
 # Only these exact pages may be opened from the chat UI (safety allowlist).
 _ALLOWED_URLS = {
     "https://platform.openai.com/api-keys",
+    "https://platform.deepseek.com/api_keys",
     "https://platform.openai.com/signup",
     "https://aistudio.google.com/apikey",
     "https://openrouter.ai/keys",
@@ -1389,6 +1362,8 @@ if _qt_ok and QDialog is not object:
             self._stack.addWidget(self._page_models())
 
             btns = QDialogButtonBox(QDialogButtonBox.StandardButton.Close)
+            from .locales import translate_standard_buttons
+            translate_standard_buttons(btns)
             qconnect(btns.rejected, self.reject)
             root.addWidget(btns)
 
@@ -1469,7 +1444,7 @@ if _qt_ok and QDialog is not object:
             for name, size, desc in self.RECOMMENDED:
                 row = QWidget(); rl = QHBoxLayout(row)
                 rl.setContentsMargins(0, 2, 0, 2)
-                lbl = QLabel(f"<b>{name}</b>  <span style='color:gray'>{size} – {desc}</span>")
+                lbl = QLabel(f"<b>{name}</b>  <span style='color:gray'>{size} – {_(desc)}</span>")
                 lbl.setTextFormat(Qt.TextFormat.RichText); lbl.setWordWrap(True)
                 btn = QPushButton(_("Pull")); btn.setFixedWidth(56)
                 btn.clicked.connect(lambda _, n=name: self._pull_model(n))
@@ -1589,7 +1564,7 @@ if _qt_ok and QDialog is not object:
 
         def _on_pull_error(self, err: str) -> None:
             self._progress_bar.setVisible(False)
-            self._progress_lbl.setText(f"Error: {err}")
+            self._progress_lbl.setText(_("Error: {}").format(err))
 
         def _use_selected(self) -> None:
             items = self._model_list.selectedItems()
@@ -1691,7 +1666,7 @@ def _setup_sidebar() -> bool:
         try:
             from aqt.qt import QColor
             page.setBackgroundColor(
-                QColor("#212121") if _detect_night_mode() else QColor("#ffffff"))
+                QColor("#2c2c2c") if _detect_night_mode() else QColor("#ffffff"))
         except Exception:
             pass
 
@@ -1726,6 +1701,8 @@ def _setup_sidebar() -> bool:
         _webview.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         _dock.setWidget(_webview)
         _dock.setVisible(False)
+        from .sidebar_widths import attach
+        attach(mw, _dock, "ai")
         mw.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, _dock)
 
         # Hooks
@@ -1780,7 +1757,7 @@ def refresh_ai_assistant_theme() -> None:
         from aqt.qt import QColor
         page = _webview.page()
         if page:
-            page.setBackgroundColor(QColor("#212121" if is_dark else "#ffffff"))
+            page.setBackgroundColor(QColor("#2c2c2c" if is_dark else "#ffffff"))
     except Exception:
         pass
 

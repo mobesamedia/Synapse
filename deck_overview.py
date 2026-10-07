@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
-import html
 import json
 import os
 import re
 from collections import Counter
+from . import deck_overview_options as overview_options
+from .deck_overview_view import render_dashboard, EXTRA_CSS
 from aqt import mw
 from aqt.gui_hooks import webview_will_set_content, webview_did_receive_js_message
 from aqt.overview import Overview
@@ -141,6 +142,7 @@ def on_brainstorm_finished(future, expected_deck_id=None):
     try:
         if (not mw or not mw.col or mw.state != "overview"
                 or not getattr(mw, "overview", None)
+                or not overview_options.normalize(current_settings)["deck_overview_brainstorm"]
                 or (expected_deck_id is not None
                     and mw.col.decks.current().get("id") != expected_deck_id)):
             return
@@ -245,16 +247,18 @@ def get_style():
 </style>
 """
 
-def get_script():
+def get_script(stats=None):
     js_url = get_media_url("wordcloud2.min.js")
     # Pre-compute translated JS labels. Escape double quotes so they're safe inside "..." JS strings.
     def _js(s: str) -> str:
         return s.replace("\\", "\\\\").replace('"', '\\"')
-    lbl_retention_info = _js(_("Retention rate for this deck over its entire lifetime."))
+    opts = overview_options.normalize(current_settings)
+    days = opts['deck_overview_retention_days']
+    lbl_retention_info = _js(_("Remembered answers across all learning and review steps. Period: {}.").format(_("All time") if not days else _("Last {} days").format(days)))
     lbl_hard_info      = _js(_("Hard cards are cards you have forgotten 8 or more times."))
     lbl_show_hard      = _js(_("Show Hard Cards"))
-    lbl_learned_info   = _js(_("Finished cards are 'Mature' cards with an interval of 21 days or more."))
-    lbl_diff_info      = _js(_("Difficulty is based on the average Ease Factor of this deck."))
+    lbl_learned_info   = _js(_("Mature cards have an interval of at least 21 days. They still need reviews."))
+    lbl_diff_info = _js(_("Remembered review answers in the last 30 days; Again counts as forgotten. Green from {}%, orange from {}%, red below. Neutral until 20 reviews. This describes recent recall, not effort or ability.").format(opts['deck_overview_green'], opts['deck_overview_orange']))
     lbl_analyzing      = _js(_("Analyzing..."))
     lbl_no_marked      = _js(_("No marked words found."))
     lbl_wc_missing     = _js(_("Error: wordcloud2.min.js missing in 'media' folder."))
@@ -272,6 +276,20 @@ def get_script():
     const LBL_WC_MISSING     = "{lbl_wc_missing}";
     const LBL_BRAINSTORM_BTN = "{lbl_brainstorm_btn}";
 
+    document.addEventListener('keydown', function(event) {{
+        if(event.code !== 'Space' || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+        if(!document.getElementById('custom-dashboard')) return;
+        if(event.target.closest('input,textarea,select,button,a,summary,[contenteditable="true"],[role="dialog"]')) return;
+        event.preventDefault();event.stopImmediatePropagation();
+        if(!event.repeat) pycmd('start_study');
+    }}, true);
+
+    function setDeckIndicator(input, deckId) {{
+        const stored = document.getElementById('smiley-picker').content.querySelector('input');
+        stored.toggleAttribute('checked', input.checked);
+        pycmd('deck_indicator:' + deckId + ':' + (input.checked ? '1' : '0'));
+    }}
+
     function toggleInfo(type) {{
         const panel = document.getElementById('info-panel');
         const content = document.getElementById('info-content');
@@ -280,14 +298,14 @@ def get_script():
         const diff = document.querySelector('.diff-container');
 
         widgets.forEach(w => w.classList.remove('active'));
-        diff.classList.remove('active');
+        if(diff)diff.classList.remove('active');
 
         let text = ""; let html = ""; let activeEl = null;
 
-        if (type === 'retention') {{ text = LBL_RETENTION_INFO; activeEl = widgets[0]; }}
-        else if (type === 'hard') {{ text = LBL_HARD_INFO; html = "<br><button class='brainstorm-btn btn' style='margin-top:10px; padding: 6px 16px;' onclick='pycmd(\\\"browse_hard\\\")'>" + LBL_SHOW_HARD + "</button>"; activeEl = widgets[1]; }}
-        else if (type === 'learned') {{ text = LBL_LEARNED_INFO; activeEl = widgets[2]; }}
-        else if (type === 'diff') {{ text = LBL_DIFF_INFO; activeEl = diff; }}
+        if (type === 'retention') {{ text = LBL_RETENTION_INFO; activeEl = document.querySelector('[data-info="retention"]'); }}
+        else if (type === 'hard') {{ text = LBL_HARD_INFO; html = "<br><button class='brainstorm-btn btn' style='margin-top:10px; padding: 6px 16px;' onclick='pycmd(\\\"browse_hard\\\")'>" + LBL_SHOW_HARD + "</button>"; activeEl = document.querySelector('[data-info="hard"]'); }}
+        else if (type === 'learned') {{ text = LBL_LEARNED_INFO; activeEl = document.querySelector('[data-info="learned"]'); }}
+        else if (type === 'diff') {{ text = LBL_DIFF_INFO; html = document.getElementById('smiley-picker').innerHTML; activeEl = diff; }}
 
         if (panel.classList.contains('visible') && content.dataset.type === type) {{
             panel.classList.remove('visible'); hint.classList.remove('hidden');
@@ -299,6 +317,7 @@ def get_script():
     }}
 
     function triggerBrainstorm() {{
+        document.querySelectorAll('.deck-menu[open]').forEach(menu=>menu.open=false);
         const container = document.getElementById('wordcloud-container');
         const overlay = document.getElementById('cloud-overlay');
         const btn = document.getElementById('brainstorm-btn');
@@ -321,6 +340,7 @@ def get_script():
         const overlay = document.getElementById('cloud-overlay');
         const btn = document.getElementById('brainstorm-btn');
 
+        if (!overlay || !btn) return;
         if (!wordData || wordData.length === 0) {{
             document.getElementById('cloud-loading-text').innerText = LBL_NO_MARKED;
             document.querySelector('.spinner').style.display = 'none';
@@ -384,36 +404,47 @@ def get_script():
 """
 
 def get_stats(deck_id):
-    dids = mw.col.decks.deck_and_child_ids(deck_id)
-    ids_str = ",".join(str(i) for i in dids)
-    total = mw.col.db.scalar(f"select count() from cards where did in ({ids_str})") or 0
-    base_query = f"from revlog where cid in (select id from cards where did in ({ids_str}))"
-    ok_revs = mw.col.db.scalar(f"select count() {base_query} and ease > 1") or 0
-    # ease=0 rows are manual reschedules, not answered reviews. Including them
-    # artificially lowers retention.
-    all_revs = mw.col.db.scalar(f"select count() {base_query} and ease > 0") or 1
-    ret_p = int((ok_revs / all_revs) * 100)
-    hard_cards = mw.col.db.scalar(f"select count() from cards where did in ({ids_str}) and lapses >= 8") or 0
-    learned = mw.col.db.scalar(f"select count() from cards where did in ({ids_str}) and ivl >= 21") or 0
-    review_cards = mw.col.db.scalar(f"select count() from cards where did in ({ids_str}) and queue=2") or 0
-    learn_cards  = mw.col.db.scalar(f"select count() from cards where did in ({ids_str}) and (queue=1 or queue=3)") or 0
-    new_cards    = mw.col.db.scalar(f"select count() from cards where did in ({ids_str}) and queue=0") or 0
-    active_cards = review_cards + learn_cards + new_cards
-    review_p = 100 if active_cards == 0 else int((review_cards / active_cards) * 100)
-    learn_p  = 0   if active_cards == 0 else int((learn_cards  / active_cards) * 100)
-    new_p    = 0   if active_cards == 0 else int((new_cards    / active_cards) * 100)
-    avg_ease = mw.col.db.scalar(f"select avg(factor) from cards where did in ({ids_str}) and queue=2") or 2500
-    if avg_ease > 2600: diff_img = "easy.png"
-    elif avg_ease > 2300: diff_img = "medium.png"
-    else: diff_img = "hard.png"
+    stats = overview_options.collect_stats(mw.col, deck_id, current_settings)
+    choice = overview_options.smiley_choice(mw.col, deck_id)
+    stats.update(deck_id=deck_id, smiley_choice=choice, indicator_enabled=overview_options.indicator_enabled(mw.col, deck_id))
+    stats['indicators_all'] = overview_options.normalize(current_settings)['deck_overview_indicators_all']
+    if choice != 'auto':
+        stats['diff_img'] = overview_options.SMILEY_IMAGES[choice]
+    return stats
 
-    return {"total": total, "ret_p": ret_p, "hard": hard_cards, "learned": learned,
-            "review_p": review_p, "learn_p": learn_p, "new_p": new_p, "diff_img": diff_img}
 
 def on_message(handled, msg, ctx):
     if not isinstance(ctx, Overview):
         return handled
+    if msg.startswith("deck_indicator:"):
+        try:
+            _, deck_id, enabled = msg.split(":")
+            deck_id = int(deck_id)
+            if mw.state != "overview" or mw.col.decks.current()['id'] != deck_id or enabled not in ('0','1'):
+                return (True, None)
+            overview_options.set_indicator_enabled(mw.col, deck_id, enabled == '1')
+        except Exception:
+            tooltip(_("Could not save the setting. Please try again."))
+            mw.overview.refresh()
+        return (True, None)
+    if msg.startswith("deck_smiley:"):
+        try:
+            _, deck_id, choice = msg.split(":")
+            deck_id = int(deck_id)
+            if mw.state != "overview" or mw.col.decks.current()['id'] != deck_id:
+                return (True, None)
+            overview_options.set_smiley_choice(mw.col, deck_id, choice)
+            mw.overview.refresh()
+        except Exception:
+            tooltip(_("Could not save the smiley. Please try again."))
+        return (True, None)
+    if msg == "deck_overview_settings":
+        from . import show_settings_dialog
+        mw.progress.single_shot(0, lambda: show_settings_dialog(initial_page="deck"))
+        return (True, None)
     if msg == "start_study":
+        if mw.state != "overview":
+            return (True, None)
         mw.col.startTimebox()
         mw.moveToState("review")
         return (True, None)
@@ -424,6 +455,8 @@ def on_message(handled, msg, ctx):
         browser.setFilter(query)
         return (True, None)
     elif msg == "brainstorm":
+        if not overview_options.normalize(current_settings)["deck_overview_brainstorm"]:
+            return (True, None)
         deck = mw.col.decks.current()
         if deck:
             # DB query must run on the main thread.
@@ -471,12 +504,17 @@ def _session_summary_inner():
         else:
             time_str = f"{total_s}s"
 
-        # XP estimate with the same formula the manager uses (minutes * rate).
-        try:
-            from .gamification import XP_PER_MINUTE_STUDIED as _xp_rate
-        except Exception:
-            _xp_rate = 10
-        xp_earned = int((total_ms / 60000.0) * _xp_rate)
+        # Display the actual committed award, including any carried fraction.
+        # Reconciliation is idempotent; the second render also retries failures.
+        gm = getattr(mw, "gamification_manager", None)
+        xp_earned = 0
+        if gm:
+            credited = gm.credit_study_xp(int(start_ms))
+            sidebar = getattr(mw, "gamification_sidebar", None)
+            if credited and sidebar and sidebar.isVisible():
+                sidebar.update_display()
+            if getattr(gm, "_study_session_start", None) == int(start_ms):
+                xp_earned = getattr(gm, "_study_session_xp", 0)
 
         night = False
         try:
@@ -542,7 +580,8 @@ def inject_session_summary_into_congrats():
             "(function(){"
             "try{"
             "if(location.href.indexOf('congrats')===-1) return;"
-            "if(document.getElementById('sp-session-summary')) return;"
+            "var existing=document.getElementById('sp-session-summary');"
+            f"if(existing){{existing.innerHTML={json.dumps(snippet)};return;}}"
             "var d=document.createElement('div');"
             "d.id='sp-session-summary';"
             f"d.innerHTML={json.dumps(snippet)};"
@@ -563,24 +602,6 @@ def on_overview_render(web, ctx):
 
     try:
         s = get_stats(deck['id'])
-        # Escape the (user-controlled) deck name before it goes into the HTML.
-        # For normal names this is byte-identical; only markup chars change.
-        deck_title = html.escape(deck['name'].split('::')[-1])
-
-        # Pre-computed translated labels for the HTML template
-        lbl_cards = _("{} Cards").format(s['total'])
-        lbl_progress = _("Progress")
-        lbl_review = _("Review")
-        lbl_learn  = _("Learn")
-        lbl_new    = _("New")
-        lbl_retention = _("Retention")
-        lbl_hard_cards = _("Hard Cards")
-        lbl_finished_cards = _("Finished Cards")
-        lbl_click_details = _("Click for details")
-        lbl_generating = _("Generating Brainstorm Cloud...")
-        lbl_cloud_desc = _("Displays the most frequent bold, underlined, or cloze terms in this deck.")
-        lbl_brainstorm_btn = _("Deck Brainstorm Cloud")
-        lbl_start_study = _("Start Study")
 
         custom_background_override = ""
         if current_settings.get("custom_background_enabled", False):
@@ -610,76 +631,28 @@ def on_overview_render(web, ctx):
                     + "document.body.classList.add('overview');</script>"
                 )
 
-        page_html = f"""
-        {get_style()}
-        <div id="overview-wrapper">
-            <div id="custom-dashboard">
-                <div class="deck-header">
-                    <h1>{deck_title}</h1>
-                    <p>{lbl_cards}</p>
-                </div>
-                <div class="white-box">
-                    <div class="progress-label">{lbl_progress}</div>
-                    <div class="progress-stack">
-                        <div class="progress-row">
-                            <span class="progress-row-label">{lbl_review}</span>
-                            <div class="progress-outer"><div class="progress-inner"><div class="progress-bar-fill bar-green" style="width: {s['review_p']}%"></div></div></div>
-                            <span class="progress-row-pct">{s['review_p']}%</span>
-                        </div>
-                        <div class="progress-row">
-                            <span class="progress-row-label">{lbl_learn}</span>
-                            <div class="progress-outer"><div class="progress-inner"><div class="progress-bar-fill bar-red" style="width: {s['learn_p']}%"></div></div></div>
-                            <span class="progress-row-pct">{s['learn_p']}%</span>
-                        </div>
-                        <div class="progress-row">
-                            <span class="progress-row-label">{lbl_new}</span>
-                            <div class="progress-outer"><div class="progress-inner"><div class="progress-bar-fill bar-blue" style="width: {s['new_p']}%"></div></div></div>
-                            <span class="progress-row-pct">{s['new_p']}%</span>
-                        </div>
-                    </div>
-                    <div class="widgets-row">
-                        <div class="widget" onclick="toggleInfo('retention')">
-                            <div class="widget-header"><img src="{get_media_url('retention.png')}"><span>{lbl_retention}</span></div>
-                            <div class="widget-val">{s['ret_p']}%</div>
-                        </div>
-                        <div class="widget" onclick="toggleInfo('hard')">
-                            <div class="widget-header"><img src="{get_media_url('hardcards.png')}"><span>{lbl_hard_cards}</span></div>
-                            <div class="widget-val">{s['hard']}</div>
-                        </div>
-                        <div class="widget" onclick="toggleInfo('learned')">
-                            <div class="widget-header"><img src="{get_media_url('learned.png')}"><span>{lbl_finished_cards}</span></div>
-                            <div class="widget-val">{s['learned']}</div>
-                        </div>
-                        <div class="diff-container" onclick="toggleInfo('diff')">
-                            <img src="{get_media_url(s['diff_img'])}">
-                        </div>
-                    </div>
-                    <div id="hint-text" class="hint-text">{lbl_click_details}</div>
-                    <div id="info-panel" class="info-panel"><span id="info-content"></span></div>
-
-                    <div id="wordcloud-container">
-                        <div id="cloud-overlay"><div class="spinner"></div><div id="cloud-loading-text">{lbl_generating}</div></div>
-                        <canvas id="cloud-canvas"></canvas>
-                        <div class="cloud-description">{lbl_cloud_desc}</div>
-                    </div>
-                </div>
-                <div class="button-container">
-                    <button id="brainstorm-btn" class="btn brainstorm-btn" onclick="triggerBrainstorm()">{lbl_brainstorm_btn}</button>
-                    <button class="btn start-btn" onclick="pycmd('start_study')">{lbl_start_study}</button>
-                </div>
-            </div>
-        </div>
-        {get_script()}
-        {custom_background_override}
-        """
+        options = overview_options.normalize(current_settings)
+        page_html = (get_style() + EXTRA_CSS
+                     + render_dashboard(deck['name'].split('::')[-1], s, options, _, get_media_url)
+                     + get_script(s) + custom_background_override)
         web.body = page_html
     except Exception as e:
         print(f"SynapsePro Deck Overview Error: {e}")
+
+def on_deck_browser_render(browser, content):
+    try:
+        from .deck_browser_indicator import render
+        content.tree = render(content.tree, mw.col, current_settings, _)
+    except Exception as exc:
+        print(f"SynapsePro deck indicator: {exc}")
+
 
 def init_deck_overview():
     global _hooks_registered
     if _hooks_registered:
         return
+    from aqt import gui_hooks
+    gui_hooks.deck_browser_will_render_content.append(on_deck_browser_render)
     webview_will_set_content.append(on_overview_render)
     webview_did_receive_js_message.append(on_message)
     _hooks_registered = True

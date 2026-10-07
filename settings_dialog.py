@@ -20,6 +20,7 @@ except Exception:
 # --- Translation Function ---
 try:
     from .locales import _
+    from . import workspace_strings  # Register workspace labels in the native fallback.
 except ImportError:
     def _(text): return text  # safety fallback
 
@@ -32,7 +33,7 @@ try:
                         QGroupBox, QScrollArea, QPushButton, QHBoxLayout,
                         QSizePolicy, QApplication, QListWidget, QListWidgetItem,
                         QStackedWidget, QPixmap, QDesktopServices, Qt, QUrl, QTimer,
-                        QKeySequenceEdit, QKeySequence, QMessageBox)
+                        QKeySequenceEdit, QKeySequence, QMessageBox, QSpinBox, QColorDialog, QColor)
 except ImportError as e:
     print(f"SettingsDialog Error: Failed to import required modules: {e}")
     QDialog, QVBoxLayout, QLabel, QDialogButtonBox, QCheckBox, QWidget, QGridLayout, QFrame, Qt, QPixmap, QComboBox, QGroupBox, QScrollArea, QPushButton, QHBoxLayout, QDesktopServices, QUrl, QSizePolicy, QApplication, QTimer, QListWidget, QListWidgetItem, QStackedWidget = (object,) * 23
@@ -47,7 +48,7 @@ except Exception:
 
 # --- Theme ---
 try:
-    from .theme import palette as _palette, FONT_FAMILY as _FONT_FAMILY
+    from .theme import dialog_palette as _palette, FONT_FAMILY as _FONT_FAMILY
 except ImportError:
     def _palette(night): return {}  # type: ignore
     _FONT_FAMILY = "sans-serif"
@@ -375,6 +376,7 @@ class SettingsDialog(QDialog):
         self.language_combo.addItem("한국어", "ko")
         self.language_combo.addItem("中文", "zh")
         self.language_combo.addItem("हिन्दी", "hi")
+        self.language_combo.addItem("Polski", "pl")
         lang_val = self.current_config.get("language", "auto")
         idx = self.language_combo.findData(lang_val)
         self.language_combo.setCurrentIndex(idx if idx != -1 else 0)
@@ -390,6 +392,7 @@ class SettingsDialog(QDialog):
         self.fact_theme_combo.addItem(_("Law"), "Law")
         self.fact_theme_combo.addItem(_("General"), "General")
         self.fact_theme_combo.addItem(_("Countries"), "Countries")
+        self.fact_theme_combo.addItem(_("Random"), "Random")
         idx = self.fact_theme_combo.findData(self.current_config.get("fact_theme", "Medical"))
         if idx != -1:
             self.fact_theme_combo.setCurrentIndex(idx)
@@ -475,7 +478,7 @@ class SettingsDialog(QDialog):
 
         self._add_section_header(
             layout, _("Appearance"),
-            _("Choose the accent colour used across SynapsePro and the background style."),
+            _("Choose the accent colour used across Synapse and the background style."),
         )
 
         self._color_theme_value   = self.current_config.get("active_color_theme", "ocean")
@@ -617,6 +620,7 @@ class SettingsDialog(QDialog):
         layout.addSpacing(8)
 
         features = [
+            ("dashboard_wide_deck_list", _("Wide Deck List"), _("Match the deck list width to the widgets. Turn off for a compact deck list.")),
             ("gamification_widgets_enabled", _("Gamification Widgets"),
              _("Your level, XP and daily streak.")),
             ("study_plan_widget_enabled", _("Study Plan Widget"),
@@ -641,6 +645,22 @@ class SettingsDialog(QDialog):
         minimal_cb.toggled.connect(sync_minimal_widgets)
         sync_minimal_widgets(minimal_cb.isChecked())
 
+        layout.addSpacing(22)
+        self._add_section_header(layout, _("Gamification"), "")
+        self.add_checkbox("gamification_popups_enabled", _("Celebration popups"), layout,
+                          _("Show celebrations on the dashboard."))
+        for kind, label in (("rank", "New Rank!"), ("level", "Level Up!"),
+                            ("challenge", "Daily Challenge completed!")):
+            key = "gamification_popup_" + kind
+            self.add_checkbox(key, _(label), layout)
+            self.checkboxes[key].setChecked(bool(self.current_config.get(key, kind != "level")))
+        master = self.checkboxes["gamification_popups_enabled"]
+        def sync_celebrations(enabled):
+            for kind in ("rank", "level", "challenge"):
+                self.checkboxes["gamification_popup_" + kind].setVisible(enabled)
+        master.toggled.connect(sync_celebrations)
+        sync_celebrations(master.isChecked())
+
         return card
 
     def create_deck_overview_card(self) -> QFrame:
@@ -662,6 +682,51 @@ class SettingsDialog(QDialog):
               "retention, hard cards and more."),
         )
 
+        options_frame = QFrame()
+        layout.addWidget(options_frame)
+        layout = QVBoxLayout(options_frame)
+        layout.setContentsMargins(0, 0, 0, 0)
+        master = self.checkboxes['deck_overview_enabled']
+        options_frame.setEnabled(master.isChecked())
+        master.toggled.connect(options_frame.setEnabled)
+        self._deck_options_frame = options_frame
+        from .deck_overview_options import payload
+        model = payload(self.current_config, _)
+        self._deck_controls = {}
+        for field in model['fields']:
+            key = field['key']
+            if field['type'] == 'boolean':
+                self.add_checkbox(key, field['label'], layout)
+                self.checkboxes[key].setChecked(model['config'][key])
+                continue
+            row = QHBoxLayout()
+            label = QLabel(field['label']); label.setWordWrap(True); row.addWidget(label, 1)
+            if field['type'] == 'choice':
+                control = QComboBox()
+                for item in field['choices']: control.addItem(item['label'], item['value'])
+                control.setCurrentIndex(control.findData(model['config'][key]))
+            elif field['type'] == 'color':
+                control = QPushButton(model['config'][key])
+                control.setProperty('colorValue', model['config'][key])
+                def choose_color(_checked=False, button=control):
+                    color = QColorDialog.getColor(QColor(button.property('colorValue')), self)
+                    if color.isValid():
+                        button.setProperty('colorValue', color.name())
+                        button.setText(color.name())
+                control.clicked.connect(choose_color)
+            else:
+                control = QSpinBox(); control.setRange(1 if key.endswith('green') else 0, 100 if key.endswith('green') else 99)
+                control.setValue(model['config'][key]); control.setSuffix(' %')
+            label.setBuddy(control); control.setAccessibleName(field['label'])
+            self._deck_controls[key] = control; row.addWidget(control); layout.addLayout(row)
+        # Keep the native fallback's thresholds valid while editing.
+        green=self._deck_controls['deck_overview_green']; orange=self._deck_controls['deck_overview_orange']
+        green.valueChanged.connect(lambda value: orange.setMaximum(value-1))
+        orange.setMaximum(green.value()-1)
+        hint=QLabel(model['labels']['hint']); hint.setWordWrap(True);hint.setObjectName('SettingDesc');layout.addWidget(hint)
+        note = QLabel(model['labels']['indicatorHelp']); note.setWordWrap(True)
+        note.setObjectName('SettingDesc'); layout.addWidget(note)
+
         return card
 
     def create_sidebar_card(self) -> QFrame:
@@ -678,13 +743,13 @@ class SettingsDialog(QDialog):
         )
 
         features = [
-            ("mindmap_enabled", _("Mind Map"),
+            ("mindmap_enabled", _("MindMap"),
              _("A visual mind-mapping panel.")),
             ("gamification_sidebar_enabled", _("Gamification Sidebar"),
              _("Progress, rewards and motivation panel.")),
             ("music_player_enabled", _("Music Player"),
              _("Background music while you study.")),
-            ("pomodoro_enabled", _("Pomodoro Timer"),
+            ("pomodoro_enabled", _("Timer"),
              _("A focus timer with work and break intervals.")),
             ("ai_assistant_enabled", _("AI Assistant"),
              _("Chat assistant that can explain your cards.")),
@@ -949,6 +1014,9 @@ class SettingsDialog(QDialog):
             "sidebar_visibility_mode": self.sidebar_vis_combo.currentData() or "always_show",
             "language": self.language_combo.currentData() or "auto",
         }
+        for key, control in self._deck_controls.items():
+            settings[key] = (control.currentData() if isinstance(control, QComboBox) else
+                             control.property('colorValue') if isinstance(control, QPushButton) else control.value())
         for key, cb in self.checkboxes.items():
             settings[key] = cb.isChecked()
         if sidebar_shortcuts:

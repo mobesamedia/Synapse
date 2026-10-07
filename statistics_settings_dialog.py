@@ -46,7 +46,7 @@ class StatisticsSettingsDialog(QDialog):
         self._result: Optional[Dict] = None
         self._injected = False
 
-        self.setWindowTitle(f"SynapsePro - {_('Statistics Settings')}")
+        self.setWindowTitle(f"Synapse - {_('Statistics Settings')}")
         self.resize(680, 590)
         self.setMinimumSize(560, 500)
 
@@ -66,7 +66,7 @@ class StatisticsSettingsDialog(QDialog):
         except Exception:
             pass
         try:
-            self._page.setBackgroundColor(QColor("#1c1c1e" if night else "#ffffff"))
+            self._page.setBackgroundColor(QColor("#2c2c2c" if night else "#ffffff"))
         except Exception:
             pass
 

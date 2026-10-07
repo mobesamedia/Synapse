@@ -27,6 +27,7 @@ Supported values for :data:`USER_LANG`:
 * ``"vi"``   – Tiếng Việt
 * ``"zh"``   – 中文
 * ``"hi"``   – हिन्दी
+* ``"pl"``   – Polski
 
 
 Adding / editing translations
@@ -39,6 +40,12 @@ Adding / editing translations
 """
 
 from typing import Dict
+import json
+from pathlib import Path
+
+# Supplemental catalog for newer features; loaded locally once.
+SUPPLEMENTAL_TRANSLATIONS = json.loads(Path(__file__).with_name("translation_catalog.json").read_text(encoding="utf-8"))
+WORKSPACE_TRANSLATIONS = json.loads(Path(__file__).with_name("workspace_translations.json").read_text(encoding="utf-8"))
 
 try:
     from .web_translations import WEB_TRANSLATIONS
@@ -49,7 +56,7 @@ except ImportError:
 # --------------------------------------------------------------------- #
 # Active language
 # --------------------------------------------------------------------- #
-# Valid values: "auto", "en", "de", "es", "ko", "pt", "fr", "vi", "zh", "hi".
+# Valid values: "auto", "en", "de", "es", "ko", "pt", "fr", "vi", "zh", "hi", "pl".
 # Defaults to "auto" until ``on_profile_open()`` overwrites it from the
 # user's settings.
 USER_LANG: str = "auto"
@@ -62,21 +69,21 @@ def _detect_anki_lang() -> str:
     """Best-effort detection of Anki's current UI language.
 
     Returns one of ``"en"``, ``"de"``, ``"es"``, ``"ko"``, ``"pt"``,
-    ``"fr"``, ``"vi"``, ``"zh"``, ``"hi"``. Unknown Anki locales fall
+    ``"fr"``, ``"vi"``, ``"zh"``, ``"hi"``, ``"pl"``. Unknown Anki locales fall
     back to English.
     """
     raw = ""
     # Preferred API (modern Anki versions).
     try:
-        from anki.lang import currentLang  # type: ignore
-        raw = currentLang or ""
+        from anki.lang import current_lang  # type: ignore
+        raw = current_lang or ""
     except Exception:
         pass
     # Fallback API name used on some older Anki versions.
     if not raw:
         try:
-            from anki.lang import current_lang  # type: ignore
-            raw = current_lang or ""
+            from anki.lang import currentLang  # type: ignore
+            raw = currentLang or ""
         except Exception:
             pass
     # Last resort: read directly from the profile manager.
@@ -105,6 +112,8 @@ def _detect_anki_lang() -> str:
         return "zh"
     if raw.startswith("hi"):
         return "hi"
+    if raw.startswith("pl"):
+        return "pl"
     return "en"
 
 
@@ -113,7 +122,7 @@ def _current_lang() -> str:
     lang = USER_LANG
     if lang == "auto":
         return _detect_anki_lang()
-    if lang in ("en", "de", "es", "ko", "pt", "fr", "vi", "zh", "hi"):
+    if lang in ("en", "de", "es", "ko", "pt", "fr", "vi", "zh", "hi", "pl"):
         return lang
     return "en"
 
@@ -127,32 +136,196 @@ def _(text: str) -> str:
     If the key is missing or has no entry for the active language, the
     original English ``text`` is returned unchanged as a safe fallback.
     """
-    lang = _current_lang()
+    return translate_for_language(text, _current_lang())
+
+
+def translate_for_language(text: str, lang: str) -> str:
+    """Translate without changing the active language (e.g. during onboarding)."""
     if lang == "en":
         return text
-    entry = TRANSLATIONS.get(text) or WEB_TRANSLATIONS.get(text)
-    if not entry:
-        return text
-    return entry.get(lang) or text
+    for catalog in (TRANSLATIONS, WEB_TRANSLATIONS, SUPPLEMENTAL_TRANSLATIONS, WORKSPACE_TRANSLATIONS):
+        translated = catalog.get(text, {}).get(lang)
+        if translated:
+            return translated
+    return text
 
 
 # --------------------------------------------------------------------- #
 # Translations
 # --------------------------------------------------------------------- #
 TRANSLATIONS: Dict[str, Dict[str, str]] = {
+    "Choose which celebrations appear on the dashboard. Changes are saved immediately.": {"de": "Wähle die Erfolgsmeldungen für dein Dashboard. Änderungen werden sofort gespeichert."},
+    "Google is having trouble loading or requests verification. You can try DuckDuckGo instead. Home stays unchanged.": {"de": "Google lädt nicht richtig oder verlangt eine Sicherheitsprüfung. Du kannst stattdessen DuckDuckGo ausprobieren. Home bleibt unverändert."},
+    "Try DuckDuckGo": {"de": "DuckDuckGo ausprobieren"},
+    "Your statistics, explained": {"de": "Deine Statistiken erklärt"},
+    "Understand the insights on your dashboard.": {"de": "Was die Kennzahlen auf deinem Dashboard bedeuten."},
+    "Enable the celebration types selected in Settings.": {"de": "Aktiviert die in den Einstellungen ausgewählten Erfolgsmeldungen."},
+    "Google having trouble? Try DuckDuckGo": {"de": "Probleme mit Google? DuckDuckGo ausprobieren"},
+    "Switch only if you want to. Your Home page stays unchanged.": {"de": "Du entscheidest, ob du wechselst. Deine Startseite bleibt unverändert."},
+    "Show celebrations on the dashboard.": {"de": "Erfolgsmeldungen auf dem Dashboard anzeigen."},
+    "Celebration": {"de": "Erfolg"},
+    "+{} XP claimed.": {"de": "+{} XP abgeholt."},
+    "Goal achieved!": {"de": "Ziel erreicht!"},
+    "Opening developer console...": {"de": "Entwicklerkonsole wird geöffnet..."},
+    "Open developer console": {"de": "Entwicklerkonsole öffnen"},
+    "Developer console unlocked": {"de": "Entwicklerkonsole freigeschaltet"},
+    "Could not open the developer console: {}": {"de": "Die Entwicklerkonsole konnte nicht geöffnet werden: {}"},
+    "Developer console": {"de": "Entwicklerkonsole"},
+    "Badge: nearby goal": {"de": "Abzeichen: nahes Ziel"},
+    "Badge: active comeback": {"de": "Abzeichen: laufender Wiedereinstieg"},
+    "Badge: stage change": {"de": "Abzeichen: Stufenwechsel"},
+    "Badge: all complete": {"de": "Abzeichen: alles vollständig"},
+    "Badge gallery": {"de": "Abzeichenübersicht"},
+    "Badge gallery: {}": {"de": "Abzeichenübersicht: {}"},
+    "Badge stage": {"de": "Abzeichenstufe"},
+    "Locked": {"de": "Gesperrt"},
+    "Preview only. Your profile stays unchanged.": {"de": "Nur Vorschau. Dein Profil bleibt unverändert."},
+    "Preview closed. Use Replay to show it again.": {"de": "Vorschau geschlossen. Mit Erneut abspielen kannst du sie wieder öffnen."},
+    "Preview only. Celebration preferences will be connected when this design is adopted.": {"de": "Nur Vorschau. Die Meldungseinstellungen werden bei Übernahme des Designs verbunden."},
+    "New rank unlocked": {"de": "Neuer Rang freigeschaltet"},
+    "Your learning is paying off.": {"de": "Dein Lernen zahlt sich aus."},
+    "Celebration settings": {"de": "Erfolgsmeldungen einstellen"},
+    "Rank up": {"de": "Rangaufstieg"},
+    "Level up": {"de": "Levelaufstieg"},
+    "Also show a completed challenge": {"de": "Zusätzlich eine abgeschlossene Challenge anzeigen"},
+    "Dark preview": {"de": "Dunkle Vorschau"},
+    "Reduced motion": {"de": "Reduzierte Bewegung"},
+    "Previous rank": {"de": "Vorheriger Rang"},
+    "New rank": {"de": "Neuer Rang"},
+    "Replay": {"de": "Erneut abspielen"},
+    "Achievements": {"de": "Abzeichen"},
+    "Study streak": {"de": "Lernserie"},
+    "Reviews": {"de": "Wiederholungen"},
+    "Study days": {"de": "Lerntage"},
+    "Daily goals": {"de": "Tagesziele"},
+    "Welcome back": {"de": "Wiedereinstieg"},
+    "Earned": {"de": "Verdient"},
+    "Bronze": {"de": "Bronze"},
+    "Silver": {"de": "Silber"},
+    "Gold": {"de": "Gold"},
+    "Diamond": {"de": "Diamant"},
+    "Select a badge to see your progress.": {"de": "Klicke auf ein Abzeichen, um deinen Fortschritt zu sehen."},
+    "Not earned yet": {"de": "Noch nicht verdient"},
+    "Recorded progress: {}": {"de": "Erfasster Fortschritt: {}"},
+    "Next stage: {}": {"de": "Nächste Stufe: {}"},
+    "Still needed: {}": {"de": "Noch benötigt: {}"},
+    "All stages earned": {"de": "Alle Stufen verdient"},
+    "This achievement is yours to keep.": {"de": "Dieses Abzeichen bleibt dir erhalten."},
+    "Your next badge": {"de": "Dein nächstes Abzeichen"},
+    "One more {} to reach {}.": {"de": "Noch 1 {} bis {}."},
+    "{} more {} to reach {}.": {"de": "Noch {} {} bis {}."},
+    "Earned on {}": {"de": "Erreicht am {}"},
+    "Choose as favorite badge": {"de": "Als Lieblingsabzeichen wählen"},
+    "Favorite badge": {"de": "Lieblingsabzeichen"},
+    "streak day": {"de": "Serientag"},
+    "streak days": {"de": "Serientage"},
+    "review": {"de": "Wiederholung"},
+    "reviews": {"de": "Wiederholungen"},
+    "study day": {"de": "Lerntag"},
+    "study days": {"de": "Lerntage"},
+    "daily goal": {"de": "Tagesziel"},
+    "daily goals": {"de": "Tagesziele"},
+    "Study on consecutive Anki days. Your longest recorded streak counts, even after a break.": {"de": "Lerne an aufeinanderfolgenden Anki-Tagen. Deine längste erfasste Serie zählt, auch nach einer Pause."},
+    "Answer cards. Repeated answers to the same card count; manual rescheduling does not.": {"de": "Beantworte Karten. Mehrere Antworten auf dieselbe Karte zählen mit. Manuelles Neuplanen zählt nicht."},
+    "Study on different Anki days. One answer is enough for a day to count. Breaks are welcome.": {"de": "Lerne an verschiedenen Anki-Tagen. Eine Antwort genügt, damit ein Tag zählt. Pausen sind erlaubt."},
+    "Complete daily challenges. Each day counts once, even without claiming XP. Counting starts with this feature.": {"de": "Schließe Tageschallenges ab. Jeder Tag zählt einmal, auch ohne die XP abzuholen. Die Zählung beginnt mit dieser Funktion."},
+    "After at least seven full days without reviews, study on three consecutive Anki days. This is a one-time achievement.": {"de": "Lerne nach mindestens sieben vollen Tagen ohne Wiederholungen an drei aufeinanderfolgenden Anki-Tagen. Dieses Abzeichen wird einmalig vergeben."},
+    'Simulated Preview': {"de": 'Simulierte Vorschau'},
+    'Decks': {"de": 'Stapel'},
+    'Example background. The result depends on your wallpaper. Blur is easier to see with lower surface opacity and a detailed image.': {"de": 'Beispielhintergrund. Das Ergebnis hängt von deinem Hintergrundbild ab. Bei geringerer Deckkraft und einem detailreichen Bild ist die Unschärfe deutlicher sichtbar.'},
+    'This renderer does not support the glass effect. Normal transparency is shown.': {"de": 'Diese Darstellung unterstützt den Glaseffekt nicht. Es wird die normale Transparenz angezeigt.'},
+
+    'Glass Effect': {"de": 'Glaseffekt'},
+    'May cause severe performance issues. Smooth use and studying cannot be guaranteed while enabled.': {"de": 'Kann die Performance erheblich beeinträchtigen. Flüssige Bedienung und flüssiges Lernen können bei aktiviertem Effekt nicht garantiert werden.'},
+    'Glass Strength': {"de": 'Stärke des Glaseffekts'},
+    'Lower strength reduces rendering work. Set surface opacity below 100% to see the effect. Unsupported renderers keep normal transparency.': {"de": 'Eine geringere Stärke reduziert den Darstellungsaufwand. Stelle die Deckkraft unter 100 %, damit der Effekt sichtbar wird. Ohne technische Unterstützung bleibt die normale Transparenz erhalten.'},
+    'Enable glass effect?': {"de": 'Glaseffekt aktivieren?'},
+    'This effect may cause severe performance issues.': {"de": 'Dieser Effekt kann die Performance erheblich beeinträchtigen.'},
+    'Blurring the background adds rendering work, especially with large windows and long deck lists. Smooth use and studying can no longer be guaranteed while this option is enabled.': {"de": 'Die Unschärfe im Hintergrund erzeugt zusätzlichen Darstellungsaufwand, besonders bei großen Fenstern und langen Decklisten. Solange diese Option aktiviert ist, können flüssige Bedienung und flüssiges Lernen nicht mehr garantiert werden.'},
+    'You can reduce the strength or turn the effect off at any time. The effect is limited to the dashboard and does not change your learning data.': {"de": 'Du kannst die Stärke jederzeit reduzieren oder den Effekt ausschalten. Der Effekt ist auf das Dashboard begrenzt und verändert deine Lerndaten nicht.'},
+    'Enable anyway': {"de": 'Trotzdem aktivieren'},
+
+    'Dashboard Surfaces': {"de": 'Dashboard-Flächen'},
+    'Surface Opacity': {"de": 'Deckkraft der Flächen'},
+    'Applies to widgets and the deck list, including the minimalist dashboard. Text and controls stay fully visible.': {"de": 'Gilt für Widgets und die Deckliste, auch im minimalistischen Dashboard. Texte und Bedienelemente bleiben vollständig sichtbar.'},
+
+    'Task settings': {"de": 'Aufgabeneinstellungen'},
+    'Remove completed one-time tasks on the next day': {"de": 'Erledigte einmalige Aufgaben am nächsten Tag löschen'},
+    'Off by default. Recurring tasks and old tasks without a completion date are kept.': {"de": 'Standardmäßig aus. Wiederkehrende Aufgaben und alte Aufgaben ohne Erledigungsdatum bleiben erhalten.'},
+    'Repeat task': {"de": 'Aufgabe wiederholen'},
+    'No repeat': {"de": 'Keine Wiederholung'},
+    'Daily': {"de": 'Täglich'},
+    'Weekly': {"de": 'Wöchentlich'},
+    'Selected weekdays': {"de": 'Ausgewählte Wochentage'},
+    'Weekly tasks repeat on the weekday you configure them. Missed tasks remain open without extra copies.': {"de": 'Wöchentliche Aufgaben wiederholen sich an dem Wochentag, an dem du sie einstellst. Verpasste Aufgaben bleiben ohne zusätzliche Kopien offen.'},
+    'Choose at least one weekday.': {"de": 'Wähle mindestens einen Wochentag.'},
+    'Cancel': {"de": 'Abbrechen'},
+    'Save': {"de": 'Speichern'},
+    'Recurring task': {"de": 'Wiederkehrende Aufgabe'},
+
+    "Task could not be saved. Please try again.": {"de": "Die Aufgabe konnte nicht gespeichert werden. Bitte versuche es erneut."},
+    'Open Manager': {"de": 'Manager öffnen'},
+    'Open tasks': {"de": 'Offene Aufgaben'},
+    'Completed tasks': {"de": 'Erledigte Aufgaben'},
+    'Complete task': {"de": 'Aufgabe erledigen'},
+
+    'Widget Content': {"de": 'Widget-Inhalt'},
+    'Show facts or open tasks on the home screen. Click the task widget to open your list.': {"de": 'Zeige Fakten oder offene Aufgaben auf dem Hauptbildschirm. Ein Klick auf das Aufgabenwidget öffnet deine Liste.'},
+    'Facts': {"de": 'Fakten'},
+    'Tasks': {"de": 'Aufgaben'},
+    'Open all tasks': {"de": 'Alle Aufgaben öffnen'},
+    'All done. No open tasks.': {"de": 'Alles erledigt. Keine offenen Aufgaben.'},
+    'Open Tasks to view your list.': {"de": 'Öffne die Aufgabenansicht, um deine Liste zu sehen.'},
+    'Facts or Tasks Widget': {"de": 'Widget für Fakten oder Aufgaben'},
+    'Show the selected content on your Anki home screen.': {"de": 'Zeige den ausgewählten Inhalt auf deinem Anki-Hauptbildschirm.'},
+
+    'Connect ideas visually and test your knowledge with hidden answers.': {"de": 'Verbinde Begriffe zu einer übersichtlichen Map und prüfe dein Wissen mit verdeckten Antworten.'},
+    'Six short steps': {"de": 'Sechs kurze Schritte'},
+    'Create and connect nodes': {"de": 'Knoten erstellen und verbinden'},
+    'Adjust colors and sizes': {"de": 'Farben und Größen anpassen'},
+    'Navigate your map and try learning mode': {"de": 'Durch die Map navigieren und den Lernmodus ausprobieren'},
+    'Practice with sample data': {"de": 'Mit Beispieldaten üben'},
+    'Your own maps stay untouched. Practice changes are not saved.': {"de": 'Deine eigenen Maps bleiben unverändert. Die Übungen werden nicht gespeichert.'},
+    'You can exit at any time and restart from the menu.': {"de": 'Du kannst jederzeit aufhören und das Tutorial über das Menü neu starten.'},
+
+    'Step {current} of {total}': {"de": 'Schritt {current} von {total}'},
+    'Right click a node and choose a different color or size.': {"de": 'Klicke mit der rechten Maustaste auf einen Knoten und wähle eine andere Farbe oder Größe.'},
+    'Tutorial': {"de": 'Tutorial'},
+    'Show entire map': {"de": 'Gesamte Map anzeigen'},
+    'Click the main topic and change its text.': {"de": 'Klicke auf den Hauptbegriff und ändere seinen Text.'},
+    'Drag the small blue dot on the main topic into an empty area to create a child node.': {"de": 'Ziehe den kleinen blauen Punkt am Hauptbegriff auf eine freie Stelle, um einen Unterknoten zu erstellen.'},
+    'Drag the empty canvas to move the view. Use the mouse wheel or the zoom buttons to zoom.': {"de": 'Ziehe die freie Fläche, um die Ansicht zu verschieben. Mit dem Mausrad oder den Zoomtasten kannst du zoomen.'},
+    'Click Show entire map to bring every node into view. Node positions stay unchanged.': {"de": 'Klicke auf „Gesamte Map anzeigen“, um alle Knoten zu sehen. Ihre Positionen bleiben unverändert.'},
+    'Open the highlighted menu and choose Start Learning. Try revealing a hidden answer.': {"de": 'Öffne das markierte Menü und wähle „Lernen starten“. Probiere aus, eine verdeckte Antwort aufzudecken.'},
+    'Done. Continue when you are ready.': {"de": 'Geschafft. Gehe weiter, sobald du bereit bist.'},
+    'Finish tutorial': {"de": 'Tutorial abschließen'},
+    'Skip step': {"de": 'Schritt überspringen'},
+    'Practice · changes are not saved': {"de": 'Übung · Änderungen werden nicht gespeichert'},
+    'My learning topic': {"de": 'Mein Lernthema'},
+    'An example': {"de": 'Ein Beispiel'},
+    'Exit tutorial': {"de": 'Tutorial beenden'},
+    'Finish the current editing or learning mode before opening the tutorial.': {"de": 'Beende zuerst die aktuelle Bearbeitung oder den Lernmodus, bevor du das Tutorial öffnest.'},
+    'Discover Mindmaps': {"de": 'Mindmaps kennenlernen'},
+    'Connect ideas visually and test your knowledge with hidden answers. In six short steps, you will create and style nodes, navigate your map and try learning mode. You will use sample data. Your own maps stay untouched and practice changes are not saved. You can exit at any time and restart from the menu.': {"de": 'Verbinde Begriffe zu einer übersichtlichen Map und prüfe dein Wissen mit verdeckten Antworten. In sechs kurzen Schritten erstellst und gestaltest du Knoten, navigierst durch deine Map und probierst den Lernmodus aus. Du übst mit Beispieldaten. Deine eigenen Maps bleiben unverändert und die Übungen werden nicht gespeichert. Du kannst jederzeit aufhören und das Tutorial über das Menü neu starten.'},
+    'Start tutorial': {"de": 'Tutorial starten'},
+    'Not now': {"de": 'Jetzt nicht'},
+
+    "Open in browser": {"de": "Im Browser öffnen"},
+    "Search '{}' in browser": {"de": "'{}' im Browser suchen"},
+    "Could not open the system browser.": {"de": "Der Standardbrowser konnte nicht geöffnet werden."},
 
     # ================================================================= #
     # __init__.py – tooltips & menu entries
     # ================================================================= #
-    "SynapsePro is ready!": {
-        "de": "SynapsePro ist bereit!",
-        "es": "¡SynapsePro está listo!",
-        "ko": "SynapsePro 준비 완료!",
-        "pt": "SynapsePro está pronto!",
-        "fr": "SynapsePro est prêt !",
-        "vi": "SynapsePro đã sẵn sàng!",
-        "zh": "SynapsePro 已就绪！",
-        "hi": "SynapsePro तैयार है!",
+    "Synapse is ready!": {
+        "de": "Synapse ist bereit!",
+        "es": "¡Synapse está listo!",
+        "ko": "Synapse 준비 완료!",
+        "pt": "Synapse está pronto!",
+        "fr": "Synapse est prêt !",
+        "vi": "Synapse đã sẵn sàng!",
+        "zh": "Synapse 已就绪！",
+        "hi": "Synapse तैयार है!",
     },
     "Settings saved.": {
         "de": "Einstellungen gespeichert.",
@@ -2028,26 +2201,26 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
     },
 
     # help_dialog.py
-    "SynapsePro - Help": {
-        "de": "SynapsePro – Hilfe",
-        "es": "SynapsePro – Ayuda",
-        "ko": "SynapsePro – 도움말",
-        "pt": "SynapsePro – Ajuda",
-        "fr": "SynapsePro – Aide",
-        "vi": "SynapsePro – Trợ giúp",
-        "zh": "SynapsePro – 帮助",
-        "hi": "SynapsePro – सहायता",
+    "Synapse - Help": {
+        "de": "Synapse – Hilfe",
+        "es": "Synapse – Ayuda",
+        "ko": "Synapse – 도움말",
+        "pt": "Synapse – Ajuda",
+        "fr": "Synapse – Aide",
+        "vi": "Synapse – Trợ giúp",
+        "zh": "Synapse – 帮助",
+        "hi": "Synapse – सहायता",
     },
     """
 <h2>Troubleshooting & Manual Removal</h2>
-<p>If you are unable to activate the addon or close Anki, you can manually remove SynapsePro to regain access.</p>
+<p>If you are unable to activate the addon or close Anki, you can manually remove Synapse to regain access.</p>
 
 <b>Follow these steps:</b>
 <ol>
     <li>Close this window and click the "Quit Anki" button in the activation dialog. If that fails, force-quit Anki (e.g., via Activity Monitor on Mac or Task Manager on Windows).</li>
     <li>Open Anki while holding down the <b>Shift key</b>. This will temporarily disable all addons.</li>
     <li>Go to <b>Tools > Add-ons</b> from the Anki menu.</li>
-    <li>Select "SynapsePro" from the list.</li>
+    <li>Select "Synapse" from the list.</li>
     <li>Click the "Delete" button on the right side.</li>
     <li>Restart Anki normally.</li>
 </ol>
@@ -2057,14 +2230,14 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
 """: {
         "de": """
 <h2>Fehlerbehebung &amp; Manuelle Entfernung</h2>
-<p>Wenn du das Addon nicht aktivieren oder Anki nicht schließen kannst, kannst du SynapsePro manuell entfernen, um wieder Zugriff zu erhalten.</p>
+<p>Wenn du das Addon nicht aktivieren oder Anki nicht schließen kannst, kannst du Synapse manuell entfernen, um wieder Zugriff zu erhalten.</p>
 
 <b>Befolge diese Schritte:</b>
 <ol>
     <li>Schließe dieses Fenster und klicke im Aktivierungsdialog auf den Button 'Anki beenden'. Falls das nicht funktioniert, erzwinge das Beenden von Anki (z. B. über die Aktivitätsanzeige auf dem Mac oder den Task-Manager unter Windows).</li>
     <li>Starte Anki mit gedrückter <b>Umschalttaste (Shift)</b>. Dadurch werden alle Addons vorübergehend deaktiviert.</li>
     <li>Gehe im Anki-Menü zu <b>Werkzeuge &gt; Add-ons</b>.</li>
-    <li>Wähle 'SynapsePro' aus der Liste aus.</li>
+    <li>Wähle 'Synapse' aus der Liste aus.</li>
     <li>Klicke rechts auf den Button 'Löschen'.</li>
     <li>Starte Anki normal neu.</li>
 </ol>
@@ -2074,14 +2247,14 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
 """,
         "es": """
 <h2>Solución de problemas y eliminación manual</h2>
-<p>Si no puedes activar el complemento o cerrar Anki, puedes eliminar SynapsePro manualmente para recuperar el acceso.</p>
+<p>Si no puedes activar el complemento o cerrar Anki, puedes eliminar Synapse manualmente para recuperar el acceso.</p>
 
 <b>Sigue estos pasos:</b>
 <ol>
     <li>Cierra esta ventana y haz clic en el botón «Salir de Anki» del diálogo de activación. Si eso falla, fuerza el cierre de Anki (por ejemplo, mediante el Monitor de Actividad en Mac o el Administrador de tareas en Windows).</li>
     <li>Abre Anki manteniendo pulsada la <b>tecla Shift</b>. Esto desactivará temporalmente todos los complementos.</li>
     <li>Ve a <b>Herramientas &gt; Complementos</b> en el menú de Anki.</li>
-    <li>Selecciona «SynapsePro» de la lista.</li>
+    <li>Selecciona «Synapse» de la lista.</li>
     <li>Haz clic en el botón «Eliminar» del lado derecho.</li>
     <li>Reinicia Anki con normalidad.</li>
 </ol>
@@ -2091,14 +2264,14 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
 """,
         "ko": """
 <h2>문제 해결 및 수동 제거</h2>
-<p>애드온을 활성화하거나 Anki를 닫을 수 없는 경우 SynapsePro를 수동으로 제거하여 접근권을 되찾을 수 있습니다.</p>
+<p>애드온을 활성화하거나 Anki를 닫을 수 없는 경우 Synapse를 수동으로 제거하여 접근권을 되찾을 수 있습니다.</p>
 
 <b>다음 단계를 따르세요:</b>
 <ol>
     <li>이 창을 닫고 활성화 대화상자에서 "Anki 종료" 버튼을 클릭하세요. 실패하면 Anki를 강제 종료하세요 (Mac의 활동 모니터 또는 Windows의 작업 관리자 사용).</li>
     <li><b>Shift 키</b>를 누른 채 Anki를 실행하세요. 이렇게 하면 모든 애드온이 일시적으로 비활성화됩니다.</li>
     <li>Anki 메뉴에서 <b>도구 &gt; 애드온</b>으로 이동하세요.</li>
-    <li>목록에서 "SynapsePro"를 선택하세요.</li>
+    <li>목록에서 "Synapse"를 선택하세요.</li>
     <li>오른쪽의 "삭제" 버튼을 클릭하세요.</li>
     <li>Anki를 정상적으로 재시작하세요.</li>
 </ol>
@@ -2108,14 +2281,14 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
 """,
         "pt": """
 <h2>Solução de Problemas e Remoção Manual</h2>
-<p>Se não conseguir ativar o complemento ou fechar o Anki, você pode remover o SynapsePro manualmente para recuperar o acesso.</p>
+<p>Se não conseguir ativar o complemento ou fechar o Anki, você pode remover o Synapse manualmente para recuperar o acesso.</p>
 
 <b>Siga estes passos:</b>
 <ol>
     <li>Feche esta janela e clique no botão "Sair do Anki" no diálogo de ativação. Se isso falhar, force o encerramento do Anki (por exemplo, via Monitor de Atividade no Mac ou Gerenciador de Tarefas no Windows).</li>
     <li>Abra o Anki mantendo pressionada a <b>tecla Shift</b>. Isso desativará temporariamente todos os complementos.</li>
     <li>Vá para <b>Ferramentas &gt; Complementos</b> no menu do Anki.</li>
-    <li>Selecione "SynapsePro" na lista.</li>
+    <li>Selecione "Synapse" na lista.</li>
     <li>Clique no botão "Excluir" no lado direito.</li>
     <li>Reinicie o Anki normalmente.</li>
 </ol>
@@ -2125,14 +2298,14 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
 """,
         "fr": """
 <h2>Dépannage et suppression manuelle</h2>
-<p>Si vous ne pouvez pas activer le module ou fermer Anki, vous pouvez supprimer SynapsePro manuellement pour retrouver l'accès.</p>
+<p>Si vous ne pouvez pas activer le module ou fermer Anki, vous pouvez supprimer Synapse manuellement pour retrouver l'accès.</p>
 
 <b>Suivez ces étapes :</b>
 <ol>
     <li>Fermez cette fenêtre et cliquez sur le bouton « Quitter Anki » dans la boîte de dialogue d'activation. Si cela échoue, forcez la fermeture d'Anki (par exemple via le Moniteur d'activité sur Mac ou le Gestionnaire des tâches sous Windows).</li>
     <li>Ouvrez Anki en maintenant la <b>touche Maj</b> enfoncée. Cela désactivera temporairement tous les modules.</li>
     <li>Allez dans <b>Outils &gt; Extensions</b> dans le menu Anki.</li>
-    <li>Sélectionnez « SynapsePro » dans la liste.</li>
+    <li>Sélectionnez « Synapse » dans la liste.</li>
     <li>Cliquez sur le bouton « Supprimer » à droite.</li>
     <li>Redémarrez Anki normalement.</li>
 </ol>
@@ -2142,14 +2315,14 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
 """,
         "vi": """
 <h2>Khắc phục sự cố và Gỡ cài đặt thủ công</h2>
-<p>Nếu bạn không thể kích hoạt tiện ích hoặc đóng Anki, bạn có thể gỡ SynapsePro thủ công để lấy lại quyền truy cập.</p>
+<p>Nếu bạn không thể kích hoạt tiện ích hoặc đóng Anki, bạn có thể gỡ Synapse thủ công để lấy lại quyền truy cập.</p>
 
 <b>Thực hiện các bước sau:</b>
 <ol>
     <li>Đóng cửa sổ này và nhấn nút "Thoát Anki" trong hộp thoại kích hoạt. Nếu không được, hãy buộc thoát Anki (ví dụ: qua Activity Monitor trên Mac hoặc Task Manager trên Windows).</li>
     <li>Mở Anki trong khi giữ phím <b>Shift</b>. Điều này sẽ tạm thời vô hiệu hóa tất cả tiện ích.</li>
     <li>Vào <b>Công cụ &gt; Tiện ích</b> từ menu Anki.</li>
-    <li>Chọn "SynapsePro" trong danh sách.</li>
+    <li>Chọn "Synapse" trong danh sách.</li>
     <li>Nhấn nút "Xóa" ở bên phải.</li>
     <li>Khởi động lại Anki bình thường.</li>
 </ol>
@@ -2159,14 +2332,14 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
 """,
         "zh": """
 <h2>故障排除与手动卸载</h2>
-<p>如果您无法激活插件或关闭 Anki，可以手动删除 SynapsePro 以恢复访问权限。</p>
+<p>如果您无法激活插件或关闭 Anki，可以手动删除 Synapse 以恢复访问权限。</p>
 
 <b>请按以下步骤操作：</b>
 <ol>
     <li>关闭此窗口并在激活对话框中点击"退出 Anki"按钮。若失败，请强制退出 Anki（例如通过 Mac 的活动监视器或 Windows 的任务管理器）。</li>
     <li>按住 <b>Shift 键</b> 打开 Anki。这将临时禁用所有插件。</li>
     <li>在 Anki 菜单中选择 <b>工具 &gt; 插件</b>。</li>
-    <li>从列表中选择"SynapsePro"。</li>
+    <li>从列表中选择"Synapse"。</li>
     <li>点击右侧的"删除"按钮。</li>
     <li>正常重启 Anki。</li>
 </ol>
@@ -2176,14 +2349,14 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
 """,
         "hi": """
 <h2>समस्या निवारण और मैन्युअल निष्कासन</h2>
-<p>यदि आप ऐड-ऑन सक्रिय नहीं कर सकते या Anki बंद नहीं कर सकते, तो आप SynapsePro को मैन्युअल रूप से हटाकर पहुंच वापस पा सकते हैं।</p>
+<p>यदि आप ऐड-ऑन सक्रिय नहीं कर सकते या Anki बंद नहीं कर सकते, तो आप Synapse को मैन्युअल रूप से हटाकर पहुंच वापस पा सकते हैं।</p>
 
 <b>इन चरणों का पालन करें:</b>
 <ol>
     <li>यह विंडो बंद करें और सक्रियण डायलॉग में "Anki बंद करें" बटन पर क्लिक करें। यदि वह विफल हो, तो Anki को बलपूर्वक बंद करें (उदा. Mac पर Activity Monitor या Windows पर Task Manager से)।</li>
     <li><b>Shift कुंजी</b> दबाए रखते हुए Anki खोलें। यह सभी ऐड-ऑन अस्थायी रूप से अक्षम कर देगा।</li>
     <li>Anki मेनू से <b>Tools &gt; Add-ons</b> पर जाएं।</li>
-    <li>सूची से "SynapsePro" चुनें।</li>
+    <li>सूची से "Synapse" चुनें।</li>
     <li>दाईं ओर "Delete" बटन पर क्लिक करें।</li>
     <li>Anki को सामान्य रूप से पुनः प्रारंभ करें।</li>
 </ol>
@@ -2356,15 +2529,15 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "zh": "不再显示此消息",
         "hi": "यह संदेश दोबारा न दिखाएँ",
     },
-    "<b>Theme Change Detected</b><br><br>You have switched between Light and Dark mode.<br>To ensure all SynapsePro UI elements and styles are applied correctly, please restart Anki.": {
-        "de": "<b>Theme-Wechsel erkannt</b><br><br>Du hast zwischen hellem und dunklem Modus gewechselt.<br>Damit alle SynapsePro-UI-Elemente und -Stile korrekt übernommen werden, starte Anki bitte neu.",
-        "es": "<b>Cambio de tema detectado</b><br><br>Has cambiado entre el modo claro y el oscuro.<br>Para asegurar que todos los elementos y estilos de la interfaz de SynapsePro se apliquen correctamente, reinicia Anki.",
-        "ko": "<b>테마 변경 감지됨</b><br><br>라이트 모드와 다크 모드 간 전환이 감지되었습니다.<br>SynapsePro UI 요소 및 스타일을 올바르게 적용하려면 Anki를 다시 시작하세요.",
-        "pt": "<b>Alteração de tema detectada</b><br><br>Você alternou entre o modo claro e escuro.<br>Para garantir que todos os elementos e estilos da interface do SynapsePro sejam aplicados corretamente, reinicie o Anki.",
-        "fr": "<b>Changement de thème détecté</b><br><br>Vous avez basculé entre le mode clair et sombre.<br>Pour s'assurer que tous les éléments et styles de l'interface SynapsePro sont correctement appliqués, veuillez redémarrer Anki.",
-        "vi": "<b>Phát hiện thay đổi giao diện</b><br><br>Bạn đã chuyển đổi giữa chế độ sáng và tối.<br>Để đảm bảo tất cả thành phần giao diện SynapsePro được áp dụng đúng, hãy khởi động lại Anki.",
-        "zh": "<b>检测到主题变更</b><br><br>您在浅色模式和深色模式之间进行了切换。<br>为确保所有 SynapsePro 界面元素和样式正确应用，请重启 Anki。",
-        "hi": "<b>थीम परिवर्तन का पता चला</b><br><br>आपने लाइट और डार्क मोड के बीच स्विच किया है।<br>सभी SynapsePro UI तत्वों और स्टाइल्स को सही से लागू करने के लिए कृपया Anki पुनः प्रारंभ करें।",
+    "<b>Theme Change Detected</b><br><br>You have switched between Light and Dark mode.<br>To ensure all Synapse UI elements and styles are applied correctly, please restart Anki.": {
+        "de": "<b>Theme-Wechsel erkannt</b><br><br>Du hast zwischen hellem und dunklem Modus gewechselt.<br>Damit alle Synapse-UI-Elemente und -Stile korrekt übernommen werden, starte Anki bitte neu.",
+        "es": "<b>Cambio de tema detectado</b><br><br>Has cambiado entre el modo claro y el oscuro.<br>Para asegurar que todos los elementos y estilos de la interfaz de Synapse se apliquen correctamente, reinicia Anki.",
+        "ko": "<b>테마 변경 감지됨</b><br><br>라이트 모드와 다크 모드 간 전환이 감지되었습니다.<br>Synapse UI 요소 및 스타일을 올바르게 적용하려면 Anki를 다시 시작하세요.",
+        "pt": "<b>Alteração de tema detectada</b><br><br>Você alternou entre o modo claro e escuro.<br>Para garantir que todos os elementos e estilos da interface do Synapse sejam aplicados corretamente, reinicie o Anki.",
+        "fr": "<b>Changement de thème détecté</b><br><br>Vous avez basculé entre le mode clair et sombre.<br>Pour s'assurer que tous les éléments et styles de l'interface Synapse sont correctement appliqués, veuillez redémarrer Anki.",
+        "vi": "<b>Phát hiện thay đổi giao diện</b><br><br>Bạn đã chuyển đổi giữa chế độ sáng và tối.<br>Để đảm bảo tất cả thành phần giao diện Synapse được áp dụng đúng, hãy khởi động lại Anki.",
+        "zh": "<b>检测到主题变更</b><br><br>您在浅色模式和深色模式之间进行了切换。<br>为确保所有 Synapse 界面元素和样式正确应用，请重启 Anki。",
+        "hi": "<b>थीम परिवर्तन का पता चला</b><br><br>आपने लाइट और डार्क मोड के बीच स्विच किया है।<br>सभी Synapse UI तत्वों और स्टाइल्स को सही से लागू करने के लिए कृपया Anki पुनः प्रारंभ करें।",
     },
 
     # pomodoro.py
@@ -3347,25 +3520,25 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "zh": "无法保存许可证文件：{}\n请检查权限。",
         "hi": "लाइसेंस फ़ाइल सहेजी नहीं जा सकी: {}\nकृपया अनुमतियां जांचें।",
     },
-    "Synapse Pro AI License": {
-        "de": "Synapse Pro KI-Lizenz",
-        "es": "Licencia de Synapse Pro IA",
-        "ko": "Synapse Pro AI 라이선스",
-        "pt": "Licença Synapse Pro AI",
-        "fr": "Licence IA Synapse Pro",
-        "vi": "Giấy phép AI Synapse Pro",
-        "zh": "Synapse Pro AI 许可证",
-        "hi": "Synapse Pro AI लाइसेंस",
+    "Synapse AI License": {
+        "de": "Synapse KI-Lizenz",
+        "es": "Licencia de Synapse IA",
+        "ko": "Synapse AI 라이선스",
+        "pt": "Licença Synapse AI",
+        "fr": "Licence IA Synapse",
+        "vi": "Giấy phép AI Synapse",
+        "zh": "Synapse AI 许可证",
+        "hi": "Synapse AI लाइसेंस",
     },
-    "Please enter your Synapse Pro License Key to activate the AI Assistant.": {
-        "de": "Bitte gib Deinen Synapse Pro Lizenzschlüssel ein, um den KI-Assistenten zu aktivieren.",
-        "es": "Introduce tu clave de licencia de Synapse Pro para activar el asistente de IA.",
-        "ko": "AI 어시스턴트를 활성화하려면 Synapse Pro 라이선스 키를 입력하세요.",
-        "pt": "Insira sua chave de licença do Synapse Pro para ativar o assistente de IA.",
-        "fr": "Entrez votre clé de licence Synapse Pro pour activer l'assistant IA.",
-        "vi": "Nhập khóa giấy phép Synapse Pro để kích hoạt trợ lý AI.",
-        "zh": "请输入您的 Synapse Pro 许可证密钥以激活 AI 助手。",
-        "hi": "AI सहायक सक्रिय करने के लिए Synapse Pro लाइसेंस कुंजी दर्ज करें।",
+    "Please enter your Synapse License Key to activate the AI Assistant.": {
+        "de": "Bitte gib Deinen Synapse Lizenzschlüssel ein, um den KI-Assistenten zu aktivieren.",
+        "es": "Introduce tu clave de licencia de Synapse para activar el asistente de IA.",
+        "ko": "AI 어시스턴트를 활성화하려면 Synapse 라이선스 키를 입력하세요.",
+        "pt": "Insira sua chave de licença do Synapse para ativar o assistente de IA.",
+        "fr": "Entrez votre clé de licence Synapse pour activer l'assistant IA.",
+        "vi": "Nhập khóa giấy phép Synapse để kích hoạt trợ lý AI.",
+        "zh": "请输入您的 Synapse 许可证密钥以激活 AI 助手。",
+        "hi": "AI सहायक सक्रिय करने के लिए Synapse लाइसेंस कुंजी दर्ज करें।",
     },
     "Enter your license key here...": {
         "de": "Lizenzschlüssel hier eingeben...",
@@ -3427,15 +3600,15 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "zh": "为什么不免费？",
         "hi": "मुफ्त क्यों नहीं?",
     },
-    "The SynapsePro AI Assistant is completely non-profit — I earn nothing from it.\n\nHowever, every AI response has a real cost: the model providers charge per token used. It is simply not possible to cover these API fees for all users for free.\n\nBy entering your own OpenRouter key, you connect directly to your own account and only pay for exactly what you use — typically just a few cents per session. No subscription, no markup.": {
-        "de": "Der SynapsePro-KI-Assistent ist vollständig gemeinnützig – ich verdiene nichts damit.\n\nJede KI-Antwort kostet jedoch echtes Geld: Die Modellanbieter berechnen pro verwendetem Token. Es ist schlicht nicht möglich, diese API-Kosten für alle Nutzer kostenlos zu übernehmen.\n\nMit deinem eigenen OpenRouter-Schlüssel verbindest du dich direkt mit deinem eigenen Konto und zahlst nur für genau das, was du nutzt – in der Regel nur wenige Cent pro Sitzung. Kein Abo, keine Aufschläge.",
-        "es": "El asistente de IA de SynapsePro es completamente sin ánimo de lucro: no gano nada con él.\n\nSin embargo, cada respuesta de IA tiene un coste real: los proveedores de modelos cobran por cada token usado. Sencillamente no es posible cubrir esos costes de API para todos los usuarios de forma gratuita.\n\nAl introducir tu propia clave de OpenRouter, te conectas directamente a tu cuenta y solo pagas por lo que realmente usas, normalmente solo unos céntimos por sesión. Sin suscripción, sin margen.",
-        "ko": "SynapsePro AI 어시스턴트는 완전히 비영리입니다 — 저는 아무것도 벌지 않습니다.\n\n그러나 모든 AI 응답에는 실제 비용이 발생합니다: 모델 제공업체는 사용된 토큰당 요금을 부과합니다. 모든 사용자에게 이 API 비용을 무료로 제공하는 것은 불가능합니다.\n\n자신의 OpenRouter 키를 입력하면 자신의 계정에 직접 연결되며, 실제로 사용한 것만 비용을 지불합니다 — 일반적으로 세션당 몇 센트에 불과합니다. 구독 없이, 마크업 없이.",
-        "pt": "O assistente de IA do SynapsePro é completamente sem fins lucrativos — não ganho nada com ele.\n\nNo entanto, cada resposta de IA tem um custo real: os provedores de modelos cobram por token usado. Simplesmente não é possível cobrir essas taxas de API para todos os usuários gratuitamente.\n\nAo inserir sua própria chave OpenRouter, você se conecta diretamente à sua conta e paga apenas pelo que realmente usa — normalmente apenas alguns centavos por sessão. Sem assinatura, sem margem.",
-        "fr": "L'assistant IA de SynapsePro est entièrement à but non lucratif — je n'en tire aucun revenu.\n\nCependant, chaque réponse IA a un coût réel : les fournisseurs de modèles facturent par token utilisé. Il est tout simplement impossible de couvrir ces frais d'API pour tous les utilisateurs gratuitement.\n\nEn entrant votre propre clé OpenRouter, vous vous connectez directement à votre compte et ne payez que pour ce que vous utilisez réellement — généralement quelques centimes par session. Pas d'abonnement, pas de majoration.",
-        "vi": "Trợ lý AI của SynapsePro hoàn toàn phi lợi nhuận — tôi không kiếm gì từ nó.\n\nTuy nhiên, mỗi phản hồi AI có chi phí thực tế: các nhà cung cấp mô hình tính phí theo token sử dụng. Đơn giản là không thể chi trả các phí API này miễn phí cho tất cả người dùng.\n\nBằng cách nhập khóa OpenRouter của riêng bạn, bạn kết nối trực tiếp với tài khoản của mình và chỉ trả tiền cho những gì bạn thực sự sử dụng — thường chỉ vài xu mỗi phiên. Không có đăng ký, không có phụ phí.",
-        "zh": "SynapsePro AI 助手完全非营利 — 我不从中获益。\n\n但是，每次 AI 响应都有实际成本：模型提供商按使用的 token 收费。根本不可能为所有用户免费承担这些 API 费用。\n\n输入您自己的 OpenRouter 密钥后，您直接连接到自己的账户，只为实际使用的内容付费 — 通常每次会话只需几分钱。无需订阅，无附加费。",
-        "hi": "SynapsePro AI सहायक पूरी तरह से गैर-लाभकारी है — मुझे इससे कोई कमाई नहीं।\n\nहालांकि, हर AI प्रतिक्रिया की वास्तविक लागत है: मॉडल प्रदाता प्रयोग किए गए टोकन के अनुसार शुल्क लेते हैं। सभी उपयोगकर्ताओं के लिए इन API शुल्कों को मुफ्त में कवर करना असंभव है।\n\nअपनी खुद की OpenRouter कुंजी दर्ज करके, आप सीधे अपने खाते से जुड़ते हैं और केवल वही भुगतान करते हैं जो आप वास्तव में उपयोग करते हैं — आमतौर पर प्रति सत्र कुछ सेंट। कोई सदस्यता नहीं, कोई मार्कअप नहीं।",
+    "The Synapse AI Assistant is completely non-profit — I earn nothing from it.\n\nHowever, every AI response has a real cost: the model providers charge per token used. It is simply not possible to cover these API fees for all users for free.\n\nBy entering your own OpenRouter key, you connect directly to your own account and only pay for exactly what you use — typically just a few cents per session. No subscription, no markup.": {
+        "de": "Der Synapse-KI-Assistent ist vollständig gemeinnützig – ich verdiene nichts damit.\n\nJede KI-Antwort kostet jedoch echtes Geld: Die Modellanbieter berechnen pro verwendetem Token. Es ist schlicht nicht möglich, diese API-Kosten für alle Nutzer kostenlos zu übernehmen.\n\nMit deinem eigenen OpenRouter-Schlüssel verbindest du dich direkt mit deinem eigenen Konto und zahlst nur für genau das, was du nutzt – in der Regel nur wenige Cent pro Sitzung. Kein Abo, keine Aufschläge.",
+        "es": "El asistente de IA de Synapse es completamente sin ánimo de lucro: no gano nada con él.\n\nSin embargo, cada respuesta de IA tiene un coste real: los proveedores de modelos cobran por cada token usado. Sencillamente no es posible cubrir esos costes de API para todos los usuarios de forma gratuita.\n\nAl introducir tu propia clave de OpenRouter, te conectas directamente a tu cuenta y solo pagas por lo que realmente usas, normalmente solo unos céntimos por sesión. Sin suscripción, sin margen.",
+        "ko": "Synapse AI 어시스턴트는 완전히 비영리입니다 — 저는 아무것도 벌지 않습니다.\n\n그러나 모든 AI 응답에는 실제 비용이 발생합니다: 모델 제공업체는 사용된 토큰당 요금을 부과합니다. 모든 사용자에게 이 API 비용을 무료로 제공하는 것은 불가능합니다.\n\n자신의 OpenRouter 키를 입력하면 자신의 계정에 직접 연결되며, 실제로 사용한 것만 비용을 지불합니다 — 일반적으로 세션당 몇 센트에 불과합니다. 구독 없이, 마크업 없이.",
+        "pt": "O assistente de IA do Synapse é completamente sem fins lucrativos — não ganho nada com ele.\n\nNo entanto, cada resposta de IA tem um custo real: os provedores de modelos cobram por token usado. Simplesmente não é possível cobrir essas taxas de API para todos os usuários gratuitamente.\n\nAo inserir sua própria chave OpenRouter, você se conecta diretamente à sua conta e paga apenas pelo que realmente usa — normalmente apenas alguns centavos por sessão. Sem assinatura, sem margem.",
+        "fr": "L'assistant IA de Synapse est entièrement à but non lucratif — je n'en tire aucun revenu.\n\nCependant, chaque réponse IA a un coût réel : les fournisseurs de modèles facturent par token utilisé. Il est tout simplement impossible de couvrir ces frais d'API pour tous les utilisateurs gratuitement.\n\nEn entrant votre propre clé OpenRouter, vous vous connectez directement à votre compte et ne payez que pour ce que vous utilisez réellement — généralement quelques centimes par session. Pas d'abonnement, pas de majoration.",
+        "vi": "Trợ lý AI của Synapse hoàn toàn phi lợi nhuận — tôi không kiếm gì từ nó.\n\nTuy nhiên, mỗi phản hồi AI có chi phí thực tế: các nhà cung cấp mô hình tính phí theo token sử dụng. Đơn giản là không thể chi trả các phí API này miễn phí cho tất cả người dùng.\n\nBằng cách nhập khóa OpenRouter của riêng bạn, bạn kết nối trực tiếp với tài khoản của mình và chỉ trả tiền cho những gì bạn thực sự sử dụng — thường chỉ vài xu mỗi phiên. Không có đăng ký, không có phụ phí.",
+        "zh": "Synapse AI 助手完全非营利 — 我不从中获益。\n\n但是，每次 AI 响应都有实际成本：模型提供商按使用的 token 收费。根本不可能为所有用户免费承担这些 API 费用。\n\n输入您自己的 OpenRouter 密钥后，您直接连接到自己的账户，只为实际使用的内容付费 — 通常每次会话只需几分钱。无需订阅，无附加费。",
+        "hi": "Synapse AI सहायक पूरी तरह से गैर-लाभकारी है — मुझे इससे कोई कमाई नहीं।\n\nहालांकि, हर AI प्रतिक्रिया की वास्तविक लागत है: मॉडल प्रदाता प्रयोग किए गए टोकन के अनुसार शुल्क लेते हैं। सभी उपयोगकर्ताओं के लिए इन API शुल्कों को मुफ्त में कवर करना असंभव है।\n\nअपनी खुद की OpenRouter कुंजी दर्ज करके, आप सीधे अपने खाते से जुड़ते हैं और केवल वही भुगतान करते हैं जो आप वास्तव में उपयोग करते हैं — आमतौर पर प्रति सत्र कुछ सेंट। कोई सदस्यता नहीं, कोई मार्कअप नहीं।",
     },
     "Only OpenRouter keys are supported currently.": {
         "de": "Zurzeit werden nur OpenRouter-Schlüssel unterstützt.",
@@ -3557,15 +3730,15 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "zh": "为什么这是一个付费功能？",
         "hi": "यह भुगतान वाली सुविधा क्यों है?",
     },
-    "Thank you for using the Synapse Pro Addon!\n\nWhile the vast majority of the addon is and will always remain free, the AI Assistant feature has significant running costs. These include API fees for the powerful language models and server expenses.\n\nYour license purchase directly supports these operational costs.": {
+    "Thank you for using the Synapse Addon!\n\nWhile the vast majority of the addon is and will always remain free, the AI Assistant feature has significant running costs. These include API fees for the powerful language models and server expenses.\n\nYour license purchase directly supports these operational costs.": {
         "de": "Danke, dass Du das Synapse-Pro-Add-on verwendest!\n\nDer Großteil des Add-ons ist und bleibt kostenlos, aber die KI-Assistent-Funktion verursacht erhebliche laufende Kosten. Dazu gehören API-Gebühren für die leistungsstarken Sprachmodelle sowie Serverkosten.\n\nMit Deinem Lizenzkauf unterstützt Du diese Betriebskosten direkt.",
-        "es": "¡Gracias por usar el complemento Synapse Pro!\n\nLa gran mayoría del complemento es y seguirá siendo gratuita, pero la función de asistente de IA tiene costes de funcionamiento significativos. Estos incluyen las tarifas de API de los potentes modelos de lenguaje y los gastos del servidor.\n\nTu compra de licencia apoya directamente estos costes operativos.",
-        "ko": "Synapse Pro 애드온을 사용해 주셔서 감사합니다!\n\n애드온의 대부분은 항상 무료이지만, AI 어시스턴트 기능에는 상당한 운영 비용이 있습니다. 여기에는 강력한 언어 모델의 API 비용과 서버 비용이 포함됩니다.\n\n라이선스 구매를 통해 이러한 운영 비용을 직접 지원하게 됩니다.",
-        "pt": "Obrigado por usar o complemento Synapse Pro!\n\nEmbora a grande maioria do complemento seja e sempre permaneça gratuita, o recurso de assistente de IA tem custos operacionais significativos. Estes incluem taxas de API para os poderosos modelos de linguagem e despesas com servidor.\n\nSua compra de licença apoia diretamente esses custos operacionais.",
-        "fr": "Merci d'utiliser le module Synapse Pro !\n\nBien que la grande majorité du module soit et reste toujours gratuite, la fonctionnalité d'assistant IA a des coûts de fonctionnement significatifs. Ceux-ci comprennent les frais d'API pour les puissants modèles de langage et les dépenses de serveur.\n\nVotre achat de licence soutient directement ces coûts opérationnels.",
-        "vi": "Cảm ơn bạn đã sử dụng tiện ích Synapse Pro!\n\nMặc dù phần lớn tiện ích luôn miễn phí, tính năng trợ lý AI có chi phí vận hành đáng kể. Bao gồm phí API cho các mô hình ngôn ngữ mạnh và chi phí máy chủ.\n\nViệc mua giấy phép của bạn trực tiếp hỗ trợ các chi phí vận hành này.",
-        "zh": "感谢您使用 Synapse Pro 插件！\n\n虽然插件的绝大部分是且将始终保持免费，但 AI 助手功能有显著的运营成本。这包括强大语言模型的 API 费用和服务器开支。\n\n您的许可证购买直接支持这些运营成本。",
-        "hi": "Synapse Pro ऐड-ऑन उपयोग करने के लिए धन्यवाद!\n\nहालांकि ऐड-ऑन का अधिकांश भाग हमेशा मुफ्त रहेगा, AI सहायक सुविधा में महत्वपूर्ण परिचालन लागतें हैं। इनमें शक्तिशाली भाषा मॉडल के API शुल्क और सर्वर खर्च शामिल हैं।\n\nआपकी लाइसेंस खरीद इन परिचालन लागतों का सीधे समर्थन करती है।",
+        "es": "¡Gracias por usar el complemento Synapse!\n\nLa gran mayoría del complemento es y seguirá siendo gratuita, pero la función de asistente de IA tiene costes de funcionamiento significativos. Estos incluyen las tarifas de API de los potentes modelos de lenguaje y los gastos del servidor.\n\nTu compra de licencia apoya directamente estos costes operativos.",
+        "ko": "Synapse 애드온을 사용해 주셔서 감사합니다!\n\n애드온의 대부분은 항상 무료이지만, AI 어시스턴트 기능에는 상당한 운영 비용이 있습니다. 여기에는 강력한 언어 모델의 API 비용과 서버 비용이 포함됩니다.\n\n라이선스 구매를 통해 이러한 운영 비용을 직접 지원하게 됩니다.",
+        "pt": "Obrigado por usar o complemento Synapse!\n\nEmbora a grande maioria do complemento seja e sempre permaneça gratuita, o recurso de assistente de IA tem custos operacionais significativos. Estes incluem taxas de API para os poderosos modelos de linguagem e despesas com servidor.\n\nSua compra de licença apoia diretamente esses custos operacionais.",
+        "fr": "Merci d'utiliser le module Synapse !\n\nBien que la grande majorité du module soit et reste toujours gratuite, la fonctionnalité d'assistant IA a des coûts de fonctionnement significatifs. Ceux-ci comprennent les frais d'API pour les puissants modèles de langage et les dépenses de serveur.\n\nVotre achat de licence soutient directement ces coûts opérationnels.",
+        "vi": "Cảm ơn bạn đã sử dụng tiện ích Synapse!\n\nMặc dù phần lớn tiện ích luôn miễn phí, tính năng trợ lý AI có chi phí vận hành đáng kể. Bao gồm phí API cho các mô hình ngôn ngữ mạnh và chi phí máy chủ.\n\nViệc mua giấy phép của bạn trực tiếp hỗ trợ các chi phí vận hành này.",
+        "zh": "感谢您使用 Synapse 插件！\n\n虽然插件的绝大部分是且将始终保持免费，但 AI 助手功能有显著的运营成本。这包括强大语言模型的 API 费用和服务器开支。\n\n您的许可证购买直接支持这些运营成本。",
+        "hi": "Synapse ऐड-ऑन उपयोग करने के लिए धन्यवाद!\n\nहालांकि ऐड-ऑन का अधिकांश भाग हमेशा मुफ्त रहेगा, AI सहायक सुविधा में महत्वपूर्ण परिचालन लागतें हैं। इनमें शक्तिशाली भाषा मॉडल के API शुल्क और सर्वर खर्च शामिल हैं।\n\nआपकी लाइसेंस खरीद इन परिचालन लागतों का सीधे समर्थन करती है।",
     },
     "Help": {
         "de": "Hilfe",
@@ -3597,15 +3770,15 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "zh": "管理您的许可证密钥",
         "hi": "अपनी लाइसेंस कुंजी प्रबंधित करें",
     },
-    "Synapse Pro License": {
-        "de": "Synapse Pro Lizenz",
-        "es": "Licencia de Synapse Pro",
-        "ko": "Synapse Pro 라이선스",
-        "pt": "Licença Synapse Pro",
-        "fr": "Licence Synapse Pro",
-        "vi": "Giấy phép Synapse Pro",
-        "zh": "Synapse Pro 许可证",
-        "hi": "Synapse Pro लाइसेंस",
+    "Synapse License": {
+        "de": "Synapse Lizenz",
+        "es": "Licencia de Synapse",
+        "ko": "Synapse 라이선스",
+        "pt": "Licença Synapse",
+        "fr": "Licence Synapse",
+        "vi": "Giấy phép Synapse",
+        "zh": "Synapse 许可证",
+        "hi": "Synapse लाइसेंस",
     },
     "Custom OpenRouter Key": {
         "de": "Eigener OpenRouter-Schlüssel",
@@ -5994,15 +6167,15 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
     # ================================================================= #
     # changelog_manager.py
     # ================================================================= #
-    "Awesome\!": {
-        "de": "Super\!",
-        "es": "¡Genial\!",
-        "ko": "훌륭해요\!",
-        "pt": "Incrível\!",
-        "fr": "Super \!",
-        "vi": "Tuyệt vời\!",
+    "Awesome\\!": {
+        "de": "Super\\!",
+        "es": "¡Genial\\!",
+        "ko": "훌륭해요\\!",
+        "pt": "Incrível\\!",
+        "fr": "Super \\!",
+        "vi": "Tuyệt vời\\!",
         "zh": "太棒了！",
-        "hi": "शानदार\!",
+        "hi": "शानदार\\!",
     },
 
     # ================================================================= #
@@ -6042,43 +6215,43 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
     # ================================================================= #
     # notebook_sidebar.py
     # ================================================================= #
-    "SynapsePro \u2013 Notebook": {
-        "de": "SynapsePro \u2013 Notizbuch",
-        "es": "SynapsePro \u2013 Cuaderno",
-        "ko": "SynapsePro \u2013 노트북",
-        "pt": "SynapsePro \u2013 Caderno",
-        "fr": "SynapsePro \u2013 Carnet",
-        "vi": "SynapsePro \u2013 Sổ tay",
-        "zh": "SynapsePro \u2013 笔记本",
-        "hi": "SynapsePro \u2013 नोटबुक",
+    "Synapse \u2013 Notebook": {
+        "de": "Synapse \u2013 Notizbuch",
+        "es": "Synapse \u2013 Cuaderno",
+        "ko": "Synapse \u2013 노트북",
+        "pt": "Synapse \u2013 Caderno",
+        "fr": "Synapse \u2013 Carnet",
+        "vi": "Synapse \u2013 Sổ tay",
+        "zh": "Synapse \u2013 笔记本",
+        "hi": "Synapse \u2013 नोटबुक",
     },
 
     # ================================================================= #
     # onboarding_dialog.py
     # ================================================================= #
-    "SynapsePro": {
-        "de": "SynapsePro",
-        "es": "SynapsePro",
-        "ko": "SynapsePro",
-        "pt": "SynapsePro",
-        "fr": "SynapsePro",
-        "vi": "SynapsePro",
-        "zh": "SynapsePro",
-        "hi": "SynapsePro",
+    "Synapse": {
+        "de": "Synapse",
+        "es": "Synapse",
+        "ko": "Synapse",
+        "pt": "Synapse",
+        "fr": "Synapse",
+        "vi": "Synapse",
+        "zh": "Synapse",
+        "hi": "Synapse",
     },
 
     # ================================================================= #
     # version_check_dialog.py
     # ================================================================= #
-    "Anki Version Check - SynapsePro": {
-        "de": "Anki-Versionsprüfung – SynapsePro",
-        "es": "Comprobación de versión de Anki – SynapsePro",
-        "ko": "Anki 버전 확인 – SynapsePro",
-        "pt": "Verificação de versão do Anki – SynapsePro",
-        "fr": "Vérification de version Anki – SynapsePro",
-        "vi": "Kiểm tra phiên bản Anki – SynapsePro",
-        "zh": "Anki 版本检查 – SynapsePro",
-        "hi": "Anki संस्करण जाँच – SynapsePro",
+    "Anki Version Check - Synapse": {
+        "de": "Anki-Versionsprüfung – Synapse",
+        "es": "Comprobación de versión de Anki – Synapse",
+        "ko": "Anki 버전 확인 – Synapse",
+        "pt": "Verificação de versão do Anki – Synapse",
+        "fr": "Vérification de version Anki – Synapse",
+        "vi": "Kiểm tra phiên bản Anki – Synapse",
+        "zh": "Anki 版本检查 – Synapse",
+        "hi": "Anki संस्करण जाँच – Synapse",
     },
     "Download a Tested Version": {
         "de": "Getestete Version herunterladen",
@@ -6303,6 +6476,16 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "vi": "Đã lưu",
         "zh": "已保存",
         "hi": "सहेजा गया",
+    },
+    "Save failed": {
+        "de": "Nicht gespeichert",
+        "es": "No guardado",
+        "ko": "저장 실패",
+        "pt": "Não salvo",
+        "fr": "Non enregistré",
+        "vi": "Chưa lưu",
+        "zh": "未保存",
+        "hi": "सहेजा नहीं गया",
     },
     "Saving...": {
         "de": "Speichern...",
@@ -7637,15 +7820,15 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "zh": "始终显示启动器，或在复习时隐藏。",
         "hi": "लॉन्चर हमेशा दिखाएँ, या दोहराते समय छिपाएँ।",
     },
-    "Choose the accent colour used across SynapsePro and the background style.": {
-        "de": "Wähle die Akzentfarbe für SynapsePro und den Hintergrund-Stil.",
-        "es": "Elige el color de acento de SynapsePro y el estilo de fondo.",
-        "ko": "SynapsePro 전체에 사용할 강조 색상과 배경 스타일을 선택하세요.",
-        "pt": "Escolha a cor de destaque do SynapsePro e o estilo de fundo.",
-        "fr": "Choisissez la couleur d'accent de SynapsePro et le style d'arrière-plan.",
-        "vi": "Chọn màu nhấn dùng trong SynapsePro và kiểu nền.",
-        "zh": "选择 SynapsePro 使用的强调色和背景样式。",
-        "hi": "SynapsePro में उपयोग होने वाला एक्सेंट रंग और पृष्ठभूमि शैली चुनें।",
+    "Choose the accent colour used across Synapse and the background style.": {
+        "de": "Wähle die Akzentfarbe für Synapse und den Hintergrund-Stil.",
+        "es": "Elige el color de acento de Synapse y el estilo de fondo.",
+        "ko": "Synapse 전체에 사용할 강조 색상과 배경 스타일을 선택하세요.",
+        "pt": "Escolha a cor de destaque do Synapse e o estilo de fundo.",
+        "fr": "Choisissez la couleur d'accent de Synapse et le style d'arrière-plan.",
+        "vi": "Chọn màu nhấn dùng trong Synapse và kiểu nền.",
+        "zh": "选择 Synapse 使用的强调色和背景样式。",
+        "hi": "Synapse में उपयोग होने वाला एक्सेंट रंग और पृष्ठभूमि शैली चुनें।",
     },
     "Accent colour for buttons, highlights and widgets.": {
         "de": "Akzentfarbe für Buttons, Hervorhebungen und Widgets.",
@@ -8169,7 +8352,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
     "The percentage of cards in your active collection that you have never studied.": {"de":"Der Anteil der Karten in deiner aktiven Sammlung, die du noch nie gelernt hast.","es":"El porcentaje de tarjetas de tu colección activa que nunca has estudiado.","ko":"활성 컬렉션에서 아직 한 번도 학습하지 않은 카드의 비율입니다.","pt":"A porcentagem de cartões da coleção ativa que você nunca estudou.","fr":"Le pourcentage de cartes de votre collection active que vous n’avez jamais étudiées.","vi":"Tỷ lệ thẻ trong bộ sưu tập đang hoạt động mà bạn chưa từng học.","zh":"活动集合中从未学习过的卡片比例。","hi":"आपके सक्रिय संग्रह में उन कार्डों का प्रतिशत जिन्हें आपने कभी नहीं पढ़ा।"},
     "Your reviews per day over {}. The curve is relative to this period: the day with the most reviews forms the peak, days without reviews sit on the baseline. The dot marks today.": {"de":"Deine Wiederholungen pro Tag über {}. Die Kurve ist relativ zu diesem Zeitraum: Der Tag mit den meisten Wiederholungen bildet die Spitze, Tage ohne Wiederholungen liegen auf der Grundlinie. Der Punkt markiert heute.","es":"Tus repasos diarios durante {}. La curva es relativa a este período: el día con más repasos forma el pico y los días sin repasos quedan en la línea base. El punto marca hoy.","ko":"{} 동안의 일별 복습 수입니다. 곡선은 이 기간을 기준으로 하며 복습이 가장 많은 날이 정점, 복습이 없는 날은 기준선에 놓입니다. 점은 오늘을 표시합니다.","pt":"Suas revisões por dia durante {}. A curva é relativa a esse período: o dia com mais revisões forma o pico e dias sem revisões ficam na linha de base. O ponto marca hoje.","fr":"Vos révisions quotidiennes sur {}. La courbe est relative à cette période : le jour avec le plus de révisions forme le sommet et les jours sans révision restent sur la ligne de base. Le point indique aujourd’hui.","vi":"Số lượt ôn mỗi ngày trong {}. Đường cong tương đối với giai đoạn này: ngày ôn nhiều nhất tạo đỉnh, ngày không ôn nằm trên đường cơ sở. Chấm tròn đánh dấu hôm nay.","zh":"{}内的每日复习量。曲线相对于该时间段：复习最多的一天形成峰值，无复习的日期位于基线，圆点表示今天。","hi":"{} में आपकी प्रतिदिन समीक्षाएँ। वक्र इस अवधि के सापेक्ष है: सबसे अधिक समीक्षाओं वाला दिन शिखर बनता है, बिना समीक्षा वाले दिन आधार रेखा पर रहते हैं। बिंदु आज को दर्शाता है।"},
     "Use the gear button on the statistics widget to change periods and visible insights.": {"de":"Mit dem Zahnrad im Statistik-Widget kannst du Zeiträume und sichtbare Werte ändern.","es":"Usa el engranaje del widget de estadísticas para cambiar los períodos y los datos visibles.","ko":"통계 위젯의 톱니바퀴 버튼으로 기간과 표시할 지표를 변경하세요.","pt":"Use a engrenagem no widget de estatísticas para alterar períodos e dados visíveis.","fr":"Utilisez le bouton en forme d’engrenage du widget pour modifier les périodes et les données visibles.","vi":"Dùng nút bánh răng trên tiện ích thống kê để đổi khoảng thời gian và dữ liệu hiển thị.","zh":"使用统计组件上的齿轮按钮更改时间范围和显示的指标。","hi":"अवधि और दिखने वाले आँकड़े बदलने के लिए सांख्यिकी विजेट का गियर बटन उपयोग करें।"},
-    "SynapsePro - Statistics": {"de":"SynapsePro – Statistiken","es":"SynapsePro - Estadísticas","ko":"SynapsePro - 통계","pt":"SynapsePro - Estatísticas","fr":"SynapsePro – Statistiques","vi":"SynapsePro - Thống kê","zh":"SynapsePro - 统计","hi":"SynapsePro - सांख्यिकी"},
+    "Synapse - Statistics": {"de":"Synapse – Statistiken","es":"Synapse - Estadísticas","ko":"Synapse - 통계","pt":"Synapse - Estatísticas","fr":"Synapse – Statistiques","vi":"Synapse - Thống kê","zh":"Synapse - 统计","hi":"Synapse - सांख्यिकी"},
     "Next": {"de":"Weiter","es":"Siguiente","ko":"다음","pt":"Próximo","fr":"Suivant","vi":"Tiếp theo","zh":"下一步","hi":"अगला"},
     "More": {"de":"Mehr","es":"Más","ko":"더 보기","pt":"Mais","fr":"Plus","vi":"Thêm","zh":"更多","hi":"अधिक"},
     "Choose Background Image": {"de":"Hintergrundbild auswählen","es":"Elegir imagen de fondo","ko":"배경 이미지 선택","pt":"Escolher imagem de fundo","fr":"Choisir une image d’arrière-plan","vi":"Chọn ảnh nền","zh":"选择背景图片","hi":"पृष्ठभूमि चित्र चुनें"},
@@ -8183,3 +8366,853 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
     "The optimized background could not be saved.": {"de":"Der optimierte Hintergrund konnte nicht gespeichert werden.","es":"No se pudo guardar el fondo optimizado.","ko":"최적화된 배경을 저장할 수 없습니다.","pt":"Não foi possível salvar o fundo otimizado.","fr":"L’arrière-plan optimisé n’a pas pu être enregistré.","vi":"Không thể lưu nền đã tối ưu.","zh":"无法保存优化后的背景。","hi":"अनुकूलित पृष्ठभूमि सहेजी नहीं जा सकी।"},
 
 }
+
+# Gamification sidebar settings.
+TRANSLATIONS.update({
+    "Streak sensitivity": {
+        "de": "Streak-Empfindlichkeit"
+    },
+    "Minimum reviews per day": {
+        "de": "Mindestzahl Wiederholungen pro Tag"
+    },
+    "Creating cards can also count": {
+        "de": "Auch das Erstellen von Karten zählt"
+    },
+    "Minimum new cards per day": {
+        "de": "Mindestzahl neuer Karten pro Tag"
+    },
+    "A day counts when either enabled goal is reached. Anki’s day boundary applies. Changes recalculate your current streak, including past days; earned XP and badges stay yours.": {
+        "de": "Ein Tag zählt, sobald eines der aktivierten Ziele erreicht ist. Es gilt Ankis Tagesgrenze. Änderungen berechnen deine aktuelle Streak auch rückwirkend neu; verdiente XP und Abzeichen bleiben erhalten."
+    },
+    "Uses creation dates of cards still in your collection, including imported cards. Deleted cards no longer count.": {
+        "de": "Es zählen die Erstellungsdaten der noch vorhandenen Karten, auch bei importierten Karten. Gelöschte Karten zählen nicht mehr."
+    },
+    "Your streak counts consecutive qualifying Anki days. Today remains open until the next day begins. Choose your daily criteria in Settings. Achievement badges keep their own study criteria.": {
+        "de": "Deine Streak zählt aufeinanderfolgende Anki-Tage, an denen du dein Ziel erreichst. Für heute hast du bis zum nächsten Tagesbeginn Zeit. Deine Tagesziele legst du in den Einstellungen fest. Für Abzeichen gelten weiterhin ihre eigenen Lernkriterien."
+    }
+})
+
+# Deck Overview customization.
+TRANSLATIONS.update({
+    "Classic": {
+        "de": "Klassisch"
+    },
+    "Focus": {
+        "de": "Fokus"
+    },
+    "Overview": {
+        "de": "Übersicht"
+    },
+    "Comfortable": {
+        "de": "Großzügig"
+    },
+    "Compact": {
+        "de": "Kompakt"
+    },
+    "Spacing": {
+        "de": "Abstände"
+    },
+    "Show button": {
+        "de": "Als Button anzeigen"
+    },
+    "Only in menu": {
+        "de": "Nur im Menü"
+    },
+    "Hidden": {
+        "de": "Ausblenden"
+    },
+    "Last 7 days": {
+        "de": "Letzte 7 Tage"
+    },
+    "Last 30 days": {
+        "de": "Letzte 30 Tage"
+    },
+    "All time": {
+        "de": "Gesamter Zeitraum"
+    },
+    "Retention period": {
+        "de": "Zeitraum der Behaltensrate"
+    },
+    "Today’s cards": {
+        "de": "Heute anstehende Karten"
+    },
+    "Card distribution": {
+        "de": "Kartenverteilung"
+    },
+    "Mature cards": {
+        "de": "Langfristig gelernte Karten"
+    },
+    "Recall indicator": {
+        "de": "Lernindikator (Smiley)"
+    },
+    "Study history (overview layout)": {
+        "de": "Lernverlauf im Übersichts-Layout"
+    },
+    "Green from (%)": {
+        "de": "Grün ab (%)"
+    },
+    "Orange from (%)": {
+        "de": "Orange ab (%)"
+    },
+    "Visible content": {
+        "de": "Sichtbare Inhalte"
+    },
+    "Based on remembered review answers in the last 30 days, not Ease Factor. Neutral until 20 reviews. Green and orange include their threshold; red is below orange.": {
+        "de": "Basiert auf erinnerten Wiederholungsantworten der letzten 30 Tage, nicht auf dem Ease-Faktor. Bei weniger als 20 Wiederholungen bleibt die Anzeige neutral. Grün und Orange gelten ab dem eingestellten Wert; darunter wird Rot angezeigt."
+    },
+    "The green threshold must be higher than the orange threshold.": {
+        "de": "Der Grenzwert für Grün muss höher sein als der für Orange."
+    },
+    "Layout preview · example values": {
+        "de": "Layout-Vorschau · Beispielwerte"
+    },
+    "Deck details": {
+        "de": "Deckdetails"
+    },
+    "Last 14 days": {
+        "de": "Letzte 14 Tage"
+    },
+    "Not enough reviews yet": {
+        "de": "Noch zu wenige Wiederholungen"
+    },
+    "Customize Deck Overview": {
+        "de": "Deckübersicht anpassen"
+    },
+    "More options": {
+        "de": "Weitere Optionen"
+    },
+    "Remembered answers across all learning and review steps. Period: {}.": {
+        "de": "Erinnerte Antworten aus Lernschritten und Wiederholungen. Zeitraum: {}."
+    },
+    "Mature cards have an interval of at least 21 days. They still need reviews.": {
+        "de": "Diese Karten haben ein Intervall von mindestens 21 Tagen. Sie müssen weiterhin wiederholt werden."
+    },
+    "Remembered review answers in the last 30 days; Again counts as forgotten. Green from {}%, orange from {}%, red below. Neutral until 20 reviews. This describes recent recall, not effort or ability.": {
+        "de": "Erinnerte Wiederholungsantworten der letzten 30 Tage; „Nochmal“ zählt als vergessen. Grün ab {} %, Orange ab {} %, darunter Rot. Unter 20 Wiederholungen bleibt die Anzeige neutral. Sie beschreibt die letzte Erinnerungsleistung, nicht deinen Einsatz oder deine Fähigkeiten."
+    }
+})
+
+TRANSLATIONS.update({
+    "Period": {"de": "Zeitraum"},
+    "Period for the retention rate. The smiley uses the last 30 days; the graph shows the last 14 days.": {"de": "Zeitraum für die Behaltensrate. Der Smiley nutzt die letzten 30 Tage, der Graph zeigt die letzten 14 Tage."},
+    "How to set the smiley": {"de": "Smiley einstellen – kurz erklärt"},
+    "The smiley reflects remembered review answers over 30 days, not effort. With green at 85 and orange at 70: 90% is green, 80% orange, 60% red. Lower the thresholds for a more forgiving indicator. Fewer than 20 answers are not rated.": {"de": "Der Smiley zeigt, wie viele Wiederholungsantworten du in 30 Tagen erinnert hast, nicht deinen Einsatz. Bei Grün ab 85 und Orange ab 70 gilt: 90 % sind grün, 80 % orange, 60 % rot. Niedrigere Grenzen machen die Anzeige toleranter. Weniger als 20 Antworten werden noch nicht bewertet."}
+})
+
+TRANSLATIONS.update({
+ "Confident": {"de":"Sicher"},
+ "Still practicing": {"de":"Noch am Üben"},
+ "Needs work": {"de":"Noch unsicher"},
+ "Automatic suggestion": {"de":"Automatischer Vorschlag"},
+ "Choose how you feel about this deck. Your choice stays until you change it or return to Automatic suggestion.": {"de":"Wähle, wie sicher du dich mit diesem Deck fühlst. Deine Auswahl bleibt, bis du sie änderst oder zum automatischen Vorschlag zurückkehrst."},
+ "Could not save the smiley. Please try again.": {"de":"Der Smiley konnte nicht gespeichert werden. Bitte versuche es erneut."}
+})
+
+TRANSLATIONS.update({
+ "Auto": {"de":"Auto"},
+ "Show indicator in Deck Browser for this deck": {"de":"Punkt für dieses Deck in der Deckübersicht anzeigen"},
+ "Only this deck gets a dot. Auto appears after 20 review answers; manual choices appear immediately.": {"de":"Nur dieses Deck erhält einen Punkt. Bei Auto erscheint er ab 20 Wiederholungsantworten, bei manueller Auswahl sofort."},
+ "Choose how you feel about this deck. Your choice stays until you change it or return to Auto.": {"de":"Wähle, wie sicher du dich mit diesem Deck fühlst. Deine Auswahl bleibt, bis du sie änderst oder zu Auto zurückkehrst."},
+ "Could not save the setting. Please try again.": {"de":"Die Einstellung konnte nicht gespeichert werden. Bitte versuche es erneut."}
+})
+
+TRANSLATIONS.update({
+ "Show indicators in Deck Browser for all decks": {"de":"Punkte für alle Decks in der Deckübersicht anzeigen"},
+ "Off: enable individual decks via the smiley. On: show all eligible decks. Dots require at least 20 review answers in the last 30 days, including manual smileys.": {"de":"Aus: Einzelne Decks über den Smiley aktivieren. An: Alle geeigneten Decks anzeigen. Punkte erscheinen ab 20 Wiederholungsantworten in den letzten 30 Tagen, auch bei manueller Smiley-Auswahl."},
+ "Remaining": {"de":"Verbleibend"},
+ "No cards waiting right now": {"de":"Gerade stehen keine Karten an"},
+ "Reviews · last 14 days": {"de":"Wiederholungen · letzte 14 Tage"},
+ "No reviews in the last 14 days": {"de":"Keine Wiederholungen in den letzten 14 Tagen"},
+ "All decks are enabled in Settings.": {"de":"In den Einstellungen sind alle Decks aktiviert."},
+ "Dots appear after 20 review answers in the last 30 days.": {"de":"Punkte erscheinen ab 20 Wiederholungsantworten in den letzten 30 Tagen."}
+})
+
+TRANSLATIONS.update({
+ "Indicator hidden: {}/20 review answers in the last 30 days.": {"de":"Punkt noch ausgeblendet: {}/20 Wiederholungsantworten in den letzten 30 Tagen."}
+})
+
+TRANSLATIONS.update({
+ "Auto appears after 20 review answers in 30 days. Manual smileys appear immediately.": {"de":"Auto erscheint ab 20 Wiederholungsantworten in 30 Tagen. Manuell gewählte Smileys erscheinen sofort als Punkt."},
+ "Off: enable individual decks via the smiley. On: show all eligible decks. Auto requires 20 review answers in the last 30 days. Manual smileys appear immediately.": {"de":"Aus: Einzelne Decks über den Smiley aktivieren. An: Alle geeigneten Decks anzeigen. Auto benötigt 20 Wiederholungsantworten in den letzten 30 Tagen. Manuelle Smileys erscheinen sofort als Punkt."}
+})
+
+TRANSLATIONS.update({
+ "Wide Deck List": {"de":"Breite Deckliste"},
+ "Match the deck list width to the widgets. Turn off for a compact deck list.": {"de":"Breite der Deckliste an die Widgets anpassen. Für eine kompakte Deckliste ausschalten."},
+})
+
+TRANSLATIONS.update({
+    "Timer": {"de": "Timer", "es": "Temporizador", "ko": "타이머", "pt": "Temporizador", "fr": "Minuterie", "vi": "Bộ đếm giờ", "zh": "计时器", "hi": "टाइमर"},
+    "Pomodoro Statistics": {"de": "Pomodoro-Statistiken", "es": "Estadísticas Pomodoro", "ko": "포모도로 통계", "pt": "Estatísticas Pomodoro", "fr": "Statistiques Pomodoro", "vi": "Thống kê Pomodoro", "zh": "番茄钟统计", "hi": "पोमोडोरो आँकड़े"},
+})
+
+TRANSLATIONS.update({
+    "Could not copy text": {"de": "Text konnte nicht kopiert werden", "es": "No se pudo copiar el texto", "ko": "텍스트를 복사할 수 없습니다", "pt": "Não foi possível copiar o texto", "fr": "Impossible de copier le texte", "vi": "Không thể sao chép văn bản", "zh": "无法复制文本", "hi": "टेक्स्ट कॉपी नहीं हो सका"},
+})
+
+TRANSLATIONS.update({
+    "Analytics": {"de":"Analytics","es":"Análisis","ko":"분석","pt":"Análise","fr":"Analyse","vi":"Phân tích","zh":"分析","hi":"विश्लेषण"},
+    "Study time": {"de":"Lernzeit","es":"Tiempo de estudio","ko":"학습 시간","pt":"Tempo de estudo","fr":"Temps d’étude","vi":"Thời gian học","zh":"学习时间","hi":"अध्ययन समय"},
+    "Study time · Last 30 days": {"de":"Lernzeit · Letzte 30 Tage","es":"Tiempo de estudio · Últimos 30 días","ko":"학습 시간 · 최근 30일","pt":"Tempo de estudo · Últimos 30 dias","fr":"Temps d’étude · 30 derniers jours","vi":"Thời gian học · 30 ngày qua","zh":"学习时间 · 最近30天","hi":"अध्ययन समय · पिछले 30 दिन"},
+    "Total study time": {"de":"Gesamte Lernzeit","es":"Tiempo total de estudio","ko":"총 학습 시간","pt":"Tempo total de estudo","fr":"Temps d’étude total","vi":"Tổng thời gian học","zh":"总学习时间","hi":"कुल अध्ययन समय"},
+    "About this study time": {"de":"Wie wird die Lernzeit berechnet?","es":"Cómo se calcula este tiempo","ko":"학습 시간 계산 방법","pt":"Como este tempo é calculado","fr":"Comment ce temps est-il calculé ?","vi":"Cách tính thời gian học","zh":"学习时间如何计算？","hi":"यह समय कैसे मापा जाता है?"},
+    "Loading study time…": {"de":"Lernzeit wird geladen…","es":"Cargando tiempo de estudio…","ko":"학습 시간 불러오는 중…","pt":"Carregando tempo de estudo…","fr":"Chargement du temps d’étude…","vi":"Đang tải thời gian học…","zh":"正在加载学习时间…","hi":"अध्ययन समय लोड हो रहा है…"},
+    "Study time could not be loaded.": {"de":"Die Lernzeit konnte nicht geladen werden.","es":"No se pudo cargar el tiempo de estudio.","ko":"학습 시간을 불러올 수 없습니다.","pt":"Não foi possível carregar o tempo de estudo.","fr":"Impossible de charger le temps d’étude.","vi":"Không thể tải thời gian học.","zh":"无法加载学习时间。","hi":"अध्ययन समय लोड नहीं हो सका।"},
+    "No recorded study time in the last 30 days.": {"de":"In den letzten 30 Tagen wurde keine Lernzeit aufgezeichnet.","es":"No hay tiempo de estudio registrado en los últimos 30 días.","ko":"최근 30일 동안 기록된 학습 시간이 없습니다.","pt":"Nenhum tempo de estudo registrado nos últimos 30 dias.","fr":"Aucun temps d’étude enregistré au cours des 30 derniers jours.","vi":"Không có thời gian học được ghi lại trong 30 ngày qua.","zh":"最近30天没有记录到学习时间。","hi":"पिछले 30 दिनों में कोई अध्ययन समय दर्ज नहीं हुआ।"},
+    "Recorded answer time, capped by your Anki deck settings. Includes learning and review cards, not breaks or card editing. Parent decks include their subdecks; totals count each answer once. Cards are grouped by their current deck; deleted cards are excluded.": {
+        "de":"Aufgezeichnete Antwortzeit, begrenzt durch deine Anki-Deck-Einstellungen. Enthält Lern- und Wiederholungskarten, keine Pausen oder Kartenbearbeitung. Übergeordnete Decks enthalten ihre Unterdecks; jede Antwort zählt insgesamt nur einmal. Karten werden ihrem aktuellen Deck zugeordnet; gelöschte Karten sind nicht enthalten.",
+        "es":"Tiempo de respuesta registrado, limitado por los ajustes de Anki. Incluye tarjetas de aprendizaje y repaso, no pausas ni edición. Los mazos principales incluyen sus submazos; cada respuesta cuenta una sola vez en el total. Se usa el mazo actual de cada tarjeta; se excluyen las tarjetas eliminadas.",
+        "ko":"Anki 덱 설정에 따라 상한이 적용된 응답 시간입니다. 학습 및 복습 카드를 포함하며 휴식이나 카드 편집 시간은 제외합니다. 상위 덱은 하위 덱을 포함하며 총합에서 각 응답은 한 번만 계산됩니다. 카드는 현재 덱으로 분류하며 삭제된 카드는 제외합니다.",
+        "pt":"Tempo de resposta registrado, limitado pelas configurações do Anki. Inclui cartões em aprendizado e revisão, não pausas ou edição. Baralhos principais incluem os sub-baralhos; cada resposta é contada apenas uma vez no total. Os cartões são agrupados pelo baralho atual; cartões excluídos não são incluídos.",
+        "fr":"Temps de réponse enregistré, plafonné par les réglages d’Anki. Inclut les cartes en apprentissage et en révision, pas les pauses ni la modification. Les paquets parents incluent leurs sous-paquets ; chaque réponse compte une seule fois dans le total. Les cartes sont regroupées selon leur paquet actuel ; les cartes supprimées sont exclues.",
+        "vi":"Thời gian trả lời đã ghi, giới hạn theo cài đặt bộ thẻ Anki. Bao gồm thẻ đang học và ôn tập, không gồm nghỉ giải lao hay chỉnh sửa thẻ. Bộ thẻ cha bao gồm bộ thẻ con; mỗi câu trả lời chỉ được tính một lần trong tổng. Thẻ được nhóm theo bộ thẻ hiện tại; không gồm thẻ đã xóa.",
+        "zh":"记录的作答时间，上限由 Anki 牌组设置决定。包括学习和复习卡片，不包括休息或编辑卡片。父牌组包含子牌组；总计中每次作答只计一次。卡片按当前牌组归类；已删除的卡片不计入。",
+        "hi":"दर्ज उत्तर समय, जिसकी सीमा Anki डेक सेटिंग्स तय करती हैं। इसमें सीखने और दोहराने वाले कार्ड शामिल हैं, विराम या कार्ड संपादन नहीं। मुख्य डेक में उपडेक शामिल हैं; कुल में हर उत्तर एक बार गिना जाता है। कार्ड उनके वर्तमान डेक के अनुसार समूहित हैं; हटाए गए कार्ड शामिल नहीं हैं।"
+    },
+})
+
+# Consistent feature branding; preserve legacy translation keys for callers.
+for _brand_key, _brand_values in list(TRANSLATIONS.items()):
+    if "Mind Map" in _brand_key:
+        TRANSLATIONS[_brand_key.replace("Mind Map", "MindMap")] = {
+            lang: value.replace("Mind Map", "MindMap").replace("Mindmap", "MindMap")
+            for lang, value in _brand_values.items()
+        }
+TRANSLATIONS["MindMap"] = {lang: "MindMap" for lang in ("de", "es", "ko", "pt", "fr", "vi", "zh", "hi", "pl")}
+TRANSLATIONS["FreeMap"] = {lang: "FreeMap" for lang in TRANSLATIONS["MindMap"]}
+
+# Optional study background.
+TRANSLATIONS.update({'Show while studying': {'de': 'Beim Lernen anzeigen',
+                         'es': 'Mostrar al estudiar',
+                         'ko': '학습 중 표시',
+                         'pt': 'Mostrar ao estudar',
+                         'fr': 'Afficher pendant l’étude',
+                         'vi': 'Hiển thị khi học',
+                         'zh': '学习时显示',
+                         'hi': 'पढ़ते समय दिखाएँ'},
+ 'Use the same image behind your learning cards.': {'de': 'Dasselbe Bild hinter deinen Lernkarten verwenden.',
+                                                    'es': 'Usa la misma imagen detrás de tus tarjetas.',
+                                                    'ko': '학습 카드 뒤에 같은 이미지를 사용합니다.',
+                                                    'pt': 'Use a mesma imagem atrás dos cartões.',
+                                                    'fr': 'Utilisez la même image derrière vos cartes.',
+                                                    'vi': 'Dùng cùng hình ảnh phía sau thẻ học.',
+                                                    'zh': '在学习卡片后使用同一张图片。',
+                                                    'hi': 'अपने कार्ड के पीछे उसी चित्र का उपयोग करें।'},
+ 'Background intensity': {'de': 'Hintergrundintensität',
+                          'es': 'Intensidad del fondo',
+                          'ko': '배경 강도',
+                          'pt': 'Intensidade do fundo',
+                          'fr': 'Intensité du fond',
+                          'vi': 'Độ đậm của nền',
+                          'zh': '背景强度',
+                          'hi': 'पृष्ठभूमि की तीव्रता'},
+ 'Lower values make the image lighter in Light Mode and darker in Dark Mode.': {'de': 'Niedrigere Werte '
+                                                                                      'machen das Bild im '
+                                                                                      'Light Mode heller und '
+                                                                                      'im Dark Mode dunkler.',
+                                                                                'es': 'Los valores bajos '
+                                                                                      'aclaran la imagen en '
+                                                                                      'modo claro y la '
+                                                                                      'oscurecen en modo '
+                                                                                      'oscuro.',
+                                                                                'ko': '값이 낮을수록 라이트 모드에서는 '
+                                                                                      '밝아지고 다크 모드에서는 어두워집니다.',
+                                                                                'pt': 'Valores menores '
+                                                                                      'clareiam a imagem no '
+                                                                                      'modo claro e '
+                                                                                      'escurecem no modo '
+                                                                                      'escuro.',
+                                                                                'fr': 'Une valeur faible '
+                                                                                      'éclaircit l’image en '
+                                                                                      'mode clair et '
+                                                                                      'l’assombrit en mode '
+                                                                                      'sombre.',
+                                                                                'vi': 'Giá trị thấp làm ảnh '
+                                                                                      'sáng hơn ở chế độ '
+                                                                                      'sáng và tối hơn ở chế '
+                                                                                      'độ tối.',
+                                                                                'zh': '较低的值让图片在浅色模式下更亮，在深色模式下更暗。',
+                                                                                'hi': 'कम मान चित्र को लाइट '
+                                                                                      'मोड में हल्का और '
+                                                                                      'डार्क मोड में गहरा '
+                                                                                      'बनाते हैं।'},
+ 'Study background blur': {'de': 'Unschärfe beim Lernen',
+                           'es': 'Desenfoque al estudiar',
+                           'ko': '학습 배경 흐림',
+                           'pt': 'Desfoque ao estudar',
+                           'fr': 'Flou pendant l’étude',
+                           'vi': 'Độ mờ nền khi học',
+                           'zh': '学习背景模糊',
+                           'hi': 'अध्ययन पृष्ठभूमि का धुंधलापन'},
+ 'Softens only the background. Card content stays sharp.': {'de': 'Macht nur den Hintergrund weicher. '
+                                                                  'Karteninhalte bleiben scharf.',
+                                                            'es': 'Suaviza solo el fondo. El contenido sigue '
+                                                                  'nítido.',
+                                                            'ko': '배경만 흐려집니다. 카드 내용은 선명하게 유지됩니다.',
+                                                            'pt': 'Suaviza apenas o fundo. O conteúdo '
+                                                                  'permanece nítido.',
+                                                            'fr': 'Adoucit uniquement le fond. Le contenu '
+                                                                  'reste net.',
+                                                            'vi': 'Chỉ làm mờ nền. Nội dung thẻ vẫn rõ nét.',
+                                                            'zh': '仅柔化背景，卡片内容保持清晰。',
+                                                            'hi': 'केवल पृष्ठभूमि धुंधली होती है। कार्ड की '
+                                                                  'सामग्री स्पष्ट रहती है।'},
+ 'Card preview': {'de': 'Kartenvorschau',
+                  'es': 'Vista previa de tarjeta',
+                  'ko': '카드 미리보기',
+                  'pt': 'Prévia do cartão',
+                  'fr': 'Aperçu de carte',
+                  'vi': 'Xem trước thẻ',
+                  'zh': '卡片预览',
+                  'hi': 'कार्ड पूर्वावलोकन'},
+ 'Card templates with their own backgrounds may cover the image or look different. You can turn this off at any time.': {'de': 'Kartenvorlagen '
+                                                                                                                               'mit '
+                                                                                                                               'eigenen '
+                                                                                                                               'Hintergründen '
+                                                                                                                               'können '
+                                                                                                                               'das '
+                                                                                                                               'Bild '
+                                                                                                                               'verdecken '
+                                                                                                                               'oder '
+                                                                                                                               'anders '
+                                                                                                                               'aussehen. '
+                                                                                                                               'Du '
+                                                                                                                               'kannst '
+                                                                                                                               'die '
+                                                                                                                               'Option '
+                                                                                                                               'jederzeit '
+                                                                                                                               'ausschalten.',
+                                                                                                                         'es': 'Las '
+                                                                                                                               'plantillas '
+                                                                                                                               'con '
+                                                                                                                               'fondos '
+                                                                                                                               'propios '
+                                                                                                                               'pueden '
+                                                                                                                               'cubrir '
+                                                                                                                               'la '
+                                                                                                                               'imagen '
+                                                                                                                               'o '
+                                                                                                                               'verse '
+                                                                                                                               'diferentes. '
+                                                                                                                               'Puedes '
+                                                                                                                               'desactivar '
+                                                                                                                               'esta '
+                                                                                                                               'opción '
+                                                                                                                               'en '
+                                                                                                                               'cualquier '
+                                                                                                                               'momento.',
+                                                                                                                         'ko': '자체 '
+                                                                                                                               '배경이 '
+                                                                                                                               '있는 '
+                                                                                                                               '카드 '
+                                                                                                                               '템플릿은 '
+                                                                                                                               '이미지를 '
+                                                                                                                               '가리거나 '
+                                                                                                                               '다르게 '
+                                                                                                                               '보일 '
+                                                                                                                               '수 '
+                                                                                                                               '있습니다. '
+                                                                                                                               '언제든 '
+                                                                                                                               '끌 '
+                                                                                                                               '수 '
+                                                                                                                               '있습니다.',
+                                                                                                                         'pt': 'Modelos '
+                                                                                                                               'com '
+                                                                                                                               'fundos '
+                                                                                                                               'próprios '
+                                                                                                                               'podem '
+                                                                                                                               'cobrir '
+                                                                                                                               'a '
+                                                                                                                               'imagem '
+                                                                                                                               'ou '
+                                                                                                                               'ter '
+                                                                                                                               'outra '
+                                                                                                                               'aparência. '
+                                                                                                                               'Você '
+                                                                                                                               'pode '
+                                                                                                                               'desativar '
+                                                                                                                               'a '
+                                                                                                                               'opção '
+                                                                                                                               'a '
+                                                                                                                               'qualquer '
+                                                                                                                               'momento.',
+                                                                                                                         'fr': 'Les '
+                                                                                                                               'modèles '
+                                                                                                                               'avec '
+                                                                                                                               'leur '
+                                                                                                                               'propre '
+                                                                                                                               'fond '
+                                                                                                                               'peuvent '
+                                                                                                                               'masquer '
+                                                                                                                               'l’image '
+                                                                                                                               'ou '
+                                                                                                                               'modifier '
+                                                                                                                               'son '
+                                                                                                                               'apparence. '
+                                                                                                                               'Vous '
+                                                                                                                               'pouvez '
+                                                                                                                               'désactiver '
+                                                                                                                               'cette '
+                                                                                                                               'option '
+                                                                                                                               'à '
+                                                                                                                               'tout '
+                                                                                                                               'moment.',
+                                                                                                                         'vi': 'Mẫu '
+                                                                                                                               'thẻ '
+                                                                                                                               'có '
+                                                                                                                               'nền '
+                                                                                                                               'riêng '
+                                                                                                                               'có '
+                                                                                                                               'thể '
+                                                                                                                               'che '
+                                                                                                                               'ảnh '
+                                                                                                                               'hoặc '
+                                                                                                                               'hiển '
+                                                                                                                               'thị '
+                                                                                                                               'khác. '
+                                                                                                                               'Bạn '
+                                                                                                                               'có '
+                                                                                                                               'thể '
+                                                                                                                               'tắt '
+                                                                                                                               'tùy '
+                                                                                                                               'chọn '
+                                                                                                                               'bất '
+                                                                                                                               'cứ '
+                                                                                                                               'lúc '
+                                                                                                                               'nào.',
+                                                                                                                         'zh': '自带背景的卡片模板可能遮住图片或呈现不同效果。你可以随时关闭此选项。',
+                                                                                                                         'hi': 'अपने '
+                                                                                                                               'बैकग्राउंड '
+                                                                                                                               'वाले '
+                                                                                                                               'कार्ड '
+                                                                                                                               'टेम्पलेट '
+                                                                                                                               'चित्र '
+                                                                                                                               'को '
+                                                                                                                               'ढक '
+                                                                                                                               'सकते '
+                                                                                                                               'हैं '
+                                                                                                                               'या '
+                                                                                                                               'अलग '
+                                                                                                                               'दिख '
+                                                                                                                               'सकते '
+                                                                                                                               'हैं। '
+                                                                                                                               'इसे '
+                                                                                                                               'कभी '
+                                                                                                                               'भी '
+                                                                                                                               'बंद '
+                                                                                                                               'कर '
+                                                                                                                               'सकते '
+                                                                                                                               'हैं।'},
+ 'A background for studying': {'de': 'Ein Hintergrund fürs Lernen',
+                               'es': 'Un fondo para estudiar',
+                               'ko': '학습용 배경',
+                               'pt': 'Um fundo para estudar',
+                               'fr': 'Un fond pour étudier',
+                               'vi': 'Hình nền khi học',
+                               'zh': '学习背景',
+                               'hi': 'पढ़ाई के लिए पृष्ठभूमि'},
+ 'Some card templates use their own colours, images or panels. These may cover the background or change how it looks. This can be due to the card design, rather than a Synapse error.': {'de': 'Manche '
+                                                                                                                                                                                                   'Kartenvorlagen '
+                                                                                                                                                                                                   'verwenden '
+                                                                                                                                                                                                   'eigene '
+                                                                                                                                                                                                   'Farben, '
+                                                                                                                                                                                                   'Bilder '
+                                                                                                                                                                                                   'oder '
+                                                                                                                                                                                                   'Flächen. '
+                                                                                                                                                                                                   'Diese '
+                                                                                                                                                                                                   'können '
+                                                                                                                                                                                                   'den '
+                                                                                                                                                                                                   'Hintergrund '
+                                                                                                                                                                                                   'verdecken '
+                                                                                                                                                                                                   'oder '
+                                                                                                                                                                                                   'seine '
+                                                                                                                                                                                                   'Darstellung '
+                                                                                                                                                                                                   'verändern. '
+                                                                                                                                                                                                   'Das '
+                                                                                                                                                                                                   'kann '
+                                                                                                                                                                                                   'am '
+                                                                                                                                                                                                   'Kartendesign '
+                                                                                                                                                                                                   'liegen '
+                                                                                                                                                                                                   'und '
+                                                                                                                                                                                                   'muss '
+                                                                                                                                                                                                   'kein '
+                                                                                                                                                                                                   'Fehler '
+                                                                                                                                                                                                   'von '
+                                                                                                                                                                                                   'Synapse '
+                                                                                                                                                                                                   'sein.',
+                                                                                                                                                                                             'es': 'Algunas '
+                                                                                                                                                                                                   'plantillas '
+                                                                                                                                                                                                   'usan '
+                                                                                                                                                                                                   'colores, '
+                                                                                                                                                                                                   'imágenes '
+                                                                                                                                                                                                   'o '
+                                                                                                                                                                                                   'paneles '
+                                                                                                                                                                                                   'propios. '
+                                                                                                                                                                                                   'Pueden '
+                                                                                                                                                                                                   'cubrir '
+                                                                                                                                                                                                   'el '
+                                                                                                                                                                                                   'fondo '
+                                                                                                                                                                                                   'o '
+                                                                                                                                                                                                   'cambiar '
+                                                                                                                                                                                                   'su '
+                                                                                                                                                                                                   'aspecto. '
+                                                                                                                                                                                                   'Esto '
+                                                                                                                                                                                                   'puede '
+                                                                                                                                                                                                   'deberse '
+                                                                                                                                                                                                   'al '
+                                                                                                                                                                                                   'diseño '
+                                                                                                                                                                                                   'de '
+                                                                                                                                                                                                   'la '
+                                                                                                                                                                                                   'tarjeta '
+                                                                                                                                                                                                   'y '
+                                                                                                                                                                                                   'no '
+                                                                                                                                                                                                   'a '
+                                                                                                                                                                                                   'un '
+                                                                                                                                                                                                   'error '
+                                                                                                                                                                                                   'de '
+                                                                                                                                                                                                   'Synapse.',
+                                                                                                                                                                                             'ko': '일부 '
+                                                                                                                                                                                                   '카드 '
+                                                                                                                                                                                                   '템플릿은 '
+                                                                                                                                                                                                   '자체 '
+                                                                                                                                                                                                   '색상, '
+                                                                                                                                                                                                   '이미지 '
+                                                                                                                                                                                                   '또는 '
+                                                                                                                                                                                                   '패널을 '
+                                                                                                                                                                                                   '사용합니다. '
+                                                                                                                                                                                                   '배경을 '
+                                                                                                                                                                                                   '가리거나 '
+                                                                                                                                                                                                   '모양을 '
+                                                                                                                                                                                                   '바꿀 '
+                                                                                                                                                                                                   '수 '
+                                                                                                                                                                                                   '있습니다. '
+                                                                                                                                                                                                   '이는 '
+                                                                                                                                                                                                   'Synapse '
+                                                                                                                                                                                                   '오류가 '
+                                                                                                                                                                                                   '아니라 '
+                                                                                                                                                                                                   '카드 '
+                                                                                                                                                                                                   '디자인 '
+                                                                                                                                                                                                   '때문일 '
+                                                                                                                                                                                                   '수 '
+                                                                                                                                                                                                   '있습니다.',
+                                                                                                                                                                                             'pt': 'Alguns '
+                                                                                                                                                                                                   'modelos '
+                                                                                                                                                                                                   'usam '
+                                                                                                                                                                                                   'cores, '
+                                                                                                                                                                                                   'imagens '
+                                                                                                                                                                                                   'ou '
+                                                                                                                                                                                                   'painéis '
+                                                                                                                                                                                                   'próprios. '
+                                                                                                                                                                                                   'Eles '
+                                                                                                                                                                                                   'podem '
+                                                                                                                                                                                                   'cobrir '
+                                                                                                                                                                                                   'o '
+                                                                                                                                                                                                   'fundo '
+                                                                                                                                                                                                   'ou '
+                                                                                                                                                                                                   'mudar '
+                                                                                                                                                                                                   'sua '
+                                                                                                                                                                                                   'aparência. '
+                                                                                                                                                                                                   'Isso '
+                                                                                                                                                                                                   'pode '
+                                                                                                                                                                                                   'ser '
+                                                                                                                                                                                                   'causado '
+                                                                                                                                                                                                   'pelo '
+                                                                                                                                                                                                   'design '
+                                                                                                                                                                                                   'do '
+                                                                                                                                                                                                   'cartão, '
+                                                                                                                                                                                                   'e '
+                                                                                                                                                                                                   'não '
+                                                                                                                                                                                                   'por '
+                                                                                                                                                                                                   'um '
+                                                                                                                                                                                                   'erro '
+                                                                                                                                                                                                   'do '
+                                                                                                                                                                                                   'Synapse.',
+                                                                                                                                                                                             'fr': 'Certains '
+                                                                                                                                                                                                   'modèles '
+                                                                                                                                                                                                   'utilisent '
+                                                                                                                                                                                                   'leurs '
+                                                                                                                                                                                                   'propres '
+                                                                                                                                                                                                   'couleurs, '
+                                                                                                                                                                                                   'images '
+                                                                                                                                                                                                   'ou '
+                                                                                                                                                                                                   'panneaux. '
+                                                                                                                                                                                                   'Ils '
+                                                                                                                                                                                                   'peuvent '
+                                                                                                                                                                                                   'masquer '
+                                                                                                                                                                                                   'le '
+                                                                                                                                                                                                   'fond '
+                                                                                                                                                                                                   'ou '
+                                                                                                                                                                                                   'modifier '
+                                                                                                                                                                                                   'son '
+                                                                                                                                                                                                   'apparence. '
+                                                                                                                                                                                                   'Cela '
+                                                                                                                                                                                                   'peut '
+                                                                                                                                                                                                   'venir '
+                                                                                                                                                                                                   'du '
+                                                                                                                                                                                                   'modèle '
+                                                                                                                                                                                                   'de '
+                                                                                                                                                                                                   'carte '
+                                                                                                                                                                                                   'plutôt '
+                                                                                                                                                                                                   'que '
+                                                                                                                                                                                                   'd’une '
+                                                                                                                                                                                                   'erreur '
+                                                                                                                                                                                                   'de '
+                                                                                                                                                                                                   'Synapse.',
+                                                                                                                                                                                             'vi': 'Một '
+                                                                                                                                                                                                   'số '
+                                                                                                                                                                                                   'mẫu '
+                                                                                                                                                                                                   'thẻ '
+                                                                                                                                                                                                   'dùng '
+                                                                                                                                                                                                   'màu, '
+                                                                                                                                                                                                   'ảnh '
+                                                                                                                                                                                                   'hoặc '
+                                                                                                                                                                                                   'khung '
+                                                                                                                                                                                                   'riêng. '
+                                                                                                                                                                                                   'Chúng '
+                                                                                                                                                                                                   'có '
+                                                                                                                                                                                                   'thể '
+                                                                                                                                                                                                   'che '
+                                                                                                                                                                                                   'nền '
+                                                                                                                                                                                                   'hoặc '
+                                                                                                                                                                                                   'thay '
+                                                                                                                                                                                                   'đổi '
+                                                                                                                                                                                                   'cách '
+                                                                                                                                                                                                   'hiển '
+                                                                                                                                                                                                   'thị. '
+                                                                                                                                                                                                   'Điều '
+                                                                                                                                                                                                   'này '
+                                                                                                                                                                                                   'có '
+                                                                                                                                                                                                   'thể '
+                                                                                                                                                                                                   'do '
+                                                                                                                                                                                                   'thiết '
+                                                                                                                                                                                                   'kế '
+                                                                                                                                                                                                   'thẻ, '
+                                                                                                                                                                                                   'không '
+                                                                                                                                                                                                   'phải '
+                                                                                                                                                                                                   'lỗi '
+                                                                                                                                                                                                   'Synapse.',
+                                                                                                                                                                                             'zh': '部分卡片模板使用自己的颜色、图片或面板，可能遮住背景或改变显示效果。这可能源于卡片设计，而不一定是 '
+                                                                                                                                                                                                   'Synapse '
+                                                                                                                                                                                                   '的错误。',
+                                                                                                                                                                                             'hi': 'कुछ '
+                                                                                                                                                                                                   'कार्ड '
+                                                                                                                                                                                                   'टेम्पलेट '
+                                                                                                                                                                                                   'अपने '
+                                                                                                                                                                                                   'रंग, '
+                                                                                                                                                                                                   'चित्र '
+                                                                                                                                                                                                   'या '
+                                                                                                                                                                                                   'पैनल '
+                                                                                                                                                                                                   'इस्तेमाल '
+                                                                                                                                                                                                   'करते '
+                                                                                                                                                                                                   'हैं। '
+                                                                                                                                                                                                   'वे '
+                                                                                                                                                                                                   'पृष्ठभूमि '
+                                                                                                                                                                                                   'ढक '
+                                                                                                                                                                                                   'सकते '
+                                                                                                                                                                                                   'हैं '
+                                                                                                                                                                                                   'या '
+                                                                                                                                                                                                   'उसका '
+                                                                                                                                                                                                   'रूप '
+                                                                                                                                                                                                   'बदल '
+                                                                                                                                                                                                   'सकते '
+                                                                                                                                                                                                   'हैं। '
+                                                                                                                                                                                                   'यह '
+                                                                                                                                                                                                   'Synapse '
+                                                                                                                                                                                                   'की '
+                                                                                                                                                                                                   'त्रुटि '
+                                                                                                                                                                                                   'के '
+                                                                                                                                                                                                   'बजाय '
+                                                                                                                                                                                                   'कार्ड '
+                                                                                                                                                                                                   'के '
+                                                                                                                                                                                                   'डिज़ाइन '
+                                                                                                                                                                                                   'के '
+                                                                                                                                                                                                   'कारण '
+                                                                                                                                                                                                   'हो '
+                                                                                                                                                                                                   'सकता '
+                                                                                                                                                                                                   'है।'},
+ 'Start with a subtle background. If a card becomes harder to read, lower the intensity or turn this option off. Your cards are not modified.': {'de': 'Beginne '
+                                                                                                                                                       'mit '
+                                                                                                                                                       'einem '
+                                                                                                                                                       'dezenten '
+                                                                                                                                                       'Hintergrund. '
+                                                                                                                                                       'Wenn '
+                                                                                                                                                       'eine '
+                                                                                                                                                       'Karte '
+                                                                                                                                                       'schlechter '
+                                                                                                                                                       'lesbar '
+                                                                                                                                                       'wird, '
+                                                                                                                                                       'reduziere '
+                                                                                                                                                       'die '
+                                                                                                                                                       'Intensität '
+                                                                                                                                                       'oder '
+                                                                                                                                                       'schalte '
+                                                                                                                                                       'die '
+                                                                                                                                                       'Option '
+                                                                                                                                                       'aus. '
+                                                                                                                                                       'Deine '
+                                                                                                                                                       'Karten '
+                                                                                                                                                       'werden '
+                                                                                                                                                       'nicht '
+                                                                                                                                                       'verändert.',
+                                                                                                                                                 'es': 'Empieza '
+                                                                                                                                                       'con '
+                                                                                                                                                       'un '
+                                                                                                                                                       'fondo '
+                                                                                                                                                       'sutil. '
+                                                                                                                                                       'Si '
+                                                                                                                                                       'una '
+                                                                                                                                                       'tarjeta '
+                                                                                                                                                       'es '
+                                                                                                                                                       'difícil '
+                                                                                                                                                       'de '
+                                                                                                                                                       'leer, '
+                                                                                                                                                       'reduce '
+                                                                                                                                                       'la '
+                                                                                                                                                       'intensidad '
+                                                                                                                                                       'o '
+                                                                                                                                                       'desactiva '
+                                                                                                                                                       'la '
+                                                                                                                                                       'opción. '
+                                                                                                                                                       'Tus '
+                                                                                                                                                       'tarjetas '
+                                                                                                                                                       'no '
+                                                                                                                                                       'se '
+                                                                                                                                                       'modifican.',
+                                                                                                                                                 'ko': '은은한 '
+                                                                                                                                                       '배경으로 '
+                                                                                                                                                       '시작하세요. '
+                                                                                                                                                       '카드가 '
+                                                                                                                                                       '읽기 '
+                                                                                                                                                       '어려워지면 '
+                                                                                                                                                       '강도를 '
+                                                                                                                                                       '낮추거나 '
+                                                                                                                                                       '끄세요. '
+                                                                                                                                                       '카드는 '
+                                                                                                                                                       '수정되지 '
+                                                                                                                                                       '않습니다.',
+                                                                                                                                                 'pt': 'Comece '
+                                                                                                                                                       'com '
+                                                                                                                                                       'um '
+                                                                                                                                                       'fundo '
+                                                                                                                                                       'discreto. '
+                                                                                                                                                       'Se '
+                                                                                                                                                       'a '
+                                                                                                                                                       'leitura '
+                                                                                                                                                       'ficar '
+                                                                                                                                                       'difícil, '
+                                                                                                                                                       'reduza '
+                                                                                                                                                       'a '
+                                                                                                                                                       'intensidade '
+                                                                                                                                                       'ou '
+                                                                                                                                                       'desative '
+                                                                                                                                                       'a '
+                                                                                                                                                       'opção. '
+                                                                                                                                                       'Seus '
+                                                                                                                                                       'cartões '
+                                                                                                                                                       'não '
+                                                                                                                                                       'são '
+                                                                                                                                                       'modificados.',
+                                                                                                                                                 'fr': 'Commencez '
+                                                                                                                                                       'par '
+                                                                                                                                                       'un '
+                                                                                                                                                       'fond '
+                                                                                                                                                       'discret. '
+                                                                                                                                                       'Si '
+                                                                                                                                                       'une '
+                                                                                                                                                       'carte '
+                                                                                                                                                       'devient '
+                                                                                                                                                       'difficile '
+                                                                                                                                                       'à '
+                                                                                                                                                       'lire, '
+                                                                                                                                                       'réduisez '
+                                                                                                                                                       'l’intensité '
+                                                                                                                                                       'ou '
+                                                                                                                                                       'désactivez '
+                                                                                                                                                       'l’option. '
+                                                                                                                                                       'Vos '
+                                                                                                                                                       'cartes '
+                                                                                                                                                       'ne '
+                                                                                                                                                       'sont '
+                                                                                                                                                       'pas '
+                                                                                                                                                       'modifiées.',
+                                                                                                                                                 'vi': 'Hãy '
+                                                                                                                                                       'bắt '
+                                                                                                                                                       'đầu '
+                                                                                                                                                       'với '
+                                                                                                                                                       'nền '
+                                                                                                                                                       'nhẹ. '
+                                                                                                                                                       'Nếu '
+                                                                                                                                                       'thẻ '
+                                                                                                                                                       'khó '
+                                                                                                                                                       'đọc '
+                                                                                                                                                       'hơn, '
+                                                                                                                                                       'giảm '
+                                                                                                                                                       'độ '
+                                                                                                                                                       'đậm '
+                                                                                                                                                       'hoặc '
+                                                                                                                                                       'tắt '
+                                                                                                                                                       'tùy '
+                                                                                                                                                       'chọn. '
+                                                                                                                                                       'Thẻ '
+                                                                                                                                                       'của '
+                                                                                                                                                       'bạn '
+                                                                                                                                                       'không '
+                                                                                                                                                       'bị '
+                                                                                                                                                       'chỉnh '
+                                                                                                                                                       'sửa.',
+                                                                                                                                                 'zh': '建议从淡背景开始。如果卡片变得难以阅读，请降低强度或关闭此选项。你的卡片不会被修改。',
+                                                                                                                                                 'hi': 'हल्की '
+                                                                                                                                                       'पृष्ठभूमि '
+                                                                                                                                                       'से '
+                                                                                                                                                       'शुरू '
+                                                                                                                                                       'करें। '
+                                                                                                                                                       'यदि '
+                                                                                                                                                       'कार्ड '
+                                                                                                                                                       'पढ़ना '
+                                                                                                                                                       'कठिन '
+                                                                                                                                                       'हो, '
+                                                                                                                                                       'तो '
+                                                                                                                                                       'तीव्रता '
+                                                                                                                                                       'घटाएँ '
+                                                                                                                                                       'या '
+                                                                                                                                                       'विकल्प '
+                                                                                                                                                       'बंद '
+                                                                                                                                                       'करें। '
+                                                                                                                                                       'आपके '
+                                                                                                                                                       'कार्ड '
+                                                                                                                                                       'बदले '
+                                                                                                                                                       'नहीं '
+                                                                                                                                                       'जाते।'},
+ 'Enable': {'de': 'Aktivieren',
+            'es': 'Activar',
+            'ko': '활성화',
+            'pt': 'Ativar',
+            'fr': 'Activer',
+            'vi': 'Bật',
+            'zh': '启用',
+            'hi': 'सक्षम करें'}})
+
+TRANSLATIONS["Edit Dashboard Surfaces"] = {"de":"Dashboard-Flächen bearbeiten","es":"Editar superficies del panel","ko":"대시보드 표면 편집","pt":"Editar superfícies do painel","fr":"Modifier les surfaces du tableau de bord","vi":"Chỉnh sửa bề mặt bảng điều khiển","zh":"编辑仪表盘表面","hi":"डैशबोर्ड सतहें संपादित करें"}
+
+
+
+# Deck Overview title color preferences.
+TRANSLATIONS.update({
+    "Deck name color": {"de":"Farbe des Decknamens", "es":"Color del nombre del mazo", "fr":"Couleur du nom du paquet", "pt":"Cor do nome do baralho", "ko":"덱 이름 색상", "vi":"Màu tên bộ thẻ", "zh":"牌组名称颜色", "hi":"डेक के नाम का रंग"},
+    "Use primary color": {"de":"Primärfarbe verwenden", "es":"Usar color principal", "fr":"Utiliser la couleur principale", "pt":"Usar cor principal", "ko":"기본 색상 사용", "vi":"Dùng màu chủ đạo", "zh":"使用主题色", "hi":"प्राथमिक रंग का उपयोग करें"},
+    "Custom color": {"de":"Eigene Farbe", "es":"Color personalizado", "fr":"Couleur personnalisée", "pt":"Cor personalizada", "ko":"사용자 지정 색상", "vi":"Màu tùy chỉnh", "zh":"自定义颜色", "hi":"कस्टम रंग"},
+    "Custom deck name color": {"de":"Eigene Farbe für den Decknamen", "es":"Color personalizado del nombre del mazo", "fr":"Couleur personnalisée du nom du paquet", "pt":"Cor personalizada do nome do baralho", "ko":"덱 이름 사용자 지정 색상", "vi":"Màu tùy chỉnh cho tên bộ thẻ", "zh":"自定义牌组名称颜色", "hi":"डेक के नाम का कस्टम रंग"},
+})
+
+
+def translate_standard_buttons(button_box):
+    """Use the add-on language for its own Qt button boxes, not the OS locale."""
+    from aqt.qt import QDialogButtonBox
+    labels = {'Ok': 'OK', 'Save': 'Save', 'Open': 'Open', 'Cancel': 'Cancel',
+              'Close': 'Close', 'Apply': 'Apply', 'Reset': 'Reset', 'Help': 'Help',
+              'RestoreDefaults': 'Restore Defaults', 'Yes': 'Yes', 'No': 'No',
+              'Discard': 'Discard'}
+    for name, source in labels.items():
+        button = button_box.button(getattr(QDialogButtonBox.StandardButton, name))
+        if button is not None:
+            button.setText(_(source))

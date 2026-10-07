@@ -12,7 +12,8 @@ try:
     from aqt.qt import (QDialog, QGridLayout, QLabel, QSpinBox, QLineEdit,
                         QCheckBox, QDialogButtonBox, QVBoxLayout, QFrame,
                         QHBoxLayout, QPushButton, QWidget, QScrollArea, QPixmap,
-                        QPainter, QColor, QFont, QTimer, pyqtSignal, Qt)
+                        QPainter, QColor, QFont, QTimer, pyqtSignal, Qt,
+                        QTabWidget, QTreeWidget, QTreeWidgetItem)
 except ImportError:
     QDialog = object
     QTimer = object
@@ -39,7 +40,7 @@ except ImportError:
         return {}
 
 try:
-    from .theme import palette as _palette, FONT_FAMILY as _FONT_FAMILY
+    from .theme import dialog_palette as _palette, FONT_FAMILY as _FONT_FAMILY
 except ImportError:
     def _palette(night): return {}  # type: ignore
     _FONT_FAMILY = "sans-serif"
@@ -473,11 +474,11 @@ def save_pomodoro_config(config):
 
 
 class PomodoroConfigDialog(QDialog):
-    """Pomodoro dialog: settings AND statistics together on one scrollable page."""
+    """Native fallback for the three Timer tabs."""
 
     def __init__(self, parent=None):
         super().__init__(parent or mw)
-        self.setWindowTitle(_("Pomodoro"))
+        self.setWindowTitle(_("Timer"))
         self.setMinimumWidth(520)
         self.setMinimumHeight(480)
         self.resize(540, 660)
@@ -493,31 +494,51 @@ class PomodoroConfigDialog(QDialog):
         main_layout.setContentsMargins(20, 20, 20, 20)
         main_layout.setSpacing(12)
 
-        # ── One scrollable page: Settings + Statistics ─────────────────────────
-        scroll = QScrollArea()
-        scroll.setWidgetResizable(True)
-        scroll.setFrameShape(QScrollArea.Shape.NoFrame)
-
-        content = QWidget()
-        content_layout = QVBoxLayout(content)
-        content_layout.setContentsMargins(0, 0, 6, 0)
-        content_layout.setSpacing(10)
-
-        settings_label = QLabel(_("Settings").upper())
-        settings_label.setObjectName("SectionLabel")
-        content_layout.addWidget(settings_label)
-        self._build_settings_content(content_layout)
-
-        content_layout.addSpacing(8)
-        stats_label = QLabel(_("Statistics").upper())
-        stats_label.setObjectName("SectionLabel")
-        content_layout.addWidget(stats_label)
+        self.setMinimumSize(380, 300)
+        self._tabs = QTabWidget()
+        self._tabs.setDocumentMode(True)
+        self._tabs.setStyleSheet("QTabBar::tab { padding: 7px 16px; } QTabWidget::pane { border: 0; }")
+        self._native_pages = []
+        for name in (_("Settings"), _("Statistics"), _("Analytics")):
+            scroll = QScrollArea()
+            scroll.setWidgetResizable(True)
+            scroll.setFrameShape(QScrollArea.Shape.NoFrame)
+            page = QWidget()
+            page_layout = QVBoxLayout(page)
+            page_layout.setContentsMargins(0, 8, 6, 0)
+            page_layout.setSpacing(10)
+            scroll.setWidget(page)
+            self._tabs.addTab(scroll, name)
+            self._native_pages.append((page, page_layout))
+        settings_layout = self._native_pages[0][1]
+        settings_layout.addWidget(QLabel(_("Pomodoro Settings")))
+        self._build_settings_content(settings_layout)
+        settings_layout.addStretch()
         self._stats_tab = StatisticsTab(is_dark=is_night_mode)
-        content_layout.addWidget(self._stats_tab)
-
-        content_layout.addStretch()
-        scroll.setWidget(content)
-        main_layout.addWidget(scroll, 1)
+        self._native_pages[1][1].addWidget(QLabel(_("Pomodoro Statistics")))
+        self._native_pages[1][1].addWidget(self._stats_tab)
+        self._native_pages[1][1].addStretch()
+        analytics_layout = self._native_pages[2][1]
+        self._analytics_label = QLabel(_("Study time · Last 30 days"))
+        analytics_layout.addWidget(self._analytics_label)
+        self._analytics_tree = QTreeWidget()
+        self._analytics_tree.setHeaderLabels([_("Deck"), _("Study time")])
+        self._analytics_tree.setColumnWidth(0, 280)
+        analytics_layout.addWidget(self._analytics_tree)
+        note = QLabel(_("Recorded answer time, capped by your Anki deck settings. Includes learning and review cards, not breaks or card editing. Parent decks include their subdecks; totals count each answer once. Cards are grouped by their current deck; deleted cards are excluded."))
+        note.setWordWrap(True)
+        analytics_layout.addWidget(note)
+        self._analytics_retry = QPushButton(_("Retry"))
+        self._analytics_retry.hide()
+        self._analytics_retry.clicked.connect(self._load_native_analytics)
+        analytics_layout.addWidget(self._analytics_retry)
+        self._native_analytics_loaded = False
+        self._native_analytics_loading = False
+        self._analytics_tree.itemExpanded.connect(self._save_native_expanded)
+        self._analytics_tree.itemCollapsed.connect(self._save_native_expanded)
+        self._tabs.currentChanged.connect(self._native_tab_changed)
+        main_layout.addWidget(self._tabs, 1)
+        QTimer.singleShot(0, lambda: self._native_tab_changed(0))
 
         # ── Bottom buttons (always visible) ────────────────────────────────────
         btn_row = QHBoxLayout()
@@ -535,6 +556,57 @@ class PomodoroConfigDialog(QDialog):
         btn_row.addStretch()
         btn_row.addWidget(self.save_btn)
         main_layout.addLayout(btn_row)
+
+    def _native_tab_changed(self, index):
+        if index == 2 and not self._native_analytics_loaded:
+            self._load_native_analytics()
+        desired = (self._native_pages[index][0].sizeHint().height() + 120) if index != 2 else 550
+        screen = self.screen()
+        ceiling = min(760, screen.availableGeometry().height() - 70) if screen else 760
+        self.resize(self.width(), max(300, min(desired, ceiling)))
+
+    def _load_native_analytics(self):
+        if self._native_analytics_loading:
+            return
+        self._native_analytics_loading = True
+        self._analytics_retry.hide()
+        self._analytics_label.setText(_("Loading study time…"))
+        def done(data):
+            self._native_analytics_loading = False
+            self._native_analytics_loaded = True
+            self._analytics_label.setText(_("Study time · Last 30 days") if data["decks"] else _("No recorded study time in the last 30 days."))
+            self._analytics_tree.blockSignals(True)
+            self._analytics_tree.clear()
+            expanded = set(data["expanded"])
+            def append(nodes, parent):
+                for node in nodes:
+                    minutes = node["milliseconds"] // 60000
+                    duration = (f"{minutes // 60}h {minutes % 60}m" if minutes >= 60 else f"{minutes}m") if minutes else "<1m"
+                    item = QTreeWidgetItem(parent, [node["name"], duration])
+                    item.setData(0, Qt.ItemDataRole.UserRole, node["key"])
+                    item.setToolTip(0, node["key"])
+                    append(node["children"], item)
+                    item.setExpanded(node["key"] in expanded)
+            append(data["decks"], self._analytics_tree)
+            self._analytics_tree.blockSignals(False)
+        def failed(error):
+            self._native_analytics_loading = False
+            self._analytics_label.setText(_("Study time could not be loaded."))
+            self._analytics_retry.show()
+        _load_timer_analytics(self, done, failed)
+
+    def _save_native_expanded(self, *_args):
+        from .timer_analytics import save_expanded
+        keys = []
+        def walk(item):
+            for i in range(item.childCount()):
+                child = item.child(i)
+                if child.isExpanded():
+                    keys.append(child.data(0, Qt.ItemDataRole.UserRole))
+                walk(child)
+        walk(self._analytics_tree.invisibleRootItem())
+        if mw and mw.col:
+            save_expanded(mw.col, keys)
 
     def _build_settings_content(self, layout: QVBoxLayout):
         """Build the Settings card into *layout*."""
@@ -615,6 +687,26 @@ except ImportError:
     QWebEngineView = QWebEnginePage = QUrl = object  # type: ignore
 
 
+def _load_timer_analytics(parent, success, failure):
+    from aqt.operations import QueryOp
+    from .timer_analytics import collect_analytics
+    collection = mw.col if mw else None
+    if collection is None:
+        failure(RuntimeError("No collection"))
+        return
+    def load(col):
+        if col is not collection:
+            raise RuntimeError("Collection changed")
+        return collect_analytics(col)
+    def done(data):
+        if mw and mw.col is collection and parent.isVisible():
+            success(data)
+    def failed(error):
+        if mw and mw.col is collection and parent.isVisible():
+            failure(error)
+    QueryOp(parent=parent, op=load, success=done).failure(failed).run_in_background()
+
+
 def _pomo_web_payload() -> dict:
     """Config + statistics + translated labels for the HTML page."""
     config = (
@@ -665,9 +757,21 @@ def _pomo_web_payload() -> dict:
             "week":           week,
         },
         "labels": {
-            "title":      _("Pomodoro"),
-            "settings":   _("Settings"),
-            "statistics": _("Statistics"),
+            "title":      _("Timer"),
+            "close": _("Close"),
+            "tabSettings": _("Settings"),
+            "tabStatistics": _("Statistics"),
+            "tabAnalytics": _("Analytics"),
+            "analyticsPeriod": _("Study time · Last 30 days"),
+            "analyticsInfo": _("About this study time"),
+            "analyticsExplanation": _("Recorded answer time, capped by your Anki deck settings. Includes learning and review cards, not breaks or card editing. Parent decks include their subdecks; totals count each answer once. Cards are grouped by their current deck; deleted cards are excluded."),
+            "analyticsEmpty": _("No recorded study time in the last 30 days."),
+            "analyticsError": _("Study time could not be loaded."),
+            "totalStudy": _("Total study time"),
+            "loading": _("Loading study time…"),
+            "retry": _("Retry"),
+            "settings":   _("Pomodoro Settings"),
+            "statistics": _("Pomodoro Statistics"),
             "work":       _("Work Duration:").rstrip(": "),
             "short":      _("Short Break:").rstrip(": "),
             "long":       _("Long Break:").rstrip(": "),
@@ -703,7 +807,7 @@ if _web_ok:
                     print(f"{constants.ADDON_NAME_POMODORO}: bridge emit failed: {e}")
 
     class PomodoroWebDialog(QDialog):  # type: ignore[misc]
-        """Minimal one-page web UI for Pomodoro settings + statistics."""
+        """Timer tabs with on-demand study analytics and content-sized height."""
 
         def __init__(self, parent=None):
             super().__init__(parent or mw)
@@ -712,9 +816,11 @@ if _web_ok:
             self._available = os.path.exists(html)
             if not self._available:
                 return
-            self.setWindowTitle(_("Pomodoro"))
-            self.resize(430, 660)
-            self.setMinimumSize(380, 480)
+            self.setWindowTitle(_("Timer"))
+            self.resize(430, 440)
+            self.setMinimumSize(360, 300)
+            self._analytics_loading = False
+            self._analytics_data = None
             lay = QVBoxLayout(self)
             lay.setContentsMargins(0, 0, 0, 0)
             self._view = QWebEngineView(self)
@@ -725,7 +831,7 @@ if _web_ok:
             try:
                 dark = bool(mw and mw.pm.night_mode())
                 self._page.setBackgroundColor(
-                    QColor("#1c1c1e") if dark else QColor("#f5f5f7"))
+                    QColor("#2c2c2c") if dark else QColor("#f5f5f7"))
             except Exception:
                 pass
             self._page.message.connect(self._on_message)
@@ -747,6 +853,15 @@ if _web_ok:
             try:
                 if action == "ready":
                     self._inject()
+                elif action == "resize":
+                    self._fit_content(int(payload))
+                elif action == "analytics":
+                    self._show_analytics()
+                elif action == "expanded":
+                    import json
+                    from .timer_analytics import save_expanded
+                    if mw and mw.col:
+                        save_expanded(mw.col, json.loads(payload))
                 elif action == "save":
                     self._on_save(payload)
                 elif action == "cancel":
@@ -757,6 +872,38 @@ if _web_ok:
                     print(f"{constants.ADDON_NAME_POMODORO}: web UI error: {payload}")
             except Exception as e:
                 print(f"{constants.ADDON_NAME_POMODORO}: bridge action '{action}' error: {e}")
+
+        def _fit_content(self, height):
+            if self._analytics_loading or self.isMaximized() or self.isFullScreen():
+                return
+            screen = self.screen()
+            available = screen.availableGeometry() if screen else None
+            chrome = max(0, self.frameGeometry().height() - self.height())
+            ceiling = min(760, available.height() - chrome - 32) if available else 760
+            height = max(self.minimumHeight(), min(height, ceiling))
+            if abs(self.height() - height) > 1:
+                self.resize(self.width(), height)
+            if available and self.frameGeometry().bottom() > available.bottom() - 12:
+                self.move(self.x(), max(available.top() + 12,
+                    available.bottom() - self.frameGeometry().height() - 12))
+
+        def _show_analytics(self):
+            if self._analytics_loading:
+                return
+            import json
+            if self._analytics_data is not None:
+                self._page.runJavaScript(f"updateAnalytics({json.dumps(self._analytics_data)});")
+                return
+            self._analytics_loading = True
+            def done(data):
+                self._analytics_loading = False
+                self._analytics_data = data
+                self._page.runJavaScript(f"updateAnalytics({json.dumps(data)});")
+            def failed(error):
+                self._analytics_loading = False
+                self._page.runJavaScript("analyticsFailed();")
+                print(f"{constants.ADDON_NAME_POMODORO}: analytics failed: {error}")
+            _load_timer_analytics(self, done, failed)
 
         def _on_save(self, payload: str):
             import json as _json

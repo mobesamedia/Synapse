@@ -1,0 +1,61 @@
+/* Personal progress and shared Gamification dialog styles. */
+#progressView[hidden] {display:none;}
+.gami-input {display:flex;flex-direction:column;gap:6px;margin:12px 0;font-size:12px;}
+.gami-input input {min-width:0;width:100%;padding:9px 10px;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:8px;font:inherit;}
+.hero {display:grid;grid-template-columns:76px minmax(0,1fr);column-gap:16px;row-gap:12px;text-align:left;padding:18px 16px;align-items:center;}
+.hero #badge {width:76px;height:100px;margin:0;grid-row:1 / 3;}
+.hero-content {min-width:0;}
+.hero-heading {display:flex;align-items:center;flex-wrap:wrap;gap:6px 8px;margin-bottom:12px;}
+.hero #rankName {font-size:15px;line-height:1.3;margin:0;overflow-wrap:anywhere;}
+.hero .level-chip {margin:0;font-size:10px;padding:3px 8px;white-space:nowrap;}
+.hero .xpbar {height:7px;}
+.hero .xp-meta {font-size:10px;margin-top:6px;gap:8px;}
+.hero .stats {grid-column:2;padding:0;}
+.hero .stat {padding:0 6px;gap:3px;}
+.hero .stat .card-label {font-size:9px;letter-spacing:.07em;}
+.hero .stat-value {font-size:13px;}
+.hero .stat-sub {font-size:10px;}
+@media(max-width:359px) {
+.hero {grid-template-columns:64px minmax(0,1fr);gap:14px 12px;padding:16px 14px;}
+.hero #badge {width:64px;height:78px;grid-row:1;}
+.hero .stats {grid-column:1 / -1;border-top:1px solid var(--border);padding-top:12px;}
+.hero .stat .card-label {font-size:10px;}
+}
+@media(prefers-reduced-motion:reduce) {
+body.ready #wrap,.xpbar .fill {transition:none;}
+}
+html.dark {--accent-bright:#64b5ff;}
+.hero {grid-template-columns:98px minmax(0,1fr);column-gap:12px;}
+.hero #badge {width:98px;height:126px;}
+.gami-overlay-bar {display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border);font-weight:650;background:var(--card);flex-shrink:0;}
+@media(max-width:359px) {
+.hero {grid-template-columns:86px minmax(0,1fr);}
+.hero #badge {width:86px;height:108px;}
+}
+.hero {grid-template-columns:126px minmax(0,1fr);padding:20px 16px 14px;gap:16px 14px;
+  position:relative;isolation:isolate;border-color:var(--border);box-shadow:inset 0 0 0 1px var(--accent);
+  background:var(--card);--hero-light-strength:28%;}
+html.dark .hero {--hero-light-strength:20%;}
+.hero::before {content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;border-radius:inherit;
+  background:radial-gradient(ellipse 175px 150px at 80px 88px,color-mix(in srgb,var(--accent) var(--hero-light-strength),transparent),transparent 100%);
+  opacity:.85;animation:hero-light-breathe 8s ease-in-out 3;}
+@keyframes hero-light-breathe {0%,100%{opacity:.85;}50%{opacity:.6;}}
+@media(prefers-reduced-motion:reduce) {
+.hero::before {animation:none;opacity:.85;}
+}
+.hero #badge {width:126px;height:154px;grid-row:1;}
+.hero #rankName {font-size:18px;line-height:1.25;}
+.hero .level-chip {font-size:11px;padding:4px 9px;}
+.hero .xpbar {height:8px;}
+.hero .xp-meta {font-size:11px;flex-wrap:wrap;gap:3px 8px;}
+.hero .stats {grid-column:1/-1;padding:12px 4px;border:1px solid var(--border);border-radius:10px;background:var(--accent-soft);}
+.hero .stat .card-label {font-size:10px;}
+.hero .stat-value {font-size:14px;}
+.hero .stat-sub {font-size:11px;}
+@media(max-width:359px) {
+.hero {grid-template-columns:106px minmax(0,1fr);gap:14px 10px;padding:16px 12px 12px;}
+.hero #badge {width:106px;height:136px;}
+.hero #rankName {font-size:16px;}
+}
+.hero .stats,#achievementGoal {background:rgba(0,113,211,.035);background:color-mix(in srgb,var(--accent) 3.5%,var(--card));}
+html.dark .hero .stats,html.dark #achievementGoal {background:color-mix(in srgb,var(--accent) 7%,var(--card));}

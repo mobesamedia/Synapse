@@ -33,10 +33,10 @@ except ImportError:
 
 
 FEATURE_LABELS = {
-    "mindmap_enabled": "Mind Map",
+    "mindmap_enabled": "MindMap",
     "gamification_sidebar_enabled": "Gamification Sidebar",
     "music_player_enabled": "Music Player",
-    "pomodoro_enabled": "Pomodoro Timer",
+    "pomodoro_enabled": "Timer",
     "ai_assistant_enabled": "AI Assistant",
     "website_viewer_enabled": "Website Viewer",
     "notebook_enabled": "Notebook",

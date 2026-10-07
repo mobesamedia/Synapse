@@ -1,0 +1,42 @@
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import {createHash,randomUUID} from 'node:crypto';
+import {pathToFileURL} from 'node:url';
+const {PGlite}=await import(pathToFileURL(process.argv[2]).href);
+const db=new PGlite();
+await db.exec('CREATE ROLE anon; CREATE ROLE authenticated; CREATE ROLE service_role BYPASSRLS;');
+for(const name of ['202609230001_friends.sql','202609250001_cheers.sql'])await db.exec(await readFile(new URL('../supabase/migrations/'+name,import.meta.url),'utf8'));
+const hash=s=>createHash('sha256').update(s).digest('hex');
+let n=0;const check=(a,b)=>{assert.deepEqual(a,b);n++;};
+async function call(who,op,payload={},id=randomUUID()) {
+ if(['request','cheer'].includes(op))payload={issued_at:Math.floor(Date.now()/1000),...payload};
+ return (await db.query('SELECT public.synapse_friends_api($1,$2,$3,$4,$5) r',[op,hash(who),id,JSON.stringify(payload),hash(who+'net')])).rows[0].r;
+}
+const people={};for(const name of ['aa','bb','cc','dd','ee','ff'])people[name]=(await call(name,'register',{name,level:12,badges:{}})).snapshot.me;
+const cheer=(from,to,id)=>call(from,'cheer',{target:people[to].id,kind:'fire'},id);
+check((await cheer('aa','bb')).error,'not_found');
+for(const name of ['bb','cc','dd','ee']){await call('aa','request',{code:people[name].code});await call(name,'accept',{target:people.aa.id});}
+const id=randomUUID();check((await cheer('aa','bb',id)).snapshot.cheers_remaining,2);
+check((await cheer('aa','bb',id)).snapshot.cheers_remaining,2);
+check((await cheer('aa','bb')).error,'cheer_duplicate');
+check((await call('aa','cheer',{target:people.cc.id,kind:'<script>'})).error,'invalid_request');
+let inbox=(await call('bb','sync')).snapshot.cheers;check(inbox.length,1);check(inbox[0].kind,'fire');
+await call('ff','cheers_ack',{ids:[inbox[0].id]});check((await call('bb','sync')).snapshot.cheers.length,1);
+await call('bb','cheers_ack',{ids:[inbox[0].id]});check((await call('bb','sync')).snapshot.cheers.length,0);
+check((await cheer('aa','cc')).snapshot.cheers_remaining,1);
+check((await cheer('aa','dd')).snapshot.cheers_remaining,0);
+check((await cheer('aa','ee')).error,'cheer_limit');
+await call('dd','delete');check((await cheer('aa','ee')).error,'cheer_limit');
+await call('cc','cheers_settings',{enabled:false});check((await call('cc','sync')).snapshot.cheers.length,0);
+check((await cheer('aa','cc')).error,'not_found');
+await call('cc','cheers_settings',{enabled:true});check((await call('cc','sync')).snapshot.cheers.length,0);
+await db.exec("UPDATE synapse_friends.cheer_sends SET day=day-1;");
+check((await cheer('aa','bb')).snapshot.cheers_remaining,2);
+await call('bb','block',{target:people.aa.id});check((await call('bb','sync')).snapshot.cheers.length,0);
+await call('bb','unblock',{target:people.aa.id});await call('aa','request',{code:people.bb.code});await call('bb','accept',{target:people.aa.id});
+check((await call('bb','sync')).snapshot.cheers.length,0);
+check((await cheer('aa','bb')).error,'cheer_duplicate');
+check((await call('aa','cheer',{target:people.ee.id,kind:'luck',issued_at:1})).error,'expired');
+await cheer('ee','aa');await db.exec("UPDATE synapse_friends.cheers SET created_at=now()-interval '8 days';");check((await call('aa','sync')).snapshot.cheers.length,0);
+const roles=(await db.query("SELECT has_table_privilege('anon','synapse_friends.cheers','SELECT') a,has_table_privilege('service_role','synapse_friends.cheer_sends','INSERT') b")).rows[0];check(roles,{a:false,b:false});
+console.log(n+' greeting database checks passed.');await db.close();

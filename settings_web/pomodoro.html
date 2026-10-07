@@ -3,21 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pomodoro</title>
+<title>Timer</title>
 <style>
   :root{
     color-scheme:light;
     --accent:#0071D3;
     --bg:#f5f5f7; --card:#ffffff; --border:rgba(0,0,0,0.08);
-    --hairline:rgba(0,0,0,0.07); --text:#1d1d1f; --muted:#8a8a90;
-    --field-bg:#f0f0f2; --switch-off:#d8d8dd; --bar-empty:#e8e8ec;
+    --hairline:rgba(0,0,0,0.07); --text:#1d1d1f; --muted:#686870;
+    --track:#e5e5ea; --field-bg:#f0f0f2; --switch-off:#d8d8dd; --bar-empty:#e8e8ec;
     --danger:#c93b3b;
   }
   html.dark, body.dark{
     color-scheme:dark;
-    --bg:#1c1c1e; --card:#2a2a2c; --border:rgba(255,255,255,0.08);
-    --hairline:rgba(255,255,255,0.09); --text:#f5f5f7; --muted:#9a9aa0;
-    --field-bg:#3a3a3c; --switch-off:#48484a; --bar-empty:#3a3a3c;
+    /* Timer-only palette: neutral base, recessed cards, raised controls.
+       Keep supporting labels readable; reserve inactive grey for idle controls. */
+    --bg:#2c2c2c; --card:#252525; --border:rgba(255,255,255,0.08);
+    --hairline:rgba(255,255,255,0.07); --text:#ffffff; --muted:#b0b0b0;
+    --track:#252525; --field-bg:#414141; --switch-off:#414141; --bar-empty:#414141;
+    --inactive:#7e7e7e; --tab-selected:#414141;
     --danger:#e06c6c;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
@@ -27,7 +30,8 @@
     background:var(--bg);color:var(--text);font-size:13px;-webkit-font-smoothing:antialiased;
     display:flex;flex-direction:column;overflow:hidden;
   }
-  .content{flex:1;overflow-y:auto;padding:26px 26px 10px;}
+  .content{flex:1;min-height:0;overflow-y:auto;padding:0 20px 16px;}
+  .header{padding:18px 20px 16px;flex-shrink:0;}
   .content::-webkit-scrollbar{width:5px;}
   .content::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
 
@@ -102,6 +106,41 @@
   .btn-grey{background:var(--field-bg);color:var(--text);}
   .btn-grey:hover{filter:brightness(0.97);}
   html.dark .btn-grey:hover, body.dark .btn-grey:hover{filter:brightness(1.15);}
+
+  [hidden]{display:none!important;}
+  .seg{display:flex;background:var(--track);border-radius:9px;padding:3px;gap:2px;}
+  .seg button{flex:1;min-width:0;border:0;background:transparent;color:var(--muted);
+    font:inherit;font-size:12.5px;font-weight:600;padding:6px 4px;border-radius:7px;cursor:pointer;}
+  .seg button[aria-selected="true"]{background:var(--tab-selected,var(--card));color:var(--text);}
+  html.dark .seg button[aria-selected="false"],body.dark .seg button[aria-selected="false"]{color:var(--inactive);}
+  html.dark .seg button:hover,body.dark .seg button:hover{color:var(--text);}
+  html.dark .stepper button,body.dark .stepper button{color:var(--text);}
+  html.dark .stepper button:hover,body.dark .stepper button:hover{background:var(--bg);}
+  html.dark .content::-webkit-scrollbar-thumb,body.dark .content::-webkit-scrollbar-thumb{background:var(--field-bg);}
+  .switch input:focus-visible + .slider{outline:2px solid var(--accent);outline-offset:3px;}
+  .panel>.sec:first-child{margin-top:0;}
+  .analytics-summary{display:flex;align-items:baseline;justify-content:space-between;gap:12px;
+    padding:15px 16px;background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:10px;}
+  .analytics-summary b{font-size:24px;letter-spacing:-.03em;font-variant-numeric:tabular-nums;}
+  .analytics-summary span,.analytics-note{font-size:12px;color:var(--muted);line-height:1.5;}
+  .analytics-note{margin:12px 2px 0;}
+  .analytics-note summary{cursor:pointer;min-height:24px;}
+  .analytics-note p{margin-top:6px;}
+  .deck-list{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+  .deck-row{display:flex;align-items:center;gap:9px;min-height:52px;padding:9px 13px;
+    border-top:1px solid var(--hairline);}
+  .deck-list>.deck-row:first-child{border-top:0;}
+  .deck-toggle{border:0;background:transparent;color:var(--muted);cursor:pointer;
+    flex:0 0 24px;width:24px;height:28px;border-radius:5px;font-size:16px;}
+  .deck-toggle:hover{background:var(--field-bg);}
+  .deck-main{min-width:0;flex:1;}
+  .deck-name{font-weight:500;overflow-wrap:anywhere;line-height:1.4;}
+  .deck-bar{height:3px;background:var(--field-bg);border-radius:3px;margin-top:6px;overflow:hidden;}
+  .deck-bar i{display:block;height:100%;background:var(--accent);border-radius:3px;opacity:.75;}
+  .deck-time{font-size:12px;white-space:nowrap;font-variant-numeric:tabular-nums;}
+  .analytics-state{padding:26px 18px;text-align:center;font-size:13px;line-height:1.6;color:var(--muted);}
+  @media(max-width:400px){.header{padding:16px 14px 14px}.content{padding:0 14px 14px}.row{padding:10px;gap:7px}.row .rl{font-size:13px}.unit{width:20px}.stepper input{width:36px}}
+  @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;}}
 </style>
 <script>
   /* Apply dark mode BEFORE the first paint (avoids a white flash) —
@@ -111,12 +150,27 @@
       document.documentElement.classList.add('dark');
   }catch(e){}
 </script>
+<style id="synapse-keyboard-focus">
+body button:focus-visible, body input:focus-visible, body select:focus-visible,
+body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-visible {
+  outline: 2px solid var(--accent, var(--primary-color, #0071d3));
+  outline-offset: 2px;
+}
+</style>
 </head>
 <body>
-  <div class="content">
-    <h1 id="title">Pomodoro</h1>
+  <div class="header">
+    <h1 id="title">Timer</h1>
+    <div class="seg" role="tablist" aria-label="Timer">
+      <button id="tab-settings" role="tab" aria-selected="true" aria-controls="panel-settings">Settings</button>
+      <button id="tab-statistics" role="tab" aria-selected="false" aria-controls="panel-statistics" tabindex="-1">Statistics</button>
+      <button id="tab-analytics" role="tab" aria-selected="false" aria-controls="panel-analytics" tabindex="-1">Analytics</button>
+    </div>
+  </div>
+  <div class="content"><div id="panels">
+    <section class="panel" id="panel-settings" role="tabpanel" aria-labelledby="tab-settings">
 
-    <div class="sec" id="secSettings">Settings</div>
+    <div class="sec" id="secSettings">Pomodoro Settings</div>
     <div class="group">
       <div class="row"><div class="rl" id="lblWork">Work Duration</div>
         <div class="stepper"><button data-step="-1" data-for="work">−</button><input id="work" type="number" min="1" max="120"><button data-step="1" data-for="work">+</button></div>
@@ -134,7 +188,9 @@
         <label class="switch"><input type="checkbox" id="autostart"><span class="slider"></span></label></div>
     </div>
 
-    <div class="sec" id="secStats">Statistics</div>
+    </section>
+    <section class="panel" id="panel-statistics" role="tabpanel" aria-labelledby="tab-statistics" hidden>
+    <div class="sec" id="secStats">Pomodoro Statistics</div>
     <div class="stats">
       <div class="stat"><b id="stTotal">0</b><span id="lblTotal">Total Pomodoros</span></div>
       <div class="stat"><b id="stFocus">0m</b><span id="lblFocus">Focus Time</span></div>
@@ -150,7 +206,16 @@
     <div class="today-row"><b id="lblToday">Today</b><span id="stToday">0 sessions · 0m</span></div>
 
     <button class="reset-link" id="resetBtn">Reset Statistics</button>
-  </div>
+    </section>
+    <section class="panel" id="panel-analytics" role="tabpanel" aria-labelledby="tab-analytics" hidden>
+      <div class="sec" id="analyticsPeriod">Study time · Last 30 days</div>
+      <div id="analyticsBody" aria-live="polite"></div>
+      <details class="analytics-note">
+        <summary id="analyticsInfo">About this study time</summary>
+        <p id="analyticsExplanation">Recorded answer time, capped by your Anki deck settings. Includes learning and review cards, not breaks or card editing. Parent decks include their subdecks; totals count each answer once. Cards are grouped by their current deck; deleted cards are excluded.</p>
+      </details>
+    </section>
+  </div></div>
 
   <div class="footer">
     <button class="btn btn-grey" id="cancelBtn">Cancel</button>
@@ -200,6 +265,97 @@ function renderStats(s){
   });
 }
 
+var initialSettings = '';
+function settingsSnapshot(){return ['work','short','long','target'].map(function(id){return document.getElementById(id).value;}).join('|')+'|'+document.getElementById('autostart').checked;}
+function updateFooter(){
+  var editing=activeTab==='settings' || settingsSnapshot()!==initialSettings;
+  document.getElementById('saveBtn').hidden=!editing;
+  document.getElementById('cancelBtn').textContent=editing?label('cancel','Cancel'):label('close','Close');
+}
+var activeTab = 'settings', analyticsRequested = false, analyticsData = null;
+var expandedDecks = new Set(), sizePending = false;
+function label(key, fallback){return window._L[key] || fallback;}
+function requestSize(){
+  if(sizePending) return;
+  sizePending = true;
+  requestAnimationFrame(function(){
+    sizePending = false;
+    var content = document.querySelector('.content'), style = getComputedStyle(content);
+    var height = document.querySelector('.header').offsetHeight + document.getElementById('panels').offsetHeight +
+      parseFloat(style.paddingTop) + parseFloat(style.paddingBottom) + document.querySelector('.footer').offsetHeight;
+    bridge('resize', String(Math.ceil(height)));
+  });
+}
+function selectTab(name){
+  activeTab = name;
+  updateFooter();
+  ['settings','statistics','analytics'].forEach(function(key){
+    var selected = key === name, tab = document.getElementById('tab-'+key);
+    tab.setAttribute('aria-selected', String(selected));tab.tabIndex = selected ? 0 : -1;
+    document.getElementById('panel-'+key).hidden = !selected;
+  });
+  document.querySelector('.content').scrollTop = 0;
+  if(name === 'analytics' && !analyticsRequested){loadAnalytics();}
+  requestSize();
+}
+function loadAnalytics(){
+  analyticsRequested = true;
+  var body = document.getElementById('analyticsBody');body.replaceChildren();
+  var state = document.createElement('div');state.className='analytics-state';
+  state.textContent=label('loading','Loading study time…');body.appendChild(state);
+  bridge('analytics');
+}
+function studyTime(ms){
+  var minutes=Math.floor(ms/60000);
+  if(ms>0 && minutes===0) return '<1 '+label('min','min');
+  return fmtTime(minutes);
+}
+window.updateAnalytics=function(data){
+  analyticsData=data;
+  expandedDecks=new Set(data.expanded || []);
+  renderAnalytics();
+};
+window.analyticsFailed=function(){
+  analyticsRequested=false;
+  var body=document.getElementById('analyticsBody');body.replaceChildren();
+  var state=document.createElement('div');state.className='analytics-state';state.textContent=label('analyticsError','Study time could not be loaded.');body.appendChild(state);
+  var retry=document.createElement('button');retry.className='btn btn-grey';retry.textContent=label('retry','Retry');retry.onclick=loadAnalytics;body.appendChild(retry);requestSize();
+};
+function renderAnalytics(){
+  var body=document.getElementById('analyticsBody');body.replaceChildren();
+  var data=analyticsData;
+  if(!data.decks.length){
+    var empty=document.createElement('div');empty.className='group analytics-state';empty.textContent=label('analyticsEmpty','No recorded study time in the last 30 days.');body.appendChild(empty);requestSize();return;
+  }
+  var summary=document.createElement('div');summary.className='analytics-summary';
+  var total=document.createElement('b');total.textContent=studyTime(data.milliseconds);
+  var caption=document.createElement('span');caption.textContent=label('totalStudy','Total study time');summary.append(total,caption);body.appendChild(summary);
+  var list=document.createElement('div');list.className='deck-list';body.appendChild(list);
+  var maximum=data.decks[0].milliseconds || 1;
+  function append(nodes,depth){nodes.forEach(function(node){
+    var row=document.createElement('div');row.className='deck-row';row.style.paddingLeft=(10+Math.min(depth,6)*12)+'px';
+    var toggle=document.createElement(node.children.length?'button':'span');toggle.className='deck-toggle';
+    if(node.children.length){
+      toggle.type='button';toggle.textContent=expandedDecks.has(node.key)?'⌄':'›';
+      toggle.setAttribute('aria-label',node.key);toggle.setAttribute('aria-expanded',String(expandedDecks.has(node.key)));
+      toggle.onclick=function(){
+        if(expandedDecks.has(node.key)) expandedDecks.delete(node.key);else expandedDecks.add(node.key);
+        bridge('expanded',JSON.stringify(Array.from(expandedDecks)));renderAnalytics();
+        var replacement=Array.from(document.getElementById('analyticsBody').querySelectorAll('button[aria-expanded]')).find(function(b){return b.getAttribute('aria-label')===node.key});
+        if(replacement) replacement.focus({preventScroll:true});
+      };
+    }else{toggle.setAttribute('aria-hidden','true');}
+    var main=document.createElement('div');main.className='deck-main';
+    var name=document.createElement('div');name.className='deck-name';name.textContent=node.name;name.title=node.key;
+    var bar=document.createElement('div');bar.className='deck-bar';bar.setAttribute('aria-hidden','true');
+    var fill=document.createElement('i');fill.style.width=Math.max(.5,node.milliseconds/maximum*100)+'%';bar.appendChild(fill);main.append(name,bar);
+    var duration=document.createElement('span');duration.className='deck-time';duration.textContent=studyTime(node.milliseconds);
+    row.append(toggle,main,duration);list.appendChild(row);
+    if(expandedDecks.has(node.key)) append(node.children,depth+1);
+  });}
+  append(data.decks,0);requestSize();
+}
+
 window._L = {};
 window._E = {};
 function etr(source){ return Object.prototype.hasOwnProperty.call(window._E, source) ? window._E[source] : source; }
@@ -213,8 +369,10 @@ window.init = function(data){
 
     // translated labels
     var L = window._L = data.labels || {};
-    document.title = L.title || 'Pomodoro';
+    document.title = L.title || 'Timer';
     var map = {title:'title', secSettings:'settings', secStats:'statistics',
+      'tab-settings':'tabSettings','tab-statistics':'tabStatistics','tab-analytics':'tabAnalytics',
+      analyticsPeriod:'analyticsPeriod',analyticsInfo:'analyticsInfo',analyticsExplanation:'analyticsExplanation',
       lblWork:'work', lblShort:'short', lblLong:'long', lblTarget:'target', lblAuto:'auto',
       lblTotal:'total', lblFocus:'focus', lblStreak:'streak', lblBest:'best',
       lblWeek:'week', lblToday:'today', resetBtn:'reset', cancelBtn:'cancel', saveBtn:'save'};
@@ -234,7 +392,10 @@ window.init = function(data){
     document.getElementById('target').value = cfg.target || 4;
     document.getElementById('autostart').checked = !!cfg.autoStart;
 
+    initialSettings=settingsSnapshot();
+    updateFooter();
     renderStats(data.stats || {});
+    requestSize();
   }catch(e){ bridge('err', String(e)); }
 };
 
@@ -242,12 +403,27 @@ window.init = function(data){
 window.updateStats = function(s){ renderStats(s || {}); };
 
 document.addEventListener('DOMContentLoaded', function(){
+  document.querySelectorAll('[role="tab"]').forEach(function(tab){
+    tab.onclick=function(){selectTab(tab.id.replace('tab-',''));};
+    tab.onkeydown=function(e){
+      var tabs=Array.from(document.querySelectorAll('[role="tab"]')), index=tabs.indexOf(tab);
+      if(e.key==='ArrowRight') index=(index+1)%tabs.length;
+      else if(e.key==='ArrowLeft') index=(index+tabs.length-1)%tabs.length;
+      else if(e.key==='Home') index=0;else if(e.key==='End') index=tabs.length-1;else return;
+      e.preventDefault();tabs[index].click();tabs[index].focus();
+    };
+  });
+  new ResizeObserver(requestSize).observe(document.getElementById('panels'));
+  window.addEventListener('resize',requestSize);
+  document.getElementById('panel-settings').addEventListener('input',updateFooter);
+  document.getElementById('panel-settings').addEventListener('change',updateFooter);
   // steppers
   document.querySelectorAll('.stepper button').forEach(function(btn){
     btn.addEventListener('click', function(){
       var el = document.getElementById(btn.dataset.for);
       el.value = (parseInt(el.value,10) || 0) + parseInt(btn.dataset.step,10);
       clampInput(el);
+      updateFooter();
     });
   });
   document.querySelectorAll('.stepper input').forEach(function(el){
@@ -302,7 +478,7 @@ document.addEventListener('DOMContentLoaded', function(){
             var preCss = 'display:none;max-height:140px;overflow:auto;white-space:pre-wrap;word-break:break-word;'
                 + 'font-size:11px;border-radius:6px;padding:8px;margin:0 0 8px 0;'
                 + (dark ? 'background:#404040;border:1px solid #555;' : 'background:#f5f5f5;border:1px solid #ccc;');
-            b.innerHTML = '<div style="font-weight:700;color:#dc3545;margin-bottom:4px;">' + etr('SynapsePro error') + '</div>'
+            b.innerHTML = '<div style="font-weight:700;color:#dc3545;margin-bottom:4px;">' + etr('Synapse error') + '</div>'
                 + '<div class="sp-eb-msg" style="margin-bottom:6px;word-break:break-word;"></div>'
                 + '<pre class="sp-eb-pre" style="' + preCss + '"></pre>'
                 + '<div><button type="button" data-spact="details" style="' + btnCss + '">' + etr('Show details') + '</button>'

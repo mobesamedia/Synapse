@@ -40,7 +40,7 @@ except ImportError:
         return {}
 
 try:
-    from .theme import palette as _palette
+    from .theme import dialog_palette as _palette
 except ImportError:
     def _palette(night):  # type: ignore
         return {}
@@ -184,6 +184,11 @@ if QWebEnginePage is not None:
             super().__init__(*args)
             self._callback = callback
 
+        def acceptNavigationRequest(self, url, navigation_type, is_main_frame):  # noqa: N802
+            # This privileged bridge belongs only to the bundled sidebar.
+            return bool(is_main_frame and url.isLocalFile()
+                        and os.path.realpath(url.toLocalFile()) == os.path.realpath(_HTML_PATH))
+
         def javaScriptConsoleMessage(self, level, message, line, source_id):  # noqa: N802
             if isinstance(message, str) and message.startswith(_BRIDGE_PREFIX):
                 try:
@@ -245,6 +250,7 @@ class GamificationSidebar(QDockWidget):
     def showEvent(self, event) -> None:  # noqa: N802
         """Replay the badge animation once whenever the sidebar is opened."""
         super().showEvent(event)
+        self._inject()
         if self._page and self._loaded:
             try:
                 self._page.runJavaScript("window.replayBadge && replayBadge();")
@@ -276,6 +282,25 @@ class GamificationSidebar(QDockWidget):
             self._on_complete_challenge()
         elif action.startswith("popups:"):
             self._set_popups_enabled(action.split(":", 1)[1] == "1")
+        elif action.startswith("popupType:"):
+            parts = action.split(":")
+            if len(parts) == 3 and parts[1] in ("rank", "level", "challenge") and parts[2] in ("0", "1"):
+                self._set_popups_enabled(parts[2] == "1", parts[1])
+        elif action.startswith("streakRules:"):
+            try:
+                if len(action) <= 256 and self.manager:
+                    if self.manager.set_streak_rules(json.loads(action.split(":", 1)[1])):
+                        self.update_display()
+            except (ValueError, TypeError):
+                pass
+        elif action.startswith("achievementSeen:"):
+            badge_id = action.split(":", 1)[1]
+            if self.manager and self.manager.mark_achievement_seen(badge_id):
+                self.update_display()
+        elif action.startswith("favoriteAchievement:"):
+            badge_id = action.split(":", 1)[1]
+            if self.manager and self.manager.toggle_favorite_achievement(badge_id):
+                self.update_display()
         elif action.startswith("err:"):
             print(f"{ADDON_NAME}: JS error: {action[4:]}")
 
@@ -289,6 +314,7 @@ class GamificationSidebar(QDockWidget):
         except Exception as e:
             print(f"{ADDON_NAME}: inject failed: {e}")
             traceback.print_exc()
+
 
     @staticmethod
     def _addon_settings():
@@ -310,14 +336,18 @@ class GamificationSidebar(QDockWidget):
             return True
         return bool(settings.get("gamification_popups_enabled", True))
 
-    def _set_popups_enabled(self, enabled: bool) -> None:
+    def _set_popups_enabled(self, enabled: bool, event_type=None) -> None:
         """Toggle the celebration popups (checkbox in this sidebar)."""
         try:
             settings, save = self._addon_settings()
             if settings is not None:
-                settings["gamification_popups_enabled"] = bool(enabled)
+                if event_type is not None and event_type not in ("rank", "level", "challenge"):
+                    return
+                key = "gamification_popup_" + event_type if event_type else "gamification_popups_enabled"
+                settings[key] = bool(enabled)
                 if callable(save):
                     save()
+                self.update_display()
         except Exception as e:
             print(f"{ADDON_NAME}: popup toggle failed: {e}")
 
@@ -341,6 +371,8 @@ class GamificationSidebar(QDockWidget):
     def _build_payload(self) -> Dict[str, Any]:
         night = _is_night()
         c = _palette(night)
+        popup_settings, _save = self._addon_settings()
+        popup_settings = popup_settings or {}
 
         payload: Dict[str, Any] = {
             "isDark": night,
@@ -354,11 +386,13 @@ class GamificationSidebar(QDockWidget):
                 "text":         c.get("text"),
                 "muted":        c.get("text_muted"),
                 "track":        c.get("grey_light"),
+                "statsControlBg": c.get("grey_mid" if night else "grey_light"),
+                "statsControlColor": c.get("text_muted"),
                 # NOTE: green intentionally not themed from the palette — the
                 # page uses its own muted, Apple-style green (text-only).
             },
             "labels": {
-                "title":       _("SynapsePro Gamification"),
+                "title":       _("Synapse Gamification"),
                 "level":       _("Level {}"),
                 "nextGoal":    _("Next Goal"),
                 "onlyXp":      _("Only {} XP left"),
@@ -377,9 +411,36 @@ class GamificationSidebar(QDockWidget):
                 "how":         _("How it works"),
                 "xpNeededTip": _("Needed for next level: {}"),
                 "popups":      _("Celebration popups"),
-                "popupsHint":  _("Show a popup on the home screen for new ranks, level-ups and completed challenges."),
+                "popupsHint":  _("Choose which celebrations appear on the dashboard. Changes are saved immediately."),
+                "popupRank": _("Rank up"), "popupLevel": _("Level up"),
+                "popupChallenge": _("Daily Challenge"),
             },
+            "streakRules": (self.manager.data.get("streak_rules", {}) if self.manager else {}),
+            "streakLabels": {key: _(value) for key, value in {
+                "settings": "Settings", "close": "Close", "title": "Streak sensitivity",
+                "reviews": "Minimum reviews per day", "allowCards": "Creating cards can also count",
+                "cards": "Minimum new cards per day",
+                "hint": "A day counts when either enabled goal is reached. Anki’s day boundary applies. Changes recalculate your current streak, including past days; earned XP and badges stay yours.",
+                "creationHint": "Uses creation dates of cards still in your collection, including imported cards. Deleted cards no longer count.",
+                "info": "Your streak counts consecutive qualifying Anki days. Today remains open until the next day begins. Choose your daily criteria in Settings. Achievement badges keep their own study criteria.",
+            }.items()},
             "popupsEnabled": self._popups_enabled(),
+            "popupTypes": {key: bool(popup_settings.get("gamification_popup_" + key, key != "level"))
+                           for key in ("rank", "level", "challenge")},
+            "achievementLabels": {
+                "title": _("Achievements"), "hint": _("Select a badge to see your progress."),
+                "locked": _("Not earned yet"), "close": _("Close"),
+                "value": _("Recorded progress: {}"), "next": _("Next stage: {}"),
+                "remaining": _("Still needed: {}"), "complete": _("All stages earned"),
+                "permanent": _("This achievement is yours to keep."),
+                "nextGoal": _("Your next badge"),
+                "goalOne": _("One more {} to reach {}."),
+                "goalMany": _("{} more {} to reach {}."),
+                "new": _("New"),
+                "earnedOn": _("Earned on {}"),
+                "chooseFavorite": _("Choose as favorite badge"),
+                "favorite": _("Favorite badge"),
+            },
             "guideHtml": self._guide_html(),
         }
 
@@ -473,6 +534,7 @@ class GamificationSidebar(QDockWidget):
             },
             "nextGoal": next_goal,
             "ranks": ranks_payload,
+            "achievements": m.get_achievements(),
         })
         return payload
 

@@ -209,7 +209,7 @@ class SidebarWidget(QWidget):
         
         top_icon_definitions = [
             (constants.AI_TOOL_ICON_FILENAME, _("Show/Hide AI Assistant")), (constants.WEBSITE_ICON_FILENAME, _("Show/Hide Website Viewer")),
-            (constants.NOTEBOOK_ICON_FILENAME, _("Show/Hide Notebook")), (constants.MINDMAP_ICON_FILENAME, _("Show/Hide Mind Map")),
+            (constants.NOTEBOOK_ICON_FILENAME, _("Show/Hide Notebook")), (constants.MINDMAP_ICON_FILENAME, _("Show/Hide MindMap")),
             (constants.GAME_ICON_FILENAME, _("Toggle Gamification Sidebar")),
             (constants.STUDY_PLAN_ICON_FILENAME, _("Configure Study Plan")),
         ]
@@ -266,7 +266,7 @@ class SidebarWidget(QWidget):
             line_bottom.setFrameShape(QFrame.Shape.HLine); line_bottom.setFrameShadow(QFrame.Shadow.Sunken)
             main_layout.addWidget(line_bottom)
             
-            self._timer_icon_button = self.create_icon_button(constants.TIMER_ICON_FILENAME, _("Pomodoro Timer Settings"))
+            self._timer_icon_button = self.create_icon_button(constants.TIMER_ICON_FILENAME, _("Timer Settings"))
             if self._timer_icon_button:
                 self._timer_icon_button.setCheckable(False)
                 if hasattr(pomodoro, 'open_pomodoro_config'): qconnect(self._timer_icon_button.clicked, pomodoro.open_pomodoro_config)
@@ -353,6 +353,19 @@ class SidebarWidget(QWidget):
         if not dock_object_name: return
         btn_ref = self._dock_button_refs.get(dock_object_name)
         if btn_ref is None: return
+        # A profile change can replace a lazily created dock. Reconnect to the
+        # current object instead of keeping the old dock's visibility listener.
+        existing = self._dock_visibility_connections.get(dock_object_name)
+        if existing:
+            current = mw.findChild(QDockWidget, dock_object_name) if mw else None
+            previous = existing[0]() if existing[0] else None
+            if previous is not current:
+                if previous is not None:
+                    try:
+                        previous.visibilityChanged.disconnect(existing[1])
+                    except (RuntimeError, TypeError):
+                        pass
+                self._dock_visibility_connections.pop(dock_object_name, None)
         # Not connected yet → wire it up (this also syncs the state once).
         if dock_object_name not in self._dock_visibility_connections:
             self._setup_dock_visibility_connection(btn_ref, dock_object_name)

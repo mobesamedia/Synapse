@@ -3,6 +3,200 @@
 
 CHANGELOG = [
     {
+        "version": "1.6.0",
+        "date": "October 2026",
+        "items": [
+            {
+                "tag": "Highlight",
+                "text": "FreeMap introduces a flexible canvas for diagrams, learning paths, and visual notes, with shapes, formatted text, images, icons, and customizable connections."
+            },
+            {
+                "tag": "Highlight",
+                "text": "The Custom Deck Overview now offers three layouts: Classic, a compact Focus layout with a donut chart, and Overview with a study-history graph."
+            },
+            {
+                "tag": "Highlight",
+                "text": "Timer Analytics shows recorded study time by deck over the past 30 days, with expandable subdecks and automatic sorting by study duration."
+            },
+            {
+                "tag": "Highlight",
+                "text": "The AI Assistant now displays mathematical formulas and includes a Copy button for answers."
+            },
+            {
+                "tag": "New",
+                "text": "The AI Assistant now supports DeepSeek API, including streamed answers and reasoning."
+            },
+            {
+                "tag": "Highlight",
+                "text": "The PDF Card Creator now supports Basic, reversed, and Cloze cards."
+            },
+            {
+                "tag": "Highlight",
+                "text": "Dark Mode has been unified across the main features, Settings, and pop-up menus for a more consistent appearance."
+            },
+            {
+                "tag": "Highlight",
+                "text": "Added Polish as the tenth interface language, including Settings and onboarding."
+            },
+            {
+                "tag": "New",
+                "text": "Added a local icon library to FreeMap, with categories, English search keywords, customizable colors, and icons included in exported maps."
+            },
+            {
+                "tag": "New",
+                "text": "Added a FreeMap tutorial that demonstrates the canvas and its editing tools."
+            },
+            {
+                "tag": "New",
+                "text": "MindMap and FreeMap objects can now link directly to Anki notes and cards."
+            },
+            {
+                "tag": "New",
+                "text": "Added configurable streak requirements, including a minimum number of reviews and optional qualification through card creation."
+            },
+            {
+                "tag": "New",
+                "text": "Added achievement badges for study milestones, with multiple progression tiers."
+            },
+            {
+                "tag": "New",
+                "text": "The Deck Overview recall indicator now supports adjustable thresholds and a manually selected smiley for each deck."
+            },
+            {
+                "tag": "New",
+                "text": "Optional colored indicators in the Deck Browser show a deck’s automatic or manually selected recall status. Indicators can be enabled globally or for individual decks."
+            },
+            {
+                "tag": "New",
+                "text": "The Deck Overview title can now use either the primary theme color or a custom color."
+            },
+            {
+                "tag": "New",
+                "text": "Custom Backgrounds can optionally appear behind learning cards, with separate intensity and blur settings."
+            },
+            {
+                "tag": "New",
+                "text": "Dashboard surfaces now support adjustable opacity and an optional Glass Effect, with a live preview."
+            },
+            {
+                "tag": "New",
+                "text": "Added a compact Deck Browser width option for users who prefer Anki’s narrower layout."
+            },
+            {
+                "tag": "New",
+                "text": "The Daily Fact widget can now display a random fact from all available categories."
+            },
+            {
+                "tag": "New",
+                "text": "The Dashboard can now show open tasks instead of daily facts."
+            },
+            {
+                "tag": "New",
+                "text": "Added recurring tasks and an optional cleanup setting for completed tasks."
+            },
+            {
+                "tag": "New",
+                "text": "The AI Assistant now includes layout settings for line spacing, message spacing, and text size."
+            },
+            {
+                "tag": "New",
+                "text": "Added optional current-card context for AI questions, with explicit controls over whether card content is included."
+            },
+            {
+                "tag": "New",
+                "text": "The developer console now includes a temporary Dashboard Demo and optional local diagnostics."
+            },
+            {
+                "tag": "Improved",
+                "text": "Sidebar widths are remembered separately for each main feature. Switching between related tabs, such as MindMap and FreeMap or Notebook, To-Do, and PDF, preserves the current width."
+            },
+            {
+                "tag": "Improved",
+                "text": "MindMap and FreeMap recenter after enlarging or reducing the workspace while preserving the selected zoom level."
+            },
+            {
+                "tag": "Improved",
+                "text": "Refined the MindMap and FreeMap editing menus, text formatting controls, connection tools, and narrow-window layouts."
+            },
+            {
+                "tag": "Improved",
+                "text": "Notebook and map visibility settings now open inside their workspace, matching the Gamification settings style."
+            },
+            {
+                "tag": "Improved",
+                "text": "The Gamification sidebar now includes compact Settings and Info buttons, a refined progress card, and a more balanced Dashboard widget layout."
+            },
+            {
+                "tag": "Improved",
+                "text": "Celebration pop-ups now follow the selected primary color. Their Settings button opens the relevant celebration controls directly."
+            },
+            {
+                "tag": "Improved",
+                "text": "Celebration-specific options are hidden when celebration pop-ups are disabled."
+            },
+            {
+                "tag": "Improved",
+                "text": "The Pomodoro feature is now named Timer, with separate Settings, Statistics, and Analytics tabs and a dialog that adapts to its content."
+            },
+            {
+                "tag": "Improved",
+                "text": "Refined the Deck Overview spacing, chart height, buttons, and information cards. Studying can now be started with the space bar."
+            },
+            {
+                "tag": "Improved",
+                "text": "Brainstorm Cloud can now be enabled or disabled in the Deck Overview settings."
+            },
+            {
+                "tag": "Improved",
+                "text": "Dashboard surface controls are now expandable, with a cleaner preview and clearer Settings organization."
+            },
+            {
+                "tag": "Improved",
+                "text": "Expanded translations across HTML interfaces, Settings, onboarding, Daily Facts, and user-facing messages."
+            },
+            {
+                "tag": "Fix",
+                "text": "Fixed unnecessary scrolling and positioning issues in the Custom Deck Overview."
+            },
+            {
+                "tag": "Fix",
+                "text": "Fixed Deck Browser indicator visibility and alignment alongside deck settings."
+            },
+            {
+                "tag": "Fix",
+                "text": "Fixed background-overlay gaps while studying and opaque centers in the Statistics widget’s circular indicators."
+            },
+            {
+                "tag": "Fix",
+                "text": "Improved grid visibility, tutorial text contrast, and workspace separation in Dark Mode."
+            },
+            {
+                "tag": "Fix",
+                "text": "Improved study XP accounting after sessions, including protection against duplicate credit and recovery after failed saves."
+            },
+            {
+                "tag": "Fix",
+                "text": "Failed Notebook data loads no longer create an editable empty replacement. Users can retry loading without overwriting existing content."
+            },
+            {
+                "tag": "Fix",
+                "text": "Delayed Notebook and map saves remain attached to their original Anki profile when switching profiles."
+            },
+            {
+                "tag": "Fix",
+                "text": "Fixed custom Deck Overview color selection in the native Settings fallback."
+            },
+            {
+                "tag": "Fix",
+                "text": "Fixed missing Daily Fact translations and untranslated AI and map messages."
+            },
+            {
+                "tag": "Fix",
+                "text": "Additional improvements to saving, recovery, imports, exports, keyboard interaction, and compatibility with older Notebook data."
+            }
+        ]
+    },
+    {
         "version": "1.5.0",
         "date": "August 2026",
         "items": [

@@ -42,7 +42,7 @@ _minimum_point_version = getattr(constants, "MIN_ANKI_POINT_VERSION", 250904)
 _anki_point_version = int_version() if "int_version" in globals() else 0
 if mw and _anki_point_version < _minimum_point_version:
     _version_error = (
-        f"SynapsePro requires Anki {_minimum_version} or newer "
+        f"Synapse requires Anki {_minimum_version} or newer "
         f"(installed: {_anki_version})."
     )
     print(_version_error)
@@ -117,6 +117,7 @@ _TOP_TOOLBAR_SIDEBAR_ICON_ID = "synapsepro-sidebar-toggle-icon"
 
 # --- Settings Handling ---
 def get_default_settings() -> Dict[str, Any]:
+    from .deck_overview_options import DEFAULTS as deck_defaults
     return {
         "onboarding_completed": False,
         "theme_enabled": True,
@@ -130,10 +131,14 @@ def get_default_settings() -> Dict[str, Any]:
         "study_plan_widget_enabled": True, "daily_fact_widget_enabled": True,
         "deadline_bar_enabled": True, "statistics_widget_enabled": True,
         "deck_overview_enabled": True,
+        **deck_defaults,
         "pomodoro_enabled": True, "ai_assistant_enabled": True,
         "website_viewer_enabled": True, "notebook_enabled": True,
-        "mindmap_enabled": True, "gamification_sidebar_enabled": True,
+        "workspace_mindmap_tab": True, "workspace_roadmap_tab": True, "mindmap_enabled": True, "gamification_sidebar_enabled": True,
         "gamification_popups_enabled": True,
+        "gamification_popup_rank": True,
+        "gamification_popup_level": False,
+        "gamification_popup_challenge": True,
         "music_player_enabled": True, "stats_time_range": 7,
         "stats_consistency_days": 30,
         "stats_show_consistency": True,
@@ -146,7 +151,15 @@ def get_default_settings() -> Dict[str, Any]:
         "custom_theme_colors": {},       # Used when active_color_theme == "custom"
         "custom_bg_light": "#f5f5f7",    # Custom solid background (light mode)
         "custom_bg_dark":  "#1f1f21",    # Custom solid background (dark mode)
+        "dashboard_surface_opacity": 100,
+        "dashboard_wide_deck_list": True,
+        "dashboard_glass_enabled": False,
+        "dashboard_glass_strength": 6,
+        "dashboard_widget_shadow": 0,
         "custom_background_enabled": False,
+        "custom_background_review_enabled": False,
+        "custom_background_review_intensity": 20,
+        "custom_background_review_blur": 8,
         "custom_background_blur": 0,
         "custom_background_overlay": 0,
         "custom_background_position": "center",
@@ -414,8 +427,12 @@ def on_state_change(new_state: str, old_state: str):
             pass
         try:
             if gamification_manager:
+                gamification_manager.credit_study_xp(getattr(mw, "_sp_session_start_ms", None))
                 gamification_manager.invalidate_dashboard_cache()
                 gamification_manager.refresh_streak_cache(persist=True)
+                gamification_manager.get_achievements()
+                if gamification_sidebar and gamification_sidebar.isVisible():
+                    gamification_sidebar.update_display()
         except Exception as e:
             print(f"SynapsePro: dashboard cache refresh failed: {e}")
         try:
@@ -457,7 +474,7 @@ def _apply_onboarding_result(result: dict):
         return
 
     # ── Language ──────────────────────────────────────────────────────────────
-    valid_langs = {"auto", "en", "de", "es", "ko", "pt", "fr", "vi", "zh", "hi"}
+    valid_langs = {"auto", "en", "de", "es", "ko", "pt", "fr", "vi", "zh", "hi", "pl"}
     lang = result.get("lang", "en")
     if lang not in valid_langs:
         lang = "en"
@@ -596,11 +613,13 @@ def run_onboarding_if_needed():
                 mw.progress.single_shot(150, _refresh_ui_after_onboarding)
             addon_settings["onboarding_completed"] = True
             save_addon_settings()
-            tooltip(_("SynapsePro is ready!"))
+            tooltip(_("Synapse is ready!"))
 
 def _apply_saved_settings(new_settings):
     """Persist the returned settings and refresh every affected piece of UI.
     Shared by the HTML settings dialog and the native fallback."""
+    if not new_settings.get("workspace_mindmap_tab", True) and not new_settings.get("workspace_roadmap_tab", True):
+        new_settings["workspace_mindmap_tab"] = True
     addon_settings.update(new_settings); save_addon_settings()
 
     # Enabling the compact dashboard may require plan/deadline managers even
@@ -630,6 +649,12 @@ def _apply_saved_settings(new_settings):
         set_active_theme(_theme_name)
     except Exception:
         pass
+
+    try:
+        from .mindmap_sidebar import refresh_workspace_settings
+        refresh_workspace_settings()
+    except Exception as error:
+        print(f"SynapsePro: workspace refresh failed: {error}")
 
     # Refresh the launcher sidebar (always-visible icon bar on the side).
     if sidebar_widget_instance:
@@ -806,7 +831,7 @@ def _sync_webview_bg_colors():
         print(f"SynapsePro: webview bg sync failed: {e}")
 
 
-def show_settings_dialog():
+def show_settings_dialog(initial_page=None, initial_section=None):
     try:
         dlg = None
         # Preferred: the modern HTML settings UI. Falls back to the native
@@ -823,8 +848,23 @@ def show_settings_dialog():
             from . import settings_dialog
             dlg = settings_dialog.SettingsDialog(addon_settings, mw)
 
+        if initial_page in ("deck", "dashboard"):
+            dlg._initial_page = initial_page
+            dlg._initial_section = initial_section
+            if hasattr(dlg, "_nav"):
+                dlg._nav.setCurrentRow(4 if initial_page == "deck" else 3)
+                if initial_section == "celebrations":
+                    def reveal_celebrations():
+                        target = dlg.checkboxes.get("gamification_popups_enabled")
+                        if target is not None:
+                            dlg._stack.currentWidget().ensureWidgetVisible(target)
+                            target.setFocus()
+                    QTimer.singleShot(0, reveal_celebrations)
         if dlg.exec():
-            _apply_saved_settings(dlg.get_new_settings())
+            settings = dlg.get_new_settings()
+            _apply_saved_settings(settings)
+            if mw and mw.state == "overview":
+                mw.overview.refresh()
     except Exception:
         traceback.print_exc()
 
@@ -863,6 +903,8 @@ def _ensure_gamification_sidebar():
         # Keep it hidden while it is attached. It becomes visible below only in
         # direct response to the user's click, never during Anki startup.
         sidebar.setVisible(False)
+        from .sidebar_widths import attach
+        attach(mw, sidebar, "gamification")
         mw.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, sidebar)
         gamification_sidebar = sidebar
         mw.gamification_sidebar = sidebar
@@ -893,6 +935,16 @@ def show_configuration_dialog():
 # --- Theme Change Notification ---
 def on_theme_changed():
     _sync_webview_bg_colors()
+    try:
+        from .website_sidebar import refresh_website_theme
+        refresh_website_theme()
+    except Exception as error:
+        print(f"SynapsePro: browser theme refresh failed: {error}")
+    try:
+        from .mindmap_sidebar import refresh_workspace_theme
+        refresh_workspace_theme()
+    except Exception as error:
+        print(f"SynapsePro: workspace theme refresh failed: {error}")
     try:
         custom_background.setup(addon_settings)
     except Exception:
@@ -947,8 +999,11 @@ def on_sync_finished(*_args) -> None:
         pass
     try:
         if gamification_manager:
-            gamification_manager.invalidate_dashboard_cache()
+            gamification_manager.invalidate_dashboard_cache(full=True)
             gamification_manager.refresh_streak_cache(persist=True)
+            gamification_manager.get_achievements()
+            if gamification_sidebar and gamification_sidebar.isVisible():
+                gamification_sidebar.update_display()
     except Exception as e:
         print(f"SynapsePro: post-sync dashboard refresh failed: {e}")
 
@@ -1167,6 +1222,8 @@ def _init_ui_delayed(expected_profile_generation=None):
         except Exception as e:
             print(f"SynapsePro: daily gamification maintenance failed: {e}")
 
+    from .notebook_sidebar import setup_task_calendar
+    setup_task_calendar()
     if addon_settings.get("notebook_enabled", True):
         setup_notebook_sidebar()
 
@@ -1197,6 +1254,14 @@ def _init_ui_delayed(expected_profile_generation=None):
     
 
 def on_profile_close():
+    from . import dashboard_demo
+    dashboard_demo.stop()
+    # Diagnostics owns a background writer, never wait for disk IO on the GUI.
+    try:
+        from . import diagnostics
+        diagnostics.stop('profile_closed')
+    except Exception:
+        pass
     global launcher_dock_widget, sidebar_widget_instance, gamification_manager, gamification_sidebar, learning_plan_manager, deadline_manager
     global _dashboard_rendered_with_models, _daily_maintenance_done
     global _top_toolbar_redraw_generation, _profile_generation, _synapse_tools_menu
@@ -1250,66 +1315,83 @@ def on_profile_close():
 # --- Webview & Rendering Hooks ---
 def render_all_deck_browser_widgets(deck_browser: DeckBrowser, content: DeckBrowserContent):
     global _dashboard_rendered_with_models
-    minimal_enabled = bool(addon_settings.get("minimal_dashboard_enabled", False))
+    from . import dashboard_demo
+    demo = dashboard_demo.current(getattr(mw, "col", None))
+    display_settings = dict(addon_settings)
+    demo_stats = None
+    if demo:
+        display_settings.update(statistics_widget_enabled=True, gamification_widgets_enabled=True,
+                                daily_fact_widget_enabled=True, daily_widget_content="facts",
+                                stats_show_consistency=True, stats_show_efficiency=True,
+                                stats_show_retention=True, stats_show_new_cards=True,
+                                fact_theme=demo["fact_theme"])
+        demo_stats = dashboard_demo.statistics(demo, int(display_settings.get("stats_time_range", 7)),
+                                               int(display_settings.get("stats_consistency_days", 30)))
+    minimal_enabled = bool(display_settings.get("minimal_dashboard_enabled", False))
     if (not minimal_enabled
-            and not addon_settings.get("statistics_widget_enabled", True)
-            and not addon_settings.get("gamification_widgets_enabled", True)
-            and not addon_settings.get("study_plan_widget_enabled", True)
-            and not addon_settings.get("daily_fact_widget_enabled", True)
-            and not addon_settings.get("deadline_bar_enabled", True)):
+            and not display_settings.get("statistics_widget_enabled", True)
+            and not display_settings.get("gamification_widgets_enabled", True)
+            and not display_settings.get("study_plan_widget_enabled", True)
+            and not display_settings.get("daily_fact_widget_enabled", True)
+            and not display_settings.get("deadline_bar_enabled", True)):
         _dashboard_rendered_with_models = True
         return
     
     stats_html = gamification_html = daily_html = deadline_html = compact_html = compact_stats_html = ""
-    gm = getattr(mw, 'gamification_manager', None)
+    gm = dashboard_demo.DisplayGamification(demo) if demo else getattr(mw, 'gamification_manager', None)
     lpm = getattr(mw, 'learning_plan_manager', None)
     dm = getattr(mw, 'deadline_manager', None)
     if minimal_enabled:
         _dashboard_rendered_with_models = bool(gm and lpm and dm)
         try:
-            fact_theme = addon_settings.get("fact_theme", "Medical")
-            fact_html = daily_widgets.generate_fact_widget(fact_theme)
+            fact_theme = display_settings.get("fact_theme", "Medical")
+            tasks_selected = display_settings.get("daily_widget_content", "facts") == "tasks"
+            fact_html = "" if tasks_selected else daily_widgets.generate_fact_widget(fact_theme, demo["fact_index"] if demo else None)
             compact_html, compact_stats_html = minimal_dashboard.render_minimal_dashboard_sections(
-                gm, lpm, dm, int(addon_settings.get("stats_time_range", 7)),
-                fact_theme, fact_html,
+                gm, lpm, dm, int(display_settings.get("stats_time_range", 7)),
+                fact_theme, fact_html, tasks_selected, bool(display_settings.get("daily_fact_widget_enabled", True)),
+                statistics_override=demo_stats,
             )
         except Exception as e:
             print(f"SynapsePro: minimal dashboard render error: {e}")
     else:
         _dashboard_rendered_with_models = bool(
-            (not addon_settings.get("gamification_widgets_enabled", True) or gm)
-            and (not addon_settings.get("study_plan_widget_enabled", True) or lpm)
-            and (not addon_settings.get("deadline_bar_enabled", True) or dm)
+            (not display_settings.get("gamification_widgets_enabled", True) or gm)
+            and (not display_settings.get("study_plan_widget_enabled", True) or lpm)
+            and (not display_settings.get("deadline_bar_enabled", True) or dm)
         )
 
-        if addon_settings.get("statistics_widget_enabled", True):
+        if display_settings.get("statistics_widget_enabled", True):
             try:
                 stats_html = statistics_widget.render_statistics_widget_html(
-                    stats_days=int(addon_settings.get("stats_time_range", 7)),
-                    chart_days=int(addon_settings.get("stats_consistency_days", 30)),
+                    stats_days=int(display_settings.get("stats_time_range", 7)),
+                    chart_days=int(display_settings.get("stats_consistency_days", 30)),
+                    display_data=demo_stats,
                     visibility={
-                        "consistency": addon_settings.get("stats_show_consistency", True),
-                        "efficiency": addon_settings.get("stats_show_efficiency", True),
-                        "retention": addon_settings.get("stats_show_retention", True),
-                        "new_cards": addon_settings.get("stats_show_new_cards", True),
+                        "consistency": display_settings.get("stats_show_consistency", True),
+                        "efficiency": display_settings.get("stats_show_efficiency", True),
+                        "retention": display_settings.get("stats_show_retention", True),
+                        "new_cards": display_settings.get("stats_show_new_cards", True),
                     },
                 )
             except Exception as e: print(f"SynapsePro: stats widget render error: {e}")
-        if addon_settings.get("gamification_widgets_enabled", True) and gm:
+        if display_settings.get("gamification_widgets_enabled", True) and gm:
             try: gamification_html = gm.render_widgets_html()
             except Exception as e: print(f"SynapsePro: gamification widget render error: {e}")
-        plan_enabled = addon_settings.get("study_plan_widget_enabled", True)
-        fact_enabled = addon_settings.get("daily_fact_widget_enabled", True)
+        plan_enabled = display_settings.get("study_plan_widget_enabled", True)
+        fact_enabled = display_settings.get("daily_fact_widget_enabled", True)
         if fact_enabled or (plan_enabled and lpm):
             try:
                 plan_data = lpm.get_plan_for_display() if plan_enabled and lpm else []
                 daily_html = daily_widgets.generate_daily_widgets_html(
-                    plan_data, addon_settings.get("fact_theme", "Medical"),
+                    plan_data, display_settings.get("fact_theme", "Medical"),
                     show_study_plan=bool(plan_enabled and lpm),
                     show_daily_fact=bool(fact_enabled),
+                    widget_content=display_settings.get("daily_widget_content", "facts"),
+                    display_fact_index=demo["fact_index"] if demo else None,
                 )
             except Exception as e: print(f"SynapsePro: daily widget render error: {e}")
-        if addon_settings.get("deadline_bar_enabled", True) and dm:
+        if display_settings.get("deadline_bar_enabled", True) and dm:
             try: deadline_html = dm.render_deadline_bar_html()
             except Exception as e: print(f"SynapsePro: deadline bar render error: {e}")
     
@@ -1320,11 +1402,12 @@ def render_all_deck_browser_widgets(deck_browser: DeckBrowser, content: DeckBrow
     celebrate_html = ""
     try:
         gm = getattr(mw, 'gamification_manager', None)
-        if gm:
+        if gm and not demo:
             events = gm.get_celebration_events()
-            if events and addon_settings.get("gamification_popups_enabled", True):
-                from . import gamification_popup
-                celebrate_html = gamification_popup.render_celebration_modal(events)
+            if events and display_settings.get("gamification_popups_enabled", True):
+                from . import celebration_live
+                celebrate_html = celebration_live.render_celebration_modal(
+                    celebration_live.select_events(events, addon_settings))
     except Exception as e:
         print(f"SynapsePro: celebration popup error: {e}")
 
@@ -1428,6 +1511,16 @@ def webview_did_receive_js_message(handled: bool, message: str, context: object)
             if mw.state == "deckBrowser":
                 mw.deckBrowser.refresh()
         return (True, None)
+    if cmd.startswith("synapsepro:todo_complete:"):
+        from urllib.parse import unquote
+        from .notebook_sidebar import complete_dashboard_task
+        task_id = unquote(cmd[len("synapsepro:todo_complete:"):])
+        QTimer.singleShot(0, lambda: complete_dashboard_task(task_id))
+        return (True, None)
+    if cmd == "synapsepro:todo_viewer":
+        from .notebook_sidebar import toggle_todo_sidebar
+        QTimer.singleShot(0, toggle_todo_sidebar)
+        return (True, None)
     if cmd == "synapsepro:study_plan_viewer":
         lpm = getattr(mw, 'learning_plan_manager', None)
         try:
@@ -1459,7 +1552,10 @@ def webview_did_receive_js_message(handled: bool, message: str, context: object)
         except Exception as e:
             print(f"SynapsePro: could not schedule statistics settings: {e}")
         return (True, None)
-    # "Don't show again" checkbox in the gamification celebration popup.
+    if cmd == "synapsepro:celebration_settings":
+        QTimer.singleShot(0, lambda: show_settings_dialog("dashboard", "celebrations"))
+        return (True, None)
+    # Legacy popup opt-out command remains supported.
     if cmd == "synapsepro:celebrate_optout:1":
         addon_settings["gamification_popups_enabled"] = False
         save_addon_settings()
@@ -1468,6 +1564,13 @@ def webview_did_receive_js_message(handled: bool, message: str, context: object)
 
 # --- Theme Injection (Dynamic) ---
 def inject_theme_assets(web_content: WebContent, context: Optional[Any]):
+    # Only the real learning view, never the editor, previews or answer toolbar.
+    from aqt.reviewer import Reviewer
+    if isinstance(context, Reviewer):
+        try:
+            custom_background.inject_reviewer_style(web_content)
+        except Exception as error:
+            print(f"SynapsePro: study background unavailable: {error}")
     if not addon_settings.get("theme_enabled", True): return
     
     try:
@@ -1488,6 +1591,15 @@ def inject_theme_assets(web_content: WebContent, context: Optional[Any]):
         if os.path.exists(local_path):
             web_content.css.append(f"/_addons/{addon_pkg}/theme/user_files/{css_file}?v={int(os.path.getmtime(local_path))}")
             if isinstance(context, DeckBrowser):
+                from .dashboard_appearance import dashboard_surface_css, deck_list_width_css
+                web_content.head += dashboard_surface_css(
+                    addon_settings.get("dashboard_surface_opacity", 100),
+                    addon_settings.get("dashboard_glass_enabled", False),
+                    addon_settings.get("dashboard_glass_strength", 6),
+                    addon_settings.get("dashboard_widget_shadow", 0),
+                    enabled=addon_settings.get("dashboard_surface_controls_expanded") is not False,
+                )
+                web_content.head += deck_list_width_css(addon_settings.get("dashboard_wide_deck_list", True))
                 dashboard_class = (
                     ",'synapse-minimal-dashboard'"
                     if addon_settings.get("minimal_dashboard_enabled", False)
@@ -1549,6 +1661,8 @@ def inject_theme_assets(web_content: WebContent, context: Optional[Any]):
                         and getattr(mw, "state", "") in custom_background.ACTIVE_STATES
                     ),
                 )
+                if isinstance(context, DeckBrowser):
+                    custom_background.inject_glass_backdrop(web_content)
             except Exception as e:
                 print(f"SynapsePro: custom background CSS injection failed: {e}")
 
@@ -1569,15 +1683,32 @@ def _add_menus():
             pass
         _synapse_tools_menu = None
     # "SynapsePro" is the brand/product name and is intentionally not translated.
-    m = mw.form.menuTools.addMenu("SynapsePro")
+    m = mw.form.menuTools.addMenu("Synapse")
     _synapse_tools_menu = m
     m.addAction(_("Settings..."), show_settings_dialog)
     m.addAction(_("Configure Study Plan..."), show_configuration_dialog)
     m.addSeparator()
     m.addAction(_("Toggle Gamification Sidebar"), toggle_gamification_sidebar)
+    from . import developer_console
+    if developer_console.enabled:
+        m.addSeparator()
+        m.addAction(_("Developer console"), lambda: developer_console.open_console())
+
+def on_gamification_collection_change(changes, _handler=None):
+    """Refresh custom streaks after adding, deleting or importing cards."""
+    if not getattr(changes, "card", False) or not gamification_manager:
+        return
+    if not gamification_manager.data.get("streak_rules", {}).get("allowCards"):
+        return
+    gamification_manager._streak_cache = None
+    if gamification_sidebar and gamification_sidebar.isVisible():
+        gamification_sidebar.update_display()
+
 
 # --- Init Hooks ---
 if modules_loaded and mw and gui_hooks:
+    if hasattr(gui_hooks, "operation_did_execute"):
+        gui_hooks.operation_did_execute.append(on_gamification_collection_change)
     gui_hooks.profile_did_open.append(on_profile_open)
     gui_hooks.profile_will_close.append(on_profile_close)
     gui_hooks.deck_browser_will_render_content.append(render_all_deck_browser_widgets)

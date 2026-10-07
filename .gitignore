@@ -28,7 +28,10 @@ __pycache__/
 *.zip
 *_backup.json
 *_recovery.json
-Icon?
+# Finder's custom icon filename ends in a control character (carriage return).
+# Do not use Icon?: on case-insensitive systems it also ignores icons/.
+Icon[[:cntrl:]]
+*.ankiaddon
 
 # IDE folders
 .idea/

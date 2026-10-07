@@ -17,7 +17,7 @@ from aqt.qt import (
     QFormLayout,
     QSizePolicy,
     QFont, QColor, QPainter, QPen, QBrush, QRectF, QIcon, QToolButton,
-    QTextEdit,
+    QTextEdit, QTextCharFormat,
     QApplication,
     QDesktopServices, QUrl
 )
@@ -54,7 +54,7 @@ except ImportError:
 
 # --- Theme ---
 try:
-    from .theme import palette as _palette, FONT_FAMILY as _FONT_FAMILY
+    from .theme import dialog_palette as _palette, FONT_FAMILY as _FONT_FAMILY
 except ImportError:
     def _palette(night): return {}  # type: ignore
     _FONT_FAMILY = "sans-serif"
@@ -165,7 +165,14 @@ class StudyPlanCalendarWidget(QCalendarWidget):
 
     def __init__(self, night: bool, parent: Optional[QWidget] = None):
         super().__init__(parent)
+        self.setLocale(_ui_locale())
         colors = _palette(night)
+        # Qt gives weekends a red foreground by default, independently of QSS.
+        # Match ordinary dates while preserving native selection/out-of-month styling.
+        for weekday in (Qt.DayOfWeek.Saturday, Qt.DayOfWeek.Sunday):
+            weekend_format = QTextCharFormat(self.weekdayTextFormat(weekday))
+            weekend_format.setForeground(QBrush(QColor(colors["text"])))
+            self.setWeekdayTextFormat(weekday, weekend_format)
         self._surface_color = QColor(colors["surface"])
         self._accent_color = QColor(colors["blue_accent"])
         self._selected_text_color = QColor("#FFFFFF")
@@ -307,7 +314,7 @@ class AIPlanHelperDialog(QDialog):
         step1_frame = QFrame()
         step1_frame.setObjectName("CardFrame")
         step1_layout = QVBoxLayout(step1_frame)
-        step1_label = QLabel("Step 1: Get the Prompt")
+        step1_label = QLabel(_("Step 1: Get the Prompt"))
         step1_label.setObjectName("HeaderLabel")
         step1_layout.addWidget(step1_label)
         instructions1 = QLabel(_("Fill in your details, then copy this to your AI."))
@@ -317,7 +324,7 @@ class AIPlanHelperDialog(QDialog):
         self.prompt_text_edit.setPlainText(self._get_prompt_template())
         self.prompt_text_edit.setFixedHeight(150)
         step1_layout.addWidget(self.prompt_text_edit)
-        copy_button = QPushButton("Copy Prompt to Clipboard")
+        copy_button = QPushButton(_("Copy Prompt to Clipboard"))
         copy_button.setCursor(Qt.CursorShape.PointingHandCursor)
         copy_button.clicked.connect(self.copy_prompt_to_clipboard)
         step1_layout.addWidget(copy_button, 0, Qt.AlignmentFlag.AlignLeft)
@@ -339,6 +346,8 @@ class AIPlanHelperDialog(QDialog):
         layout.addWidget(step2_frame)
 
         self.button_box = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
+        from .locales import translate_standard_buttons
+        translate_standard_buttons(self.button_box)
         self.button_box.button(QDialogButtonBox.StandardButton.Ok).setText(_("Import Plan"))
         self.button_box.button(QDialogButtonBox.StandardButton.Ok).setCursor(Qt.CursorShape.PointingHandCursor)
         self.button_box.button(QDialogButtonBox.StandardButton.Cancel).setObjectName("SecondaryButton")
@@ -381,7 +390,7 @@ Create a plan based on these requirements:
     def copy_prompt_to_clipboard(self):
         clipboard = QApplication.clipboard()
         clipboard.setText(self.prompt_text_edit.toPlainText())
-        tooltip("Prompt copied to clipboard!", parent=self)
+        tooltip(_("Prompt copied to clipboard!"), parent=self)
 
     @staticmethod
     def _sanitize_plan(parsed_data: dict):
@@ -542,7 +551,7 @@ class LearningPlanConfigDialog(QDialog):
         plan_layout = QVBoxLayout(plan_card)
         plan_layout.setContentsMargins(20, 20, 20, 20)
 
-        self.selected_date_label = QLabel(f"Plan for: {self.selected_date.toString(Qt.DateFormat.ISODate)}")
+        self.selected_date_label = QLabel(_("Plan for: {}").format(self.selected_date.toString(Qt.DateFormat.ISODate)))
         self.selected_date_label.setObjectName("HeaderLabel")
         plan_layout.addWidget(self.selected_date_label)
 
@@ -655,6 +664,8 @@ class LearningPlanConfigDialog(QDialog):
         action_layout = QHBoxLayout()
         action_layout.addStretch()
         self.button_box = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
+        from .locales import translate_standard_buttons
+        translate_standard_buttons(self.button_box)
         self.button_box.button(QDialogButtonBox.StandardButton.Ok).setCursor(Qt.CursorShape.PointingHandCursor)
         self.button_box.button(QDialogButtonBox.StandardButton.Cancel).setCursor(Qt.CursorShape.PointingHandCursor)
         self.button_box.button(QDialogButtonBox.StandardButton.Cancel).setObjectName("SecondaryButton")
@@ -721,7 +732,7 @@ class LearningPlanConfigDialog(QDialog):
 
     def on_date_selected(self):
         self.selected_date = self.calendar.selectedDate()
-        self.selected_date_label.setText(f"Plan for: {self.selected_date.toString('dddd, MMM d, yyyy')}")
+        self.selected_date_label.setText(_("Plan for: {}").format(_ui_locale().toString(self.selected_date, _ui_locale().FormatType.LongFormat)))
         self.load_plan_for_selected_date_into_table()
         self.subject_input.clear(); self.time_input.setTime(QTime(1, 0))
         self.subject_input.setFocus(); self.table.clearSelection(); self.remove_button.setEnabled(False)
@@ -803,7 +814,7 @@ class LearningPlanConfigDialog(QDialog):
     def accept(self):
         if self.config_changed:
             self._save_plan_to_file()
-            tooltip("Configuration saved.", parent=mw)
+            tooltip(_("Configuration saved."), parent=mw)
         super().accept()
 
 def show_study_plan_dialog(config_json_path: Optional[str]): pass
@@ -816,6 +827,12 @@ def show_study_plan_dialog(config_json_path: Optional[str]): pass
 # ─────────────────────────────────────────────────────────────────────────────
 # _TimelineWidget — custom QPainter day-strip (no WebEngine required)
 # ─────────────────────────────────────────────────────────────────────────────
+
+def _ui_locale():
+    from aqt.qt import QLocale
+    from .locales import _current_lang
+    return QLocale(_current_lang())
+
 
 def _import_painter_tools():
     """Lazy-import QPainter helpers to avoid touching the global import list."""
@@ -890,7 +907,7 @@ class _TimelineWidget(QWidget):
     # ── painting ──────────────────────────────────────────────────────────────
 
     def paintEvent(self, _ev):
-        QPainter, QPen, QBrush, QPoint, QFontMetrics, _ = _import_painter_tools()
+        QPainter, QPen, QBrush, QPoint, QFontMetrics, _scroll_area = _import_painter_tools()
         from aqt.qt import QColor
 
         if not self._days:
@@ -934,7 +951,7 @@ class _TimelineWidget(QWidget):
                 p.setPen(QColor(c['text_muted']))
                 p.drawText(cx - r, 2, self.DAY_W * 4, 18,
                            Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter,
-                           '{} {}'.format(self.MONTHS_S[d.month - 1], d.year))
+                           '{} {}'.format(_ui_locale().monthName(d.month, _ui_locale().FormatType.ShortFormat), d.year))
 
             # circle
             if has_plan:
@@ -965,7 +982,7 @@ class _TimelineWidget(QWidget):
                        str(d.day))
             p.drawText(cx - 16, lbl_y + 15, 32, 15,
                        Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter,
-                       self.WDAYS_S[d.weekday()])
+                       _ui_locale().dayName(d.weekday()+1, _ui_locale().FormatType.ShortFormat))
 
         # today marker — always full opacity, drawn on top
         today_idx = next(
@@ -984,7 +1001,7 @@ class _TimelineWidget(QWidget):
             fb.setBold(True)
             p.setFont(fb)
             fm   = QFontMetrics(fb)
-            lbl  = 'TODAY'
+            lbl  = _('TODAY')
             lw   = fm.horizontalAdvance(lbl)
             pw   = lw + 14; ph = 20
             px   = tx - pw // 2; py = 2
@@ -1028,7 +1045,10 @@ class _TimelineWidget(QWidget):
             def _do():
                 bar = scroll_area.horizontalScrollBar()
                 bar.setValue(max(0, self._cx(idx) - scroll_area.width() // 2))
-            _QTimer.singleShot(80, _do)
+            timer = _QTimer(scroll_area)
+            timer.setSingleShot(True)
+            timer.timeout.connect(_do)
+            timer.start(80)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1062,7 +1082,7 @@ class StudyPlanTimelineDialog(QDialog):
     # ── build UI ──────────────────────────────────────────────────────────────
 
     def _build_ui(self):
-        _, _, _, _, _, QScrollArea = _import_painter_tools()
+        QScrollArea = _import_painter_tools()[-1]
 
         keys      = sorted(self._plan.keys())
         today     = self._today
@@ -1082,19 +1102,19 @@ class StudyPlanTimelineDialog(QDialog):
         hdr = QFrame(); hdr.setObjectName('CardFrame')
         hl  = QHBoxLayout(hdr)
         hl.setContentsMargins(16, 10, 16, 10); hl.setSpacing(12)
-        ttl = QLabel('Study Plan Timeline'); ttl.setObjectName('HeaderLabel')
+        ttl = QLabel(_('Study Plan Timeline')); ttl.setObjectName('HeaderLabel')
         hl.addWidget(ttl); hl.addStretch()
         chip_bg = _palette(is_night_mode)['grey_light']
         chip_fg = _palette(is_night_mode)['text_muted']
         chip_tx = _palette(is_night_mode)['text']
-        for label, val in [('Total', '{} days'.format(total)),
-                           ('Elapsed',  '{} days'.format(elapsed)),
-                           ('Upcoming', '{} days'.format(upcoming)),
+        for label, val in [('Total', _('{} days').format(total)),
+                           ('Elapsed',  _('{} days').format(elapsed)),
+                           ('Upcoming', _('{} days').format(upcoming)),
                            ('Time',  self._fmt(total_sec))]:
             chip = QLabel()
             chip.setText('<span style="color:{fg}">{lbl}:</span>'
                          ' <b style="color:{tx}">{val}</b>'.format(
-                             fg=chip_fg, lbl=label, tx=chip_tx, val=val))
+                             fg=chip_fg, lbl=_(label), tx=chip_tx, val=val))
             chip.setTextFormat(Qt.TextFormat.RichText)
             chip_border = _palette(is_night_mode)['grey_mid']
             chip.setStyleSheet(
@@ -1108,7 +1128,7 @@ class StudyPlanTimelineDialog(QDialog):
         prog_frame = QFrame(); prog_frame.setObjectName('CardFrame')
         pl = QHBoxLayout(prog_frame)
         pl.setContentsMargins(16, 8, 16, 8); pl.setSpacing(10)
-        lbl_l = QLabel('{}% schedule elapsed'.format(pct)); lbl_l.setObjectName('SubLabel')
+        lbl_l = QLabel(_('{}% schedule elapsed').format(pct)); lbl_l.setObjectName('SubLabel')
         try:
             from aqt.qt import QProgressBar
             bar = QProgressBar()
@@ -1122,7 +1142,7 @@ class StudyPlanTimelineDialog(QDialog):
                     bg=_palette(is_night_mode)['grey_light']))
         except Exception:
             bar = QWidget()
-        lbl_r = QLabel('{} of {} scheduled dates are in the past'.format(elapsed, total))
+        lbl_r = QLabel(_('{} of {} scheduled dates are in the past').format(elapsed, total))
         lbl_r.setObjectName('SubLabel')
         pl.addWidget(lbl_l); pl.addWidget(bar, 1); pl.addWidget(lbl_r)
         outer.addWidget(prog_frame)
@@ -1149,7 +1169,7 @@ class StudyPlanTimelineDialog(QDialog):
         self._detail = QFrame(); self._detail.setObjectName('CardFrame')
         self._dl = QVBoxLayout(self._detail)
         self._dl.setContentsMargins(16, 12, 16, 12); self._dl.setSpacing(8)
-        hint = QLabel('Click on any day to see its schedule.')
+        hint = QLabel(_('Click on any day to see its schedule.'))
         hint.setObjectName('SubLabel')
         self._dl.addWidget(hint)
         outer.addWidget(self._detail, 1)
@@ -1158,22 +1178,24 @@ class StudyPlanTimelineDialog(QDialog):
         leg = QFrame(); leg.setObjectName('CardFrame')
         ll  = QHBoxLayout(leg)
         ll.setContentsMargins(14, 8, 14, 8); ll.setSpacing(14)
-        ll.addWidget(QLabel('Intensity') if True else None)
+        ll.addWidget(QLabel(_('Intensity')) if True else None)
         leg.layout().itemAt(0).widget().setObjectName('SubLabel')
         for dot_style, name in [
                 ('border:1.5px dashed #AEAEB2;background:transparent;', 'Rest'),
-                ('background:#28CD41;',  'Light'),
+                ('background:#28CD41;',  'Light workload'),
                 ('background:#FF9F0A;',  'Moderate'),
                 ('background:#FF3B30;',  'Intensive')]:
             dot = QLabel(); dot.setFixedSize(10, 10)
             dot.setStyleSheet('border-radius:5px;' + dot_style)
-            txt = QLabel(name); txt.setObjectName('SubLabel')
+            txt = QLabel(_(name)); txt.setObjectName('SubLabel')
             ll.addWidget(dot); ll.addWidget(txt)
         ll.addStretch()
         outer.addWidget(leg)
 
         # ── close button ──────────────────────────────────────────────────────
         bb = QDialogButtonBox(QDialogButtonBox.StandardButton.Close)
+        from .locales import translate_standard_buttons
+        translate_standard_buttons(bb)
         bb.button(QDialogButtonBox.StandardButton.Close).setObjectName('SecondaryButton')
         bb.button(QDialogButtonBox.StandardButton.Close).setCursor(
             Qt.CursorShape.PointingHandCursor)
@@ -1207,9 +1229,7 @@ class StudyPlanTimelineDialog(QDialog):
                     'July','August','September','October','November','December']
         WDAYS_L  = ['Monday','Tuesday','Wednesday','Thursday',
                     'Friday','Saturday','Sunday']
-        day_str  = '{wd}, {mn} {day}, {yr}'.format(
-            wd=WDAYS_L[d.weekday()], mn=MONTHS_L[d.month - 1],
-            day=d.day, yr=d.year)
+        day_str = _ui_locale().toString(QDate(d.year, d.month, d.day), _ui_locale().FormatType.LongFormat)
 
         # header row
         hdr_row = QHBoxLayout(); hdr_row.setSpacing(8)
@@ -1217,17 +1237,17 @@ class StudyPlanTimelineDialog(QDialog):
         hdr_row.addWidget(day_lbl_w)
 
         if is_today:
-            b = QLabel('TODAY')
+            b = QLabel(_('TODAY'))
             b.setStyleSheet('background:#007AFF;color:white;padding:2px 9px;'
                             'border-radius:9px;font-size:10px;font-weight:700;')
             hdr_row.addWidget(b)
         elif is_past and has_pl:
-            b = QLabel('past'); b.setObjectName('SubLabel')
+            b = QLabel(_('past')); b.setObjectName('SubLabel')
             hdr_row.addWidget(b)
 
         if has_pl:
             tot = sum(v.get('target_seconds', 0) for v in dp.values())
-            tl  = QLabel('Total: ' + self._fmt(tot)); tl.setObjectName('SubLabel')
+            tl  = QLabel(_('Total: {}').format(self._fmt(tot))); tl.setObjectName('SubLabel')
             hdr_row.addStretch(); hdr_row.addWidget(tl)
         else:
             hdr_row.addStretch()
@@ -1236,7 +1256,7 @@ class StudyPlanTimelineDialog(QDialog):
         self._dl.addWidget(hc)
 
         if not has_pl:
-            rl = QLabel('Rest day \u2014 no subjects scheduled')
+            rl = QLabel(_('Rest day \u2014 no subjects scheduled'))
             rl.setObjectName('SubLabel')
             self._dl.addWidget(rl)
         else:
@@ -1287,7 +1307,7 @@ class DeadlineConfigDialog(QDialog):
         top_row = QHBoxLayout()
         lbl = QLabel(_("Deadlines"))
         lbl.setObjectName("HeaderLabel")
-        self.enabled_cb = QCheckBox("Enable deadline bar")
+        self.enabled_cb = QCheckBox(_("Enable deadline bar"))
         self.enabled_cb.setCursor(Qt.CursorShape.PointingHandCursor)
         self.enabled_cb.setChecked(self._working_data.get("enabled", True))
         top_row.addWidget(lbl)
@@ -1661,7 +1681,7 @@ class DeadlineViewerDialog(QDialog):
 
                     # Title row
                     title_row = QHBoxLayout()
-                    name_lbl = QLabel(dl.get("name", "Deadline"))
+                    name_lbl = QLabel(dl.get("name", _("Deadline")))
                     name_lbl.setObjectName("HeaderLabel")
                     name_font = name_lbl.font()
                     name_font.setPointSize(13)
@@ -1669,7 +1689,7 @@ class DeadlineViewerDialog(QDialog):
                     title_row.addWidget(name_lbl)
                     title_row.addStretch()
                     if dl.get("id") == pinned_id:
-                        pin_lbl = QLabel("default")
+                        pin_lbl = QLabel(_("default"))
                         pin_lbl.setStyleSheet(
                             f"color: {c.get('blue_bright','#007AFF')}; font-size: 11px; "
                             f"background: {c.get('hover_subtle','#e8f0fe')}; "
@@ -1687,16 +1707,16 @@ class DeadlineViewerDialog(QDialog):
                         elapsed = (today - start).days
                         if today < start:
                             progress = 0
-                            days_lbl_txt = f"Starts in {(start - today).days} day(s)"
+                            days_lbl_txt = _("Starts in {} day(s)").format((start - today).days)
                         elif today > end:
                             progress = 100
-                            days_lbl_txt = f"Ended {(today - end).days} day(s) ago"
+                            days_lbl_txt = _("Ended {} day(s) ago").format((today - end).days)
                         else:
                             progress = max(0, min(100, int(max(0, elapsed) / max(1, total) * 100)))
-                            days_lbl_txt = f"{(end - today).days} day(s) remaining"
+                            days_lbl_txt = _("{} day(s) remaining").format((end - today).days)
                     except Exception:
                         progress = 0
-                        days_lbl_txt = "Invalid date"
+                        days_lbl_txt = _("Invalid date")
 
                     bar = QProgressBar()
                     bar.setRange(0, 100)

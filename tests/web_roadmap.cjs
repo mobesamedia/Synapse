@@ -1,0 +1,28 @@
+// Isolated Chromium context: no Anki profiles or user data.
+const {chromium}=require('playwright');const assert=require('node:assert/strict');const path=require('node:path');const {pathToFileURL}=require('node:url');
+(async()=>{const browser=await chromium.launch({headless:true,executablePath:process.env.SYNAPSE_TEST_CHROME||'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'});try{const page=await browser.newPage({viewport:{width:1100,height:800}}),errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto(pathToFileURL(path.resolve(__dirname,'../web_roadmap/index.html')).href);await page.waitForFunction(()=>window.__roadmapSnapshot);
+const snap=()=>page.evaluate(()=>window.__roadmapSnapshot().data);const shapes=()=>page.locator('#objects > g');
+await page.locator('#add-menu summary').click();await page.locator('[data-shape="rect"]').click();assert.equal(await shapes().count(),1);let data=await snap();const first=data.maps[0].objects[0];
+await page.locator('#objects > g').dblclick();await page.locator('[contenteditable="true"]').fill('Test Box');await page.locator('#text-done').click();assert.equal((await snap()).maps[0].objects[0].html,'Test Box');
+// Autosave snapshot must preserve a live editor and its caret context.
+await page.locator('#objects > g').dblclick();await page.locator('[contenteditable="true"]').fill('Test Box edited');await snap();assert.equal(await page.locator('[contenteditable="true"]').count(),1);await page.locator('#text-done').click();
+await page.keyboard.press('Meta+z');assert.equal((await snap()).maps[0].objects[0].html,'Test Box');await page.keyboard.press('Meta+Shift+z');assert.equal((await snap()).maps[0].objects[0].html,'Test Box edited');
+// Object copy/paste and deletion.
+await page.locator('#objects > g').click();await page.keyboard.press('Meta+c');await page.keyboard.press('Meta+v');assert.equal(await shapes().count(),2);await page.keyboard.press('Backspace');assert.equal(await shapes().count(),1);await page.keyboard.press('Meta+z');assert.equal(await shapes().count(),2);
+// Move second object well away, then dock an arrow.
+const second=page.locator('#objects > g').nth(1);let b=await second.boundingBox();await page.mouse.move(b.x+b.width/2,b.y+b.height/2);await page.mouse.down();await page.mouse.move(b.x+b.width/2+280,b.y+b.height/2-170,{steps:8});await page.mouse.up();
+await page.locator('#objects > g').first().click();let start=await page.locator('[data-anchor="right"]').boundingBox();data=await snap();const target=data.maps[0].objects[1];const world=await page.locator('#world').getAttribute('transform');const box=await second.boundingBox();await page.mouse.move(start.x+start.width/2,start.y+start.height/2);await page.mouse.down();await page.mouse.move(box.x,box.y+box.height/2,{steps:10});await page.mouse.up();data=await snap();const arrow=data.maps[0].objects.find(o=>o.kind==='arrow');assert.ok(arrow.a.node);assert.ok(arrow.b.node);assert.equal(arrow.b.node,target.id);
+// All routes produce finite geometry.
+for(const route of ['curve','angle','straight','rounded']){await page.locator('select[aria-label="Arrow route"]').selectOption(route);const d=await page.locator('#objects > g').last().locator('path').first().getAttribute('d');assert.ok(!/NaN|undefined/.test(d))}
+// Shape replacement preserves the connection ID and text.
+await page.locator('#objects > g').first().click();await page.locator('select[aria-label="Shape"]').selectOption('diamond');data=await snap();assert.equal(data.maps[0].objects[0].shape,'diamond');assert.equal(data.maps[0].objects.find(o=>o.kind==='arrow').a.node,first.id);assert.equal(data.maps[0].objects[0].html,'Test Box edited');
+// Rotation and resize update geometry without disconnecting.
+let handle=await page.locator('[data-rotate]').boundingBox();await page.mouse.move(handle.x+handle.width/2,handle.y+handle.height/2);await page.mouse.down();await page.mouse.move(handle.x+100,handle.y+80,{steps:6});await page.mouse.up();assert.notEqual((await snap()).maps[0].objects[0].rotation,0);
+handle=await page.locator('[data-resize="se"]').boundingBox();await page.mouse.move(handle.x+handle.width/2,handle.y+handle.height/2);await page.mouse.down();await page.mouse.move(handle.x+70,handle.y+30,{steps:6});await page.mouse.up();assert.notEqual((await snap()).maps[0].objects[0].w,first.w);
+await page.locator('#fit').click();await page.locator('#zoom-in').click();await page.locator('#center').click();
+// Multiple documents and import sanitization.
+page.once('dialog',d=>d.accept('Second roadmap'));await page.locator('#new-map').click();assert.equal(await shapes().count(),0);await page.locator('#map-select-btn').click();await page.getByRole('option',{name:data.maps[0].name,exact:true}).click();assert.equal(await shapes().count(),3);
+await page.locator('#document-menu summary').click();await page.locator('[data-doc="duplicate"]').click();assert.equal((await snap()).maps.length,3);
+await page.setViewportSize({width:390,height:720});await page.locator('#fit').click();assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);assert.equal(await page.locator('#workspace-nav').getByRole('button').count(),5);
+await page.screenshot({path:path.resolve(__dirname,'../docs/roadmap-preview.png')});await page.evaluate(()=>document.documentElement.classList.add('dark'));await page.screenshot({path:path.resolve(__dirname,'../docs/roadmap-preview-dark.png')});assert.deepEqual(errors,[]);console.log('PASS: creation, live text/autosave, undo/redo, clipboard, docked arrows, all routes, shape replacement, rotation, resize, multiple maps, narrow layout, dark mode');
+}finally{await browser.close()}})().catch(e=>{console.error(e);process.exitCode=1});

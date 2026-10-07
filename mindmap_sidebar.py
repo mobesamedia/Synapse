@@ -13,10 +13,14 @@ from . import constants
 QWidget, QDockWidget, QVBoxLayout, QHBoxLayout, QLabel = object, object, object, object, object
 QUrl, Qt, QPushButton, QIcon, QTimer = object, object, object, object, object
 QWebEngineView, QWebEnginePage, QWebEngineProfile, QWebEngineSettings, QWebEngineScript = object, object, object, object, object
+QObject, QWebChannel = object, object
+pyqtSlot = lambda *args: (lambda method: method)
 
 try:
     from aqt.qt import (QWidget, QDockWidget, QVBoxLayout, QHBoxLayout, QLabel,
-                        QPushButton, QUrl, Qt, QTimer, QIcon, QColor)
+                        QPushButton, QUrl, Qt, QTimer, QIcon, QColor, QCoreApplication)
+    from PyQt6.QtCore import QObject, pyqtSlot
+    from PyQt6.QtWebChannel import QWebChannel
     from PyQt6.QtWebEngineWidgets import QWebEngineView
     from PyQt6.QtWebEngineCore import QWebEnginePage, QWebEngineProfile, QWebEngineSettings, QWebEngineScript
 except ImportError:
@@ -36,21 +40,47 @@ except ImportError:
     def _(text): return text  # type: ignore
 
 from . import embedded_window
+from . import roadmap_store, workspace_io
 
 # --- Globale Referenz ---
 mindmap_dock: Optional[QDockWidget] = None
 MINDMAP_RECOVERY_FILENAME = "mindmap_recovery.json"
 
 
-def _mindmap_recovery_path() -> str:
+def _claim_tutorial_invitation(profile_folder: str) -> bool:
+    """At most one automatic invitation per profile; fail closed on I/O errors.
+
+    Exclusive creation also prevents two views from offering simultaneously.
+    Even a partial marker suppresses future automatic invitations.
+    """
+    if not profile_folder:
+        return False
+    try:
+        folder = os.path.join(profile_folder, "SynapsePro_Data")
+        os.makedirs(folder, exist_ok=True)
+        with open(os.path.join(folder, "mindmap_tutorial.json"), "x", encoding="utf-8") as handle:
+            json.dump({"version": 1, "invitation_handled": True}, handle)
+            handle.flush()
+            os.fsync(handle.fileno())
+        return True
+    except FileExistsError:
+        return False
+    except Exception as exc:
+        print(f"Mindmap tutorial invitation could not be recorded: {exc}")
+        return False
+
+
+def _mindmap_recovery_path(profile_folder=None) -> str:
+    if profile_folder is not None:
+        return os.path.join(profile_folder, MINDMAP_RECOVERY_FILENAME)
     if mw and mw.pm and mw.pm.profileFolder():
         return os.path.join(mw.pm.profileFolder(), MINDMAP_RECOVERY_FILENAME)
     return os.path.join(constants.addon_path, MINDMAP_RECOVERY_FILENAME)
 
 
-def _write_mindmap_recovery(snapshot: str, saved_at: int) -> bool:
+def _write_mindmap_recovery(snapshot: str, saved_at: int, profile_folder=None) -> bool:
     """Atomically mirror the latest map collection outside QtWebEngine storage."""
-    path = _mindmap_recovery_path()
+    path = _mindmap_recovery_path(profile_folder)
     tmp_path = f"{path}.tmp"
     try:
         mindmaps = json.loads(snapshot)
@@ -78,9 +108,9 @@ def _write_mindmap_recovery(snapshot: str, saved_at: int) -> bool:
         return False
 
 
-def _load_mindmap_recovery() -> Optional[dict]:
+def _load_mindmap_recovery(profile_folder=None) -> Optional[dict]:
     try:
-        with open(_mindmap_recovery_path(), "r", encoding="utf-8") as handle:
+        with open(_mindmap_recovery_path(profile_folder), "r", encoding="utf-8") as handle:
             payload = json.load(handle)
         if (
             isinstance(payload, dict)
@@ -102,7 +132,7 @@ class MindmapFullscreenWindow(QWidget):
         self.web_view = web_view
         self.windowed = windowed
         self.setWindowTitle(
-            _("Mind Map") if windowed else _("Mind Map - Fullscreen")
+            _("MindMap") if windowed else _("MindMap - Fullscreen")
         )
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -116,7 +146,39 @@ class MindmapFullscreenWindow(QWidget):
 def _build_mindmap_i18n() -> dict:
     """Return the translation dict for the current addon language."""
     return {
-        "app_title":        _("Mind Map"),
+        'tutorial': _('Tutorial'),
+        'fit_map': _('Show entire map'),
+        'tour_step': _('Step {current} of {total}'),
+        'tour_style': _('Right click a node and choose a different color or size.'),
+        'tour_edit': _('Click the main topic and change its text.'),
+        'tour_child': _('Drag the small blue dot on the main topic into an empty area to create a child node.'),
+        'tour_navigate': _('Drag the empty canvas to move the view. Use the mouse wheel or the zoom buttons to zoom.'),
+        'tour_fit': _('Click Show entire map to bring every node into view. Node positions stay unchanged.'),
+        'tour_learn': _('Open the highlighted menu and choose Start Learning. Try revealing a hidden answer.'),
+        'tour_done': _('Done. Continue when you are ready.'),
+        'tour_finish': _('Finish tutorial'),
+        'tour_next': _('Next'),
+        'tour_back': _('Back'),
+        'tour_skip': _('Skip step'),
+        'tour_practice': _('Practice · changes are not saved'),
+        'tour_topic': _('My learning topic'),
+        'tour_example': _('An example'),
+        'tour_exit': _('Exit tutorial'),
+        'tour_busy': _('Finish the current editing or learning mode before opening the tutorial.'),
+        'tour_invite': _('Discover Mindmaps'),
+        'tour_intro_summary': _('Connect ideas visually and test your knowledge with hidden answers.'),
+        'tour_intro_steps': _('Six short steps'),
+        'tour_intro_create': _('Create and connect nodes'),
+        'tour_intro_style': _('Adjust colors and sizes'),
+        'tour_intro_navigate': _('Navigate your map and try learning mode'),
+        'tour_intro_safe_title': _('Practice with sample data'),
+        'tour_intro_safe': _('Your own maps stay untouched. Practice changes are not saved.'),
+        'tour_intro_exit': _('You can exit at any time and restart from the menu.'),
+        'tour_invite_body': _('Connect ideas visually and test your knowledge with hidden answers. In six short steps, you will create and style nodes, navigate your map and try learning mode. You will use sample data. Your own maps stay untouched and practice changes are not saved. You can exit at any time and restart from the menu.'),
+        'tour_start': _('Start tutorial'),
+        'tour_not_now': _('Not now'),
+
+        "app_title":        _("MindMap"),
         "new_map":          _("New"),
         "menu_title":       _("Menu"),
         "start_learning":   _("Start Learning"),
@@ -150,13 +212,16 @@ def _build_mindmap_i18n() -> dict:
         "tap_to_select":    _("Tap nodes to select:"),
         "footer_hint":      _("Right-click on a node for options. Drag the blue dot to create new nodes."),
         "edit_hints":       _("Edit Hints"),
+        "save_status_saved": _("Saved"),
+        "save_status_pending": _("Saving..."),
+        "save_status_error": _("Save failed"),
         "save":             _("Save"),
         "selected_count":   _("{count} selected"),
         "enter_here":       _("Enter here..."),
         "confirm":          _("Confirm"),
         "undo":             _("Undo (Ctrl+Z)"),
         "redo":             _("Redo (Ctrl+Y)"),
-        "error_title":      _("Mind Map error"),
+        "error_title":      _("MindMap error"),
         "error_show":       _("Show details"),
         "error_hide":       _("Hide details"),
         "error_copy":       _("Copy error"),
@@ -164,7 +229,7 @@ def _build_mindmap_i18n() -> dict:
         "error_dismiss":    _("Dismiss"),
         "error_unexpected": _("Unexpected error"),
         "error_unexpected_async": _("Unexpected error (async)"),
-        "error_safe":       _("Your data is safe. Please screenshot the details and send them to help.synapse.pro@gmail.com."),
+        "error_safe":       _("Please keep this window open and export your changes. Send the error details to help.synapse.pro@gmail.com."),
         "error_no_stack":   _("(no stack trace available)"),
         "info_basic":       _("Basic Controls"),
         "info_pan":         _("Pan View: Click and drag on the empty background."),
@@ -177,12 +242,12 @@ def _build_mindmap_i18n() -> dict:
         "info_manage":      _("New Map / Delete Map: Manage your mind maps."),
         "info_ai":          _("Create with AI: Generate a mind map from a topic using AI."),
         "info_learn":       _("Start Learning: Review mode with active recall."),
-        "info_title":       _("Mind Map Information"),
+        "info_title":       _("MindMap Information"),
         "ai_step1":        _("Step 1: Customize and Copy the Prompt"),
         "copy_prompt":      _("Copy Prompt"),
         "ai_step2":        _("Step 2: Paste the AI-Generated JSON"),
         "paste_json":      _("Paste JSON here..."),
-        "import_mindmap":  _("Import Mind Map"),
+        "import_mindmap":  _("Import MindMap"),
         "import_save_failed": _("The current mind map could not be saved. Import was cancelled to protect your changes."),
         "import_paste_first": _("Please paste your mind map JSON first."),
         "invalid_json":    _("Invalid JSON: {error}. Make sure you copied the complete JSON object."),
@@ -191,7 +256,7 @@ def _build_mindmap_i18n() -> dict:
         "import_load_failed": _("Import failed while loading the map: {error}"),
         "import_repaired": _("Mind map imported. Some data was repaired automatically: {details}"),
         "unnamed_map":     _("Unnamed Map"),
-        "create_title":    _("Create New Mind Map"),
+        "create_title":    _("Create New MindMap"),
         "enter_name":      _("Please enter a name."),
         "create":          _("Create"),
         "central_topic":   _("Central Topic"),
@@ -231,13 +296,13 @@ def _build_mindmap_i18n() -> dict:
         "ai_prompt_intro": _("You are an expert assistant that creates mind maps in a specific JSON format."),
         "ai_prompt_json_only": _("The output must be one valid JSON object and nothing else. Do not add explanations."),
         "ai_prompt_structure": _("Use this JSON structure:"),
-        "ai_sample_name": _("Name of the Mind Map"),
+        "ai_sample_name": _("Name of the MindMap"),
         "ai_sample_central": _("Central Topic"),
         "ai_sample_branch": _("Main Branch"),
         "ai_sample_subpoint": _("Sub-point"),
         "ai_prompt_generate": _("Generate the mind map JSON now."),
-        "tutorial_name": _("Mind Map Tutorial"),
-        "tutorial_welcome": _("Welcome to the Mind Map Tool!"),
+        "tutorial_name": _("MindMap Tutorial"),
+        "tutorial_welcome": _("Welcome to the MindMap Tool!"),
         "tutorial_center": _("Center View: Use the Center View button to focus on the root node."),
         "tutorial_manage_nodes": _("Managing Nodes"),
         "tutorial_delete_node": _("Delete Node: Hover over a node and use the minus button."),
@@ -260,6 +325,23 @@ def _build_mindmap_i18n() -> dict:
     }
 
 
+class MindmapBridge(QObject):
+    """Control messages without navigating/unloading the HTML document."""
+
+    def __init__(self, panel, page):
+        super().__init__(page)
+        self._panel = panel
+        self._page = page
+
+    @pyqtSlot(str)
+    def send(self, command):
+        panel, page = self._panel, self._page
+        def dispatch():
+            if panel.page is page and panel.web_view is not None:
+                panel._handle_command(command)
+        QTimer.singleShot(0, dispatch)
+
+
 # --- Custom WebPage: intercepts mindmap://fullscreen navigation ---
 class MindmapWebPage(QWebEnginePage):
     """Intercepts mindmap:// navigation requests and routes them to the panel."""
@@ -267,19 +349,21 @@ class MindmapWebPage(QWebEnginePage):
     def __init__(self, panel: "MindmapPanel", profile, parent=None):
         super().__init__(profile, parent)
         self._panel = panel
+        self._channel = QWebChannel(self)
+        self._bridge = MindmapBridge(panel, self)
+        self._channel.registerObject("mindmapHost", self._bridge)
+        self.setWebChannel(self._channel)
 
     def acceptNavigationRequest(self, url, nav_type, is_main_frame):
         if QUrl is not object and url.scheme() == "mindmap":
-            cmd = url.host()
-            if QTimer is not object:
-                if cmd == "fullscreen":
-                    QTimer.singleShot(0, self._panel.enter_fullscreen)
-                elif cmd == "exitfullscreen":
-                    QTimer.singleShot(0, self._panel.close_fullscreen)
-                elif cmd == "window":
-                    QTimer.singleShot(0, self._panel.enter_window)
-                elif cmd == "exitwindow":
-                    QTimer.singleShot(0, self._panel.exit_window)
+            # Compatibility for existing pages; new controls use QWebChannel.
+            if is_main_frame:
+                command = url.host()
+                if command == "switch":
+                    command += ":" + url.query()
+                elif command == "tutorial-init":
+                    command += ":" + ("1" if url.query() == "existing=1" else "0")
+                self._bridge.send(command)
             return False
         return super().acceptNavigationRequest(url, nav_type, is_main_frame)
 
@@ -289,6 +373,7 @@ class MindmapPanel(QWidget):
     def __init__(self, parent_dock: QDockWidget):
         super().__init__()
         self.parent_dock = parent_dock
+        self._profile_folder = mw.pm.profileFolder()
         self.layout = QVBoxLayout(self)
         self.layout.setContentsMargins(0, 0, 0, 0)
         self.layout.setSpacing(0)
@@ -302,11 +387,17 @@ class MindmapPanel(QWidget):
         self.fullscreen_window = None
         self.is_in_fullscreen = False
         self.is_embedded = False  # True when embedded in the Anki main window
+        self.current_tool = "mindmap" if workspace_io.enabled_tools()["mindmap"] else "roadmap"
+        self._switching = False
+        self._roadmap_saving = False
+        self._page_generation = 0
+        self._roadmap_saved_revision = -1
         self._windowed = False
 
         self.is_initialized = False
         self._page_ready = False
         self._unload_in_progress = False
+        self._unload_for_hide = False
         self._unload_callbacks: list[Callable[[bool], None]] = []
 
     def load_content(self):
@@ -323,7 +414,7 @@ class MindmapPanel(QWidget):
             old_storage = os.path.join(constants.addon_path, "web_storage")
             new_storage = old_storage
             if mw and mw.pm and mw.pm.profileFolder():
-                new_storage = os.path.join(mw.pm.profileFolder(), "mindmap_web_data")
+                new_storage = os.path.join(self._profile_folder, "mindmap_web_data")
 
             if new_storage != old_storage and os.path.exists(old_storage) and not os.path.exists(new_storage):
                 try:
@@ -333,13 +424,12 @@ class MindmapPanel(QWidget):
 
             os.makedirs(new_storage, exist_ok=True)
             
-            # The profile must NOT be a child of the web_view: Qt destroys
-            # children in creation order, so the profile would be torn down
-            # while the page (created after it) still exists — QtWebEngine's
-            # "Release of profile requested but WebEnginePage still not
-            # deleted" hard-crash scenario. Keep it parentless and delete it
-            # explicitly in _destroy_web_view() AFTER view+page are gone.
-            self.profile = QWebEngineProfile("mindmap_persistent_profile_v3")
+            # The application owns the profile until the page is actually
+            # destroyed. A queued deleteLater on the view is not proof that
+            # Qt has finished destroying its page.
+            self.profile = QWebEngineProfile(
+                "mindmap_persistent_profile_v3", QCoreApplication.instance()
+            )
             self.profile.setPersistentStoragePath(new_storage)
             self.page = MindmapWebPage(self, self.profile, self.web_view)
             self.web_view.setPage(self.page)
@@ -366,6 +456,7 @@ class MindmapPanel(QWidget):
                 script.setWorldId(QWebEngineScript.ScriptWorldId.MainWorld)
                 script.setRunsOnSubFrames(False)
                 script.setSourceCode(
+                    workspace_io.boot_script() + "window.__SYNAPSE_MM_HOSTED__=true;"
                     f"window.__SYNAPSE_MM_I18N__={boot_i18n};"
                     f"window.__SYNAPSE_MM_DARK__={json.dumps(boot_dark)};"
                     f"window.__SYNAPSE_MM_ACCENT__={json.dumps(boot_accent)};"
@@ -387,15 +478,20 @@ class MindmapPanel(QWidget):
         # Match the page background to the theme BEFORE anything paints —
         # otherwise the view flashes white in dark mode while loading.
         try:
+            from .theme import palette
             dark = bool(mw and mw.pm.night_mode())
             self.web_view.page().setBackgroundColor(
-                QColor("#191919") if dark else QColor("#f8f9fa"))
+                QColor("#2c2c2c") if dark else QColor("#f8f9fa"))
         except Exception:
             pass
 
-        self.web_view.loadFinished.connect(self._on_load_finished)
+        web_ref = self.web_view
+        self.web_view.loadFinished.connect(
+            lambda ok: self._on_load_finished(ok) if self.web_view is web_ref else None
+        )
 
-        html_path = os.path.join(constants.addon_path, constants.MINDMAP_HTML_FILENAME)
+        self._prepare_roadmap_boot()
+        html_path = self._tool_path()
         if os.path.exists(html_path):
             self.web_view.setUrl(QUrl.fromLocalFile(html_path))
         else:
@@ -404,52 +500,250 @@ class MindmapPanel(QWidget):
         self.web_layout.addWidget(self.web_view)
         self.is_initialized = True
 
-    def _on_load_finished(self, ok: bool) -> None:
-        self._page_ready = bool(ok)
-        if not ok:
+    def _consider_tutorial_invitation(self, existing_maps: bool) -> None:
+        if not self.web_view or not mw or not mw.pm:
             return
+        # Record the decision for existing users too; removing their maps later
+        # must not make a first-use invitation unexpectedly reappear.
+        if _claim_tutorial_invitation(mw.pm.profileFolder()) and not existing_maps:
+            self.web_view.page().runJavaScript(
+                "if(window.__synapseOfferTutorial) window.__synapseOfferTutorial();"
+            )
+
+    def _on_load_finished(self, ok: bool) -> None:
+        # Rejected mindmap:// control messages also emit loadFinished(False)
+        # in Qt. They do not unload the already usable document. Real document
+        # loads explicitly clear _page_ready before setUrl().
+        if not ok or not self.web_view:
+            return
+        self._page_ready = True
         self._inject_i18n()
         self._inject_theme_accent()
-        self._inject_recovery_snapshot()
+        self._set_html_toggle(self.web_view, self.is_in_fullscreen)
+        self._set_html_toggle(self.web_view, self.is_embedded, windowed=True)
 
-    def _inject_recovery_snapshot(self) -> None:
-        """Restore a newer disk mirror after a failed/rolled-back LocalStorage save."""
-        if not self.web_view:
+    def _handle_command(self, command):
+        if mw.pm.profileFolder() != self._profile_folder:
             return
-        recovery = _load_mindmap_recovery()
-        if not recovery:
+        if command.startswith(("anki-links:", "anki-open:")):
+            from . import workspace_link_bridge
+            QTimer.singleShot(0, lambda: workspace_link_bridge.action(self, command))
             return
-        snapshot_json = json.dumps(
-            recovery["mindmaps"], ensure_ascii=False, separators=(",", ":")
-        )
-        js = (
-            "if(window.__synapseRestoreMindmapRecovery) "
-            f"window.__synapseRestoreMindmapRecovery({json.dumps(snapshot_json)}, "
-            f"{int(recovery['saved_at'])});"
-        )
+        if command in ("image-add", "workspace-import", "workspace-export", "roadmap-export"):
+            QTimer.singleShot(0, lambda: workspace_io.action(self, command))
+            return
+        if command == "settings":
+            from .workspace_preferences import popup_script
+            self.web_view.page().runJavaScript(popup_script('maps'))
+            return
+        if command.startswith("settings-save:"):
+            from .workspace_preferences import save_command, popup_error
+            def saved(ok):
+                if not ok:
+                    self.web_view.page().runJavaScript(popup_error(_('Could not save the current map. Please try again.')))
+                    return
+                try:
+                    save_command('maps', command)
+                    refresh_workspace_settings()
+                except Exception as error:
+                    self.web_view.page().runJavaScript(popup_error(error))
+            self._persist_active(saved)
+            return
+        if command in ("switch:mindmap", "switch:roadmap"):
+            self.switch_tool(command.split(":", 1)[1])
+        elif command in ("tutorial-init:0", "tutorial-init:1"):
+            self._consider_tutorial_invitation(command.endswith(":1"))
+        else:
+            action = {
+                "roadmap-save": self.save_roadmap,
+                "roadmap-export": self.export_roadmap,
+                "fullscreen": self.enter_fullscreen,
+                "exitfullscreen": self.close_fullscreen,
+                "window": self.enter_window,
+                "exitwindow": self.exit_window,
+            }.get(command)
+            if action is not None:
+                action()
+
+    def _roadmap_path(self):
+        folder = self._profile_folder
+        return os.path.join(folder, "SynapsePro_Data", "roadmaps.sqlite3")
+
+    def _tool_path(self):
+        return os.path.join(constants.addon_path, "web_roadmap", "index.html") if self.current_tool == "roadmap" else os.path.join(constants.addon_path, constants.MINDMAP_HTML_FILENAME)
+
+    def _prepare_roadmap_boot(self):
+        enabled = workspace_io.enabled_tools()
+        if not enabled.get(self.current_tool, True):
+            self.current_tool = next(key for key, value in enabled.items() if value)
+        tracker = getattr(getattr(self, "parent_dock", None), "_synapse_width", None)
+        if tracker is not None:
+            tracker.select(self.current_tool)
+        self._page_generation += 1
+        self._roadmap_saved_revision = -1
+        scripts = self.page.scripts()
+        for script in scripts.toList():
+            if script.name() in ("synapse-roadmap-data", "synapse-mindmap-recovery-current"):
+                scripts.remove(script)
+        if self.current_tool != "roadmap":
+            # Refresh on every return, including when LocalStorage was full and
+            # the latest switch could persist only the profile recovery copy.
+            script = QWebEngineScript()
+            script.setName("synapse-mindmap-recovery-current")
+            script.setInjectionPoint(QWebEngineScript.InjectionPoint.DocumentCreation)
+            script.setWorldId(QWebEngineScript.ScriptWorldId.MainWorld)
+            script.setRunsOnSubFrames(False)
+            script.setSourceCode("window.__SYNAPSE_MM_RECOVERY__=" + json.dumps(_load_mindmap_recovery(self._profile_folder), ensure_ascii=True) + ";")
+            scripts.insert(script)
+            return
         try:
-            self.web_view.page().runJavaScript(js)
-        except Exception as exc:
-            print(f"Mindmap recovery injection failed: {exc}")
+            data = roadmap_store.load(self._roadmap_path())
+            first_use = not data["maps"] and roadmap_store.is_first_use(self._roadmap_path())
+            error = None
+        except Exception:
+            data = None
+            first_use = False
+            error = _("Could not load your data. Nothing has been overwritten. Please try again.")
+        script = QWebEngineScript()
+        script.setName("synapse-roadmap-data")
+        script.setInjectionPoint(QWebEngineScript.InjectionPoint.DocumentCreation)
+        script.setWorldId(QWebEngineScript.ScriptWorldId.MainWorld)
+        script.setRunsOnSubFrames(False)
+        script.setSourceCode("window.__ROADMAP_FIRST_RUN__=" + json.dumps(first_use) + ";window.__ROADMAP_HOSTED__=true;window.__ROADMAP_DATA__=" + json.dumps(data, ensure_ascii=True) + ";window.__ROADMAP_ERROR__=" + json.dumps(error) + ";")
+        scripts.insert(script)
+
+    def _persist_active(self, done):
+        web = self.web_view
+        if not web or not self._page_ready:
+            done(not self._page_ready)
+            return
+        is_roadmap = self.current_tool == "roadmap"
+        generation = self._page_generation
+        finished = False
+        def complete(ok):
+            nonlocal finished
+            if finished:
+                return
+            finished = True
+            done(ok)
+        def receive(result):
+            if finished or self.web_view is not web or generation != self._page_generation:
+                complete(False)
+                return
+            try:
+                if not isinstance(result, dict):
+                    complete(False)
+                    return
+                if is_roadmap:
+                    revision = int(result.get("revision", 0))
+                    if revision >= self._roadmap_saved_revision:
+                        roadmap_store.save(self._roadmap_path(), result["data"])
+                        self._roadmap_saved_revision = revision
+                    web.page().runJavaScript("window.__roadmapSaved && window.__roadmapSaved(true," + json.dumps(result.get("revision")) + ");")
+                    complete(True)
+                else:
+                    recovery = _write_mindmap_recovery(result["snapshot"], int(result["savedAt"]), self._profile_folder)
+                    complete(result.get("saved") is True or recovery)
+            except Exception:
+                if is_roadmap:
+                    web.page().runJavaScript("window.__roadmapSaved && window.__roadmapSaved(false);")
+                complete(False)
+        method = "__roadmapSnapshot" if is_roadmap else "__synapseFlushMindmap"
+        try:
+            web.page().runJavaScript("window." + method + " ? window." + method + "() : null", receive)
+            QTimer.singleShot(5000, lambda: complete(False))
+        except Exception:
+            complete(False)
+
+    def export_roadmap(self):
+        if self.current_tool != "roadmap" or not self.web_view:
+            return
+        def receive(result):
+            if not isinstance(result, dict):
+                return
+            try:
+                data = roadmap_store.validate(result["data"])
+                active = next(m for m in data["maps"] if m["id"] == data["active"])
+                from aqt.qt import QFileDialog
+                path, _filter = QFileDialog.getSaveFileName(self, _("Export"), "FreeMap.json", "JSON (*.json)")
+                if not path:
+                    return
+                payload = {"version": 1, "active": active["id"], "maps": [active]}
+                with open(path, "w", encoding="utf-8") as handle:
+                    json.dump(payload, handle, ensure_ascii=False, indent=2)
+            except Exception:
+                if self.web_view:
+                    self.web_view.page().runJavaScript("alert(" + json.dumps(_("Export failed. Please try again.")) + ");")
+        self.web_view.page().runJavaScript("window.__roadmapSnapshot && window.__roadmapSnapshot()", receive)
+
+    def save_roadmap(self):
+        if self.current_tool != "roadmap" or self._roadmap_saving or self._switching:
+            return
+        self._roadmap_saving = True
+        def done(ok):
+            self._roadmap_saving = False
+        self._persist_active(done)
+
+    def switch_tool(self, target):
+        if target not in ("mindmap", "roadmap") or not workspace_io.enabled_tools().get(target) or target == self.current_tool or self._switching or self._unload_in_progress or not self._page_ready:
+            return
+        self._switching = True
+        # Freeze input while the final snapshot crosses the asynchronous bridge.
+        self.web_view.setEnabled(False)
+        def done(ok):
+            self._switching = False
+            if not self.web_view:
+                return
+            self.web_view.setEnabled(True)
+            if not ok:
+                self.web_view.page().runJavaScript("alert('Speichern fehlgeschlagen. Die aktuelle Ansicht bleibt geöffnet.');")
+                return
+            self.current_tool = target
+            self._page_ready = False
+            self._prepare_roadmap_boot()
+            self.web_view.setUrl(QUrl.fromLocalFile(self._tool_path()))
+        self._persist_active(done)
 
     def _destroy_web_view(self, web_ref) -> None:
         if self.web_view is not web_ref:
             return
         self.web_layout.removeWidget(web_ref)
+        # Delete the profile only after Qt emits the page's destroyed signal.
+        # Its application parent also keeps the Python wrapper from releasing
+        # the native profile while deleteLater is still waiting in the queue.
         profile_ref = self.profile
+        page_ref = self.page
+        if profile_ref is not None:
+            page_ref.destroyed.connect(profile_ref.deleteLater)
+        web_ref.hide()
         web_ref.deleteLater()
         self.web_view = None
         self.profile = None
         self.page = None
         self.is_initialized = False
         self._page_ready = False
-        # Delete the (parentless) profile only after the queued deleteLater of
-        # view+page has been processed — the profile must outlive the page.
-        if profile_ref is not None and QTimer is not object:
-            QTimer.singleShot(0, profile_ref.deleteLater)
+        self._page_generation += 1
+
+    def _complete_unload(self, web_ref, durable: bool) -> None:
+        def finish_outside_js_callback():
+            # A quick hide/show must not destroy the view that was just reopened.
+            reopened = self._unload_for_hide and (
+                self.parent_dock.isVisible() or self.is_in_fullscreen or self.is_embedded
+            )
+            if self.web_view is web_ref:
+                if durable and not reopened:
+                    self._destroy_web_view(web_ref)
+                else:
+                    web_ref.setEnabled(True)
+            self._unload_in_progress = False
+            self._finish_unload_callbacks(durable)
+        # Removing a dock or destroying WebEngine objects inside a JavaScript
+        # result callback can re-enter Qt's hideEvent on a partially torn-down view.
+        QTimer.singleShot(0, finish_outside_js_callback)
 
     def unload_content(
-        self, on_complete: Optional[Callable[[bool], None]] = None
+        self, on_complete: Optional[Callable[[bool], None]] = None,
+        *, only_if_hidden: bool = False,
     ) -> None:
         """Persist LocalStorage plus a disk recovery copy before freeing RAM."""
         if on_complete:
@@ -458,8 +752,19 @@ class MindmapPanel(QWidget):
             self._finish_unload_callbacks(True)
             return
         if self._unload_in_progress:
+            if not only_if_hidden:
+                self._unload_for_hide = False
             return
+        self._unload_for_hide = only_if_hidden
 
+        if self.current_tool == "roadmap":
+            self._unload_in_progress = True
+            web_ref = self.web_view
+            web_ref.setEnabled(False)
+            def finished(ok):
+                self._complete_unload(web_ref, ok)
+            self._persist_active(finished)
+            return
         self._unload_in_progress = True
         web_ref = self.web_view
         page_was_ready = self._page_ready
@@ -470,14 +775,7 @@ class MindmapPanel(QWidget):
             if completed:
                 return
             completed = True
-            self._unload_in_progress = False
-            if durable:
-                self._destroy_web_view(web_ref)
-            else:
-                # Keep the hidden WebView alive so reopening the dock returns to
-                # the unsaved in-memory state instead of loading older data.
-                print("Mindmap: WebView kept alive because final persistence failed")
-            self._finish_unload_callbacks(durable)
+            self._complete_unload(web_ref, durable)
 
         def receive_snapshot(result) -> None:
             if self.web_view is not web_ref:
@@ -498,7 +796,7 @@ class MindmapPanel(QWidget):
                 saved_at = int(time.time() * 1000)
             recovery_saved = (
                 isinstance(snapshot, str)
-                and _write_mindmap_recovery(snapshot, saved_at)
+                and _write_mindmap_recovery(snapshot, saved_at, self._profile_folder)
             )
             finish(local_saved or recovery_saved)
 
@@ -533,9 +831,9 @@ class MindmapPanel(QWidget):
             strings = _build_mindmap_i18n()
             dark = bool(mw and mw.pm.night_mode())
             js = (
-                f"window.__SYNAPSE_MM_I18N__ = {json.dumps(strings, ensure_ascii=False)};"
+                workspace_io.boot_script() + f"window.__SYNAPSE_MM_I18N__ = {json.dumps(strings, ensure_ascii=False)};"
                 f"document.documentElement.classList.toggle('dark', {json.dumps(dark)});"
-                f"if(window.applyMindmapI18n) applyMindmapI18n();"
+                f"if(window.applyMindmapI18n) applyMindmapI18n();if(window.applyWorkspaceI18n) applyWorkspaceI18n();"
             )
             self.web_view.page().runJavaScript(js)
         except Exception:
@@ -619,7 +917,7 @@ class MindmapPanel(QWidget):
         self.web_view.setParent(None)
         self.parent_dock.hide()
 
-        ok = embedded_window.embed(self.web_view, self.exit_window, _("Mind Map"),
+        ok = embedded_window.embed(self.web_view, self.exit_window, _("MindMap"),
                                    show_header=False)
         if not ok:
             self.is_embedded = False
@@ -661,7 +959,7 @@ class MindmapPanel(QWidget):
             self.load_content()
         else:
             if not self.is_in_fullscreen and not self.is_embedded:
-                self.unload_content()
+                self.unload_content(only_if_hidden=True)
 
 # --- Setup & Toggle ---
 
@@ -670,7 +968,7 @@ def setup_mindmap_dock():
     if not mw or QDockWidget is object or mindmap_dock: return
 
     try:
-        mindmap_dock = QDockWidget("Mind Map", mw)
+        mindmap_dock = QDockWidget("MindMap", mw)
         mindmap_dock.setObjectName(constants.MINDMAP_DOCK_OBJECT_NAME)
         if Qt: mindmap_dock.setAllowedAreas(Qt.DockWidgetArea.RightDockWidgetArea | Qt.DockWidgetArea.LeftDockWidgetArea)
 
@@ -683,6 +981,9 @@ def setup_mindmap_dock():
         
         mindmap_dock.visibilityChanged.connect(panel.on_visibility_changed)
 
+        from .sidebar_widths import attach
+        attach(mw, mindmap_dock, panel.current_tool,
+               lambda: panel.is_in_fullscreen or panel.is_embedded)
         if Qt: mw.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, mindmap_dock)
         mindmap_dock.setVisible(False)
 
@@ -707,6 +1008,7 @@ def cleanup_mindmap_sidebar():
         return
 
     dock_ref = mindmap_dock
+    mindmap_dock = None
     panel = dock_ref.widget()
 
     def dispose(saved: bool) -> None:
@@ -731,3 +1033,58 @@ def cleanup_mindmap_sidebar():
         panel.unload_content(dispose)
     else:
         dispose(True)
+
+
+def refresh_workspace_settings():
+    """Persist before rebuilding tabs/language; defer navigation out of JS callbacks."""
+    if not mindmap_dock:
+        return
+    panel = mindmap_dock.widget()
+    if not panel or not panel.web_view or not panel._page_ready:
+        return
+    def saved(ok):
+        if not ok:
+            return
+        def reload_page():
+            if not panel.web_view:
+                return
+            scripts = panel.page.scripts()
+            for script in scripts.toList():
+                if script.name() == 'synapse-workspace-settings':
+                    scripts.remove(script)
+            script = QWebEngineScript()
+            script.setName('synapse-workspace-settings')
+            script.setInjectionPoint(QWebEngineScript.InjectionPoint.DocumentCreation)
+            script.setWorldId(QWebEngineScript.ScriptWorldId.MainWorld)
+            script.setRunsOnSubFrames(False)
+            script.setSourceCode(workspace_io.boot_script() +
+                'window.__SYNAPSE_MM_I18N__=' + json.dumps(_build_mindmap_i18n()) + ';' +
+                'window.__SYNAPSE_MM_DARK__=' + json.dumps(bool(mw.pm.night_mode())) + ';')
+            scripts.insert(script)
+            panel._page_ready = False
+            panel._prepare_roadmap_boot()
+            panel.web_view.setUrl(QUrl.fromLocalFile(panel._tool_path()))
+        QTimer.singleShot(0, reload_page)
+    panel._persist_active(saved)
+
+
+def refresh_workspace_theme():
+    """Apply Anki's appearance to either editor without reloading or losing undo."""
+    if not mindmap_dock:
+        return
+    panel = mindmap_dock.widget()
+    if not panel or not panel.web_view:
+        return
+    dark = json.dumps(bool(mw and mw.pm.night_mode()))
+    panel.web_view.page().runJavaScript(
+        'window.__SYNAPSE_MM_DARK__='+dark+';document.documentElement.classList.toggle("dark",'+dark+');')
+    panel._inject_theme_accent()
+    # Keep early-paint values correct on the next tab switch too.
+    import re
+    scripts = panel.page.scripts()
+    for script in scripts.toList():
+        if script.name() in ('synapse-mindmap-i18n','synapse-workspace-settings'):
+            source = re.sub(r'window\.__SYNAPSE_MM_DARK__\s*=\s*(?:true|false);', 'window.__SYNAPSE_MM_DARK__='+dark+';', script.sourceCode())
+            scripts.remove(script)
+            script.setSourceCode(source)
+            scripts.insert(script)

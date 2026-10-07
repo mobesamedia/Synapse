@@ -8,37 +8,37 @@ from typing import Dict
 
 
 WEB_TRANSLATIONS: Dict[str, Dict[str, str]] = {
-    "SynapsePro Settings": {
-        "de": "SynapsePro-Einstellungen", "es": "Ajustes de SynapsePro", "ko": "SynapsePro 설정", "pt": "Configurações do SynapsePro",
-        "fr": "Paramètres de SynapsePro", "vi": "Cài đặt SynapsePro", "zh": "SynapsePro 设置", "hi": "SynapsePro सेटिंग्स",
+    "Synapse Settings": {
+        "de": "Synapse-Einstellungen", "es": "Ajustes de Synapse", "ko": "Synapse 설정", "pt": "Configurações do Synapse",
+        "fr": "Paramètres de Synapse", "vi": "Cài đặt Synapse", "zh": "Synapse 设置", "hi": "Synapse सेटिंग्स",
     },
     "Support": {
         "de": "Unterstützung", "es": "Apoyo", "ko": "후원", "pt": "Apoio",
         "fr": "Soutien", "vi": "Ủng hộ", "zh": "支持", "hi": "समर्थन",
     },
-    "Announcements, tips and updates from SynapsePro.": {
-        "de": "Ankündigungen, Tipps und Neuigkeiten von SynapsePro.",
-        "es": "Anuncios, consejos y novedades de SynapsePro.",
-        "ko": "SynapsePro의 공지, 팁 및 업데이트입니다.",
-        "pt": "Anúncios, dicas e novidades do SynapsePro.",
-        "fr": "Annonces, conseils et nouveautés de SynapsePro.",
-        "vi": "Thông báo, mẹo và cập nhật từ SynapsePro.",
-        "zh": "SynapsePro 的公告、提示和更新。",
-        "hi": "SynapsePro की घोषणाएँ, सुझाव और अपडेट।",
+    "Announcements, tips and updates from Synapse.": {
+        "de": "Ankündigungen, Tipps und Neuigkeiten von Synapse.",
+        "es": "Anuncios, consejos y novedades de Synapse.",
+        "ko": "Synapse의 공지, 팁 및 업데이트입니다.",
+        "pt": "Anúncios, dicas e novidades do Synapse.",
+        "fr": "Annonces, conseils et nouveautés de Synapse.",
+        "vi": "Thông báo, mẹo và cập nhật từ Synapse.",
+        "zh": "Synapse 的公告、提示和更新。",
+        "hi": "Synapse की घोषणाएँ, सुझाव और अपडेट।",
     },
     "Known Add-on Conflict": {
         "de": "Bekannter Add-on-Konflikt", "es": "Conflicto conocido entre complementos", "ko": "알려진 애드온 충돌", "pt": "Conflito conhecido de complementos",
         "fr": "Conflit connu entre extensions", "vi": "Xung đột tiện ích bổ sung đã biết", "zh": "已知插件冲突", "hi": "ज्ञात ऐड-ऑन टकराव",
     },
-    "The following add-on is known to potentially cause UI-related issues when used together with SynapsePro:": {
-        "de": "Das folgende Add-on kann bei gemeinsamer Verwendung mit SynapsePro möglicherweise Probleme mit der Benutzeroberfläche verursachen:",
-        "es": "Se sabe que el siguiente complemento puede causar problemas de interfaz al utilizarse junto con SynapsePro:",
-        "ko": "다음 애드온은 SynapsePro와 함께 사용할 경우 UI 관련 문제를 일으킬 수 있는 것으로 알려져 있습니다:",
-        "pt": "O complemento a seguir pode causar problemas de interface quando usado junto com o SynapsePro:",
-        "fr": "L’extension suivante est susceptible de provoquer des problèmes d’interface lorsqu’elle est utilisée avec SynapsePro :",
-        "vi": "Tiện ích bổ sung sau có thể gây ra sự cố giao diện khi được dùng cùng SynapsePro:",
-        "zh": "已知以下插件与 SynapsePro 同时使用时可能导致界面相关问题：",
-        "hi": "निम्न ऐड-ऑन को SynapsePro के साथ उपयोग करने पर इंटरफ़ेस संबंधी समस्याएँ हो सकती हैं:",
+    "The following add-on is known to potentially cause UI-related issues when used together with Synapse:": {
+        "de": "Das folgende Add-on kann bei gemeinsamer Verwendung mit Synapse möglicherweise Probleme mit der Benutzeroberfläche verursachen:",
+        "es": "Se sabe que el siguiente complemento puede causar problemas de interfaz al utilizarse junto con Synapse:",
+        "ko": "다음 애드온은 Synapse와 함께 사용할 경우 UI 관련 문제를 일으킬 수 있는 것으로 알려져 있습니다:",
+        "pt": "O complemento a seguir pode causar problemas de interface quando usado junto com o Synapse:",
+        "fr": "L’extension suivante est susceptible de provoquer des problèmes d’interface lorsqu’elle est utilisée avec Synapse :",
+        "vi": "Tiện ích bổ sung sau có thể gây ra sự cố giao diện khi được dùng cùng Synapse:",
+        "zh": "已知以下插件与 Synapse 同时使用时可能导致界面相关问题：",
+        "hi": "निम्न ऐड-ऑन को Synapse के साथ उपयोग करने पर इंटरफ़ेस संबंधी समस्याएँ हो सकती हैं:",
     },
     "This may include unusual colours, layout problems or other visual glitches. If you experience these issues, please try temporarily disabling this add-on. If you need help or notice conflicts with other add-ons, contact me at help.synapse.pro@gmail.com.": {
         "de": "Dazu können ungewöhnliche Farben, Layoutprobleme oder andere Darstellungsfehler gehören. Falls solche Probleme auftreten, versuche bitte, dieses Add-on vorübergehend zu deaktivieren. Wenn du Hilfe benötigst oder Konflikte mit weiteren Add-ons bemerkst, kontaktiere mich unter help.synapse.pro@gmail.com.",
@@ -80,11 +80,11 @@ WEB_TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "de": "Beitreten", "es": "Unirse", "ko": "참여", "pt": "Participar",
         "fr": "Rejoindre", "vi": "Tham gia", "zh": "加入", "hi": "जुड़ें",
     },
-    "Enjoying SynapsePro and got 5 seconds?": {
-        "de": "Gefällt dir SynapsePro und hast du 5 Sekunden?", "es": "¿Te gusta SynapsePro y tienes 5 segundos?",
-        "ko": "SynapsePro가 마음에 드시나요? 5초만 내주세요!", "pt": "Gostando do SynapsePro e tem 5 segundos?",
-        "fr": "SynapsePro vous plaît et vous avez 5 secondes ?", "vi": "Bạn thích SynapsePro và có 5 giây chứ?",
-        "zh": "喜欢 SynapsePro，并愿意花 5 秒钟吗？", "hi": "SynapsePro पसंद है और 5 सेकंड हैं?",
+    "Enjoying Synapse and got 5 seconds?": {
+        "de": "Gefällt dir Synapse und hast du 5 Sekunden?", "es": "¿Te gusta Synapse y tienes 5 segundos?",
+        "ko": "Synapse가 마음에 드시나요? 5초만 내주세요!", "pt": "Gostando do Synapse e tem 5 segundos?",
+        "fr": "Synapse vous plaît et vous avez 5 secondes ?", "vi": "Bạn thích Synapse và có 5 giây chứ?",
+        "zh": "喜欢 Synapse，并愿意花 5 秒钟吗？", "hi": "Synapse पसंद है और 5 सेकंड हैं?",
     },
     "Leaving a thumbs up on AnkiWeb supports development the most. Thank you so much!": {
         "de": "Ein Daumen hoch auf AnkiWeb unterstützt die Entwicklung am meisten. Vielen Dank!",
@@ -158,17 +158,17 @@ WEB_TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "de": "Hintergrund", "es": "Fondo", "ko": "배경", "pt": "Fundo",
         "fr": "Arrière-plan", "vi": "Nền", "zh": "背景", "hi": "पृष्ठभूमि",
     },
-    "What changed in recent versions of SynapsePro.": {
-        "de": "Änderungen in den letzten SynapsePro-Versionen.", "es": "Cambios en las últimas versiones de SynapsePro.",
-        "ko": "최근 SynapsePro 버전의 변경 사항입니다.", "pt": "O que mudou nas versões recentes do SynapsePro.",
-        "fr": "Les changements des versions récentes de SynapsePro.", "vi": "Những thay đổi trong các phiên bản SynapsePro gần đây.",
-        "zh": "SynapsePro 最近版本的更新内容。", "hi": "SynapsePro के हाल के संस्करणों में हुए बदलाव।",
+    "What changed in recent versions of Synapse.": {
+        "de": "Änderungen in den letzten Synapse-Versionen.", "es": "Cambios en las últimas versiones de Synapse.",
+        "ko": "최근 Synapse 버전의 변경 사항입니다.", "pt": "O que mudou nas versões recentes do Synapse.",
+        "fr": "Les changements des versions récentes de Synapse.", "vi": "Những thay đổi trong các phiên bản Synapse gần đây.",
+        "zh": "Synapse 最近版本的更新内容。", "hi": "Synapse के हाल के संस्करणों में हुए बदलाव।",
     },
-    "The people who help keep SynapsePro going.": {
-        "de": "Die Menschen, die SynapsePro am Laufen halten.", "es": "Las personas que ayudan a mantener SynapsePro.",
-        "ko": "SynapsePro가 계속될 수 있도록 돕는 분들입니다.", "pt": "As pessoas que ajudam o SynapsePro a continuar.",
-        "fr": "Les personnes qui aident SynapsePro à continuer.", "vi": "Những người giúp SynapsePro tiếp tục phát triển.",
-        "zh": "帮助 SynapsePro 持续发展的支持者。", "hi": "वे लोग जो SynapsePro को आगे बढ़ने में मदद करते हैं।",
+    "The people who help keep Synapse going.": {
+        "de": "Die Menschen, die Synapse am Laufen halten.", "es": "Las personas que ayudan a mantener Synapse.",
+        "ko": "Synapse가 계속될 수 있도록 돕는 분들입니다.", "pt": "As pessoas que ajudam o Synapse a continuar.",
+        "fr": "Les personnes qui aident Synapse à continuer.", "vi": "Những người giúp Synapse tiếp tục phát triển.",
+        "zh": "帮助 Synapse 持续发展的支持者。", "hi": "वे लोग जो Synapse को आगे बढ़ने में मदद करते हैं।",
     },
     "Custom Deck Dashboard": {
         "de": "Benutzerdefinierte Deck-Übersicht", "es": "Panel de mazo personalizado", "ko": "사용자 지정 덱 대시보드", "pt": "Painel personalizado do baralho",
@@ -224,19 +224,19 @@ WEB_TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "de": "Unterstützende werden hier bald aufgeführt", "es": "Pronto aparecerán aquí las personas que apoyan el proyecto", "ko": "후원자 목록이 곧 여기에 표시됩니다", "pt": "Os apoiadores serão listados aqui em breve",
         "fr": "Les soutiens seront bientôt affichés ici", "vi": "Những người ủng hộ sẽ sớm được liệt kê tại đây", "zh": "支持者名单即将在此显示", "hi": "समर्थकों की सूची जल्द यहाँ दिखाई जाएगी",
     },
-    "A heartfelt thank you to everyone who supports SynapsePro. This space is reserved for you.": {
-        "de": "Herzlichen Dank an alle, die SynapsePro unterstützen. Dieser Platz ist für euch reserviert.",
-        "es": "Gracias de corazón a quienes apoyan SynapsePro. Este espacio está reservado para vosotros.",
-        "ko": "SynapsePro를 후원해 주시는 모든 분께 진심으로 감사드립니다. 이 공간은 여러분을 위한 곳입니다.",
-        "pt": "Um agradecimento de coração a todos que apoiam o SynapsePro. Este espaço é de vocês.",
-        "fr": "Un immense merci à toutes les personnes qui soutiennent SynapsePro. Cet espace vous est réservé.",
-        "vi": "Chân thành cảm ơn tất cả những ai ủng hộ SynapsePro. Không gian này dành cho các bạn.",
-        "zh": "衷心感谢每一位支持 SynapsePro 的人。这个位置为你们而留。",
-        "hi": "SynapsePro का समर्थन करने वाले सभी लोगों को दिल से धन्यवाद। यह स्थान आपके लिए है।",
+    "A heartfelt thank you to everyone who supports Synapse. This space is reserved for you.": {
+        "de": "Herzlichen Dank an alle, die Synapse unterstützen. Dieser Platz ist für euch reserviert.",
+        "es": "Gracias de corazón a quienes apoyan Synapse. Este espacio está reservado para vosotros.",
+        "ko": "Synapse를 후원해 주시는 모든 분께 진심으로 감사드립니다. 이 공간은 여러분을 위한 곳입니다.",
+        "pt": "Um agradecimento de coração a todos que apoiam o Synapse. Este espaço é de vocês.",
+        "fr": "Un immense merci à toutes les personnes qui soutiennent Synapse. Cet espace vous est réservé.",
+        "vi": "Chân thành cảm ơn tất cả những ai ủng hộ Synapse. Không gian này dành cho các bạn.",
+        "zh": "衷心感谢每一位支持 Synapse 的人。这个位置为你们而留。",
+        "hi": "Synapse का समर्थन करने वाले सभी लोगों को दिल से धन्यवाद। यह स्थान आपके लिए है।",
     },
-    "SynapsePro error": {
-        "de": "SynapsePro-Fehler", "es": "Error de SynapsePro", "ko": "SynapsePro 오류", "pt": "Erro do SynapsePro",
-        "fr": "Erreur SynapsePro", "vi": "Lỗi SynapsePro", "zh": "SynapsePro 错误", "hi": "SynapsePro त्रुटि",
+    "Synapse error": {
+        "de": "Synapse-Fehler", "es": "Error de Synapse", "ko": "Synapse 오류", "pt": "Erro do Synapse",
+        "fr": "Erreur Synapse", "vi": "Lỗi Synapse", "zh": "Synapse 错误", "hi": "Synapse त्रुटि",
     },
     "Show details": {
         "de": "Details anzeigen", "es": "Mostrar detalles", "ko": "세부 정보 보기", "pt": "Mostrar detalhes",
@@ -484,7 +484,7 @@ _add_rows([
     ("An API key is a password that lets SynapseGPT talk to an AI service on your behalf. You create one in the provider's dashboard, paste it here, and the add-on sends your questions directly to that service.", "Ein API-Schlüssel ist ein Passwort, mit dem SynapseGPT in deinem Auftrag einen KI-Dienst anspricht. Du erstellst ihn beim Anbieter, fügst ihn hier ein und das Add-on sendet deine Fragen direkt an diesen Dienst.", "Una clave API es una contraseña que permite a SynapseGPT comunicarse con un servicio de IA en tu nombre. La creas en el panel del proveedor, la pegas aquí y el complemento envía tus preguntas directamente al servicio.", "API 키는 SynapseGPT가 사용자를 대신해 AI 서비스와 통신할 수 있게 하는 비밀번호입니다. 제공업체 대시보드에서 키를 만든 뒤 여기에 붙여 넣으면 질문이 해당 서비스로 직접 전송됩니다.", "Uma chave de API é uma senha que permite ao SynapseGPT falar com um serviço de IA em seu nome. Você a cria no painel do provedor, cola aqui e o add-on envia suas perguntas diretamente ao serviço.", "Une clé API est un mot de passe qui permet à SynapseGPT de communiquer avec un service d’IA pour vous. Créez-la sur le site du fournisseur, collez-la ici et l’add-on enverra vos questions directement à ce service.", "Khóa API là mật khẩu cho phép SynapseGPT giao tiếp với dịch vụ AI thay bạn. Bạn tạo khóa trong bảng điều khiển của nhà cung cấp, dán vào đây và tiện ích gửi câu hỏi trực tiếp đến dịch vụ đó.", "API 密钥相当于一个密码，让 SynapseGPT 代表你与 AI 服务通信。你在服务商的控制台创建密钥并粘贴到这里，插件会将问题直接发送给该服务。", "API कुंजी एक पासवर्ड है जिससे SynapseGPT आपकी ओर से AI सेवा से बात करता है। प्रदाता के डैशबोर्ड में इसे बनाएँ, यहाँ चिपकाएँ और ऐड-ऑन प्रश्न सीधे उस सेवा को भेजेगा।"),
     ("OpenAI (gpt-5.4-mini) is a fast all-rounder. Google Gemini offers a capable free tier. Anthropic Claude is strong at nuanced explanations. OpenRouter provides many models with one key. Ollama runs locally without a key or usage fees.", "OpenAI (gpt-5.4-mini) ist ein schneller Allrounder. Google Gemini bietet einen leistungsfähigen Gratis-Tarif. Anthropic Claude eignet sich für differenzierte Erklärungen. OpenRouter stellt mit einem Schlüssel viele Modelle bereit. Ollama läuft lokal ohne Schlüssel oder Nutzungskosten.", "OpenAI (gpt-5.4-mini) es rápido y versátil. Google Gemini ofrece un nivel gratuito capaz. Anthropic Claude destaca en explicaciones matizadas. OpenRouter da acceso a muchos modelos con una clave. Ollama funciona en local sin clave ni costes de uso.", "OpenAI(gpt-5.4-mini)는 빠른 범용 모델입니다. Google Gemini는 유용한 무료 등급을 제공합니다. Anthropic Claude는 섬세한 설명에 강합니다. OpenRouter는 키 하나로 여러 모델을 제공합니다. Ollama는 키나 사용료 없이 로컬에서 실행됩니다.", "OpenAI (gpt-5.4-mini) é rápido e versátil. O Google Gemini oferece uma boa faixa gratuita. O Anthropic Claude é forte em explicações detalhadas. O OpenRouter dá acesso a muitos modelos com uma chave. O Ollama roda localmente sem chave ou custo de uso.", "OpenAI (gpt-5.4-mini) est rapide et polyvalent. Google Gemini propose une offre gratuite performante. Anthropic Claude excelle dans les explications nuancées. OpenRouter donne accès à de nombreux modèles avec une seule clé. Ollama fonctionne localement sans clé ni frais d’utilisation.", "OpenAI (gpt-5.4-mini) nhanh và đa dụng. Google Gemini có gói miễn phí hữu ích. Anthropic Claude mạnh về giải thích tinh tế. OpenRouter cho phép dùng nhiều mô hình bằng một khóa. Ollama chạy cục bộ, không cần khóa hay phí sử dụng.", "OpenAI（gpt-5.4-mini）速度快且用途广。Google Gemini 提供实用的免费额度。Anthropic Claude 擅长细致解释。OpenRouter 可用一个密钥访问多个模型。Ollama 在本地运行，无需密钥或使用费。", "OpenAI (gpt-5.4-mini) तेज़ और बहुउपयोगी है। Google Gemini का सक्षम निःशुल्क स्तर है। Anthropic Claude सूक्ष्म व्याख्याओं में अच्छा है। OpenRouter एक कुंजी से कई मॉडल देता है। Ollama बिना कुंजी या उपयोग शुल्क के स्थानीय रूप से चलता है।"),
     ("Ollama runs open-source models directly on your computer. Nothing is sent to an online AI provider. Select Ollama, open the setup assistant, and install a model such as gemma2:2b.", "Ollama führt Open-Source-Modelle direkt auf deinem Computer aus. Es wird nichts an einen Online-KI-Anbieter gesendet. Wähle Ollama, öffne den Einrichtungsassistenten und installiere ein Modell wie gemma2:2b.", "Ollama ejecuta modelos de código abierto directamente en tu ordenador. No se envía nada a un proveedor de IA en línea. Selecciona Ollama, abre el asistente e instala un modelo como gemma2:2b.", "Ollama는 오픈 소스 모델을 컴퓨터에서 직접 실행합니다. 온라인 AI 제공업체로 아무것도 전송하지 않습니다. Ollama를 선택하고 설정 도우미에서 gemma2:2b 같은 모델을 설치하세요.", "O Ollama executa modelos de código aberto diretamente no computador. Nada é enviado a um provedor de IA on-line. Selecione Ollama, abra o assistente e instale um modelo como gemma2:2b.", "Ollama exécute des modèles libres directement sur votre ordinateur. Rien n’est envoyé à un fournisseur d’IA en ligne. Sélectionnez Ollama, ouvrez l’assistant et installez un modèle tel que gemma2:2b.", "Ollama chạy mô hình mã nguồn mở trực tiếp trên máy tính. Không có gì được gửi đến nhà cung cấp AI trực tuyến. Chọn Ollama, mở trợ lý thiết lập và cài mô hình như gemma2:2b.", "Ollama 直接在你的电脑上运行开源模型，不会向在线 AI 服务商发送任何内容。请选择 Ollama，打开设置助手并安装 gemma2:2b 等模型。", "Ollama ओपन-सोर्स मॉडल सीधे आपके कंप्यूटर पर चलाता है। ऑनलाइन AI प्रदाता को कुछ नहीं भेजा जाता। Ollama चुनें, सेटअप सहायक खोलें और gemma2:2b जैसा मॉडल स्थापित करें।"),
-    ("Your API key is stored in your local Anki profile and is never uploaded by SynapsePro. Questions go directly to the selected provider. Visible card text is included only when you use a Quick Action or enable current-card context. The chat assistant does not collect chat analytics, logs, or conversations.", "Dein API-Schlüssel wird im lokalen Anki-Profil gespeichert und von SynapsePro nie hochgeladen. Fragen gehen direkt an den gewählten Anbieter. Sichtbarer Kartentext wird nur bei einer Schnellaktion oder aktiviertem Kartenkontext mitgesendet. Der Chat-Assistent sammelt keine Chat-Analysen, Protokolle oder Unterhaltungen.", "Tu clave API se guarda en el perfil local de Anki y SynapsePro nunca la sube. Las preguntas van directamente al proveedor elegido. El texto visible de la tarjeta solo se incluye al usar una acción rápida o activar el contexto. El asistente no recopila análisis, registros ni conversaciones.", "API 키는 로컬 Anki 프로필에 저장되며 SynapsePro가 업로드하지 않습니다. 질문은 선택한 제공업체로 직접 전송됩니다. 빠른 작업을 사용하거나 현재 카드 컨텍스트를 켠 경우에만 보이는 카드 텍스트가 포함됩니다. 채팅 도우미는 채팅 분석, 로그 또는 대화를 수집하지 않습니다.", "Sua chave de API fica no perfil local do Anki e nunca é enviada pelo SynapsePro. As perguntas vão direto ao provedor escolhido. O texto visível do cartão só é incluído em uma ação rápida ou com o contexto ativado. O assistente não coleta análises, logs ou conversas.", "Votre clé API est conservée dans votre profil Anki local et n’est jamais téléversée par SynapsePro. Les questions vont directement au fournisseur choisi. Le texte visible d’une carte n’est inclus qu’avec une action rapide ou le contexte activé. L’assistant ne collecte ni analyses de chat, ni journaux, ni conversations.", "Khóa API được lưu trong hồ sơ Anki cục bộ và SynapsePro không tải khóa lên. Câu hỏi được gửi thẳng đến nhà cung cấp đã chọn. Văn bản thẻ chỉ được gửi khi dùng Tác vụ nhanh hoặc bật ngữ cảnh thẻ. Trợ lý không thu thập phân tích, nhật ký hay cuộc trò chuyện.", "API 密钥保存在本地 Anki 配置文件中，SynapsePro 不会上传它。问题会直接发送给所选服务商。只有使用快捷操作或启用当前卡片上下文时，才会包含可见的卡片文本。聊天助手不会收集聊天分析、日志或对话。", "आपकी API कुंजी स्थानीय Anki प्रोफ़ाइल में रहती है और SynapsePro इसे अपलोड नहीं करता। प्रश्न सीधे चुने प्रदाता को जाते हैं। दृश्य कार्ड पाठ केवल क्विक एक्शन या कार्ड संदर्भ चालू होने पर शामिल होता है। चैट सहायक चैट विश्लेषण, लॉग या बातचीत एकत्र नहीं करता।"),
+    ("Your API key is stored in your local Anki profile and is never uploaded by Synapse. Questions go directly to the selected provider. Visible card text is included only when you use a Quick Action or enable current-card context. The chat assistant does not collect chat analytics, logs, or conversations.", "Dein API-Schlüssel wird im lokalen Anki-Profil gespeichert und von Synapse nie hochgeladen. Fragen gehen direkt an den gewählten Anbieter. Sichtbarer Kartentext wird nur bei einer Schnellaktion oder aktiviertem Kartenkontext mitgesendet. Der Chat-Assistent sammelt keine Chat-Analysen, Protokolle oder Unterhaltungen.", "Tu clave API se guarda en el perfil local de Anki y Synapse nunca la sube. Las preguntas van directamente al proveedor elegido. El texto visible de la tarjeta solo se incluye al usar una acción rápida o activar el contexto. El asistente no recopila análisis, registros ni conversaciones.", "API 키는 로컬 Anki 프로필에 저장되며 Synapse가 업로드하지 않습니다. 질문은 선택한 제공업체로 직접 전송됩니다. 빠른 작업을 사용하거나 현재 카드 컨텍스트를 켠 경우에만 보이는 카드 텍스트가 포함됩니다. 채팅 도우미는 채팅 분석, 로그 또는 대화를 수집하지 않습니다.", "Sua chave de API fica no perfil local do Anki e nunca é enviada pelo Synapse. As perguntas vão direto ao provedor escolhido. O texto visível do cartão só é incluído em uma ação rápida ou com o contexto ativado. O assistente não coleta análises, logs ou conversas.", "Votre clé API est conservée dans votre profil Anki local et n’est jamais téléversée par Synapse. Les questions vont directement au fournisseur choisi. Le texte visible d’une carte n’est inclus qu’avec une action rapide ou le contexte activé. L’assistant ne collecte ni analyses de chat, ni journaux, ni conversations.", "Khóa API được lưu trong hồ sơ Anki cục bộ và Synapse không tải khóa lên. Câu hỏi được gửi thẳng đến nhà cung cấp đã chọn. Văn bản thẻ chỉ được gửi khi dùng Tác vụ nhanh hoặc bật ngữ cảnh thẻ. Trợ lý không thu thập phân tích, nhật ký hay cuộc trò chuyện.", "API 密钥保存在本地 Anki 配置文件中，Synapse 不会上传它。问题会直接发送给所选服务商。只有使用快捷操作或启用当前卡片上下文时，才会包含可见的卡片文本。聊天助手不会收集聊天分析、日志或对话。", "आपकी API कुंजी स्थानीय Anki प्रोफ़ाइल में रहती है और Synapse इसे अपलोड नहीं करता। प्रश्न सीधे चुने प्रदाता को जाते हैं। दृश्य कार्ड पाठ केवल क्विक एक्शन या कार्ड संदर्भ चालू होने पर शामिल होता है। चैट सहायक चैट विश्लेषण, लॉग या बातचीत एकत्र नहीं करता।"),
     ("Chat subscriptions and API access are separate products with separate billing. Google Gemini and some OpenRouter models offer free tiers; Ollama runs locally for free. API credit is managed in the selected provider's dashboard.", "Chat-Abos und API-Zugriff sind getrennte Produkte mit eigener Abrechnung. Google Gemini und einige OpenRouter-Modelle bieten Gratis-Tarife; Ollama läuft lokal kostenlos. API-Guthaben verwaltest du beim gewählten Anbieter.", "Las suscripciones de chat y el acceso API son productos distintos con facturación separada. Google Gemini y algunos modelos de OpenRouter tienen niveles gratuitos; Ollama funciona gratis en local. El saldo API se gestiona en el panel del proveedor.", "채팅 구독과 API 사용은 별도 결제 상품입니다. Google Gemini와 일부 OpenRouter 모델은 무료 등급을 제공하고 Ollama는 로컬에서 무료로 실행됩니다. API 크레딧은 제공업체 대시보드에서 관리합니다.", "Assinaturas de chat e acesso à API são produtos separados e têm cobranças distintas. O Google Gemini e alguns modelos do OpenRouter oferecem faixas gratuitas; o Ollama roda localmente de graça. Os créditos são gerenciados no painel do provedor.", "Les abonnements de chat et l’accès API sont des produits distincts avec une facturation séparée. Google Gemini et certains modèles OpenRouter ont une offre gratuite ; Ollama fonctionne gratuitement en local. Le crédit API se gère sur le site du fournisseur.", "Gói đăng ký trò chuyện và quyền truy cập API là hai sản phẩm có thanh toán riêng. Google Gemini và một số mô hình OpenRouter có gói miễn phí; Ollama chạy cục bộ miễn phí. Tín dụng API được quản lý trong bảng điều khiển của nhà cung cấp.", "聊天订阅和 API 访问是分别计费的不同产品。Google Gemini 和部分 OpenRouter 模型提供免费额度；Ollama 可免费在本地运行。API 余额在所选服务商的控制台管理。", "चैट सदस्यता और API पहुँच अलग बिलिंग वाले अलग उत्पाद हैं। Google Gemini और कुछ OpenRouter मॉडल निःशुल्क स्तर देते हैं; Ollama स्थानीय रूप से मुफ़्त चलता है। API क्रेडिट प्रदाता के डैशबोर्ड में प्रबंधित होता है।"),
     ("Open a reviewer card before using Quick Actions. Enable current-card context for your own card questions. Manage button shortcuts in the Manage dialog. Choose Front & Back for richer context and adjust the chat font size in Settings.", "Öffne vor Schnellaktionen eine Karte im Reviewer. Aktiviere den Kartenkontext für eigene Fragen. Verwalte Tastenkürzel im Dialog „Verwalten“. Wähle für mehr Kontext Vorder- & Rückseite und passe die Chat-Schriftgröße in den Einstellungen an.", "Abre una tarjeta en el repaso antes de usar acciones rápidas. Activa el contexto para preguntas propias. Gestiona los atajos en el diálogo Gestionar. Elige Anverso y reverso para más contexto y ajusta el tamaño del chat en Ajustes.", "빠른 작업을 사용하기 전에 복습 화면에서 카드를 여세요. 직접 질문할 때는 현재 카드 컨텍스트를 켜세요. 관리 창에서 버튼 단축키를 설정할 수 있습니다. 더 풍부한 컨텍스트를 위해 앞면 및 뒷면을 선택하고 설정에서 글꼴 크기를 조절하세요.", "Abra um cartão no revisor antes das ações rápidas. Ative o contexto para perguntas próprias. Gerencie atalhos no diálogo Gerenciar. Escolha Frente e verso para mais contexto e ajuste o tamanho do chat nas Configurações.", "Ouvrez une carte dans le réviseur avant d’utiliser les actions rapides. Activez le contexte pour vos propres questions. Gérez les raccourcis dans la boîte de dialogue Gérer. Choisissez Recto et verso pour plus de contexte et réglez la taille du texte dans les paramètres.", "Mở một thẻ trong trình ôn tập trước khi dùng Tác vụ nhanh. Bật ngữ cảnh thẻ cho câu hỏi riêng. Quản lý phím tắt trong hộp thoại Quản lý. Chọn Mặt trước & sau để có thêm ngữ cảnh và chỉnh cỡ chữ trong Cài đặt.", "使用快捷操作前，请先在复习界面打开一张卡片。自行提问时可启用当前卡片上下文。在“管理”对话框中设置按钮快捷键。选择“正面与背面”可提供更多上下文，也可在设置中调整聊天字体大小。", "क्विक एक्शन से पहले रिव्यूअर में कार्ड खोलें। अपने कार्ड प्रश्नों के लिए कार्ड संदर्भ चालू करें। प्रबंधित संवाद में बटन शॉर्टकट सेट करें। अधिक संदर्भ के लिए सामने और पीछे चुनें और सेटिंग्स में चैट फ़ॉन्ट आकार बदलें।"),
     ("Press this key to trigger “{label}” when not typing", "Diese Taste löst „{label}“ aus, wenn du gerade nicht tippst", "Pulsa esta tecla para ejecutar «{label}» cuando no estés escribiendo", "입력 중이 아닐 때 이 키를 누르면 ‘{label}’이 실행됩니다", "Pressione esta tecla para acionar “{label}” quando não estiver digitando", "Appuyez sur cette touche pour lancer « {label} » lorsque vous ne saisissez pas de texte", "Nhấn phím này để chạy “{label}” khi không nhập văn bản", "未输入文字时按此键可触发“{label}”", "टाइप न करते समय “{label}” चलाने के लिए यह कुंजी दबाएँ"),
@@ -678,7 +678,7 @@ _add_rows([
     ("Brainwaves", "Gehirnwellen", "Ondas cerebrales", "뇌파", "Ondas cerebrais", "Ondes cérébrales", "Sóng não", "脑波", "मस्तिष्क तरंगें"),
     ("Zoom out", "Verkleinern", "Alejar", "축소", "Reduzir zoom", "Dézoomer", "Thu nhỏ", "缩小", "ज़ूम आउट"),
     ("Zoom in", "Vergrößern", "Acercar", "확대", "Ampliar zoom", "Zoomer", "Phóng to", "放大", "ज़ूम इन"),
-    ("SynapsePro Gamification", "SynapsePro-Gamifizierung", "Gamificación de SynapsePro", "SynapsePro 게임화", "Gamificação do SynapsePro", "Gamification SynapsePro", "Trò chơi hóa SynapsePro", "SynapsePro 游戏化", "SynapsePro गेमिफिकेशन"),
+    ("Synapse Gamification", "Synapse-Gamifizierung", "Gamificación de Synapse", "Synapse 게임화", "Gamificação do Synapse", "Gamification Synapse", "Trò chơi hóa Synapse", "Synapse 游戏化", "Synapse गेमिफिकेशन"),
 ])
 
 _add_rows([
@@ -706,3 +706,51 @@ _add_rows([
     ("Abstract Wallpaper", "Abstraktes Wallpaper", "Fondo abstracto", "추상 배경화면", "Papel de parede abstrato", "Fond d’écran abstrait", "Hình nền trừu tượng", "抽象壁纸", "अमूर्त वॉलपेपर"),
     ("A colorful abstract wallpaper suitable for either mode.", "Ein farbenfrohes abstraktes Wallpaper, das für beide Modi geeignet ist.", "Un fondo abstracto y colorido adecuado para ambos modos.", "두 모드 모두에 어울리는 다채로운 추상 배경화면입니다.", "Um papel de parede abstrato e colorido adequado para ambos os modos.", "Un fond d’écran abstrait et coloré adapté aux deux modes.", "Hình nền trừu tượng nhiều màu phù hợp với cả hai chế độ.", "适用于两种模式的彩色抽象壁纸。", "दोनों मोड के लिए उपयुक्त रंगीन अमूर्त वॉलपेपर।"),
 ])
+
+_add_rows([
+    ('Basic', 'Grundeinstellungen', 'Básico', '기본', 'Básico', 'Général', 'Cơ bản', '基本', 'मूल'),
+    ('Layout', 'Darstellung', 'Diseño', '레이아웃', 'Layout', 'Affichage', 'Bố cục', '布局', 'लेआउट'),
+    ('Line spacing', 'Zeilenabstand', 'Interlineado', '줄 간격', 'Espaçamento entre linhas', 'Interligne', 'Giãn dòng', '行距', 'पंक्ति अंतर'),
+    ('Message spacing', 'Nachrichtenabstand', 'Espacio entre mensajes', '메시지 간격', 'Espaçamento entre mensagens', 'Espacement des messages', 'Khoảng cách tin nhắn', '消息间距', 'संदेश अंतर'),
+    ('Compact', 'Kompakt', 'Compacto', '좁게', 'Compacto', 'Compact', 'Gọn', '紧凑', 'सघन'),
+    ('Standard', 'Standard', 'Estándar', '표준', 'Padrão', 'Standard', 'Tiêu chuẩn', '标准', 'मानक'),
+    ('Relaxed', 'Großzügig', 'Amplio', '넓게', 'Amplo', 'Aéré', 'Thoáng', '宽松', 'खुला'),
+    ('Applies to all conversations. Formulas are displayed automatically.', 'Gilt für alle Unterhaltungen. Formeln werden automatisch dargestellt.', 'Se aplica a todas las conversaciones. Las fórmulas se muestran automáticamente.', '모든 대화에 적용됩니다. 수식은 자동으로 표시됩니다.', 'Aplica-se a todas as conversas. As fórmulas são exibidas automaticamente.', 'S’applique à toutes les conversations. Les formules s’affichent automatiquement.', 'Áp dụng cho mọi cuộc trò chuyện. Công thức được hiển thị tự động.', '适用于所有对话。公式会自动显示。', 'सभी वार्तालापों पर लागू होता है। सूत्र अपने आप प्रदर्शित होते हैं।'),
+])
+
+_add_rows([
+    ('Card type', 'Kartentyp', 'Tipo de tarjeta', '카드 유형', 'Tipo de cartão', 'Type de carte', 'Loại thẻ', '卡片类型', 'कार्ड का प्रकार'),
+    ('Basic + Reversed', 'Basic + umgekehrt', 'Básica + invertida', '기본 + 역방향', 'Básico + invertido', 'Basique + inversée', 'Cơ bản + đảo ngược', '基础 + 反向', 'मूल + उल्टा'),
+    ('Cloze', 'Lückentext', 'Texto con huecos', '빈칸', 'Lacunas', 'Texte à trous', 'Điền khuyết', '填空', 'रिक्त स्थान'),
+    ('New cloze', 'Neue Lücke', 'Nuevo hueco', '새 빈칸', 'Nova lacuna', 'Nouveau trou', 'Chỗ trống mới', '新建填空', 'नया रिक्त स्थान'),
+    ('Same card', 'Gleiche Karte', 'Misma tarjeta', '같은 카드', 'Mesmo cartão', 'Même carte', 'Cùng thẻ', '同一卡片', 'वही कार्ड'),
+    ('Text', 'Text', 'Texto', '텍스트', 'Texto', 'Texte', 'Văn bản', '文本', 'पाठ'),
+    ('Extra', 'Zusatz', 'Extra', '추가', 'Extra', 'Complément', 'Bổ sung', '补充', 'अतिरिक्त'),
+    ('Select text below, then add a cloze. Different numbers create separate cards; matching numbers hide together.', 'Markiere unten Text und füge eine Lücke hinzu. Verschiedene Nummern erzeugen separate Karten; gleiche Nummern werden gemeinsam ausgeblendet.', 'Selecciona texto abajo y añade un hueco. Los números distintos crean tarjetas separadas; los iguales se ocultan juntos.', '아래 텍스트를 선택하고 빈칸을 추가하세요. 다른 번호는 별도 카드를 만들고, 같은 번호는 함께 숨겨집니다.', 'Selecione o texto abaixo e adicione uma lacuna. Números diferentes criam cartões separados; números iguais são ocultados juntos.', 'Sélectionnez du texte ci-dessous et ajoutez un trou. Des numéros différents créent des cartes séparées ; les numéros identiques sont masqués ensemble.', 'Chọn văn bản bên dưới rồi tạo chỗ trống. Số khác nhau tạo thẻ riêng; số giống nhau được ẩn cùng lúc.', '选择下方文本后添加填空。不同编号生成独立卡片，相同编号会一起隐藏。', 'नीचे पाठ चुनें, फिर रिक्त स्थान जोड़ें। अलग संख्याएँ अलग कार्ड बनाती हैं; समान संख्याएँ एक साथ छिपती हैं।'),
+    ('Select the text you want to hide first.', 'Markiere zuerst den Text, den du ausblenden möchtest.', 'Primero selecciona el texto que quieres ocultar.', '먼저 숨길 텍스트를 선택하세요.', 'Primeiro selecione o texto que deseja ocultar.', 'Sélectionnez d’abord le texte à masquer.', 'Trước tiên hãy chọn văn bản muốn ẩn.', '请先选择要隐藏的文本。', 'पहले वह पाठ चुनें जिसे छिपाना है।'),
+    ('Select plain text outside an existing cloze.', 'Markiere normalen Text außerhalb einer vorhandenen Lücke.', 'Selecciona texto fuera de un hueco existente.', '기존 빈칸 밖의 일반 텍스트를 선택하세요.', 'Selecione texto fora de uma lacuna existente.', 'Sélectionnez du texte en dehors d’un trou existant.', 'Chọn văn bản nằm ngoài chỗ trống hiện có.', '请选择已有填空之外的普通文本。', 'मौजूदा रिक्त स्थान के बाहर का सामान्य पाठ चुनें।'),
+    ('Add at least one cloze deletion, for example {{c1::answer}}.', 'Füge mindestens eine Lücke ein, zum Beispiel {{c1::Antwort}}.', 'Añade al menos un hueco, por ejemplo {{c1::respuesta}}.', '빈칸을 하나 이상 추가하세요. 예: {{c1::답}}.', 'Adicione pelo menos uma lacuna, por exemplo {{c1::resposta}}.', 'Ajoutez au moins un trou, par exemple {{c1::réponse}}.', 'Thêm ít nhất một chỗ trống, ví dụ {{c1::đáp án}}.', '请至少添加一个填空，例如 {{c1::答案}}。', 'कम से कम एक रिक्त स्थान जोड़ें, जैसे {{c1::उत्तर}}।'),
+    ('Reversed cards need text on both sides.', 'Umgekehrte Karten benötigen Text auf beiden Seiten.', 'Las tarjetas invertidas necesitan texto en ambos lados.', '역방향 카드는 양쪽에 텍스트가 필요합니다.', 'Cartões invertidos precisam de texto nos dois lados.', 'Les cartes inversées nécessitent du texte des deux côtés.', 'Thẻ đảo ngược cần văn bản ở cả hai mặt.', '反向卡片的两面都需要文本。', 'उल्टे कार्ड के दोनों ओर पाठ होना चाहिए।'),
+])
+
+_add_rows([('Basic (Front / Back)', 'Basic (Vorder- / Rückseite)', 'Básica (anverso / reverso)', '기본 (앞면 / 뒷면)', 'Básico (frente / verso)', 'Basique (recto / verso)', 'Cơ bản (mặt trước / sau)', '基础（正面 / 背面）', 'मूल (आगे / पीछे)')])
+
+
+WEB_TRANSLATIONS.update({
+    "Widget Shadow": {
+        "de": "Widget-Schatten", "es": "Sombra de widgets", "ko": "위젯 그림자",
+        "pt": "Sombra dos widgets", "fr": "Ombre des widgets", "vi": "Bóng tiện ích",
+        "zh": "组件阴影", "hi": "विजेट की छाया", "pl": "Cień widżetów",
+    },
+    "Shadow intensity for widgets and the deck list. Set to 0 to turn off.": {
+        "de": "Schattenstärke für Widgets und Stapelliste. Zum Ausschalten auf 0 setzen.",
+        "es": "Intensidad de sombra para widgets y lista de mazos. Pon 0 para desactivarla.",
+        "ko": "위젯과 덱 목록의 그림자 강도입니다. 0으로 설정하면 꺼집니다.",
+        "pt": "Intensidade da sombra dos widgets e da lista de baralhos. Use 0 para desativar.",
+        "fr": "Intensité de l’ombre des widgets et de la liste des paquets. Réglez sur 0 pour désactiver.",
+        "vi": "Độ đậm bóng của tiện ích và danh sách bộ thẻ. Đặt 0 để tắt.",
+        "zh": "组件和牌组列表的阴影强度。设为 0 可关闭。",
+        "hi": "विजेट और डेक सूची की छाया की तीव्रता। बंद करने के लिए 0 चुनें।",
+        "pl": "Intensywność cienia widżetów i listy talii. Ustaw 0, aby wyłączyć.",
+    },
+})

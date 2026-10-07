@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Ebene_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 120 120">
+  <!-- Generator: Adobe Illustrator 30.8.1, SVG Export Plug-In . SVG Version: 2.1.4 Build 1)  -->
+  <defs>
+    <style>
+      .st0 {
+        fill: url(#Unbenannter_Verlauf);
+      }
+
+      .st1 {
+        fill: #b58225;
+      }
+
+      .st2 {
+        fill: none;
+        stroke: #fff0a4;
+        stroke-opacity: .55;
+      }
+
+      .st3 {
+        fill: #f0f0f0;
+      }
+
+      .st4 {
+        fill: url(#Unbenannter_Verlauf1);
+      }
+
+      .st5 {
+        fill: url(#Unbenannter_Verlauf2);
+      }
+
+      .st6 {
+        fill: #9b6d24;
+      }
+
+      .st7 {
+        stroke: #f0f0f0;
+        stroke-linecap: round;
+        stroke-miterlimit: 4;
+        stroke-width: 5px;
+      }
+    </style>
+    <linearGradient id="Unbenannter_Verlauf" data-name="Unbenannter Verlauf" x1="-356.63" y1="356.19" x2="-355.93" y2="355.19" gradientTransform="translate(39245 39178.3131) scale(110 -110)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff0a4"/>
+      <stop offset=".48" stop-color="#edbb45"/>
+      <stop offset="1" stop-color="#b58225"/>
+    </linearGradient>
+    <linearGradient id="Unbenannter_Verlauf1" data-name="Unbenannter Verlauf" x1="48.85" y1="61.07" x2="94.58" y2="61.07" gradientTransform="translate(112.14 -24.01) rotate(75)" xlink:href="#Unbenannter_Verlauf"/>
+    <linearGradient id="Unbenannter_Verlauf2" data-name="Unbenannter Verlauf" x1="27.21" y1="59.74" x2="74.62" y2="59.74" gradientTransform="translate(14.74 -9.92) rotate(13)" xlink:href="#Unbenannter_Verlauf"/>
+  </defs>
+  <g id="rim">
+    <circle class="st0" cx="60" cy="60" r="55"/>
+    <circle class="st2" cx="60" cy="60" r="53.5"/>
+  </g>
+  <g id="center">
+    <circle class="st1" cx="60" cy="60" r="44.5"/>
+    <circle class="st3" cx="60" cy="60" r="43"/>
+  </g>
+  <g id="icon">
+    <rect class="st4" x="46.22" y="43.07" width="51" height="36" rx="5" ry="5" transform="translate(-5.83 114.53) rotate(-75)"/>
+    <g>
+      <rect class="st1" x="34.61" y="40.42" width="54" height="37" rx="5" ry="5" transform="translate(-.46 117.36) rotate(-87)"/>
+      <path class="st6" d="M72.51,32.46l3.99.21c2.76.14,4.88,2.5,4.73,5.25l-2.3,43.94c-.14,2.76-2.5,4.88-5.25,4.73l-3.99-.21,2.83-53.93Z"/>
+    </g>
+    <g>
+      <rect class="st5" x="31.91" y="32.24" width="38" height="55" rx="5" ry="5" transform="translate(-12.13 12.98) rotate(-13)"/>
+      <path class="st7" d="M38.58,50.78l18.51-4.27M41.06,61.5l18.51-4.27M43.53,72.22l11.69-2.7"/>
+    </g>
+  </g>
+</svg>

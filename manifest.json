@@ -1,6 +1,6 @@
 {
     "package": "SynapsePro1",
-    "name": "SynapsePro",
+    "name": "Synapse – The Ultimate Anki Workspace",
     "min_point_version": 250904,
-    "human_version": "1.5.0"
+    "human_version": "1.6.0"
 }

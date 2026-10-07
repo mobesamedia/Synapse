@@ -1,0 +1,21 @@
+const {chromium}=require('playwright'),assert=require('node:assert/strict'),path=require('node:path');
+(async()=>{const browser=await chromium.launch({executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true});try{
+const page=await browser.newPage({viewport:{width:1000,height:850}});
+await page.goto('file://'+path.resolve(__dirname,'../web_notebook/pdf_viewer.html'));
+await page.evaluate(()=>{window.sent=[];window.pycmd=c=>sent.push(c);showViewer('Demo.pdf','/tmp/demo.pdf');openCardCreator();});
+await page.selectOption('#creator-type','cloze');await page.fill('#creator-front','The heart pumps blood.');
+await page.evaluate(()=>document.getElementById('creator-front').setSelectionRange(4,9));await page.getByRole('button',{name:'New cloze',exact:true}).click();
+assert.equal(await page.locator('#creator-front').inputValue(),'The {{c1::heart}} pumps blood.');
+await page.evaluate(()=>{const el=document.getElementById('creator-front');el.setSelectionRange(el.value.indexOf('blood'),el.value.indexOf('blood')+5);});await page.getByRole('button',{name:'Same card',exact:true}).click();
+assert.match(await page.locator('#creator-front').inputValue(),/\{\{c1::blood\}\}/);
+await page.locator('#creator-add-card').click();
+assert.equal(await page.evaluate(()=>state.cardCreatorSession.cards[0].type),'cloze');
+await page.selectOption('#creator-type','reversed');await page.fill('#creator-front','A');await page.locator('#creator-add-card').click();assert.equal(await page.evaluate(()=>state.cardCreatorSession.cards.length),1);
+await page.fill('#creator-back','B');await page.locator('#creator-add-card').click();assert.equal(await page.evaluate(()=>state.cardCreatorSession.cards.length),2);
+await page.evaluate(()=>{const restored=sanitizeCreatorSession(JSON.parse(JSON.stringify(state.cardCreatorSession)),currentPdfName,currentPdfPath);state.cardCreatorSession=restored;editCreatorCard(0);});
+assert.equal(await page.locator('#creator-type').inputValue(),'cloze');
+await page.locator('#creator-add-card').click();await page.screenshot({path:'/tmp/pdf-creator-types.png'});
+await page.locator('#creator-finish').click();
+const payload=await page.evaluate(()=>JSON.parse(sent.find(c=>c.startsWith('notion_mini:pdf:create-batch:')).split('notion_mini:pdf:create-batch:')[1]));assert.deepEqual(payload.cards.map(c=>c.type),['cloze','reversed']);
+console.log('PASS cloze selection, shared deletion number, validation, mixed types, edit/persistence and batch payload');
+}finally{await browser.close();}})().catch(e=>{console.error(e);process.exit(1)});

@@ -62,12 +62,14 @@ body:has(#custom-dashboard) {
 
 html:has(body.nightMode.deckbrowser),
 html:has(body.nightMode.overview),
-html:has(body.nightMode.review),
 html:has(body.nightMode):has(#custom-dashboard),
 body.nightMode.deckbrowser,
 body.nightMode.overview,
-body.nightMode.review,
 body.nightMode:has(#custom-dashboard) {
+    background: linear-gradient(0deg, hsla(0, 0%, 17%, 1) 0%, hsla(308, 17%, 25%, 1) 50%, hsla(0, 0%, 17%, 1) 100%) !important;
+    background-attachment: fixed !important;
+}
+html:has(body.nightMode.review), body.nightMode.review {
     background: linear-gradient(0deg, hsla(0, 0%, 17%, 1) 0%, hsla(308, 17%, 25%, 1) 50%, hsla(0, 0%, 17%, 1) 100%) !important;
     background-attachment: fixed !important;
 }

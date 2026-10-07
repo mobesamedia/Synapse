@@ -91,6 +91,9 @@ def render_minimal_dashboard_sections(
     stats_days: int = 7,
     fact_theme: str = "Medical",
     daily_fact_html: str = "",
+    tasks_selected: bool = False,
+    content_widget_enabled: bool = True,
+    statistics_override=None,
 ) -> tuple[str, str]:
     """Return the compact overview (above decks) and statistics (below decks)."""
     level = streak = challenge_current = 0
@@ -154,7 +157,7 @@ def render_minimal_dashboard_sections(
             print(f"SynapsePro: minimal deadline render error: {exc}")
 
     try:
-        stats = statistics_widget.get_minimal_statistics_data(
+        stats = statistics_override if statistics_override is not None else statistics_widget.get_minimal_statistics_data(
             max(1, _int(stats_days, 7))
         )
         chart_html = stats.get("chart_html", "")
@@ -592,7 +595,16 @@ def render_minimal_dashboard_sections(
     done_class = " sp-min-challenge-done" if challenge_done else ""
     challenge_value = f"{challenge_current}/{challenge_target}"
     missing_xp_text = f"-{remaining_xp:,} XP" if remaining_xp > 0 else "0 XP"
-    fact_content = daily_fact_html or f'<div style="padding:28px;color:var(--sp-min-muted);text-align:center">{_esc(_("No daily facts available."))}</div>'
+    daily_widget_html = f'''<div class="sp-min-fact-button" role="button" tabindex="0" onclick="window.synapseDashboardCommand('pycmd:synapsepro:todo_viewer','tasks')" onkeydown="if(event.key==='Enter'||event.key===' '){{event.preventDefault();this.click();}}">{_esc(_('Tasks'))}</div>''' if tasks_selected else f''' 
+        <div class="sp-min-fact-button" role="button" tabindex="0" data-sp-min-fact-trigger aria-expanded="false"
+             onclick="window.synapseToggleDailyFact(this)"
+             onkeydown="if(event.key==='Enter'||event.key===' '){{event.preventDefault();this.click();}}">
+          {_esc(_('Daily Fact'))}
+        </div>
+    '''
+    if not content_widget_enabled:
+        daily_widget_html = ""
+    fact_content = ("" if tasks_selected else daily_fact_html) or f'<div style="padding:28px;color:var(--sp-min-muted);text-align:center">{_esc(_("No daily facts available."))}</div>'
     gamification_click = "window.synapseDashboardCommand('pycmd:synapsepro:gamification_viewer','gamification')"
     level_size_class = _number_size_class(level)
     streak_size_class = _number_size_class(streak)
@@ -680,11 +692,7 @@ def render_minimal_dashboard_sections(
           <span class="sp-min-subjects">{subjects_html}</span>
           <span class="sp-min-subject-more" aria-label="{_esc(_('More'))}">•••</span>
         </div>
-        <div class="sp-min-fact-button" role="button" tabindex="0" data-sp-min-fact-trigger aria-expanded="false"
-             onclick="window.synapseToggleDailyFact(this)"
-             onkeydown="if(event.key==='Enter'||event.key===' '){{event.preventDefault();this.click();}}">
-          {_esc(_('Daily Fact'))}
-        </div>
+        {daily_widget_html}
       </div>
     </section>
     <section class="sp-min-box sp-min-deadline-box sp-min-interactive{deadline_nav_class}" role="button" tabindex="0"

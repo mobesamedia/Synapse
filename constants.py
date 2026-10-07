@@ -4,10 +4,10 @@ import os
 
 # --- Addon Package Name ---
 addon_package_name = "SynapsePro1"
-ADDON_DISPLAY_NAME = "SynapsePro"
+ADDON_DISPLAY_NAME = "Synapse"
 print(f"Constants: Addon package name set to '{addon_package_name}'.")
 
-ADDON_VERSION = "1.5.0"
+ADDON_VERSION = "1.6.0"
 MIN_ANKI_VERSION = "25.09.4"
 MIN_ANKI_POINT_VERSION = 250904
 

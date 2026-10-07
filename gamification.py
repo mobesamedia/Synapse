@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 
 import json
+from html import escape
 import random
 import os
 import time
 from datetime import date, datetime, timedelta
 import traceback
 from typing import Union, List, Dict, Optional, Any
+from .achievements import BADGES, ReviewHistory, update_achievements
 
 from aqt import mw
 from aqt.utils import showInfo, tooltip, askUser, QMessageBox
@@ -136,7 +138,7 @@ def _tint_hex(color: str, factor: float = 0.45) -> str:
         return color
 
 
-def calculate_streak_from_revlog() -> int:
+def calculate_streak_from_revlog(rules=None) -> int:
     """
     Berechnet den aktuellen Streak dynamisch aus der revlog-Tabelle.
 
@@ -154,7 +156,8 @@ def calculate_streak_from_revlog() -> int:
     Jahreswechsel bei einer Lernsession in der Silvesternacht.
 
     Regeln:
-    - Nur echte Reviews (ease > 0), kein manuelles Rescheduling
+    - Konfigurierbare Mindestzahl echter Reviews (ease > 0), kein Rescheduling
+    - Optional alternativ eine Mindestzahl erstellter, noch vorhandener Karten
     - Ankis Rollover-Stunde + historisch korrekte lokale Zeitzone
     - Streak = aufeinanderfolgende Lerntage endend bei heute/gestern
     - Wenn letzter Lerntag vorgestern oder früher → Streak = 0
@@ -164,6 +167,9 @@ def calculate_streak_from_revlog() -> int:
     try:
         from datetime import date as _date
 
+        rules = rules or {}
+        minimum = max(1, min(10000, int(rules.get("reviews", 1))))
+        creation_minimum = max(1, min(10000, int(rules.get("cards", 1))))
         rollover = int(mw.col.conf.get("rollover", 4))
 
         # "Today" as an Anki day (datetime.now() is already correct local time).
@@ -178,13 +184,22 @@ def calculate_streak_from_revlog() -> int:
             start_dt = datetime.combine(start_day, datetime.min.time()) + timedelta(hours=rollover)
             end_dt = datetime.combine(end_day, datetime.min.time()) + timedelta(hours=rollover)
             rows = mw.col.db.all(
-                "SELECT DISTINCT strftime('%Y-%m-%d', id / 1000 - ?, "
-                "'unixepoch', 'localtime') AS d "
-                "FROM revlog WHERE ease > 0 AND id >= ? AND id < ?",
-                rollover * 3600,
+                "SELECT strftime('%Y-%m-%d', id / 1000, "
+                "'unixepoch', 'localtime', ?) AS d "
+                "FROM revlog WHERE ease > 0 AND id >= ? AND id < ? "
+                "GROUP BY d HAVING count(*) >= ?",
+                f"-{rollover} hours",
                 int(start_dt.timestamp() * 1000),
                 int(end_dt.timestamp() * 1000),
+                minimum,
             )
+            if rules.get("allowCards", False):
+                rows += mw.col.db.all(
+                    "SELECT strftime('%Y-%m-%d', id / 1000, 'unixepoch', 'localtime', ?) AS d "
+                    "FROM cards WHERE id >= ? AND id < ? GROUP BY d HAVING count(*) >= ?",
+                    f"-{rollover} hours", int(start_dt.timestamp() * 1000),
+                    int(end_dt.timestamp() * 1000), creation_minimum,
+                )
             return {_date.fromisoformat(r[0]) for r in rows if r and r[0]}
 
         study_days = load_days(chunk_start, chunk_end)
@@ -220,17 +235,10 @@ class GamificationManager:
         self.data: Dict = {}
         self._addon_dir_path: Optional[str] = addon_path
         self.load_data()
-        today_int = _anki_today_int()
-        # A streak cannot change between two launches on the same Anki day
-        # unless reviews were performed. The review-leave hook refreshes and
-        # persists it, so same-day restarts can use the stored value instead of
-        # grouping the complete revlog again.
-        self._streak_cache: Optional[int] = (
-            int(self.data.get("streak", 0))
-            if self.data.get("last_login_day", 0) == today_int
-            else None
-        )
+        self._streak_cache: Optional[int] = None
+        self._streak_source_key = None
         self._challenge_progress_cache = None
+        self._badge_history = ReviewHistory()
         self._todays_challenge: Optional[Dict] = None
         challenge_id = self.data.get("current_challenge_id")
         if challenge_id is not None:
@@ -382,7 +390,7 @@ class GamificationManager:
         except Exception:
             return None
 
-    def add_xp(self, amount: int, reason: str = "") -> bool:
+    def add_xp(self, amount: int, reason: str = "", *, persist: bool = True) -> bool:
         if amount <= 0: return False
         current_xp = self.data.get("xp", 0)
         current_level = self.data.get("level", 1)
@@ -398,14 +406,73 @@ class GamificationManager:
             needed_for_current_level = self.get_xp_for_level(current_level)
         if levels_gained > 0:
             self.data["level"] = current_level
-            new_rank_info = self.get_current_rank_info()
-            rank_display_name = _(new_rank_info.get("name", _("Unknown Rank"))).replace("<br>", " ")
-            tooltip(_("Level Up! Lvl {}!").format(current_level), period=3000)
-            if old_rank_info["name"] != new_rank_info["name"]:
-                tooltip(_("New Rank: {}!").format(rank_display_name), period=3500)
+            # Dashboard celebrations respect the user's per-event preferences.
         self.data["xp"] = int(round(new_total_xp_at_level))
-        self.save_data()
+        if persist:
+            self.save_data()
         return True
+
+    def credit_study_xp(self, session_start_ms=None) -> int:
+        """Credit only the unpaid total since the legacy finalized-day boundary.
+
+        Aggregate rather than use a last-review cursor: late synced reviews can
+        have older IDs. Keep a high-water mark so repeated callbacks, restarts
+        and review undo cannot pay the same accumulated time twice. Fractions
+        carry between sessions. No per-review writes or extra tables required.
+        """
+        if not mw.col:
+            return 0
+        from copy import deepcopy
+        old_data = deepcopy(self.data)
+        self.data = deepcopy(old_data)
+        try:
+            ledger = self.data.get("study_xp_ledger")
+            if ledger is None:
+                try:
+                    first_day = datetime.strptime(str(self.data.get(
+                        "last_time_xp_check_day", 0)), "%Y%m%d").date()
+                except (TypeError, ValueError):
+                    first_day = _anki_today() - timedelta(days=1)
+                if first_day > _anki_today():
+                    raise ValueError("Future study XP boundary")
+                start = datetime.combine(first_day, datetime.min.time()) + timedelta(
+                    hours=self._get_rollover_hour())
+                ledger = {"start_ms": int(start.timestamp() * 1000), "paid": 0}
+            start_ms, paid = int(ledger["start_ms"]), int(ledger["paid"])
+            if start_ms < 0 or paid < 0:
+                raise ValueError("Invalid study XP ledger")
+            now_ms = int(time.time() * 1000)
+            session_ms = int(session_start_ms) if session_start_ms is not None else now_ms + 1
+            row = mw.col.db.first(
+                "SELECT COALESCE(SUM(t), 0), "
+                "COALESCE(SUM(CASE WHEN id >= ? THEN t ELSE 0 END), 0) "
+                "FROM (SELECT id, CASE WHEN time > 45000 THEN 45000 "
+                "WHEN time < 0 THEN 0 ELSE time END AS t FROM revlog "
+                "WHERE ease > 0 AND id >= ? AND id <= ?)",
+                session_ms, start_ms, now_ms)
+            total_ms, session_time_ms = row
+            earned = int(total_ms) * XP_PER_MINUTE_STUDIED // 60000
+            gain = max(0, earned - paid)
+            ledger = {"start_ms": start_ms, "paid": max(paid, earned)}
+            self.data["study_xp_ledger"] = ledger
+            if gain:
+                self.add_xp(gain, "Study Time", persist=False)
+            if self.data != old_data:
+                # XP and its receipt are one config value. A failed write must
+                # leave both unchanged, allowing a later callback to retry.
+                mw.col.conf[CONFIG_KEY] = deepcopy(self.data)
+                self._save_to_json_backup()
+            if session_start_ms is not None:
+                if getattr(self, "_study_session_start", None) != session_ms:
+                    self._study_session_start = session_ms
+                    self._study_session_xp = 0
+                before_session = (int(total_ms) - int(session_time_ms)) * XP_PER_MINUTE_STUDIED // 60000
+                self._study_session_xp += min(gain, max(0, earned - before_session))
+            return gain
+        except Exception as exc:
+            self.data = old_data
+            print(f"SynapsePro: Study XP not credited; will retry: {exc}")
+            return 0
 
     def _get_study_time_for_day(self, day_int: int) -> float:
         if not mw.col: return 0
@@ -520,7 +587,7 @@ class GamificationManager:
             data_changed = True
 
             # Recalculate streak from revlog (not from stored config counter).
-            current_streak = calculate_streak_from_revlog()
+            current_streak = calculate_streak_from_revlog(self.data.get("streak_rules"))
             self._streak_cache = current_streak
 
             # Keep data["streak"] in sync for compatibility.
@@ -543,49 +610,12 @@ class GamificationManager:
             self.assign_new_daily_challenge()
             self.data["last_login_day"] = today_int
         
-        try:
-            last_time_check_day = int(
-                self.data.get("last_time_xp_check_day", 0)
-            )
-        except (TypeError, ValueError):
-            last_time_check_day = int(
-                (_anki_today() - timedelta(days=1)).strftime("%Y%m%d")
-            )
-        time_xp_gain = 0
-        time_reason = ""
-        if today_int > last_time_check_day:
-            today = _anki_today()
-            try:
-                # The marker represents the first not-yet-finalized Anki day.
-                # This catches every day since the previous launch instead of
-                # looking only at yesterday and silently losing older study XP.
-                first_unprocessed_day = datetime.strptime(
-                    str(last_time_check_day), "%Y%m%d"
-                ).date()
-            except (TypeError, ValueError):
-                first_unprocessed_day = today - timedelta(days=1)
-
-            # A corrupt/future marker must never create a backwards query.
-            if first_unprocessed_day < today:
-                study_seconds = self._get_study_time_for_range(
-                    first_unprocessed_day, today
-                )
-                if study_seconds > 0:
-                    time_xp_gain = int(
-                        (study_seconds / 60.0) * XP_PER_MINUTE_STUDIED
-                    )
-                    time_reason = f"Study Time (+{time_xp_gain} XP)"
-            self.data["last_time_xp_check_day"] = today_int
-            data_changed = True
-            
-        total_xp_to_add = xp_gain_streak + time_xp_gain
-        if total_xp_to_add > 0:
-            full_reason = ", ".join(filter(None, [streak_reason, time_reason])) or "Daily Activity"
-            if self.add_xp(total_xp_to_add, full_reason):
-                data_changed = True
+        if xp_gain_streak > 0:
+            self.add_xp(xp_gain_streak, streak_reason)
         elif data_changed:
             self.save_data()
-        return data_changed
+        # Reconcile today's reviews too; never finalize an unread time range.
+        return self.credit_study_xp() > 0 or data_changed
 
     def assign_new_daily_challenge(self):
         if not DAILY_CHALLENGES: return
@@ -682,14 +712,59 @@ class GamificationManager:
         self._challenge_progress_cache = (cache_key, now, result)
         return result
 
-    def invalidate_dashboard_cache(self) -> None:
+    def invalidate_dashboard_cache(self, full=False) -> None:
         """Invalidate values that may have changed during a review session."""
         self._streak_cache = None
         self._challenge_progress_cache = None
+        self._badge_history.invalidate(full=full)
+
+    def get_achievements(self):
+        """Use existing profile persistence and award each tier only once."""
+        if not mw or not mw.col:
+            return []
+        try:
+            today = _anki_today()
+            counts = self._badge_history.read(mw.col.db, today, self._get_rollover_hour())
+            badges, changed = update_achievements(
+                self.data, counts, today,
+                self.is_challenge_completed_today() or self.is_challenge_achieved(), _)
+            if changed:
+                self.save_data()
+            return badges
+        except Exception as exc:
+            print(f"SynapsePro: achievement refresh failed: {exc}")
+            return []
+
+    def mark_achievement_seen(self, badge_id: str) -> bool:
+        """Mark every currently earned tier of one badge as viewed."""
+        valid_ids = {badge[0] for badge in BADGES}
+        if badge_id not in valid_ids:
+            return False
+        state = self.data.setdefault("achievements", {"earned": {}, "challenge_days": []})
+        earned = state.setdefault("earned", {}).get(badge_id, {})
+        seen = state.setdefault("seen", {})
+        current = seen.get(badge_id, [])
+        viewed = sorted(key for key in earned if str(key).isdigit()) if isinstance(earned, dict) else []
+        if current == viewed:
+            return False
+        seen[badge_id] = viewed
+        self.save_data()
+        return True
+
+    def toggle_favorite_achievement(self, badge_id: str) -> bool:
+        """Select one earned badge as the profile favorite, or clear it."""
+        badges = self.get_achievements()
+        badge = next((item for item in badges if item.get("id") == badge_id), None)
+        if not badge or badge.get("tier", -1) < 0:
+            return False
+        state = self.data.setdefault("achievements", {"earned": {}, "challenge_days": []})
+        state["favorite"] = None if state.get("favorite") == badge_id else badge_id
+        self.save_data()
+        return True
 
     def refresh_streak_cache(self, persist: bool = False) -> int:
         """Recalculate the streak once and optionally persist it for restarts."""
-        streak = calculate_streak_from_revlog()
+        streak = calculate_streak_from_revlog(self.data.get("streak_rules"))
         self._streak_cache = streak
         if self.data.get("streak") != streak:
             self.data["streak"] = streak
@@ -721,6 +796,7 @@ class GamificationManager:
         xp_reward = self.get_daily_challenge_xp()
         today_int = _anki_today_int()
         self.data["challenge_completed_day"] = today_int
+        self.get_achievements()
         self.add_xp(xp_reward, "Daily Challenge")
         tooltip(_("Challenge complete! +{} XP").format(xp_reward), period=3500)
         self._force_refresh("on_complete_challenge")
@@ -736,6 +812,7 @@ class GamificationManager:
         event is reported exactly once. Called by the deck-browser render
         hook; returns {} when nothing new happened.
         """
+        self.get_achievements()
         events: Dict[str, Any] = {}
         try:
             level = self.get_level()
@@ -782,6 +859,7 @@ class GamificationManager:
                     and self.data.get("challenge_celebrated_day") != today):
                 text, _unused = self.get_current_challenge()
                 events["challenge"] = {"text": text,
+                                       "claimed": self.is_challenge_completed_today(),
                                        "xp": self.get_daily_challenge_xp()}
                 self.data["challenge_celebrated_day"] = today
                 changed = True
@@ -794,7 +872,25 @@ class GamificationManager:
         return events
 
     def get_level(self) -> int: return self.data.get("level", 1)
+    def set_streak_rules(self, rules) -> bool:
+        if not isinstance(rules, dict) or type(rules.get("allowCards")) is not bool:
+            return False
+        if any(type(rules.get(key)) is not int or not 1 <= rules[key] <= 10000
+               for key in ("reviews", "cards")):
+            return False
+        self.data["streak_rules"] = {key: rules[key] for key in ("reviews", "cards", "allowCards")}
+        self.refresh_streak_cache()
+        self.save_data()
+        return True
+
     def get_streak(self) -> int:
+        # Card creation/deletion and day rollover also change eligibility.
+        key = (_anki_today_int(),)
+        if self.data.get("streak_rules", {}).get("allowCards") and mw and mw.col:
+            key += tuple(mw.col.db.first("SELECT count(*), max(id) FROM cards"))
+        if getattr(self, "_streak_source_key", None) != key:
+            self._streak_cache = None
+            self._streak_source_key = key
         if self._streak_cache is None:
             return self.refresh_streak_cache(persist=False)
         return self._streak_cache
@@ -848,6 +944,7 @@ class GamificationManager:
         self._streak_cache = None
         self._challenge_progress_cache = None
         self._todays_challenge = None
+        self._badge_history = ReviewHistory()
         lpm = getattr(mw, 'learning_plan_manager', None)
         lpm_json_path = getattr(lpm, '_config_json_path', None) if lpm else None
         delete_json = False
@@ -916,6 +1013,25 @@ class GamificationManager:
                 --level-accent: {_c_dark["blue"]};
                 --challenge-ready: {_tint_hex(_c_dark["blue_bright"], 0.35)};
             }}
+            #gamification-widgets-container {{ container-type: inline-size; container-name: synapse-gamification; }}
+            #gamification-widgets-container .gamification-grid {{
+                display: grid; grid-template-columns: minmax(0, 1fr); gap: {gap};
+                align-items: stretch;
+            }}
+            @container synapse-gamification (min-width: 440px) {{
+                #gamification-widgets-container .gamification-grid {{ grid-template-columns: repeat(2, minmax(0, 1fr)); }}
+            }}
+            @container synapse-gamification (min-width: 760px) {{
+                #gamification-widgets-container .gamification-grid {{
+                    grid-template-columns: fit-content(190px) minmax(90px, .6fr) minmax(200px, 1.5fr) minmax(190px, 1.2fr);
+                }}
+                #gamification-widgets-container .level-widget {{ min-width:160px; }}
+            }}
+            #gamification-widgets-container .gamewidget h5 {{ overflow-wrap: break-word; }}
+            #gamification-widgets-container .challenge-text {{
+                display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
+                overflow: hidden; overflow-wrap: break-word;
+            }}
             .gamewidget {{
                 background-color: var(--stat-bg); border-radius: 12px; padding: 15px;
                 border: 1px solid var(--stat-border); text-align: left;
@@ -928,7 +1044,7 @@ class GamificationManager:
         
         title_style_gam = f"font-size:0.95em; font-weight:bold; color: var(--text-color); margin:0 0 5px 0;"
         cont_style_gam = f"font-size:0.9em; color: var(--text-color); margin:0;"
-        sec_style_gam = f"font-size:0.8em; color: var(--text-color-light); margin-left:10px; white-space:nowrap;"
+        sec_style_gam = f"font-size:0.8em; color: var(--text-color-light); overflow-wrap:break-word; min-width:0;"
         bar_h="8px"
         
         lvl_icon = f'<div class="level-icon" style="background-color: var(--level-accent); color: var(--level-icon-text); border-radius:50%; width:45px; height:45px; display:flex; justify-content:center; align-items:center; font-weight:bold; font-size:1.3em; flex-shrink:0;">{lvl}</div>'
@@ -954,18 +1070,16 @@ class GamificationManager:
         # Tooltip must not show the layout "<br>" literally.
         rank_tooltip = rank.replace("<br/>", " ").replace("<br>", " ")
 
-        # flex-basis:max-content lets the box grow with the title (capped at
-        # 280px); the flexible challenge widget gives up that space. Under
-        # pressure it can still shrink back to 160px, where the title wraps.
-        lvl_wid = f'''<div class="gamewidget level-widget" style="flex-direction:row; align-items:center; flex: 0 1 auto; flex-basis:max-content; min-width:160px; max-width:280px; padding:10px 15px; gap: 10px;" title="{rank_tooltip}">
+        # Column widths are controlled by the grid, not competing flex minima.
+        lvl_wid = f'''<div class="gamewidget level-widget" style="flex-direction:row; align-items:center; padding:10px 15px; gap: 10px;" title="{rank_tooltip}">
                         {lvl_icon}
                         <div style="flex-grow: 1; min-width: 0;">{rank_name_html}</div>
                     </div>'''
         
-        strk_wid=f'<div class="gamewidget streak-widget" style="text-align:center; flex-grow:0; flex-shrink:1; flex-basis:95px; min-width:90px;"><h5 style="{title_style_gam}">{label_streak}</h5><p style="{cont_style_gam}">{streak} {label_days}</p></div>'
+        strk_wid=f'<div class="gamewidget streak-widget" style="text-align:center;"><h5 style="{title_style_gam}">{label_streak}</h5><p style="{cont_style_gam}">{streak} {label_days}</p></div>'
 
-        challenge_font_size = "0.9em" if len(chall_txt) <= 55 else ("0.82em" if len(chall_txt) <= 85 else "0.74em")
-        challenge_text_style = f"font-size:{challenge_font_size}; color: var(--text-color); margin:5px 0 0 0; line-height:1.3; overflow-wrap:anywhere;"
+        challenge_text_style = "font-size:0.9em; color: var(--text-color); margin:5px 0 0 0; line-height:1.3;"
+        challenge_text = escape(str(chall_txt), quote=True)
 
         # ── Minimal status indicator (not clickable) ───────────────────────
         # grey + dark check          → goal not reached yet
@@ -1001,10 +1115,10 @@ class GamificationManager:
             f'</div>'
         )
 
-        chall_wid = f'''<div class="gamewidget challenge-widget" style="flex:1 1 300px; min-width:0; flex-direction:row; align-items:center; gap:12px;">
+        chall_wid = f'''<div class="gamewidget challenge-widget" style="flex-direction:row; align-items:center; gap:12px;">
                           <div style="flex:1 1 auto; min-width:0;">
                             <h5 style="{title_style_gam.replace("margin:0 0 5px 0;", "margin:0;")}">{label_daily_challenge}</h5>
-                            <p style="{challenge_text_style}">{chall_txt}</p>
+                            <p class="challenge-text" title="{challenge_text}" style="{challenge_text_style}">{challenge_text}</p>
                           </div>
                           {chall_indicator}
                         </div>'''
@@ -1013,10 +1127,10 @@ class GamificationManager:
         prog_bar_title = label_max_reached_tpl.format(xp_current_str) if needed == float('inf') else f"{xp_current_str} / {needed_str} XP"
         prog_bar=f'<div class="progress-bar-outer" style="width:100%; height:{bar_h}; background-color: var(--progress-bg); border-radius:{bar_h}; overflow:hidden; margin-top:8px;" title="{prog_bar_title}"><div class="progress-bar-inner" style="height:100%; width:{prog}%; background-color: var(--primary-blue); border-radius:{bar_h}; transition:width 0.3s ease-out;"></div></div>'
 
-        next_lvl_wid=f'<div class="gamewidget next-level-widget" style="flex:0 1 280px; min-width:190px;"><div style="display:flex; justify-content:space-between; align-items:baseline; width:100%;"><h5 style="{title_style_gam}">{label_next_level}</h5><span style="{sec_style_gam}">{label_remaining_tpl.format(rem_xp_disp)}</span></div>{prog_bar}</div>'
+        next_lvl_wid=f'<div class="gamewidget next-level-widget"><div style="display:flex; flex-wrap:wrap; gap:4px 10px; justify-content:space-between; align-items:baseline; width:100%;"><h5 style="{title_style_gam}">{label_next_level}</h5><span style="{sec_style_gam}">{label_remaining_tpl.format(rem_xp_disp)}</span></div>{prog_bar}</div>'
         
-        gamification_container_style = f""" display: flex; justify-content: center; align-items: stretch; flex-wrap: nowrap; gap: {gap}; max-width: {WIDGET_CONTAINER_MAX_WIDTH}; margin: 0 auto {margin_b} auto; padding: 0 10px; box-sizing: border-box; """
+        gamification_container_style = f""" width:100%; max-width: {WIDGET_CONTAINER_MAX_WIDTH}; margin: 0 auto {margin_b} auto; padding: 0 10px; box-sizing: border-box; """
         
-        html = f'<div id="gamification-widgets-container" style="{gamification_container_style}">{lvl_wid}{strk_wid}{chall_wid}{next_lvl_wid}</div>'
+        html = f'<div id="gamification-widgets-container" style="{gamification_container_style}"><div class="gamification-grid">{lvl_wid}{strk_wid}{chall_wid}{next_lvl_wid}</div></div>'
 
         return css + html

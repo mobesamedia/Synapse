@@ -31,7 +31,7 @@ InfiniteLoop = -1
 try:
     from aqt.qt import (QWidget, QDialog, QVBoxLayout, QHBoxLayout, QPushButton,
                         QLabel, QLineEdit, QFileDialog, QPixmap, QPainter,
-                        QPainterPath, QUrl, Qt, QTimer, QRectF)
+                        QPainterPath, QUrl, Qt, QTimer, QRectF, QColor)
     from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput
     _has_multimedia = True
     InfiniteLoop = QMediaPlayer.Loops.Infinite
@@ -66,7 +66,7 @@ except ImportError:
 
 # --- Theme ---
 try:
-    from .theme import palette as _palette, FONT_FAMILY as _FONT_FAMILY
+    from .theme import dialog_palette as _palette, FONT_FAMILY as _FONT_FAMILY
 except ImportError:
     def _palette(night): return {}  # type: ignore
     _FONT_FAMILY = "sans-serif"
@@ -466,7 +466,7 @@ class AddTrackDialog(QDialog):
         # Buttons
         btn_row = QHBoxLayout()
         btn_row.addStretch()
-        cancel_btn = QPushButton("Cancel")
+        cancel_btn = QPushButton(_("Cancel"))
         cancel_btn.setFixedWidth(70)
         cancel_btn.clicked.connect(self.reject)
         self.import_btn = QPushButton(_("Import"))
@@ -721,6 +721,7 @@ class MiniMusicPlayer(QDialog):
         if self.ui_view is not None and prof is not None:
             self._ui_page = _ConsoleBridgePage(prof, self.ui_view,
                                                "SYNAPSEPRO_MUSIC:", self._on_ui_message)
+            self._ui_page.setBackgroundColor(QColor(_palette(self._is_night())["bg"]))
             self.ui_view.setPage(self._ui_page)
             s = self._ui_page.settings()
             _set_web_attr(s, "LocalContentCanAccessRemoteUrls", True)
@@ -1350,7 +1351,7 @@ class MiniMusicPlayer(QDialog):
             return
         folder = _get_user_music_folder()
         if not folder:
-            if tooltip: tooltip("Could not access user music folder.")
+            if tooltip: tooltip(_("Could not access user music folder."))
             return
         # Copy file, avoid name collisions
         fname = os.path.basename(src_path)

@@ -21,7 +21,7 @@ except Exception:  # pragma: no cover - Anki not available
 
 from aqt.qt import (
     Qt, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QSizePolicy,
-    QTimer,
+    QTimer, QPainter, QColor,
 )
 
 try:
@@ -126,6 +126,18 @@ def _build_header(title: str, on_close: Callable[[], None]) -> QWidget:
     return header
 
 
+class _EmbeddedSurface(QWidget):
+    """One-pixel boundary, owned only by the enlarged tool container."""
+
+    def paintEvent(self, event):
+        super().paintEvent(event)
+        night = bool(mw and getattr(mw, "pm", None) and mw.pm.night_mode())
+        painter = QPainter(self)
+        painter.fillRect(0, 0, 1, self.height(),
+                         QColor("#555555" if night else "#D8D8D8"))
+        painter.end()
+
+
 def embed(inner_widget: QWidget, on_close: Callable[[], None],
           title: str = "", show_header: bool = True) -> bool:
     """Embed ``inner_widget`` into Anki's main content area.
@@ -149,14 +161,14 @@ def embed(inner_widget: QWidget, on_close: Callable[[], None],
     if layout is None or QWidget is object:
         return False
 
-    container = QWidget()
+    container = _EmbeddedSurface()
     try:
         container.setSizePolicy(QSizePolicy.Policy.Expanding,
                                 QSizePolicy.Policy.Expanding)
     except Exception:
         pass
     v = QVBoxLayout(container)
-    v.setContentsMargins(0, 0, 0, 0)
+    v.setContentsMargins(1, 0, 0, 0)
     v.setSpacing(0)
     if show_header:
         v.addWidget(_build_header(title, on_close))

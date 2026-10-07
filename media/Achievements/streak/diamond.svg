@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Ebene_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 120 120">
+  <!-- Generator: Adobe Illustrator 30.8.1, SVG Export Plug-In . SVG Version: 2.1.4 Build 1)  -->
+  <defs>
+    <style>
+      .st0 {
+        fill: #effeff;
+        opacity: .4;
+      }
+
+      .st0, .st1, .st2 {
+        isolation: isolate;
+      }
+
+      .st3 {
+        fill: none;
+        stroke: #e6fcff;
+        stroke-opacity: .55;
+      }
+
+      .st4 {
+        fill: url(#Unbenannter_Verlauf);
+      }
+
+      .st5 {
+        fill: #359dca;
+      }
+
+      .st1 {
+        fill: #d6faff;
+      }
+
+      .st1, .st2 {
+        opacity: .65;
+      }
+
+      .st6 {
+        fill: #2b84a3;
+      }
+
+      .st2 {
+        fill: #65bfe8;
+      }
+
+      .st7 {
+        fill: #f0f0f0;
+      }
+
+      .st8 {
+        fill: #dbf4fc;
+      }
+
+      .st9 {
+        fill: url(#Unbenannter_Verlauf1);
+      }
+    </style>
+    <linearGradient id="Unbenannter_Verlauf" data-name="Unbenannter Verlauf" x1="-356.63" y1="356.19" x2="-355.93" y2="355.19" gradientTransform="translate(39245 39178.3131) scale(110 -110)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#e6fcff"/>
+      <stop offset=".48" stop-color="#70d1f1"/>
+      <stop offset="1" stop-color="#359dca"/>
+    </linearGradient>
+    <linearGradient id="Unbenannter_Verlauf1" data-name="Unbenannter Verlauf" x1="35.49" y1="63.14" x2="79.01" y2="63.14" gradientTransform="matrix(1,0,0,1,0,0)" xlink:href="#Unbenannter_Verlauf"/>
+  </defs>
+  <g id="rim">
+    <circle class="st4" cx="60" cy="60" r="55"/>
+    <circle class="st3" cx="60" cy="60" r="53.5"/>
+  </g>
+  <g id="diamond-facets">
+    <path class="st1" d="M59.86,5l27.5,7.37-5.5,9.52-22-5.89V5Z"/>
+    <path class="st0" d="M59.86,5l27.5,7.37-27.5,3.63V5Z"/>
+    <path class="st2" d="M87.36,12.37l20.13,20.13-9.52,5.49-16.11-16.1,5.5-9.53Z"/>
+    <path class="st0" d="M87.36,12.37l20.13,20.13-25.63-10.61,5.5-9.53Z"/>
+    <path class="st1" d="M107.49,32.5l7.37,27.5h-10.99s-5.9-22-5.9-22l9.53-5.5Z"/>
+    <path class="st0" d="M107.49,32.5l7.37,27.5-16.89-22,9.53-5.5Z"/>
+    <path class="st2" d="M114.86,60l-7.37,27.5-9.52-5.5,5.89-22h11Z"/>
+    <path class="st0" d="M114.86,60l-7.37,27.5-3.63-27.5h11Z"/>
+    <path class="st1" d="M107.49,87.5l-20.13,20.13-5.49-9.52,16.1-16.11,9.53,5.5Z"/>
+    <path class="st0" d="M107.49,87.5l-20.13,20.13,10.61-25.63,9.53,5.5Z"/>
+    <path class="st2" d="M87.36,107.63l-27.5,7.37v-10.99s22-5.9,22-5.9l5.5,9.53Z"/>
+    <path class="st0" d="M87.36,107.63l-27.5,7.37,22-16.89,5.5,9.53Z"/>
+    <path class="st1" d="M59.86,115l-27.5-7.37,5.5-9.52,22,5.89v11Z"/>
+    <path class="st0" d="M59.86,115l-27.5-7.37,27.5-3.63v11Z"/>
+    <path class="st2" d="M32.36,107.63l-20.13-20.13,9.52-5.49,16.11,16.1-5.5,9.53Z"/>
+    <path class="st0" d="M32.36,107.63l-20.13-20.13,25.63,10.61-5.5,9.53Z"/>
+    <path class="st1" d="M12.23,87.5l-7.37-27.5h10.99s5.9,22,5.9,22l-9.53,5.5Z"/>
+    <path class="st0" d="M12.23,87.5l-7.37-27.5,16.89,22-9.53,5.5Z"/>
+    <path class="st2" d="M4.86,60l7.37-27.5,9.52,5.5-5.89,22H4.86Z"/>
+    <path class="st0" d="M4.86,60l7.37-27.5,3.63,27.5H4.86Z"/>
+    <path class="st1" d="M12.23,32.5l20.13-20.13,5.49,9.52-16.1,16.11-9.53-5.5Z"/>
+    <path class="st0" d="M12.23,32.5l20.13-20.13-10.61,25.63-9.53-5.5Z"/>
+    <path class="st2" d="M32.36,12.37l27.5-7.37v10.99s-22,5.9-22,5.9l-5.5-9.53Z"/>
+    <path class="st0" d="M32.36,12.37l27.5-7.37-22,16.89-5.5-9.53Z"/>
+  </g>
+  <g id="center">
+    <circle class="st5" cx="60" cy="60" r="44.5"/>
+    <circle class="st7" cx="60" cy="60" r="43"/>
+  </g>
+  <g id="icon">
+    <path class="st6" d="M62,25c17,15,11,27,18,34,2-5,3-9,2-13,14,16,10,43-11,48-23,6-42-10-35-30,3-8,9-15,14-20-4,12-1,17,3,20,12-13,15-25,9-39Z"/>
+    <path class="st9" d="M61,30c8,17,1,26-9,39-5-3-7-8-6-15-15,15-13,32,0,39,9,5,21,4,29-1,10-17-2-23-1-35-4,5-6,10-9,12,3-14,9-20-4-39Z"/>
+    <path class="st8" d="M63,56c6,17-12,20-6,29,3,4,5,0,6-2,9,13-5,18-13,10-13-14,11-22,13-37Z"/>
+  </g>
+</svg>

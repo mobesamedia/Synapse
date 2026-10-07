@@ -344,3 +344,17 @@ def palette(night_mode: bool) -> dict:
         base.update(overrides)
 
     return base
+
+
+def dialog_palette(night_mode: bool) -> dict:
+    """Neutral menu/dialog palette; main feature surfaces retain palette()."""
+    colors = palette(night_mode)
+    if night_mode:
+        colors.update({
+            "bg": "#2C2C2C", "surface": "#252525",
+            "grey_light": "#414141", "grey_mid": "#414141", "grey_dark": "#505050",
+            "hover_subtle": "#414141", "selection_bg": "#414141",
+            "text": "#FFFFFF", "text_muted": "#B0B0B0", "text_faint": "#7E7E7E",
+            "text_browser": "#FFFFFF",
+        })
+    return colors
