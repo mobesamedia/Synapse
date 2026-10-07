@@ -45,7 +45,7 @@ class ThemeChangeDialog(QDialog):
         label = QLabel(_(
             "<b>Theme Change Detected</b><br><br>"
             "You have switched between Light and Dark mode.<br>"
-            "To ensure all SynapsePro UI elements and styles are applied correctly, "
+            "To ensure all Synapse UI elements and styles are applied correctly, "
             "please restart Anki."
         ))
         label.setWordWrap(True)
@@ -63,6 +63,8 @@ class ThemeChangeDialog(QDialog):
         layout.addSpacing(10)
         
         buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok)
+        from .locales import translate_standard_buttons
+        translate_standard_buttons(buttons)
         buttons.accepted.connect(self.accept)
         buttons.setCenterButtons(True) 
         layout.addWidget(buttons)

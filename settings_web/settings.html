@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SynapsePro Settings</title>
+<title>Synapse Settings</title>
 <style>
   :root{
     /* color-scheme drives how Chromium renders native widgets (e.g. the
@@ -19,10 +19,10 @@
   }
   html.dark, body.dark{
     color-scheme:dark;
-    --win-bg:#1c1c1e; --side-bg:#222224; --content-bg:#1c1c1e;
-    --group-bg:#2a2a2c; --group-border:rgba(255,255,255,0.08);
-    --hairline:rgba(255,255,255,0.10); --text:#f5f5f7; --muted:#9a9aa0;
-    --chip-hover:rgba(255,255,255,0.07); --field-bg:#3a3a3c; --switch-off:#48484a;
+    --win-bg:#2c2c2c; --side-bg:#252525; --content-bg:#2c2c2c;
+    --group-bg:#252525; --group-border:rgba(255,255,255,0.08);
+    --hairline:rgba(255,255,255,0.10); --text:#ffffff; --muted:#b0b0b0;
+    --chip-hover:rgba(255,255,255,0.07); --field-bg:#414141; --switch-off:#414141;
     --green:#41C463; --green-soft:rgba(65,196,99,0.14); --green-border:rgba(65,196,99,0.4);
   }
   *{box-sizing:border-box;}
@@ -80,6 +80,7 @@
     transition:transform .2s cubic-bezier(.4,1.3,.5,1);box-shadow:0 1px 3px rgba(0,0,0,0.3);}
   .switch input:checked + .slider{background:var(--accent);}
   .switch input:checked + .slider::before{transform:translateX(16px);}
+  #celebrationGroup .row[hidden]{display:none;}
   .row.mode-locked{opacity:.48;}
   .row.mode-locked .slider{background:var(--switch-off)!important;cursor:not-allowed;}
   .row.mode-locked .slider::before{transform:none!important;}
@@ -96,6 +97,30 @@
   .custom-bg-empty{color:var(--muted);font-size:12px;text-align:center;padding:20px;}
   .custom-bg-preview.has-image .custom-bg-empty{display:none;}
   .custom-bg-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+  #surfacePreview{position:relative;margin-top:12px;min-height:210px;border:1px solid var(--group-border);border-radius:14px;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:26px;
+    background:radial-gradient(ellipse at 10% 90%,#9bbdc8 0%,transparent 65%),radial-gradient(ellipse at 85% 10%,#c5bfdf 0%,transparent 65%),linear-gradient(135deg,#dbe5ed,#b9c9de);}
+  #surfacePreview::before{content:"";position:absolute;width:460px;height:260px;border:1px solid rgba(255,255,255,.5);border-radius:50%;transform:rotate(-28deg);top:-135px;left:-80px;box-shadow:0 0 0 24px rgba(255,255,255,.12),0 0 0 48px rgba(255,255,255,.10),0 0 0 72px rgba(255,255,255,.08);pointer-events:none;}
+  .dark #surfacePreview{background:radial-gradient(ellipse at 10% 90%,#355b68 0%,transparent 65%),radial-gradient(ellipse at 85% 10%,#524c70 0%,transparent 65%),linear-gradient(135deg,#263848,#3d4b63);}
+  .dark #surfacePreview::before{opacity:.55;}
+  .surface-preview-card{position:relative;box-sizing:border-box;width:100%;max-width:420px;min-width:0;padding:18px 20px;border:1px solid var(--group-border);border-radius:12px;color:var(--text);background:color-mix(in srgb,var(--group-bg) var(--preview-opacity,100%),transparent);backdrop-filter:var(--preview-filter,none);box-shadow:var(--preview-rim,0 0 0 transparent),0 5px 18px rgba(0,0,0,var(--preview-shadow-alpha,0));}
+  .surface-preview-title{font-size:13px;font-weight:600;margin-bottom:14px;}
+  .surface-preview-table{display:grid;grid-template-columns:minmax(80px,1fr) repeat(3,minmax(36px,auto));column-gap:14px;row-gap:11px;align-items:center;font-size:12px;font-variant-numeric:tabular-nums;}
+  .surface-preview-table .preview-heading{font-size:10px;color:var(--muted);font-weight:500;}
+  .surface-preview-table .preview-count{text-align:right;}
+  .surface-preview-table .preview-deck{display:flex;gap:7px;align-items:center;}
+  .surface-preview-table .preview-deck::before{content:"";width:5px;height:5px;border:1px solid currentColor;border-left:0;border-bottom:0;transform:rotate(45deg);opacity:.5;flex-shrink:0;}
+  @media(max-width:700px){#surfacePreview{padding:18px 12px;}.surface-preview-card{padding:16px 12px;}.surface-preview-table{column-gap:8px;}}
+
+  #glassUnsupported[hidden]{display:none;}
+  .glass-warning{color:#9a4800;}
+  html.dark .glass-warning,body.dark .glass-warning{color:#ffc078;}
+  :is(#glassWarningDialog,#reviewBackgroundDialog){margin:auto;width:580px;max-width:calc(100vw - 28px);max-height:calc(100vh - 28px);overflow:auto;padding:28px;border:1px solid var(--group-border);border-radius:14px;background:var(--group-bg);color:var(--text);font:inherit;}
+  :is(#glassWarningDialog,#reviewBackgroundDialog)::backdrop{background:rgba(0,0,0,.55);}
+  :is(#glassWarningDialog,#reviewBackgroundDialog) h2{font-size:23px;line-height:1.25;margin:0 0 20px;}
+  :is(#glassWarningDialog,#reviewBackgroundDialog) p{font-size:14px;line-height:1.6;margin:0 0 16px;}
+  :is(#glassWarningDialog,#reviewBackgroundDialog) .glass-warning-lead{font-size:17px;font-weight:600;}
+  .glass-warning-actions{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:12px;margin-top:24px;}
+  #glassStrengthRow[hidden]{display:none;}
   .wallpaper-modal{position:fixed;inset:0;z-index:10020;display:none;align-items:center;justify-content:center;
     padding:24px;background:rgba(15,18,24,.38);}
   .wallpaper-modal.open{display:flex;}
@@ -297,14 +322,20 @@
     background:var(--field-bg);border:1px solid var(--group-border);}
   .about-logo-frame img{display:block;width:100%;height:100%;object-fit:contain;}
   .about-copy{padding:20px;text-align:center;}
-  .about-copy h2{margin:0;font-size:22px;letter-spacing:-.02em;}
-  .about-version{margin:5px 0 12px;color:var(--muted);font-size:12.5px;}
+  .about-version{margin:0 0 12px;color:var(--muted);font-size:12.5px;}
   .about-credit{margin:0;color:var(--text);font-size:14px;}
 
   /* footer */
   .footer{display:flex;align-items:center;justify-content:flex-end;gap:10px;padding:11px 18px;
     border-top:1px solid var(--hairline);background:var(--win-bg);}
-</style>
+.review-bg-preview{height:130px;position:relative;overflow:hidden;isolation:isolate;border-radius:10px;background:white;display:grid;place-items:center;color:#202022;}
+  .dark .review-bg-preview{background:#202022;color:#f4f4f5}
+  .review-bg-preview img{position:absolute;inset:-20px;width:calc(100% + 40px);height:calc(100% + 40px);object-fit:cover;filter:blur(var(--review-blur,8px));z-index:-2}
+  .review-bg-wash{position:absolute;inset:0;background:white;opacity:var(--review-wash,.8);z-index:-1}
+  .dark .review-bg-wash{background:#202022}
+  .review-bg-preview span{font-size:20px;font-weight:500}
+  #reviewBackgroundControls[hidden]{display:none}
+  </style>
 <script>
   var TR = {};
   function tr(source){ return Object.prototype.hasOwnProperty.call(TR, source) ? TR[source] : source; }
@@ -339,6 +370,8 @@
       document.documentElement.classList.add('dark');
   }catch(e){}
 </script>
+<link rel="stylesheet" href="deck_overview.css">
+<script src="deck_overview.js"></script>
 </head>
 <body>
   <div class="app">
@@ -347,7 +380,7 @@
         <div class="brand" id="brandBlock">
           <img id="brandLogo" alt="">
           <div>
-            <div class="name" id="brandName">SynapsePro</div>
+            <div class="name" id="brandName">Synapse</div>
             <div class="ver" id="brandVer">Version</div>
           </div>
         </div>
@@ -369,11 +402,11 @@
         <!-- NEWS -->
         <section class="page" data-page="news">
           <h1 class="page-title">News</h1>
-          <p class="page-sub">Announcements, tips and updates from SynapsePro.</p>
+          <p class="page-sub">Announcements, tips and updates from Synapse.</p>
           <a class="banner-wrap" id="bannerWrap"><img id="homeBanner" class="banner" alt=""></a>
           <div class="conflict-card">
             <div class="conflict-head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 3.7 2.4 17.4A2 2 0 0 0 4.1 20h15.8a2 2 0 0 0 1.7-2.6L13.7 3.7a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg><b>Known Add-on Conflict</b></div>
-            <p>The following add-on is known to potentially cause UI-related issues when used together with SynapsePro:</p>
+            <p>The following add-on is known to potentially cause UI-related issues when used together with Synapse:</p>
             <p class="conflict-addon">Progress Bar for Anki - Visualize the Reviewed Cards (Fixed by Shigeඞ)</p>
             <p>This may include unusual colours, layout problems or other visual glitches. If you experience these issues, please try temporarily disabling this add-on. If you need help or notice conflicts with other add-ons, contact me at help.synapse.pro@gmail.com.</p>
           </div>
@@ -389,13 +422,7 @@
               <div class="rc"><select class="field" id="language">
                 <option value="auto">Auto</option><option value="en">English</option><option value="de">Deutsch</option>
                 <option value="es">Español</option><option value="fr">Français</option><option value="pt">Português</option>
-                <option value="vi">Tiếng Việt</option><option value="ko">한국어</option><option value="zh">中文</option><option value="hi">हिन्दी</option>
-              </select></div>
-            </div>
-            <div class="row">
-              <div class="rl"><div class="rt">Daily Fact Topic</div><div class="rd">Subject the daily fact on the home screen is drawn from.</div></div>
-              <div class="rc"><select class="field" id="fact_theme">
-                <option value="Medical">Medical</option><option value="Law">Law</option><option value="General">General</option><option value="Countries">Countries</option>
+                <option value="vi">Tiếng Việt</option><option value="ko">한국어</option><option value="zh">中文</option><option value="hi">हिन्दी</option><option value="pl">Polski</option>
               </select></div>
             </div>
             <div class="row">
@@ -426,7 +453,7 @@
           <div class="cta" style="margin-top:18px;">
             <div class="thumb"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M2 10.5A1.5 1.5 0 0 1 3.5 9H6v11H3.5A1.5 1.5 0 0 1 2 18.5v-8zM8 9.2l4.2-6.3a1.6 1.6 0 0 1 2.9 1.1L14.4 9H20a2 2 0 0 1 2 2.3l-1.2 7A2.4 2.4 0 0 1 18.4 20H8V9.2z"/></svg></div>
             <div class="ct">
-              <b>Enjoying SynapsePro and got 5 seconds?</b>
+              <b>Enjoying Synapse and got 5 seconds?</b>
               <p>Leaving a thumbs up on AnkiWeb supports development the most. Thank you so much!</p>
             </div>
             <button class="btn" onclick="openUrl('https://ankiweb.net/shared/review/236979321')">Rate on AnkiWeb</button>
@@ -436,7 +463,7 @@
         <!-- APPEARANCE -->
         <section class="page" data-page="appearance">
           <h1 class="page-title">Appearance</h1>
-          <p class="page-sub">Choose the accent colour used across SynapsePro and the background style.</p>
+          <p class="page-sub">Choose the accent colour used across Synapse and the background style.</p>
           <div class="group-label">Color Theme</div>
           <div class="group">
             <div class="row" style="display:block;">
@@ -450,6 +477,49 @@
             <div class="row" id="backgroundStyleRow">
               <div class="rl"><div class="rt">Background Style</div><div class="rd">Overall background of the add-on screens.</div></div>
               <div class="rc"><select class="field" id="background_style"></select></div>
+            </div>
+          </div>
+          <div class="group-label">Dashboard Surfaces</div>
+          <div class="group">
+            <div class="row">
+              <div class="rl"><label class="rt" for="editDashboardSurfaces">Edit Dashboard Surfaces</label></div>
+              <div class="rc"><label class="switch"><input type="checkbox" id="editDashboardSurfaces" aria-label="Edit Dashboard Surfaces" aria-controls="dashboardSurfaceControls" aria-expanded="false" onchange="toggleDashboardSurfaceControls()"><span class="slider"></span></label></div>
+            </div>
+            <div id="dashboardSurfaceControls" hidden>
+            <div class="row">
+              <div class="rl"><div class="rt">Surface Opacity</div><div class="rd">Applies to widgets and the deck list, including the minimalist dashboard. Text and controls stay fully visible.</div></div>
+              <div class="rc range-control"><input type="range" id="dashboard_surface_opacity" min="0" max="100" step="5" aria-label="Surface Opacity"><span class="range-value" id="dashboardSurfaceOpacityValue">100%</span></div>
+            </div>
+            <div class="row" style="display:block;">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:20px;">
+                <div class="rt">Glass Effect</div>
+                <label class="switch"><input type="checkbox" id="dashboard_glass_enabled" aria-label="Glass Effect" onchange="requestGlassEffect()"><span class="slider"></span></label>
+              </div>
+              <p class="rd glass-warning" style="margin:10px 0 0;">May cause severe performance issues. Smooth use and studying cannot be guaranteed while enabled.</p>
+            </div>
+            <div class="row" id="glassStrengthRow" hidden>
+              <div class="rl"><div class="rt">Glass Strength</div><div class="rd">Lower strength reduces rendering work. Set surface opacity below 100% to see the effect. Unsupported renderers keep normal transparency.</div></div>
+              <div class="rc range-control"><input type="range" id="dashboard_glass_strength" min="2" max="16" step="1" aria-label="Glass Strength" oninput="syncGlassControls()"><span class="range-value" id="glassStrengthValue">6 px</span></div>
+            </div>
+            <div class="row">
+              <div class="rl"><label class="rt" for="dashboard_widget_shadow">Widget Shadow</label><div class="rd">Shadow intensity for widgets and the deck list. Set to 0 to turn off.</div></div>
+              <div class="rc range-control"><input type="range" id="dashboard_widget_shadow" min="0" max="100" step="5" value="0" aria-label="Widget Shadow" oninput="updateSurfacePreview()"><span class="range-value" id="widgetShadowValue">0%</span></div>
+            </div>
+            <div class="row" style="display:block;">
+              <div class="rt">Simulated Preview</div>
+              <div id="surfacePreview" aria-label="Simulated Preview">
+                <div class="surface-preview-card" aria-hidden="true">
+                  <div class="surface-preview-title">Decks</div>
+                  <div class="surface-preview-table">
+                    <span></span><span class="preview-heading preview-count">New</span><span class="preview-heading preview-count">Learn</span><span class="preview-heading preview-count">Due</span>
+                    <span class="preview-deck">Medical</span><span class="preview-count">12</span><span class="preview-count">4</span><span class="preview-count">28</span>
+                    <span class="preview-deck">General</span><span class="preview-count">8</span><span class="preview-count">2</span><span class="preview-count">16</span>
+                  </div>
+                </div>
+              </div>
+              <p class="rd" style="margin:10px 0 0;">Example background. The result depends on your wallpaper. Blur is easier to see with lower surface opacity and a detailed image.</p>
+              <p class="rd glass-warning" id="glassUnsupported" hidden>This renderer does not support the glass effect. Normal transparency is shown.</p>
+            </div>
             </div>
           </div>
           <div class="group-label">Custom Background</div>
@@ -469,6 +539,15 @@
               <div class="row"><div class="rl"><div class="rt">Dark Overlay</div><div class="rd">Darkens the image to improve readability.</div></div><div class="rc range-control"><input type="range" id="custom_background_overlay" min="0" max="70" step="1"><span class="range-value" id="customBackgroundOverlayValue">0%</span></div></div>
               <div class="row"><div class="rl"><div class="rt">Image Position</div><div class="rd">Choose which part of the image stays visible when it is cropped.</div></div><div class="rc"><select class="field" id="custom_background_position"><option value="top">Top</option><option value="center">Center</option><option value="bottom">Bottom</option></select></div></div>
               <div class="row"><div class="rl"><div class="rt">Studied Text</div><div class="rd">Choose a light or dark colour for the studied-today summary.</div></div><div class="rc"><select class="field" id="custom_background_studied_text"><option value="dark">Dark</option><option value="light">Light</option></select></div></div>
+              <div class="row">
+                <div class="rl"><div class="rt">Show while studying</div><div class="rd">Use the same image behind your learning cards.</div></div>
+                <div class="rc"><label class="switch"><input type="checkbox" id="custom_background_review_enabled" aria-label="Show while studying" onchange="requestReviewBackground()"><span class="slider"></span></label></div>
+              </div>
+              <div id="reviewBackgroundControls" hidden>
+                <div class="row"><div class="rl"><div class="rt">Background intensity</div><div class="rd">Lower values make the image lighter in Light Mode and darker in Dark Mode.</div></div><div class="rc range-control"><input type="range" id="custom_background_review_intensity" min="0" max="100" step="1" aria-label="Background intensity" oninput="syncReviewBackgroundControls()"><span class="range-value" id="reviewBackgroundIntensityValue"></span></div></div>
+                <div class="row"><div class="rl"><div class="rt">Study background blur</div><div class="rd">Softens only the background. Card content stays sharp.</div></div><div class="rc range-control"><input type="range" id="custom_background_review_blur" min="0" max="30" step="1" aria-label="Study background blur" oninput="syncReviewBackgroundControls()"><span class="range-value" id="reviewBackgroundBlurValue"></span></div></div>
+                <div class="row" style="display:block"><div class="review-bg-preview"><img id="reviewBackgroundImage" alt=""><div class="review-bg-wash"></div><span>Card preview</span></div><div class="custom-bg-note">Card templates with their own backgrounds may cover the image or look different. You can turn this off at any time.</div></div>
+              </div>
             </div>
           </div>
           <div class="group-label">Deck Counter Colors</div>
@@ -513,6 +592,30 @@
           <div style="height:12px"></div>
           <div class="group" id="dashGroup"></div>
           <p class="dashboard-lock-note" id="dashboardLockNote">Individual dashboard widgets are unavailable while Minimalist Dashboard is enabled.</p>
+          <div class="group-label">Facts or Tasks Widget</div>
+          <div class="group" id="contentWidgetGroup">
+            <div class="row">
+              <div class="rl"><div class="rt">Facts or Tasks Widget</div><div class="rd">Show the selected content on your Anki home screen.</div></div>
+              <div class="rc"><label class="switch"><input type="checkbox" data-key="daily_fact_widget_enabled"><span class="slider"></span></label></div>
+            </div>
+            <div class="row" id="widget-content-row">
+              <div class="rl"><div class="rt">Widget Content</div><div class="rd">Show facts or open tasks on the home screen. Click the task widget to open your list.</div></div>
+              <div class="rc"><select class="field" id="daily_widget_content">
+                <option value="facts">Facts</option><option value="tasks">Tasks</option>
+              </select></div>
+            </div>
+            <div class="row" id="fact-topic-row">
+              <div class="rl"><div class="rt">Daily Fact Topic</div><div class="rd">Subject the daily fact on the home screen is drawn from.</div></div>
+              <div class="rc"><select class="field" id="fact_theme">
+                <option value="Medical">Medical</option><option value="Law">Law</option><option value="General">General</option><option value="Countries">Countries</option><option value="Random">Random</option>
+              </select></div>
+            </div>
+          </div>
+
+          <p class="rd" id="daily-widget-restart-note" style="font-size:11px;line-height:1.5;margin:8px 4px 20px">If the change does not appear, restart Anki.</p>
+
+          <div class="group-label" id="gamificationSettingsLabel">Gamification</div>
+          <div class="group" id="celebrationGroup"></div>
         </section>
 
         <!-- DECK -->
@@ -520,6 +623,7 @@
           <h1 class="page-title">Deck Overview</h1>
           <p class="page-sub">The screen shown after you click a deck, before studying.</p>
           <div class="group" id="deckGroup"></div>
+          <div id="deckOverviewOptions"></div>
         </section>
 
         <!-- SIDEBAR -->
@@ -533,29 +637,30 @@
         <!-- CHANGELOG -->
         <section class="page" data-page="changelog">
           <h1 class="page-title">Changelog</h1>
-          <p class="page-sub">What changed in recent versions of SynapsePro.</p>
+          <p class="page-sub">What changed in recent versions of Synapse.</p>
           <div id="changelogBody"></div>
         </section>
 
         <!-- SUPPORTERS -->
         <section class="page" data-page="support">
           <h1 class="page-title">Supporters</h1>
-          <p class="page-sub">The people who help keep SynapsePro going.</p>
+          <p class="page-sub">The people who help keep Synapse going.</p>
           <div class="group"><div id="supportBody"></div></div>
           <p class="supporter-note" id="supportersNote"></p>
         </section>
 
         <!-- ABOUT (opened only through the brand Easter egg) -->
         <section class="page" data-page="about">
-          <h1 class="page-title">About SynapsePro</h1>
-          <p class="page-sub">General information about SynapsePro.</p>
+          <h1 class="page-title">About Synapse</h1>
+          <p class="page-sub">General information about Synapse.</p>
           <div class="group about-card">
             <div class="about-logo-frame" id="aboutLogoFrame" hidden>
               <img id="aboutLogo" width="1800" height="1000" alt="MobesaMedia">
             </div>
             <div class="about-copy">
-              <h2>SynapsePro</h2>
               <p class="about-version" id="aboutVersion">Version</p>
+              <p id="developerStatus" role="status" hidden style="font-size:12px;color:var(--muted)"></p>
+              <button type="button" id="developerOpen" hidden>Open developer console</button>
               <p class="about-credit">Designed and created by MobesaMedia from Germany.</p>
             </div>
           </div>
@@ -569,6 +674,19 @@
     </div>
   </div>
 
+  <dialog id="reviewBackgroundDialog" aria-labelledby="reviewBackgroundTitle" aria-describedby="reviewBackgroundBody">
+    <h2 id="reviewBackgroundTitle">A background for studying</h2>
+    <p id="reviewBackgroundBody">Some card templates use their own colours, images or panels. These may cover the background or change how it looks. This can be due to the card design, rather than a Synapse error.</p>
+    <p>Start with a subtle background. If a card becomes harder to read, lower the intensity or turn this option off. Your cards are not modified.</p>
+    <div class="glass-warning-actions"><button type="button" class="btn btn-grey" onclick="document.getElementById('reviewBackgroundDialog').close()">Cancel</button><button type="button" class="btn btn-primary" onclick="confirmReviewBackground()">Enable</button></div>
+  </dialog>
+  <dialog id="glassWarningDialog" aria-labelledby="glassWarningTitle" aria-describedby="glassWarningBody">
+    <h2 id="glassWarningTitle">Enable glass effect?</h2>
+    <p class="glass-warning glass-warning-lead">This effect may cause severe performance issues.</p>
+    <p id="glassWarningBody">Blurring the background adds rendering work, especially with large windows and long deck lists. Smooth use and studying can no longer be guaranteed while this option is enabled.</p>
+    <p>You can reduce the strength or turn the effect off at any time. The effect is limited to the dashboard and does not change your learning data.</p>
+    <div class="glass-warning-actions"><button type="button" class="btn btn-grey" onclick="document.getElementById('glassWarningDialog').close()">Cancel</button><button type="button" class="btn btn-primary" onclick="confirmGlassEffect()">Enable anyway</button></div>
+  </dialog>
   <div class="wallpaper-modal" id="exampleWallpaperModal" role="dialog" aria-modal="true" aria-labelledby="exampleWallpaperTitle" onclick="if(event.target===this)closeExampleWallpapers()">
     <div class="wallpaper-dialog">
       <div class="wallpaper-dialog-head"><h2 id="exampleWallpaperTitle">Example Wallpapers</h2><button type="button" class="wallpaper-close" onclick="closeExampleWallpapers()" title="Close" aria-label="Close">×</button></div>
@@ -586,9 +704,9 @@
     ['dusty','Dusty','#5A9491','#4E8280'],
   ];
   var DASH = [
+    ['dashboard_wide_deck_list','Wide Deck List','Match the deck list width to the widgets. Turn off for a compact deck list.'],
     ['gamification_widgets_enabled','Gamification Widgets','Your level, XP and daily streak.'],
     ['study_plan_widget_enabled','Study Plan Widget','Your daily study plan.'],
-    ['daily_fact_widget_enabled','Daily Fact Widget','A new fact on your Anki home screen each day.'],
     ['deadline_bar_enabled','Deadline Bar','A countdown bar towards your exam or deadline.'],
     ['statistics_widget_enabled','Advanced Statistics','An extra panel with detailed review statistics.'],
   ];
@@ -599,10 +717,10 @@
     ['deck_overview_enabled','Custom Deck Dashboard','Replaces the standard overview with retention, hard cards and more.'],
   ];
   var SIDE = [
-    ['mindmap_enabled','Mind Map','A visual mind-mapping panel.'],
+    ['mindmap_enabled','MindMap','A visual mind-mapping panel.'],
     ['gamification_sidebar_enabled','Gamification Sidebar','Progress, rewards and motivation panel.'],
     ['music_player_enabled','Music Player','Background music while you study.'],
-    ['pomodoro_enabled','Pomodoro Timer','A focus timer with work and break intervals.'],
+    ['pomodoro_enabled','Timer','A focus timer with work and break intervals.'],
     ['ai_assistant_enabled','AI Assistant','Chat assistant that can explain your cards.'],
     ['website_viewer_enabled','Website Viewer','Open websites in a panel without leaving Anki.'],
     ['notebook_enabled','Notebook','Notes, to-dos and PDFs alongside your cards.'],
@@ -746,7 +864,7 @@
       }).join('');
     } else {
       el.innerHTML = '<div class="empty"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 5.6a5 5 0 0 0-7.1 0L12 7.2l-1.7-1.6a5 5 0 1 0-7.1 7.1L12 21l8.8-8.3a5 5 0 0 0 0-7.1z"/></svg></div>'+
-        '<b>'+esc(tr('Supporters will be listed here soon'))+'</b><p>'+esc(tr('A heartfelt thank you to everyone who supports SynapsePro. This space is reserved for you.'))+'</p></div>';
+        '<b>'+esc(tr('Supporters will be listed here soon'))+'</b><p>'+esc(tr('A heartfelt thank you to everyone who supports Synapse. This space is reserved for you.'))+'</p></div>';
     }
     document.getElementById('supportersNote').textContent = note || '';
   }
@@ -925,12 +1043,19 @@
   window.initSettings = function(data){
     try{
       data = data || {}; var cfg = data.config || {};
+      // Master switch: disabled surfaces use defaults; saved values remain available.
+      // Preserve existing customization for configurations without this setting.
+      document.getElementById('editDashboardSurfaces').checked=
+        typeof cfg.dashboard_surface_controls_expanded==='boolean'
+          ? cfg.dashboard_surface_controls_expanded
+          : cfg.dashboard_glass_enabled===true || Number(cfg.dashboard_surface_opacity??100)<100 || Number(cfg.dashboard_widget_shadow??0)>0;
+      toggleDashboardSurfaceControls();
       TR = (data.translations && typeof data.translations === 'object') ? data.translations : {};
       applySynapseTranslations(document);
       if(data.isDark){ document.documentElement.classList.add('dark'); document.body.classList.add('dark'); }
       else{ document.documentElement.classList.remove('dark'); document.body.classList.remove('dark'); }
 
-      document.getElementById('brandName').textContent = data.displayName || 'SynapsePro';
+      document.getElementById('brandName').textContent = data.displayName || 'Synapse';
       var ver = data.version ? (tr('Version')+' '+data.version) : tr('Version');
       document.getElementById('brandVer').textContent = ver;
 
@@ -947,15 +1072,40 @@
         return '<option value="'+esc(t.value)+'">'+esc(t.label)+'</option>';
       }).join('');
 
+      let materialStyle=document.getElementById('surfaceMaterialStyle');
+      if(!materialStyle){materialStyle=document.createElement('style');materialStyle.id='surfaceMaterialStyle';document.head.append(materialStyle);}
+      materialStyle.textContent=cfg.surface_effects_css||'';
+      const configuredShadow=Number(cfg.dashboard_widget_shadow??0);
+      document.getElementById('dashboard_widget_shadow').value=Number.isFinite(configuredShadow)?Math.max(0,Math.min(100,configuredShadow)):0;
+      const surfaceOpacity=document.getElementById('dashboard_surface_opacity');
+      const configuredOpacity=Number(cfg.dashboard_surface_opacity ?? 100);
+      surfaceOpacity.value=Number.isFinite(configuredOpacity)?Math.max(0,Math.min(100,configuredOpacity)):100;
+      const showSurfaceOpacity=()=>{document.getElementById('dashboardSurfaceOpacityValue').textContent=surfaceOpacity.value+'%';updateSurfacePreview();};
+      surfaceOpacity.oninput=showSurfaceOpacity;showSurfaceOpacity();
+      document.getElementById('dashboard_glass_enabled').checked=cfg.dashboard_glass_enabled===true;
+      const configuredGlassStrength=Number(cfg.dashboard_glass_strength ?? 6);
+      document.getElementById('dashboard_glass_strength').value=Number.isFinite(configuredGlassStrength)?Math.max(2,Math.min(16,configuredGlassStrength)):6;
+      syncGlassControls();
       // selects
       enhanceSelects();
       setSelect('language', cfg.language || 'auto');
       setSelect('fact_theme', cfg.fact_theme || 'Medical');
+      setSelect('daily_widget_content', cfg.daily_widget_content === 'tasks' ? 'tasks' : 'facts');
+      const contentSelect=document.getElementById('daily_widget_content');
+      const contentEnabled=document.querySelector('input[data-key="daily_fact_widget_enabled"]');
+      contentEnabled.checked=cfg.daily_fact_widget_enabled!==false;
+      const updateTopic=()=>{document.getElementById('widget-content-row').style.display=contentEnabled.checked?'':'none';document.getElementById('fact-topic-row').style.display=contentEnabled.checked&&contentSelect.value!=='tasks'?'':'none';};
+      contentEnabled.onchange=updateTopic;
+      contentSelect.onchange=updateTopic;updateTopic();
       setSelect('stats_time_range', cfg.stats_time_range != null ? cfg.stats_time_range : 7);
       setSelect('sidebar_visibility', cfg.sidebar_visibility_mode || 'always_show');
       setSelect('background_style', cfg.active_theme || 'medical_theme.css');
       var customEnabled = document.getElementById('custom_background_enabled');
       customEnabled.checked = !!cfg.custom_background_enabled;
+      document.getElementById('custom_background_review_enabled').checked=cfg.custom_background_review_enabled===true;
+      document.getElementById('custom_background_review_intensity').value=cfg.custom_background_review_intensity??20;
+      document.getElementById('custom_background_review_blur').value=cfg.custom_background_review_blur??8;
+      syncReviewBackgroundControls();
       document.getElementById('custom_background_blur').value = Number(cfg.custom_background_blur)||0;
       document.getElementById('custom_background_overlay').value = Number(cfg.custom_background_overlay)||0;
       setSelect('custom_background_position', ['top','center','bottom'].indexOf(cfg.custom_background_position)>=0 ? cfg.custom_background_position : 'center');
@@ -980,7 +1130,22 @@
       // toggles
       renderToggles('minimalGroup', MINIMAL_DASH, cfg);
       renderToggles('dashGroup', DASH, cfg);
+      renderToggles('celebrationGroup', [
+        ['gamification_popups_enabled','Celebration popups','Show celebrations on the dashboard.'],
+        ['gamification_popup_rank','New Rank!',''],
+        ['gamification_popup_level','Level Up!',''],
+        ['gamification_popup_challenge','Daily Challenge completed!','']
+      ], Object.assign({gamification_popup_level:false},cfg));
+      const celebrationMaster=document.querySelector('[data-key="gamification_popups_enabled"]');
+      const syncCelebrations=()=>{
+        ['rank','level','challenge'].forEach(key=>{
+          const input=document.querySelector('[data-key="gamification_popup_'+key+'"]');
+          input.closest('.row').hidden=!celebrationMaster.checked;
+        });
+      };
+      celebrationMaster.addEventListener('change',syncCelebrations);syncCelebrations();
       renderToggles('deckGroup', DECK, cfg);
+      renderDeckOverviewSettings(data.deckOverview);
       renderToggles('sideGroup', SIDE, cfg, true);
       var minimalToggle = document.querySelector('input[data-key="minimal_dashboard_enabled"]');
       if(minimalToggle) minimalToggle.addEventListener('change', syncMinimalDashboardControls);
@@ -995,6 +1160,8 @@
       renderSupport(data.supporters, data.supportersNote);
 
       var aboutVersion = document.getElementById('aboutVersion');
+      window._developerLabels = data.developerLabels || {};
+      document.getElementById('developerOpen').textContent = window._developerLabels.open || 'Open developer console';
       aboutVersion.textContent = data.version ? ('Version '+data.version) : 'Version';
       if(data.aboutLogo){
         document.getElementById('aboutLogo').src = data.aboutLogo;
@@ -1003,14 +1170,69 @@
       // The banner lives on the News tab; loading it here means it is
       // already in place (no flash) by the time the tab is opened.
       loadBanner(data.banner || {});
+      if(data.initialPage)gotoPage(data.initialPage);
+      if(data.initialPage==='dashboard' && data.initialSection==='celebrations'){
+        requestAnimationFrame(()=>{
+          document.getElementById('gamificationSettingsLabel').scrollIntoView({block:'start'});
+          document.querySelector('[data-key="gamification_popups_enabled"]').focus({preventScroll:true});
+        });
+      }
     }catch(e){ console.log('SYNAPSEPRO_SETTINGS:err:'+e); }
   };
+
+  function updateSurfacePreview(){
+    const preview=document.getElementById('surfacePreview');if(!preview)return;
+    const surfacesEnabled=document.getElementById('editDashboardSurfaces').checked;
+    const opacity=surfacesEnabled?Number(document.getElementById('dashboard_surface_opacity').value):100;
+    const enabled=surfacesEnabled&&document.getElementById('dashboard_glass_enabled').checked;
+    const supported=window.CSS&&CSS.supports('backdrop-filter','blur(1px)');
+    const configuredShadow=Number(document.getElementById('dashboard_widget_shadow').value);
+    const shadow=surfacesEnabled?configuredShadow:0;
+    const dark=document.documentElement.classList.contains('dark')||document.body.classList.contains('dark');
+    document.getElementById('widgetShadowValue').textContent=configuredShadow+'%';
+    preview.style.setProperty('--preview-shadow-alpha',shadow * (dark ? 0.0036 : 0.0018));
+    preview.style.setProperty('--preview-rim',enabled&&opacity<100?'var(--sp-glass-rim)':'0 0 0 transparent');
+    preview.style.setProperty('--preview-opacity',opacity+'%');
+    preview.style.setProperty('--preview-filter',enabled&&supported&&opacity<100?'blur('+document.getElementById('dashboard_glass_strength').value+'px)':'none');
+    document.getElementById('glassUnsupported').hidden=!enabled||supported;
+  }
+  function toggleDashboardSurfaceControls(){
+    const toggle=document.getElementById('editDashboardSurfaces');
+    document.getElementById('dashboardSurfaceControls').hidden=!toggle.checked;
+    toggle.setAttribute('aria-expanded',String(toggle.checked));
+    updateSurfacePreview();
+  }
+  function syncGlassControls(){
+    updateSurfacePreview();
+    document.getElementById('glassStrengthRow').hidden=!document.getElementById('dashboard_glass_enabled').checked;
+    document.getElementById('glassStrengthValue').textContent=document.getElementById('dashboard_glass_strength').value+' px';
+  }
+  function requestGlassEffect(){
+    const toggle=document.getElementById('dashboard_glass_enabled');
+    if(toggle.checked){
+      toggle.checked=false;
+      const dialog=document.getElementById('glassWarningDialog');
+      if(!dialog.open){dialog.showModal();dialog.querySelector('button').focus();}
+    }
+    syncGlassControls();
+  }
+  function confirmGlassEffect(){
+    document.getElementById('dashboard_glass_enabled').checked=true;
+    syncGlassControls();document.getElementById('glassWarningDialog').close();
+  }
+  document.getElementById('glassWarningDialog').addEventListener('close',()=>document.getElementById('dashboard_glass_enabled').focus());
 
   function val(id){ var el=document.getElementById(id); return el?el.value:''; }
   function collect(){
     var out = {
       language: val('language'),
+      dashboard_surface_controls_expanded: document.getElementById('editDashboardSurfaces').checked,
+      dashboard_surface_opacity: Number(val('dashboard_surface_opacity')),
+      dashboard_glass_enabled: document.getElementById('dashboard_glass_enabled').checked,
+      dashboard_glass_strength: Number(val('dashboard_glass_strength')),
+      dashboard_widget_shadow: Number(val('dashboard_widget_shadow')),
       fact_theme: val('fact_theme'),
+      daily_widget_content: val('daily_widget_content'),
       stats_time_range: Number(val('stats_time_range')) || 7,
       sidebar_visibility_mode: val('sidebar_visibility'),
       active_theme: val('background_style'),
@@ -1018,6 +1240,9 @@
       custom_bg_light: '#f5f5f7',
       custom_bg_dark: '#1f1f21',
       custom_background_enabled: !!document.getElementById('custom_background_enabled').checked,
+      custom_background_review_enabled: document.getElementById('custom_background_review_enabled').checked,
+      custom_background_review_intensity: Number(val('custom_background_review_intensity')),
+      custom_background_review_blur: Number(val('custom_background_review_blur')),
       custom_background_blur: Number(val('custom_background_blur')) || 0,
       custom_background_overlay: Number(val('custom_background_overlay')) || 0,
       custom_background_position: ['top','center','bottom'].indexOf(val('custom_background_position'))>=0 ? val('custom_background_position') : 'center',
@@ -1032,10 +1257,39 @@
       sidebar_shortcuts: Object.assign({}, _shortcutValues)
     };
     document.querySelectorAll('input[type=checkbox][data-key]').forEach(function(cb){ out[cb.dataset.key]=cb.checked; });
+    Object.assign(out, collectDeckOverviewSettings());
     return out;
   }
-  function save(){ bridge('save', JSON.stringify(collect())); }
+  function save(){ if(!validateDeckOverviewSettings())return; bridge('save', JSON.stringify(collect())); }
+  function requestReviewBackground(){
+    const toggle=document.getElementById('custom_background_review_enabled');
+    if(toggle.checked){
+      toggle.checked=false;
+      document.getElementById('reviewBackgroundDialog').showModal();
+    }
+    syncReviewBackgroundControls();
+  }
+  function confirmReviewBackground(){
+    document.getElementById('custom_background_review_enabled').checked=true;
+    document.getElementById('reviewBackgroundDialog').close();
+    syncReviewBackgroundControls();
+  }
+  document.getElementById('reviewBackgroundDialog').addEventListener('close',()=>document.getElementById('custom_background_review_enabled').focus());
+  function syncReviewBackgroundControls(){
+    document.getElementById('reviewBackgroundControls').hidden=!document.getElementById('custom_background_review_enabled').checked;
+    const intensity=Number(val('custom_background_review_intensity')),blur=Number(val('custom_background_review_blur'));
+    document.getElementById('reviewBackgroundIntensityValue').textContent=intensity+'%';
+    document.getElementById('reviewBackgroundBlurValue').textContent=blur+' px';
+    const preview=document.querySelector('.review-bg-preview');
+    preview.style.setProperty('--review-blur',blur+'px');
+    preview.style.setProperty('--review-wash',1-intensity/100);
+    const source=document.getElementById('customBackgroundImage').getAttribute('src');
+    const image=document.getElementById('reviewBackgroundImage');
+    if(source)image.src=source;else image.removeAttribute('src');
+    image.style.objectPosition='center '+(val('custom_background_position')||'center');
+  }
   function syncCustomBackgroundControls(){
+    syncReviewBackgroundControls();
     var enabled=!!document.getElementById('custom_background_enabled').checked;
     document.getElementById('customBackgroundPanel').classList.toggle('open',enabled);
     document.getElementById('backgroundStyleRow').classList.toggle('setting-locked',enabled);
@@ -1049,6 +1303,9 @@
     document.getElementById('customBackgroundImage').style.objectPosition='center '+(position==='top'?'top':position==='bottom'?'bottom':'center');
   }
   function resetCustomBackgroundDefaults(){
+    document.getElementById('custom_background_review_enabled').checked=false;
+    document.getElementById('custom_background_review_intensity').value=20;
+    document.getElementById('custom_background_review_blur').value=8;
     document.getElementById('custom_background_blur').value=0;
     document.getElementById('custom_background_overlay').value=0;
     setSelect('custom_background_position','center');
@@ -1095,6 +1352,7 @@
     var image=document.getElementById('customBackgroundImage');
     preview.classList.toggle('has-image',!!data.hasImage);
     image.src=data.preview||'';
+    syncReviewBackgroundControls();
     document.getElementById('removeBackgroundButton').disabled=!data.hasImage;
     document.getElementById('customBackgroundQualityWarning').classList.toggle('visible',!!data.hasImage&&!!data.qualityWarning);
   };
@@ -1109,6 +1367,27 @@
     it.addEventListener('click', function(){ gotoPage(it.dataset.page); });
   });
   document.getElementById('brandBlock').addEventListener('click', function(){ gotoPage('about'); });
+  (function(){
+    var clicks = 0, last = 0;
+    var versions = ['aboutVersion', 'brandVer'].map(id=>document.getElementById(id));
+    window.developerConsoleStatus = function(message, unlocked){
+      var status = document.getElementById('developerStatus');
+      status.hidden = false; status.textContent = message;
+      if(unlocked) document.getElementById('developerOpen').hidden = false;
+    };
+    function openDeveloper(){
+      window.developerConsoleStatus((window._developerLabels || {}).opening || 'Opening developer console...', false);
+      bridge('developerUnlock');
+    }
+    versions.forEach(function(version){version.style.userSelect = 'none'; version.addEventListener('click', function(){
+      var now = Date.now();
+      clicks = now - last > 3000 ? 1 : clicks + 1;
+      last = now;
+      if(clicks >= 3) window.developerConsoleStatus(clicks + ' / 7', false);
+      if(clicks === 7){clicks = 0; openDeveloper();}
+    });});
+    document.getElementById('developerOpen').addEventListener('click', openDeveloper);
+  })();
   // tell Python we're ready (Python also injects on loadFinished as a backup)
   document.addEventListener('DOMContentLoaded', function(){ enhanceSelects(); bridge('ready'); });
 </script>
@@ -1144,7 +1423,7 @@
             var preCss = 'display:none;max-height:140px;overflow:auto;white-space:pre-wrap;word-break:break-word;'
                 + 'font-size:11px;border-radius:6px;padding:8px;margin:0 0 8px 0;'
                 + (dark ? 'background:#404040;border:1px solid #555;' : 'background:#f5f5f5;border:1px solid #ccc;');
-            b.innerHTML = '<div style="font-weight:700;color:#dc3545;margin-bottom:4px;">'+tr('SynapsePro error')+'</div>'
+            b.innerHTML = '<div style="font-weight:700;color:#dc3545;margin-bottom:4px;">'+tr('Synapse error')+'</div>'
                 + '<div class="sp-eb-msg" style="margin-bottom:6px;word-break:break-word;"></div>'
                 + '<pre class="sp-eb-pre" style="' + preCss + '"></pre>'
                 + '<div><button type="button" data-spact="details" style="' + btnCss + '">'+tr('Show details')+'</button>'

@@ -22,13 +22,13 @@
       --hover-bg:    #efefef;
       --border:      rgba(0,0,0,0.08);
       --font:        -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-      --accent:      #0071D3;
+      --accent:      var(--synapse-primary, #0071D3);
       --done-text:   #9b9a97;
-      --tag-bg:      #e8f0fe;
-      --tag-text:    #1a56db;
+      --tag-bg:      color-mix(in srgb, var(--accent) 14%, var(--card-bg));
+      --tag-text:    var(--accent);
       --danger:      #e03e3e;
       --check-border:#c0c0bc;
-      --check-done:  #0071D3;
+      --check-done:  var(--accent);
       --input-bg:    #f7f7f5;
       --card-bg:     #ffffff;
       --card-shadow: 0 1px 3px rgba(0,0,0,0.06);
@@ -36,22 +36,22 @@
     /* (OS-based prefers-color-scheme fallback removed — the theme is driven
        solely by Anki via the nightMode class, see body.nightMode below.) */
     body.nightMode {
-      --bg:         #191919;
+      --bg:         #2c2c2c;
       --header-bg:  #252525;
-      --sidebar-bg: #202020;
-      --text:       #ececec;
-      --text-gray:  #888;
-      --hover-bg:   #2c2c2c;
+      --sidebar-bg: #252525;
+      --text:       #ffffff;
+      --text-gray:  #b0b0b0;
+      --hover-bg:   #414141;
       --border:     rgba(255,255,255,0.09);
-      --accent:     #4a9eff;
-      --done-text:  #666;
-      --tag-bg:     #1e3050;
-      --tag-text:   #6ea8fe;
+      --accent:     var(--synapse-primary, #4a9eff);
+      --done-text:  #7e7e7e;
+      --tag-bg:     color-mix(in srgb, var(--accent) 14%, var(--card-bg));
+      --tag-text:   var(--accent);
       --danger:     #e05a5a;
-      --check-border:#555;
-      --check-done: #4a9eff;
-      --input-bg:   #252525;
-      --card-bg:    #222222;
+      --check-border:#7e7e7e;
+      --check-done: var(--accent);
+      --input-bg:   #414141;
+      --card-bg:    #252525;
       --card-shadow:0 1px 3px rgba(0,0,0,0.3);
     }
 
@@ -179,6 +179,7 @@
     /* ── List area ──────────────────────────── */
     #todo-list-wrap {
       flex: 1;
+      min-height: 0;
       overflow-y: auto;
       padding: 10px 16px 20px;
     }
@@ -234,6 +235,8 @@
 
     /* Custom checkbox */
     .todo-check {
+      padding: 0;
+      background: transparent;
       width: 18px;
       height: 18px;
       border: 2px solid var(--check-border);
@@ -284,7 +287,8 @@
       transition: opacity 0.15s;
       flex-shrink: 0;
     }
-    .todo-item:hover .todo-actions { opacity: 1; }
+    .todo-item:hover .todo-actions, .todo-item:focus-within .todo-actions { opacity: 1; }
+    button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
     .action-btn {
       width: 24px;
       height: 24px;
@@ -319,8 +323,8 @@
 
     /* ── Status bar ─────────────────────────── */
     #status-bar {
-      position: fixed;
-      bottom: 12px;
+      position: absolute;
+      bottom: calc(100% + 8px);
       left: 50%;
       transform: translateX(-50%);
       background: #333;
@@ -360,6 +364,33 @@
       text-align: right;
     }
   </style>
+<style>
+#task-footer{position:relative;flex-shrink:0;border-top:1px solid var(--border);background:var(--header-bg);}
+.task-options{margin:0;padding:12px 16px;font-size:12px;color:var(--text);max-height:35vh;overflow:auto;}
+.task-options summary{cursor:pointer;font-weight:500;}
+#tag-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;}
+#tag-input,#new-repeat{box-sizing:border-box;width:100%;min-width:0;height:32px;margin:0;padding:5px 9px;font-size:12px;line-height:20px;}
+#new-repeat{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border:1px solid var(--border);background:var(--input-bg);color:var(--text);border-radius:6px;}
+#new-repeat:hover{border-color:var(--accent);}
+#tag-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;padding:2px;max-height:100px;overflow-y:auto;}
+#tag-chips:empty{display:none;}
+.tag-chip{max-width:100%;overflow-wrap:anywhere;flex-shrink:0;}
+.task-options label{display:flex;gap:6px;align-items:flex-start;margin-top:10px;}.task-options p{line-height:1.5;}
+#repeat-dialog{margin:auto;box-sizing:border-box;width:350px;max-width:calc(100vw - 24px);border:1px solid var(--border);border-radius:10px;padding:20px;color:var(--text);background:var(--bg);}
+#repeat-dialog h3{margin:0 0 12px;font-size:17px;}
+#repeat-dialog select{width:100%;padding:8px;font:inherit;color:inherit;background:var(--bg);border:1px solid var(--border);border-radius:6px;}
+#repeat-days{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;}#repeat-days label{display:flex;align-items:center;gap:4px;font-size:12px;}
+.repeat-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:16px;}.repeat-actions button{padding:6px 12px;border:1px solid var(--border);border-radius:6px;color:inherit;background:var(--bg);box-shadow:none;cursor:pointer;}
+#repeat-note{margin-top:12px;font-size:12px;line-height:1.5;}.repeat-badge{color:var(--accent);font-size:11px;}.repeat-edit{font-size:18px;}
+</style>
+<style id="synapse-keyboard-focus">
+body button:focus-visible, body input:focus-visible, body select:focus-visible,
+body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-visible {
+  outline: 2px solid var(--accent, var(--primary-color, #0071d3));
+  outline-offset: 2px;
+}
+</style>
+<script src="task_schedule.js"></script>
 </head>
 <body>
 
@@ -383,10 +414,15 @@
     <input id="tag-input" type="text" placeholder="Tag (optional)" autocomplete="off"
            data-i18n-placeholder="tag_placeholder"
            onkeydown="if(event.key==='Enter') addTodo()">
-    <div id="tag-chips"></div>
+    <button class="filter-btn" id="new-repeat" onclick="editRepeat(null)" data-i18n="repeat_title">Repeat task</button>
   </div>
+  <div id="tag-chips"></div>
 </div>
 
+
+<dialog id="repeat-dialog"><h3 data-i18n="repeat_title">Repeat task</h3><select id="repeat-mode" onchange="showRepeatDays()">
+<option value="none" data-i18n="repeat_none">No repeat</option><option value="daily" data-i18n="repeat_daily">Daily</option><option value="weekly" data-i18n="repeat_weekly">Weekly</option><option value="weekdays" data-i18n="repeat_days">Selected weekdays</option></select>
+<div id="repeat-days"></div><p id="repeat-note"></p><div class="repeat-actions"><button onclick="document.getElementById('repeat-dialog').close()" data-i18n="cancel">Cancel</button><button onclick="applyRepeat()" data-i18n="save_repeat">Save</button></div></dialog>
 <!-- progress -->
 <div id="progress-wrap">
   <div id="progress-bar-bg"><div id="progress-bar-fill"></div></div>
@@ -396,7 +432,7 @@
 <!-- list -->
 <div id="todo-list-wrap">
   <div id="section-open">
-    <div class="section-label" onclick="toggleSection('open')">
+    <div class="section-label" role="button" tabindex="0" aria-expanded="true" onclick="toggleSection('open')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();event.stopPropagation();this.click();}">
       <span class="section-toggle-icon">▾</span>
       <span data-i18n="section_open">Open</span>
       <span class="count-badge" id="open-count">0</span>
@@ -404,7 +440,7 @@
     <div id="open-list"></div>
   </div>
   <div id="section-done">
-    <div class="section-label" onclick="toggleSection('done')">
+    <div class="section-label" role="button" tabindex="0" aria-expanded="true" onclick="toggleSection('done')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();event.stopPropagation();this.click();}">
       <span class="section-toggle-icon">▾</span>
       <span data-i18n="section_done">Done</span>
       <span class="count-badge" id="done-count">0</span>
@@ -420,12 +456,53 @@
   </div>
 </div>
 
+<footer id="task-footer">
+<details class="task-options"><summary data-i18n="task_options">Task settings</summary>
+<label><input id="auto-cleanup" type="checkbox" onchange="setCleanup(this.checked)"> <span data-i18n="auto_cleanup">Remove completed one-time tasks on the next day</span></label>
+<p data-i18n="cleanup_note">Off by default. Recurring tasks and old tasks without a completion date are kept.</p></details>
 <div id="status-bar" data-i18n="saved">Saved</div>
+</footer>
 
 <script>
 // ── State ─────────────────────────────────────────
 let todos  = [];   // [{id, text, done, tag, createdAt}]
 let filter = "all";
+let autoCleanup = !!window.__SYNAPSE_TODO_AUTO_CLEANUP__;
+let draftRepeat = {repeat:'none'};
+let repeatTarget = null;
+const trTask = (key,fallback) => window.__SYNAPSE_I18N__?.[key] || fallback;
+function recurrenceLabel(t) {
+  if(!['daily','weekly','weekdays'].includes(t.repeat))return '';
+  let text=trTask('repeat_'+(t.repeat==='weekdays'?'days':t.repeat),{daily:'Daily',weekly:'Weekly',weekdays:'Selected weekdays'}[t.repeat]);
+  if(t.repeat==='weekdays')text+=': '+(t.repeat_days||[]).map(d=>new Intl.DateTimeFormat(undefined,{weekday:'short'}).format(new Date(2024,0,7+d))).join(', ');
+  if(t.due_on && t.due_on>TaskSchedule.today())text+=' · '+t.due_on;
+  return text;
+}
+function editRepeat(id) {
+  repeatTarget=id;
+  const t=id===null?draftRepeat:todos.find(t=>t.id===id);
+  if(!t)return;
+  document.getElementById('repeat-mode').value=t.repeat||'none';
+  document.getElementById('repeat-days').innerHTML=Array.from({length:7},(_,i)=>{const day=(i+1)%7;const name=new Intl.DateTimeFormat(undefined,{weekday:'short'}).format(new Date(2024,0,7+day));return `<label><input type="checkbox" value="${day}" ${(t.repeat_days||[new Date().getDay()]).includes(day)?'checked':''}>${esc(name)}</label>`;}).join('');
+  showRepeatDays();document.getElementById('repeat-dialog').showModal();
+}
+function showRepeatDays(){document.getElementById('repeat-days').style.display=document.getElementById('repeat-mode').value==='weekdays'?'flex':'none';document.getElementById('repeat-note').textContent=trTask('repeat_note','Weekly tasks repeat on the weekday you configure them. Missed tasks remain open without extra copies.');}
+function applyRepeat(){
+  const mode=document.getElementById('repeat-mode').value;
+  const days=[...document.querySelectorAll('#repeat-days input:checked')].map(e=>Number(e.value));
+  if(mode==='weekdays'&&!days.length){document.getElementById('repeat-note').textContent=trTask('choose_day','Choose at least one weekday.');return;}
+  const target=repeatTarget===null?draftRepeat:todos.find(t=>t.id===repeatTarget);if(!target)return;
+  target.repeat=mode;target.repeat_days=days;if(target.done&&!target.completed_on&&mode!=='none')target.completed_on=TaskSchedule.today();target.repeat_anchor=TaskSchedule.today();
+  const yesterday=new Date();yesterday.setDate(yesterday.getDate()-1);
+  target.due_on=mode==='none'?TaskSchedule.today():TaskSchedule.next(target,yesterday);
+  if(repeatTarget!==null){render();save();}else document.getElementById('new-repeat').textContent=recurrenceLabel(target)||trTask('repeat_title','Repeat task');
+  document.getElementById('repeat-dialog').close();
+}
+function setCleanup(enabled){autoCleanup=enabled;pycmd('notion_mini:todo:cleanup:'+(enabled?'1':'0'));save();syncTags();render();}
+function maintainTasks(){const normalized=TaskSchedule.normalize(todos,autoCleanup);if(JSON.stringify(normalized)!==JSON.stringify(todos)){todos=normalized;syncTags();render();save();}}
+setInterval(maintainTasks,60000);
+window.addEventListener('focus',maintainTasks);
+
 let allTags = [];  // distinct tag strings
 let sectionOpen = { open: true, done: true };
 
@@ -436,11 +513,12 @@ function now() {
   return new Date().toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
 }
 
+document.getElementById("auto-cleanup").checked=autoCleanup;
 // ── Load / Save ───────────────────────────────────
 window.loadTodos = function(jsonStr) {
   try {
     const parsed = JSON.parse(jsonStr);
-    todos = Array.isArray(parsed) ? parsed : [];
+    todos = Array.isArray(parsed) ? TaskSchedule.normalize(parsed,autoCleanup) : [];
   } catch(e) {
     todos = [];
   }
@@ -449,12 +527,14 @@ window.loadTodos = function(jsonStr) {
 };
 
 function save() {
+  const normalized=TaskSchedule.normalize(todos,autoCleanup);
+  if(JSON.stringify(normalized)!==JSON.stringify(todos)){todos=normalized;syncTags();render();}
   const json = JSON.stringify(todos);
   pycmd('notion_mini:todo:save:' + json);
 }
 
-window.__synapseSnapshotForUnload = function() { return JSON.stringify(todos); };
-window.__synapseSnapshotForVerification = function() { return JSON.stringify(todos); };
+window.__synapseSnapshotForUnload = function() { return JSON.stringify(TaskSchedule.normalize(todos,autoCleanup)); };
+window.__synapseSnapshotForVerification = function() { return JSON.stringify(TaskSchedule.normalize(todos,autoCleanup)); };
 window.onTodoSaved = function() { showStatus(window.__SYNAPSE_I18N__?.saved || 'Saved'); };
 window.onTodoSaveFailed = function() { showStatus(window.__SYNAPSE_I18N__?.save_failed || 'Save failed — your changes are still open.'); };
 
@@ -465,7 +545,8 @@ function addTodo() {
   const text   = input.value.trim();
   if (!text) return;
   const tag    = tagIn.value.trim();
-  todos.unshift({ id: uid(), text, done: false, tag, createdAt: now() });
+  todos.unshift({ id: uid(), text, done: false, tag, createdAt: now(), ...draftRepeat });
+  draftRepeat={repeat:"none"};document.getElementById("new-repeat").textContent=trTask("repeat_title","Repeat task");
   input.value = '';
   tagIn.value = '';
   syncTags();
@@ -474,9 +555,45 @@ function addTodo() {
   input.focus();
 }
 
+function editTodo(id) {
+  const item = todos.find(t => t.id === id);
+  if (!item) return;
+  const text = prompt(window.__SYNAPSE_I18N__?.edit || 'Edit', item.text);
+  if (text === null || !text.trim()) return;
+  const tag = prompt(window.__SYNAPSE_I18N__?.tag_placeholder || 'Tag (optional)', item.tag || '');
+  if (tag === null) return;
+  if (item.text === text.trim() && (item.tag || '') === tag.trim()) return;
+  const previousTag = item.tag;
+  item.text = text.trim();
+  item.tag = tag.trim();
+  // Keep the edited task visible when editing from its old tag filter.
+  if (selectedTagFilter === previousTag) selectedTagFilter = item.tag || null;
+  syncTags();
+  render();
+  save();
+}
+
+window.completeDashboardTasks = function(ids) {
+  const wanted = new Set(ids.map(String));
+  let changed = false;
+  todos.forEach(item => {
+    if (wanted.has(String(item.id)) && !item.done) { item.done = true; item.completed_on=TaskSchedule.today(); changed = true; }
+  });
+  if (changed) { render(); save(); }
+};
+
 function toggleDone(id) {
   const item = todos.find(t => t.id === id);
-  if (item) { item.done = !item.done; render(); save(); }
+  if (item) {
+    const keyboardFocus = document.activeElement?.classList.contains('todo-check');
+    item.done = !item.done;
+    if(item.done)item.completed_on=TaskSchedule.today();else{delete item.completed_on;item.due_on=TaskSchedule.today();}
+    render(); save();
+    if (keyboardFocus) {
+      const button = document.getElementById('item-' + id)?.querySelector('.todo-check');
+      (button || document.querySelector('.todo-check') || document.getElementById('new-todo-input')).focus();
+    }
+  }
 }
 
 function deleteTodo(id) {
@@ -499,6 +616,15 @@ function renderTagChips() {
   wrap.innerHTML = '';
   allTags.forEach(tag => {
     const chip = document.createElement('span');
+    chip.tabIndex = 0;
+    chip.setAttribute('role', 'button');
+    chip.setAttribute('aria-pressed', selectedTagFilter === tag ? 'true' : 'false');
+    chip.onkeydown = event => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault(); event.stopPropagation(); chip.click();
+        [...wrap.children].find(el => el.textContent === chip.textContent)?.focus();
+      }
+    };
     chip.className = 'tag-chip' + (selectedTagFilter === tag ? ' selected' : '');
     chip.appendChild(document.createTextNode(tag));
     const closeGlyph = document.createElement('span');
@@ -536,6 +662,7 @@ function toggleSection(which) {
   sectionOpen[which] = !sectionOpen[which];
   const label = document.querySelector(`#section-${which} .section-label`);
   label.classList.toggle('collapsed', !sectionOpen[which]);
+  label.setAttribute('aria-expanded', String(sectionOpen[which]));
   const list  = document.getElementById(`${which}-list`);
   list.style.display = sectionOpen[which] ? '' : 'none';
 }
@@ -580,16 +707,22 @@ function itemHTML(t) {
     : '';
   return `
   <div class="todo-item${doneClass}" id="item-${t.id}">
-    <div class="todo-check" onclick="toggleDone('${t.id}')">
+    <button type="button" class="todo-check" role="checkbox" aria-checked="${t.done ? 'true' : 'false'}" aria-label="${esc(t.text)}" onclick="toggleDone('${t.id}')">
       <svg viewBox="0 0 12 10" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <polyline points="1 5 4.5 9 11 1"/>
       </svg>
-    </div>
+    </button>
     <div class="todo-body">
       <div class="todo-text">${esc(t.text)}</div>
-      <div class="todo-meta">${tagHtml}${dateHtml}</div>
+      <div class="todo-meta">${tagHtml}${dateHtml}${recurrenceLabel(t)?`<span class="repeat-badge">↻ ${esc(recurrenceLabel(t))}</span>`:""}</div>
     </div>
     <div class="todo-actions">
+      <button class="action-btn repeat-edit" title="${esc(trTask('repeat_title','Repeat task'))}" aria-label="${esc(trTask('repeat_title','Repeat task'))}" onclick="editRepeat('${t.id}')">↻</button>
+      <button class="action-btn" title="${esc(window.__SYNAPSE_I18N__?.edit || 'Edit')}" aria-label="${esc(window.__SYNAPSE_I18N__?.edit || 'Edit')}" onclick="editTodo('${t.id}')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m16 3 5 5-13 13H3v-5Z M14 5l5 5"/>
+        </svg>
+      </button>
       <button class="action-btn del" title="${esc(window.__SYNAPSE_I18N__?.delete || 'Delete')}" aria-label="${esc(window.__SYNAPSE_I18N__?.delete || 'Delete')}" onclick="deleteTodo('${t.id}')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="3 6 5 6 21 6"/>
@@ -684,7 +817,7 @@ if (window.__SYNAPSE_TODO_PRELOAD__ !== undefined) {
                 + 'font-size:11px;border-radius:6px;padding:8px;margin:0 0 8px 0;'
                 + (dark ? 'background:#404040;border:1px solid #555;' : 'background:#f5f5f5;border:1px solid #ccc;');
             var t = window.__SYNAPSE_I18N__ || {};
-            b.innerHTML = '<div style="font-weight:700;color:#dc3545;margin-bottom:4px;">' + (t.error_title || 'SynapsePro error') + '</div>'
+            b.innerHTML = '<div style="font-weight:700;color:#dc3545;margin-bottom:4px;">' + (t.error_title || 'Synapse error') + '</div>'
                 + '<div class="sp-eb-msg" style="margin-bottom:6px;word-break:break-word;"></div>'
                 + '<pre class="sp-eb-pre" style="' + preCss + '"></pre>'
                 + '<div><button type="button" data-spact="details" style="' + btnCss + '">' + (t.error_show || 'Show details') + '</button>'

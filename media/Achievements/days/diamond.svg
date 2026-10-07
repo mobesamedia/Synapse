@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Ebene_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 120 120">
+  <!-- Generator: Adobe Illustrator 30.8.1, SVG Export Plug-In . SVG Version: 2.1.4 Build 1)  -->
+  <defs>
+    <style>
+      .st0 {
+        fill: #effeff;
+        opacity: .4;
+      }
+
+      .st0, .st1, .st2, .st3 {
+        isolation: isolate;
+      }
+
+      .st4 {
+        fill: none;
+        stroke: #e6fcff;
+        stroke-opacity: .55;
+      }
+
+      .st5 {
+        fill: url(#Unbenannter_Verlauf);
+      }
+
+      .st1, .st6 {
+        fill: #f0f0f0;
+      }
+
+      .st7 {
+        fill: #359dca;
+      }
+
+      .st2 {
+        fill: #d6faff;
+      }
+
+      .st2, .st3 {
+        opacity: .65;
+      }
+
+      .st3 {
+        fill: #65bfe8;
+      }
+
+      .st8 {
+        fill: url(#Unbenannter_Verlauf1);
+      }
+
+      .st9 {
+        stroke: #359dca;
+        stroke-linecap: round;
+        stroke-width: 7px;
+      }
+    </style>
+    <linearGradient id="Unbenannter_Verlauf" data-name="Unbenannter Verlauf" x1="-356.63" y1="356.19" x2="-355.93" y2="355.19" gradientTransform="translate(39245 39178.3131) scale(110 -110)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#e6fcff"/>
+      <stop offset=".48" stop-color="#70d1f1"/>
+      <stop offset="1" stop-color="#359dca"/>
+    </linearGradient>
+    <linearGradient id="Unbenannter_Verlauf1" data-name="Unbenannter Verlauf" x1="29" y1="44" x2="91" y2="44" gradientTransform="matrix(1,0,0,1,0,0)" xlink:href="#Unbenannter_Verlauf"/>
+  </defs>
+  <g id="rim">
+    <circle class="st5" cx="60" cy="60" r="55"/>
+    <circle class="st4" cx="60" cy="60" r="53.5"/>
+  </g>
+  <g id="diamond-facets">
+    <path class="st2" d="M60.15,5.15l27.5,7.37-5.5,9.52-22-5.89V5.15Z"/>
+    <path class="st0" d="M60.15,5.15l27.5,7.37-27.5,3.63V5.15Z"/>
+    <path class="st3" d="M87.65,12.52l20.13,20.13-9.52,5.49-16.11-16.1,5.5-9.53Z"/>
+    <path class="st0" d="M87.65,12.52l20.13,20.13-25.63-10.61,5.5-9.53Z"/>
+    <path class="st2" d="M107.78,32.65l7.37,27.5h-10.99s-5.9-22-5.9-22l9.53-5.5Z"/>
+    <path class="st0" d="M107.78,32.65l7.37,27.5-16.89-22,9.53-5.5Z"/>
+    <path class="st3" d="M115.15,60.15l-7.37,27.5-9.52-5.5,5.89-22h11Z"/>
+    <path class="st0" d="M115.15,60.15l-7.37,27.5-3.63-27.5h11Z"/>
+    <path class="st2" d="M107.78,87.65l-20.13,20.13-5.49-9.52,16.1-16.11,9.53,5.5Z"/>
+    <path class="st0" d="M107.78,87.65l-20.13,20.13,10.61-25.63,9.53,5.5Z"/>
+    <path class="st3" d="M87.65,107.78l-27.5,7.37v-10.99s22-5.9,22-5.9l5.5,9.53Z"/>
+    <path class="st0" d="M87.65,107.78l-27.5,7.37,22-16.89,5.5,9.53Z"/>
+    <path class="st2" d="M60.15,115.15l-27.5-7.37,5.5-9.52,22,5.89v11Z"/>
+    <path class="st0" d="M60.15,115.15l-27.5-7.37,27.5-3.63v11Z"/>
+    <path class="st3" d="M32.65,107.78l-20.13-20.13,9.52-5.49,16.11,16.1-5.5,9.53Z"/>
+    <path class="st0" d="M32.65,107.78l-20.13-20.13,25.63,10.61-5.5,9.53Z"/>
+    <path class="st2" d="M12.52,87.65l-7.37-27.5h10.99s5.9,22,5.9,22l-9.53,5.5Z"/>
+    <path class="st0" d="M12.52,87.65l-7.37-27.5,16.89,22-9.53,5.5Z"/>
+    <path class="st3" d="M5.15,60.15l7.37-27.5,9.52,5.5-5.89,22H5.15Z"/>
+    <path class="st0" d="M5.15,60.15l7.37-27.5,3.63,27.5H5.15Z"/>
+    <path class="st2" d="M12.52,32.65l20.13-20.13,5.49,9.52-16.1,16.11-9.53-5.5Z"/>
+    <path class="st0" d="M12.52,32.65l20.13-20.13-10.61,25.63-9.53-5.5Z"/>
+    <path class="st3" d="M32.65,12.52l27.5-7.37v10.99s-22,5.9-22,5.9l-5.5-9.53Z"/>
+    <path class="st0" d="M32.65,12.52l27.5-7.37-22,16.89-5.5-9.53Z"/>
+  </g>
+  <g id="center">
+    <circle class="st7" cx="60" cy="60" r="44.5"/>
+    <circle class="st6" cx="60" cy="60" r="43"/>
+  </g>
+  <g id="icon">
+    <rect class="st7" x="29" y="36" width="62" height="53" rx="7" ry="7"/>
+    <path class="st8" d="M36,36h48c3.87,0,7,3.13,7,7v9H29v-9c0-3.87,3.13-7,7-7Z"/>
+    <path class="st9" d="M43,29v15M77,29v15"/>
+    <g>
+      <rect class="st1" x="40" y="60" width="9" height="9" rx="1.5" ry="1.5"/>
+      <rect class="st1" x="56" y="60" width="9" height="9" rx="1.5" ry="1.5"/>
+      <rect class="st1" x="72" y="60" width="9" height="9" rx="1.5" ry="1.5"/>
+      <rect class="st1" x="40" y="75" width="9" height="9" rx="1.5" ry="1.5"/>
+      <rect class="st1" x="56" y="75" width="9" height="9" rx="1.5" ry="1.5"/>
+    </g>
+  </g>
+</svg>

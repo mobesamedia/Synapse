@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SynapsePro Onboarding</title>
+<title>Synapse Onboarding</title>
 <style>
 /* ── Reset ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -489,27 +489,27 @@ h2.screen-title {
 /* Anki night mode. Screenshots keep their original colours, while every
    interactive surface and text colour receives a dark counterpart. */
 html.dark { color-scheme: dark; }
-html.dark body, html.dark .dialog { background: #1f2329; color: #f3f4f6; }
-html.dark .right-panel { background: #1f2329; }
+html.dark body, html.dark .dialog { background: #2c2c2c; color: #ffffff; }
+html.dark .right-panel { background: #2c2c2c; }
 html.dark h1.brand, html.dark h2.screen-title, html.dark .support-content h2,
 html.dark .support-p strong, html.dark .tos-modal-header h3,
-html.dark .tos-modal-body h4 { color: #f3f4f6; }
+html.dark .tos-modal-body h4 { color: #ffffff; }
 html.dark .welcome-eyebrow, html.dark .welcome-tagline, html.dark .tip-text,
 html.dark .support-p, html.dark .tos-row label, html.dark .tos-modal-body p,
-html.dark .tos-modal-body ul li { color: #cbd5e1; }
+html.dark .tos-modal-body ul li { color: #b0b0b0; }
 html.dark .screen-subtitle, html.dark .progress-label,
-html.dark .loading-label, html.dark .tos-last-updated { color: #94a3b8; }
-html.dark .progress-track, html.dark .loading-track { background: #374151; }
-html.dark .opt { background: #282e38; border-color: #4b5563; color: #e5e7eb; }
-html.dark .opt:hover { background: #243349; border-color: #60a5fa; }
-html.dark .opt.selected { background: #1e3a5f; border-color: #60a5fa; color: #bfdbfe; }
-html.dark .theme-card { background: #282e38; box-shadow: 0 4px 12px rgba(0,0,0,.35); }
+html.dark .loading-label, html.dark .tos-last-updated { color: #b0b0b0; }
+html.dark .progress-track, html.dark .loading-track { background: #414141; }
+html.dark .opt { background: #252525; border-color: #414141; color: #ffffff; }
+html.dark .opt:hover { background: #414141; border-color: #60a5fa; }
+html.dark .opt.selected { background: #414141; border-color: #60a5fa; color: #ffffff; }
+html.dark .theme-card { background: #252525; box-shadow: 0 4px 12px rgba(0,0,0,.35); }
 html.dark .theme-card.selected { border-color: #60a5fa; }
-html.dark .tos-row, html.dark .support-text-box { background: #282e38; border-color: #4b5563; }
-html.dark .tos-modal { background: #242a33; box-shadow: 0 24px 64px rgba(0,0,0,.55); }
-html.dark .tos-modal-header { border-color: #3b4350; }
-html.dark .tos-close { background: #343c48; color: #cbd5e1; }
-html.dark .tos-close:hover { background: #46505f; color: #fff; }
+html.dark .tos-row, html.dark .support-text-box { background: #252525; border-color: #414141; }
+html.dark .tos-modal { background: #2c2c2c; box-shadow: 0 24px 64px rgba(0,0,0,.55); }
+html.dark .tos-modal-header { border-color: #414141; }
+html.dark .tos-close { background: #414141; color: #b0b0b0; }
+html.dark .tos-close:hover { background: #505050; color: #fff; }
 html.dark .tos-row a { color: #93c5fd; }
 </style>
 <script>
@@ -532,7 +532,7 @@ html.dark .tos-row a { color: #93c5fd; }
     </div>
     <div class="right-panel" style="justify-content:flex-start; padding-top: 80px;">
       <p class="welcome-eyebrow" data-i18n="welcomeTo">Welcome to</p>
-      <h1 class="brand">SynapsePro</h1>
+      <h1 class="brand">Synapse</h1>
       <p class="welcome-tagline" data-i18n="welcomeSub">Ready to boost your Anki Experience?</p>
       
       <div class="tos-row">
@@ -569,6 +569,7 @@ html.dark .tos-row a { color: #93c5fd; }
         <button class="opt" data-lang="hi"  onclick="selectLang(this)">हिन्दी</button>
         <button class="opt" data-lang="ko"  onclick="selectLang(this)">한국어</button>
         <button class="opt" data-lang="zh"  onclick="selectLang(this)">中文</button>
+        <button class="opt" data-lang="pl"  onclick="selectLang(this)">Polski</button>
       </div>
     </div>
     <div class="bottom-row">
@@ -617,7 +618,7 @@ html.dark .tos-row a { color: #93c5fd; }
         <div class="progress-track"><div class="progress-fill" style="width:50%"></div></div>
         <div class="progress-label">3 / 6</div>
       </div>
-      <h2 class="screen-title" data-i18n="whereDidYouFind">Where did you find out about SynapsePro?</h2>
+      <h2 class="screen-title" data-i18n="whereDidYouFind">Where did you find out about Synapse?</h2>
       <div class="option-grid cols-3" >
         <button class="opt" data-group="source" data-value="ankiStore"   onclick="selectOpt(this)" data-i18n="ankiStore">Anki Add-On Store</button>
         <button class="opt" data-group="source" data-value="friends"     onclick="selectOpt(this)" data-i18n="friends">Friends</button>
@@ -684,7 +685,7 @@ html.dark .tos-row a { color: #93c5fd; }
       <div class="tip-body">
         <h2 class="screen-title" style="text-align:center;" data-i18n="settingsTipTitle">Find Your Settings</h2>
         <p class="tip-text" data-i18n="settingsTipText">
-          You can find all settings by clicking on the <strong>SynapsePro logo</strong> in the top-left corner of the Anki interface.
+          You can find all settings by clicking on the <strong>Synapse logo</strong> in the top-left corner of the Anki interface.
         </p>
         
         <img src="img_settings_tip.png" class="tip-img" alt="">
@@ -724,7 +725,7 @@ html.dark .tos-row a { color: #93c5fd; }
 
         <!-- Loading bar -->
         <div class="loading-wrap">
-          <div class="loading-label" id="loading-label" data-i18n="preparingAddon">Preparing your SynapsePro...</div>
+          <div class="loading-label" id="loading-label" data-i18n="preparingAddon">Preparing your Synapse...</div>
           <div class="loading-track">
             <div class="loading-fill" id="loading-fill"></div>
           </div>
@@ -751,30 +752,30 @@ html.dark .tos-row a { color: #93c5fd; }
       <span class="tos-last-updated" id="tos-updated">Last updated: July 2026</span>
 
       <h4>1. Acceptance of Terms</h4>
-      <p>By installing and using SynapsePro ("the Add-On"), you agree to these Terms of Service. If you do not agree, please uninstall the Add-On.</p>
+      <p>By installing and using Synapse ("the Add-On"), you agree to these Terms of Service. If you do not agree, please uninstall the Add-On.</p>
 
       <h4>2. Software Provided "As Is"</h4>
-      <p>SynapsePro is a free, independently developed add-on provided without any warranty of any kind — express or implied. The developer makes no guarantees regarding functionality, reliability, accuracy, or fitness for a particular purpose.</p>
+      <p>Synapse is a free, independently developed add-on provided without any warranty of any kind — express or implied. The developer makes no guarantees regarding functionality, reliability, accuracy, or fitness for a particular purpose.</p>
       <p>The developer is not liable for any data loss, errors, bugs, crashes, interruptions, or any other damages that may arise from using this software. <strong>You use it at your own risk.</strong></p>
 
       <h4>3. Information Collected During Setup</h4>
-      <p>During the initial setup, SynapsePro asks you a few short questions and collects the information listed below. <strong>Answering these questions is required in order to use SynapsePro.</strong> The Add-On needs your answers to configure and personalize itself for you — for example, if you select "Medical Student", SynapsePro will show you medicine-related daily facts and content tailored to that category.</p>
+      <p>During the initial setup, Synapse asks you a few short questions and collects the information listed below. <strong>Answering these questions is required in order to use Synapse.</strong> The Add-On needs your answers to configure and personalize itself for you — for example, if you select "Medical Student", Synapse will show you medicine-related daily facts and content tailored to that category.</p>
       <ul>
         <li>Selected interface language</li>
         <li>User category (e.g. Medical Student, Programmer)</li>
-        <li>How you found out about SynapsePro</li>
+        <li>How you found out about Synapse</li>
         <li>Selected color theme</li>
         <li>Add-On and Anki version numbers</li>
       </ul>
-      <p>This information is also transmitted to the developer and stored in a database hosted by Supabase, the developer's hosting provider, which processes the data solely on the developer's behalf. The developer needs it to set up and maintain the Add-On, to understand how SynapsePro is actually used, and to continuously improve the project and decide which features to prioritize next.</p>
+      <p>This information is also transmitted to the developer and stored in a database hosted by Supabase, the developer's hosting provider, which processes the data solely on the developer's behalf. The developer needs it to set up and maintain the Add-On, to understand how Synapse is actually used, and to continuously improve the project and decide which features to prioritize next.</p>
       <p>No directly identifying personal data — such as your name, email address, Anki card contents, learning statistics, login credentials, or device identifiers — is collected or linked to your answers.</p>
 
       <h4>4. How Your Data Is Used</h4>
-      <p>Your answers are used for two purposes: (1) to configure and personalize SynapsePro for you, and (2) to help the developer understand which features and languages are most useful and how to prioritize future improvements to the Add-On.</p>
+      <p>Your answers are used for two purposes: (1) to configure and personalize Synapse for you, and (2) to help the developer understand which features and languages are most useful and how to prioritize future improvements to the Add-On.</p>
       <p><strong>Your data is never sold, shared with, or passed on to any third parties for their own purposes.</strong> It is stored exclusively in the developer's database at Supabase (the hosting provider), which acts only as a technical service provider on the developer's behalf.</p>
 
       <h4>5. No Account Required</h4>
-      <p>SynapsePro does not require you to create an account. No login credentials, email addresses, or personal identifiers are ever collected.</p>
+      <p>Synapse does not require you to create an account. No login credentials, email addresses, or personal identifiers are ever collected.</p>
 
       <h4>6. Open Source &amp; Transparency</h4>
       <p>The Add-On is distributed through the Anki Add-On platform. You are free to inspect its source code at any time. No hidden data collection beyond what is described here takes place.</p>
@@ -793,6 +794,30 @@ html.dark .tos-row a { color: #93c5fd; }
 ═══════════════════════════════════════ -->
 <script>
 const T = {
+  pl: {
+    welcomeTo: "Witaj w", welcomeSub: "Chcesz lepiej korzystać z Anki?",
+    tosText: "Rozumiem i akceptuję", tosLink: "warunki korzystania",
+    getStarted: "Zaczynamy", continue: "Dalej", start: "Start",
+    chooseLanguage: "Wybierz język",
+    whoAreYou: "Kim jesteś?",
+    medicalStudent: "Student medycyny", lawStudent: "Student prawa",
+    highschoolStudent: "Uczeń", programmer: "Programista",
+    languageLearner: "Uczę się języków", other: "Inne",
+    whereDidYouFind: "Skąd znasz Synapse?",
+    ankiStore: "Dodatki Anki", friends: "Znajomi", google: "Google",
+    socialMedia: "Media społecznościowe", chatgptAI: "ChatGPT / AI", reddit: "Reddit",
+    whichTheme: "Wybierz motyw",
+    changeThemeLater: "Możesz go później zmienić w ustawieniach.",
+    settingsTipTitle: "Gdzie są ustawienia?",
+    settingsTipText: "Wszystkie ustawienia znajdziesz, klikając logo Synapse w lewym górnym rogu Anki.",
+    supportTitle: "Wesprzyj mój projekt!",
+    supportText1: "Ten projekt tworzę samodzielnie, aby ulepszać korzystanie z Anki. Mogą zdarzać się błędy i problemy.",
+    supportText2: "Jeśli podoba Ci się dodatek, zostaw kciuk w górę na AnkiWeb. To moja motywacja do dalszego rozwoju i aktualizacji.",
+    thankYou: "Dziękuję!",
+    preparingAddon: "Przygotowanie Synapse...",
+    loadingDone: "✓ Synapse jest gotowy!", close: "Zamknij",
+  },
+
   en: {
     welcomeTo: "Welcome to", welcomeSub: "Ready to boost your Anki Experience?",
     tosText: "I Understand and Agree to the", tosLink: "Terms of Service",
@@ -802,19 +827,19 @@ const T = {
     medicalStudent: "Medical Student", lawStudent: "Law Student",
     highschoolStudent: "High School Student", programmer: "Programmer",
     languageLearner: "Language Learner", other: "Other",
-    whereDidYouFind: "Where did you find out about SynapsePro?",
+    whereDidYouFind: "Where did you find out about Synapse?",
     ankiStore: "Anki Add-On Store", friends: "Friends", google: "Google",
     socialMedia: "Social Media", chatgptAI: "ChatGPT / AI", reddit: "Reddit",
     whichTheme: "Which Theme Do You Choose?",
     changeThemeLater: "You can change it later in the settings.",
     settingsTipTitle: "Find Your Settings",
-    settingsTipText: "You can find all settings by clicking on the SynapsePro logo in the top-left corner of the Anki interface.",
+    settingsTipText: "You can find all settings by clicking on the Synapse logo in the top-left corner of the Anki interface.",
     supportTitle: "Support My Project!",
     supportText1: "Please keep in mind that this project was developed by one person to improve everyone's Anki experience. Bugs and occasional errors may occur.",
     supportText2: "Please support this Project with a thumbs up on AnkiWeb if you like it. This is the only motivation for me to further improve this Add-On and keep updating it.",
     thankYou: "Thank you!",
-    preparingAddon: "Preparing your SynapsePro...",
-    loadingDone: "✓ SynapsePro is ready!", close: "Close",
+    preparingAddon: "Preparing your Synapse...",
+    loadingDone: "✓ Synapse is ready!", close: "Close",
   },
   de: {
     welcomeTo: "Willkommen bei", welcomeSub: "Bereit, deine Anki-Erfahrung zu verbessern?",
@@ -825,19 +850,19 @@ const T = {
     medicalStudent: "Medizinstudent", lawStudent: "Jurastudent",
     highschoolStudent: "Schüler", programmer: "Programmierer",
     languageLearner: "Sprachenlerner", other: "Sonstiges",
-    whereDidYouFind: "Wie hast du SynapsePro gefunden?",
+    whereDidYouFind: "Wie hast du Synapse gefunden?",
     ankiStore: "Anki Add-On Store", friends: "Freunde", google: "Google",
     socialMedia: "Social Media", chatgptAI: "ChatGPT / KI", reddit: "Reddit",
     whichTheme: "Welches Theme möchtest du?",
     changeThemeLater: "Du kannst es später in den Einstellungen ändern.",
     settingsTipTitle: "Einstellungen finden",
-    settingsTipText: "Du findest alle Einstellungen, indem du auf das SynapsePro-Logo oben links in der Anki-Oberfläche klickst.",
+    settingsTipText: "Du findest alle Einstellungen, indem du auf das Synapse-Logo oben links in der Anki-Oberfläche klickst.",
     supportTitle: "Unterstütze mein Projekt!",
     supportText1: "Bitte beachte, dass dieses Projekt allein von mir erstellt wurde, um das Anki-Erlebnis zu verbessern. Es kann Fehler geben.",
     supportText2: "Bitte unterstütze dieses Projekt mit einem Daumen hoch auf AnkiWeb. Das ist meine einzige Motivation, das Add-On weiterzuentwickeln.",
     thankYou: "Danke!",
-    preparingAddon: "SynapsePro wird vorbereitet...",
-    loadingDone: "✓ SynapsePro ist bereit!", close: "Schließen",
+    preparingAddon: "Synapse wird vorbereitet...",
+    loadingDone: "✓ Synapse ist bereit!", close: "Schließen",
   },
   es: {
     welcomeTo: "Bienvenido a", welcomeSub: "¿Listo para mejorar tu experiencia en Anki?",
@@ -848,19 +873,19 @@ const T = {
     medicalStudent: "Estudiante de Medicina", lawStudent: "Estudiante de Derecho",
     highschoolStudent: "Estudiante de Secundaria", programmer: "Programador",
     languageLearner: "Aprendiz de idiomas", other: "Otro",
-    whereDidYouFind: "¿Dónde conociste SynapsePro?",
+    whereDidYouFind: "¿Dónde conociste Synapse?",
     ankiStore: "Tienda Anki Add-On", friends: "Amigos", google: "Google",
     socialMedia: "Redes Sociales", chatgptAI: "ChatGPT / IA", reddit: "Reddit",
     whichTheme: "¿Qué tema eliges?",
     changeThemeLater: "Puedes cambiarlo después en la configuración.",
     settingsTipTitle: "Encuentra los ajustes",
-    settingsTipText: "Puedes encontrar todos los ajustes haciendo clic en el logo de SynapsePro en la esquina superior izquierda de Anki.",
+    settingsTipText: "Puedes encontrar todos los ajustes haciendo clic en el logo de Synapse en la esquina superior izquierda de Anki.",
     supportTitle: "¡Apoya mi proyecto!",
     supportText1: "Ten en cuenta que este proyecto fue creado por mí solo para mejorar la experiencia de Anki. Puede haber errores ocasionales.",
     supportText2: "Por favor, apoya este proyecto con un pulgar arriba en AnkiWeb si te gusta. Esa es mi única motivación para seguir mejorando.",
     thankYou: "¡Gracias!",
-    preparingAddon: "Preparando SynapsePro...",
-    loadingDone: "✓ ¡SynapsePro está listo!", close: "Cerrar",
+    preparingAddon: "Preparando Synapse...",
+    loadingDone: "✓ ¡Synapse está listo!", close: "Cerrar",
   },
   pt: {
     welcomeTo: "Bem-vindo ao", welcomeSub: "Pronto para melhorar sua experiência no Anki?",
@@ -871,19 +896,19 @@ const T = {
     medicalStudent: "Estudante de Medicina", lawStudent: "Estudante de Direito",
     highschoolStudent: "Estudante do Ensino Médio", programmer: "Programador",
     languageLearner: "Aprendiz de idiomas", other: "Outro",
-    whereDidYouFind: "Onde você descobriu o SynapsePro?",
+    whereDidYouFind: "Onde você descobriu o Synapse?",
     ankiStore: "Loja Anki Add-On", friends: "Amigos", google: "Google",
     socialMedia: "Redes Sociais", chatgptAI: "ChatGPT / IA", reddit: "Reddit",
     whichTheme: "Qual tema você escolhe?",
     changeThemeLater: "Você pode alterá-lo depois nas configurações.",
     settingsTipTitle: "Encontre as configurações",
-    settingsTipText: "Você pode encontrar todas as configurações clicando no logotipo do SynapsePro no canto superior esquerdo do Anki.",
+    settingsTipText: "Você pode encontrar todas as configurações clicando no logotipo do Synapse no canto superior esquerdo do Anki.",
     supportTitle: "Apoie meu projeto!",
     supportText1: "Este projeto foi criado por mim sozinho para melhorar a experiência do Anki. Pode haver erros ocasionais.",
     supportText2: "Por favor, apoie este projeto com um joinha no AnkiWeb se gostar. Essa é minha única motivação para continuar melhorando.",
     thankYou: "Obrigado!",
-    preparingAddon: "Preparando seu SynapsePro...",
-    loadingDone: "✓ SynapsePro está pronto!", close: "Fechar",
+    preparingAddon: "Preparando seu Synapse...",
+    loadingDone: "✓ Synapse está pronto!", close: "Fechar",
   },
   vi: {
     welcomeTo: "Chào mừng đến với", welcomeSub: "Sẵn sàng nâng cao trải nghiệm Anki của bạn?",
@@ -894,19 +919,19 @@ const T = {
     medicalStudent: "Sinh viên Y khoa", lawStudent: "Sinh viên Luật",
     highschoolStudent: "Học sinh THPT", programmer: "Lập trình viên",
     languageLearner: "Người học ngôn ngữ", other: "Khác",
-    whereDidYouFind: "Bạn biết đến SynapsePro từ đâu?",
+    whereDidYouFind: "Bạn biết đến Synapse từ đâu?",
     ankiStore: "Cửa hàng Anki Add-On", friends: "Bạn bè", google: "Google",
     socialMedia: "Mạng xã hội", chatgptAI: "ChatGPT / AI", reddit: "Reddit",
     whichTheme: "Bạn chọn giao diện nào?",
     changeThemeLater: "Bạn có thể thay đổi sau trong cài đặt.",
     settingsTipTitle: "Tìm cài đặt",
-    settingsTipText: "Bạn có thể tìm thấy tất cả cài đặt bằng cách nhấp vào logo SynapsePro ở góc trên bên trái của Anki.",
+    settingsTipText: "Bạn có thể tìm thấy tất cả cài đặt bằng cách nhấp vào logo Synapse ở góc trên bên trái của Anki.",
     supportTitle: "Ủng hộ dự án của tôi!",
     supportText1: "Dự án này được tôi tự tạo ra để cải thiện trải nghiệm Anki. Có thể có lỗi và sự cố.",
     supportText2: "Hãy ủng hộ dự án này bằng cách thả tim trên AnkiWeb nếu bạn thích. Đó là động lực duy nhất của tôi.",
     thankYou: "Cảm ơn!",
-    preparingAddon: "Đang chuẩn bị SynapsePro...",
-    loadingDone: "✓ SynapsePro đã sẵn sàng!", close: "Đóng",
+    preparingAddon: "Đang chuẩn bị Synapse...",
+    loadingDone: "✓ Synapse đã sẵn sàng!", close: "Đóng",
   },
   fr: {
     welcomeTo: "Bienvenue sur", welcomeSub: "Prêt à améliorer votre expérience Anki ?",
@@ -917,19 +942,19 @@ const T = {
     medicalStudent: "Étudiant en médecine", lawStudent: "Étudiant en droit",
     highschoolStudent: "Lycéen", programmer: "Programmeur",
     languageLearner: "Apprenant de langues", other: "Autre",
-    whereDidYouFind: "Comment avez-vous découvert SynapsePro ?",
+    whereDidYouFind: "Comment avez-vous découvert Synapse ?",
     ankiStore: "Boutique Anki Add-On", friends: "Amis", google: "Google",
     socialMedia: "Réseaux sociaux", chatgptAI: "ChatGPT / IA", reddit: "Reddit",
     whichTheme: "Quel thème choisissez-vous ?",
     changeThemeLater: "Vous pouvez le modifier plus tard dans les paramètres.",
     settingsTipTitle: "Trouver les paramètres",
-    settingsTipText: "Vous pouvez trouver tous les paramètres en cliquant sur le logo SynapsePro en haut à gauche de l'interface Anki.",
+    settingsTipText: "Vous pouvez trouver tous les paramètres en cliquant sur le logo Synapse en haut à gauche de l'interface Anki.",
     supportTitle: "Soutenez mon projet !",
     supportText1: "Ce projet a été créé seul pour améliorer l'expérience Anki. Il peut y avoir des bugs et erreurs occasionnelles.",
     supportText2: "Veuillez soutenir ce projet avec un pouce levé sur AnkiWeb si vous l'aimez. C'est ma seule motivation pour continuer.",
     thankYou: "Merci !",
-    preparingAddon: "Préparation de SynapsePro...",
-    loadingDone: "✓ SynapsePro est prêt !", close: "Fermer",
+    preparingAddon: "Préparation de Synapse...",
+    loadingDone: "✓ Synapse est prêt !", close: "Fermer",
   },
   hi: {
     welcomeTo: "स्वागत है", welcomeSub: "अपने Anki अनुभव को बेहतर बनाने के लिए तैयार हैं?",
@@ -940,19 +965,19 @@ const T = {
     medicalStudent: "मेडिकल छात्र", lawStudent: "कानून का छात्र",
     highschoolStudent: "हाई स्कूल छात्र", programmer: "प्रोग्रामर",
     languageLearner: "भाषा सीखने वाला", other: "अन्य",
-    whereDidYouFind: "आपने SynapsePro के बारे में कहाँ जाना?",
+    whereDidYouFind: "आपने Synapse के बारे में कहाँ जाना?",
     ankiStore: "Anki Add-On Store", friends: "दोस्त", google: "Google",
     socialMedia: "सोशल मीडिया", chatgptAI: "ChatGPT / AI", reddit: "Reddit",
     whichTheme: "आप कौन सा थीम चुनते हैं?",
     changeThemeLater: "आप इसे बाद में सेटिंग्स में बदल सकते हैं।",
     settingsTipTitle: "सेटिंग्स कहाँ मिलेंगी",
-    settingsTipText: "Anki के ऊपर बाईं ओर SynapsePro लोगो पर क्लिक करके सभी सेटिंग्स मिल सकती हैं।",
+    settingsTipText: "Anki के ऊपर बाईं ओर Synapse लोगो पर क्लिक करके सभी सेटिंग्स मिल सकती हैं।",
     supportTitle: "मेरे प्रोजेक्ट का समर्थन करें!",
     supportText1: "यह प्रोजेक्ट मैंने अकेले Anki अनुभव को बेहतर बनाने के लिए बनाया है। कुछ बग हो सकती हैं।",
     supportText2: "अगर आपको यह पसंद आया तो AnkiWeb पर थम्स अप देकर इसे सपोर्ट करें। यही मेरी प्रेरणा है।",
     thankYou: "धन्यवाद!",
-    preparingAddon: "SynapsePro तैयार हो रहा है...",
-    loadingDone: "✓ SynapsePro तैयार है!", close: "बंद करें",
+    preparingAddon: "Synapse तैयार हो रहा है...",
+    loadingDone: "✓ Synapse तैयार है!", close: "बंद करें",
   },
   ko: {
     welcomeTo: "환영합니다", welcomeSub: "Anki 경험을 향상시킬 준비가 되셨나요?",
@@ -963,19 +988,19 @@ const T = {
     medicalStudent: "의대생", lawStudent: "법대생",
     highschoolStudent: "고등학생", programmer: "프로그래머",
     languageLearner: "언어 학습자", other: "기타",
-    whereDidYouFind: "SynapsePro를 어디서 알게 되셨나요?",
+    whereDidYouFind: "Synapse를 어디서 알게 되셨나요?",
     ankiStore: "Anki 애드온 스토어", friends: "친구", google: "Google",
     socialMedia: "소셜 미디어", chatgptAI: "ChatGPT / AI", reddit: "Reddit",
     whichTheme: "어떤 테마를 선택하시겠어요?",
     changeThemeLater: "나중에 설정에서 변경할 수 있습니다.",
     settingsTipTitle: "설정 찾기",
-    settingsTipText: "Anki 인터페이스 왼쪽 상단의 SynapsePro 로고를 클릭하면 모든 설정을 찾을 수 있습니다.",
+    settingsTipText: "Anki 인터페이스 왼쪽 상단의 Synapse 로고를 클릭하면 모든 설정을 찾을 수 있습니다.",
     supportTitle: "프로젝트를 응원해 주세요!",
     supportText1: "이 프로젝트는 Anki 경험을 개선하기 위해 혼자 만들었습니다. 버그가 있을 수 있습니다.",
     supportText2: "마음에 드신다면 AnkiWeb에서 좋아요를 눌러 응원해 주세요. 이것이 저의 유일한 동기입니다.",
     thankYou: "감사합니다!",
-    preparingAddon: "SynapsePro 준비 중...",
-    loadingDone: "✓ SynapsePro 준비 완료!", close: "닫기",
+    preparingAddon: "Synapse 준비 중...",
+    loadingDone: "✓ Synapse 준비 완료!", close: "닫기",
   },
   zh: {
     welcomeTo: "欢迎使用", welcomeSub: "准备好提升您的 Anki 体验了吗？",
@@ -986,19 +1011,19 @@ const T = {
     medicalStudent: "医学生", lawStudent: "法学生",
     highschoolStudent: "高中生", programmer: "程序员",
     languageLearner: "语言学习者", other: "其他",
-    whereDidYouFind: "您是在哪里发现 SynapsePro 的？",
+    whereDidYouFind: "您是在哪里发现 Synapse 的？",
     ankiStore: "Anki 插件商店", friends: "朋友", google: "Google",
     socialMedia: "社交媒体", chatgptAI: "ChatGPT / AI", reddit: "Reddit",
     whichTheme: "您选择哪个主题？",
     changeThemeLater: "您可以稍后在设置中更改。",
     settingsTipTitle: "查找设置",
-    settingsTipText: "点击 Anki 界面左上角的 SynapsePro 标志即可找到所有设置。",
+    settingsTipText: "点击 Anki 界面左上角的 Synapse 标志即可找到所有设置。",
     supportTitle: "支持我的项目！",
     supportText1: "请注意，此项目由我独自创建，旨在改善 Anki 体验。可能会有错误。",
     supportText2: "如果您喜欢，请在 AnkiWeb 上点赞支持。这是我继续改进此插件的唯一动力。",
     thankYou: "谢谢！",
-    preparingAddon: "正在准备 SynapsePro...",
-    loadingDone: "✓ SynapsePro 已就绪！", close: "关闭",
+    preparingAddon: "正在准备 Synapse...",
+    loadingDone: "✓ Synapse 已就绪！", close: "关闭",
   }
 };
 
@@ -1057,14 +1082,14 @@ function applyLang(lang) {
   const tipEl = document.querySelector('[data-i18n="settingsTipText"]');
   if (tipEl) {
     const rawText = dict['settingsTipText'] || '';
-    tipEl.innerHTML = rawText.replace('SynapsePro logo', '<strong>SynapsePro logo</strong>')
-                             .replace('SynapsePro-Logo', '<strong>SynapsePro-Logo</strong>')
-                             .replace('logo de SynapsePro', '<strong>logo de SynapsePro</strong>')
-                             .replace('logotipo do SynapsePro', '<strong>logotipo do SynapsePro</strong>')
-                             .replace('logo SynapsePro', '<strong>logo SynapsePro</strong>')
-                             .replace('SynapsePro 标志', '<strong>SynapsePro 标志</strong>')
-                             .replace('SynapsePro 로고', '<strong>SynapsePro 로고</strong>')
-                             .replace('SynapsePro लोगो', '<strong>SynapsePro लोगो</strong>');
+    tipEl.innerHTML = rawText.replace('Synapse logo', '<strong>Synapse logo</strong>')
+                             .replace('Synapse-Logo', '<strong>Synapse-Logo</strong>')
+                             .replace('logo de Synapse', '<strong>logo de Synapse</strong>')
+                             .replace('logotipo do Synapse', '<strong>logotipo do Synapse</strong>')
+                             .replace('logo Synapse', '<strong>logo Synapse</strong>')
+                             .replace('Synapse 标志', '<strong>Synapse 标志</strong>')
+                             .replace('Synapse 로고', '<strong>Synapse 로고</strong>')
+                             .replace('Synapse लोगो', '<strong>Synapse लोगो</strong>');
   }
   const s2 = document.querySelector('[data-i18n="supportText2"]');
   if (s2) s2.textContent = dict['supportText2'] || '';
@@ -1126,7 +1151,7 @@ function startLoading() {
   fill.style.width = '0%';
   fill.classList.remove('done');
   label.classList.remove('done');
-  label.textContent = dict['preparingAddon'] || 'Preparing your SynapsePro...';
+  label.textContent = dict['preparingAddon'] || 'Preparing your Synapse...';
   btn.disabled = true;
 
   const waypoints = [
@@ -1151,7 +1176,7 @@ function startLoading() {
       setTimeout(() => {
         fill.classList.add('done');
         label.classList.add('done');
-        label.textContent = dict['loadingDone'] || '✓ SynapsePro is ready!';
+        label.textContent = dict['loadingDone'] || '✓ Synapse is ready!';
         btn.disabled = false;
       }, 300);
     }
@@ -1237,7 +1262,7 @@ function closeTosOnOverlay(e) {
             var preCss = 'display:none;max-height:140px;overflow:auto;white-space:pre-wrap;word-break:break-word;'
                 + 'font-size:11px;border-radius:6px;padding:8px;margin:0 0 8px 0;'
                 + (dark ? 'background:#404040;border:1px solid #555;' : 'background:#f5f5f5;border:1px solid #ccc;');
-            b.innerHTML = '<div style="font-weight:700;color:#dc3545;margin-bottom:4px;">' + errorTr('SynapsePro error') + '</div>'
+            b.innerHTML = '<div style="font-weight:700;color:#dc3545;margin-bottom:4px;">' + errorTr('Synapse error') + '</div>'
                 + '<div class="sp-eb-msg" style="margin-bottom:6px;word-break:break-word;"></div>'
                 + '<pre class="sp-eb-pre" style="' + preCss + '"></pre>'
                 + '<div><button type="button" data-spact="details" style="' + btnCss + '">' + errorTr('Show details') + '</button>'

@@ -2,13 +2,14 @@
 """Fast, profile-local custom background rendering for SynapsePro.
 
 The image is decoded once and painted by one native QWidget behind Anki's
-top/main/bottom web views. Chromium only receives transparent backgrounds;
-it never decodes or composites a second copy of the image.
+top/main/bottom web views. Normally Chromium receives only transparent
+backgrounds. An extra image copy is provided only for explicitly enabled glass.
 """
 
 from __future__ import annotations
 
 import base64
+import json
 import os
 from typing import Optional
 
@@ -16,7 +17,7 @@ from aqt import mw
 from aqt.qt import (
     QColor, QEvent, QFileDialog, QGraphicsBlurEffect, QGraphicsPixmapItem,
     QGraphicsScene, QImageReader, QPainter, QPixmap, QRectF, QSize, Qt, QTimer,
-    QWidget,
+    QWidget, QBuffer, QByteArray, QIODevice, QPoint,
 )
 from aqt.utils import showWarning
 
@@ -31,6 +32,7 @@ ACTIVE_STATES = {"deckBrowser", "overview"}
 
 _layer: Optional["BackgroundLayer"] = None
 _settings = {}
+_review_cache = (None, "")
 
 
 def _storage_dir() -> str:
@@ -247,6 +249,11 @@ class BackgroundLayer(QWidget):
         self._overlay = 0
         self._position = "center"
         self._cache_key = None
+        self._glass_image_data = None
+        self._glass_geometry_timer = QTimer(self)
+        self._glass_geometry_timer.setSingleShot(True)
+        self._glass_geometry_timer.setInterval(60)
+        self._glass_geometry_timer.timeout.connect(self._sync_glass_geometry)
         self.setObjectName("SynapseCustomBackgroundLayer")
         self.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True)
         self.setAttribute(Qt.WidgetAttribute.WA_NoSystemBackground, True)
@@ -261,7 +268,29 @@ class BackgroundLayer(QWidget):
         ):
             self.setGeometry(watched.rect())
             self.lower()
+        if event.type() in (QEvent.Type.Resize, QEvent.Type.Move, QEvent.Type.Show) and _glass_active():
+            self._glass_geometry_timer.start()
         return False
+
+    def _sync_glass_geometry(self):
+        if not _glass_active():
+            return
+        try:
+            geometry = _glass_geometry()
+            mw.web.eval("if(window.__synapseSyncGlassBackdrop) window.__synapseSyncGlassBackdrop(" + json.dumps(geometry) + ");")
+        except Exception as exc:
+            print(f"Glass wallpaper alignment failed: {exc}")
+
+    def glass_image_data(self):
+        if self._glass_image_data is None and not self._pixmap.isNull():
+            data = QByteArray()
+            buffer = QBuffer(data)
+            buffer.open(QIODevice.OpenModeFlag.WriteOnly)
+            saved = self._pixmap.save(buffer, "PNG")
+            buffer.close()
+            if saved:
+                self._glass_image_data = "data:image/png;base64," + base64.b64encode(bytes(data)).decode("ascii")
+        return self._glass_image_data
 
     def load(self, blur_radius: int, overlay: int, position: str = "center") -> None:
         blur_radius = max(0, min(30, int(blur_radius)))
@@ -273,6 +302,7 @@ class BackgroundLayer(QWidget):
             source = QPixmap(image_path()) if has_image() else QPixmap()
             self._pixmap = _blur_pixmap(source, blur_radius)
             self._cache_key = key
+            self._glass_image_data = None
         self._overlay = max(0, min(70, int(overlay)))
         self._position = position if position in ("top", "center", "bottom") else "center"
         self.update()
@@ -300,6 +330,72 @@ class BackgroundLayer(QWidget):
         painter.end()
 
 
+
+def _bounded(value, default, maximum):
+    try:
+        return max(0, min(maximum, int(value)))
+    except (TypeError, ValueError, OverflowError):
+        return default
+
+
+def reviewer_background_css() -> str:
+    """Cache blur and theme wash together so template CSS cannot separate them."""
+    global _review_cache
+    if not (_settings.get("custom_background_enabled")
+            and _settings.get("custom_background_review_enabled") and has_image()):
+        return ""
+    from aqt.theme import theme_manager
+    blur = _bounded(_settings.get("custom_background_review_blur", 8), 8, 30)
+    intensity = _bounded(_settings.get("custom_background_review_intensity", 20), 20, 100)
+    path = image_path()
+    try:
+        stat = os.stat(path)
+        key = (path, stat.st_mtime_ns, stat.st_size, blur, intensity, bool(theme_manager.night_mode))
+        if _review_cache[0] != key:
+            pixmap = _blur_pixmap(QPixmap(path), blur)
+            if pixmap.isNull():
+                return ""
+            # A single image prevents card CSS (size, clip, attachment, etc.)
+            # from sizing the wash differently from the wallpaper.
+            painter = QPainter(pixmap)
+            wash = QColor("#202022" if theme_manager.night_mode else "#ffffff")
+            wash.setAlpha(round(255 * (1 - intensity / 100)))
+            painter.fillRect(pixmap.rect(), wash)
+            painter.end()
+            data = QByteArray()
+            buffer = QBuffer(data)
+            buffer.open(QIODevice.OpenModeFlag.WriteOnly)
+            saved = pixmap.save(buffer, "JPEG", 88)
+            buffer.close()
+            if not saved:
+                return ""
+            _review_cache = (key, "data:image/jpeg;base64," +
+                             base64.b64encode(bytes(data)).decode("ascii"))
+        position = _settings.get("custom_background_position", "center")
+        if position not in ("top", "center", "bottom"):
+            position = "center"
+        # Low specificity: card-template background images/shorthands win.
+        # Inner card panels, text, media, scripts and answer controls are untouched.
+        return ("body{background-image:url(" + json.dumps(_review_cache[1]) + ");"
+                "background-size:cover;background-position:center " + position +
+                ";background-repeat:no-repeat;background-attachment:fixed;}")
+    except (OSError, RuntimeError):
+        return ""
+
+
+def inject_reviewer_style(web_content) -> None:
+    web_content.head += '<style id="synapse-review-background">' + reviewer_background_css() + '</style>'
+
+
+def _sync_reviewer_background() -> None:
+    if not mw or getattr(mw, "state", "") != "review":
+        return
+    css = reviewer_background_css()
+    mw.web.eval("(function(){let s=document.getElementById('synapse-review-background');"
+                "if(!s){s=document.createElement('style');s.id='synapse-review-background';"
+                "document.head.appendChild(s);}const css=" + json.dumps(css) + ";if(s.textContent!==css)s.textContent=css;})();")
+
+
 def setup(settings: dict) -> None:
     global _layer, _settings
     _settings = dict(settings or {})
@@ -310,6 +406,8 @@ def setup(settings: dict) -> None:
         return
     if _layer is None:
         _layer = BackgroundLayer(parent)
+    if getattr(mw, "web", None) is not None:
+        mw.web.installEventFilter(_layer)
     if _settings.get("custom_background_enabled", False) and has_image():
         _layer.load(
             int(_settings.get("custom_background_blur", 0) or 0),
@@ -317,6 +415,32 @@ def setup(settings: dict) -> None:
             str(_settings.get("custom_background_position", "center") or "center"),
         )
     sync_state(getattr(mw, "state", ""))
+
+
+def _glass_active():
+    from .dashboard_appearance import surface_opacity
+    return bool(mw and getattr(mw, "state", "") == "deckBrowser"
+                and _settings.get("dashboard_surface_controls_expanded") is not False
+                and _settings.get("dashboard_glass_enabled") is True
+                and surface_opacity(_settings.get("dashboard_surface_opacity", 100)) < 100
+                and _settings.get("custom_background_enabled") and has_image())
+
+
+def _glass_geometry():
+    parent = mw.centralWidget()
+    origin = mw.web.mapTo(parent, QPoint(0, 0))
+    return {"width": parent.width(), "height": parent.height(),
+            "x": origin.x(), "y": origin.y(), "viewWidth": mw.web.width()}
+
+
+def inject_glass_backdrop(web_content):
+    if not _glass_active() or _layer is None:
+        return
+    image = _layer.glass_image_data()
+    if not image:
+        return
+    from .dashboard_appearance import glass_backdrop_html
+    web_content.body = glass_backdrop_html(image, _glass_geometry(), _layer._overlay, _layer._position) + web_content.body
 
 
 def canvas_script(active: bool, include_body: bool = True) -> str:
@@ -333,11 +457,13 @@ def canvas_script(active: bool, include_body: bool = True) -> str:
         + body_expr + "];for(var i=0;i<nodes.length;i++){var n=nodes[i];if(!n)continue;"
         "n.classList.toggle(i===0?'synapse-custom-background-root':"
         "'synapse-custom-background',on);"
-        "if(on){n.style.setProperty('background','transparent','important');"
+        "if(on){if(!n.__synapseCanvasStyle)n.__synapseCanvasStyle=['background','background-color','background-image'].map(k=>[k,n.style.getPropertyValue(k),n.style.getPropertyPriority(k)]);"
+        "n.style.setProperty('background','transparent','important');"
         "n.style.setProperty('background-color','transparent','important');"
         "n.style.setProperty('background-image','none','important');}else{"
-        "n.style.removeProperty('background');n.style.removeProperty('background-color');"
-        "n.style.removeProperty('background-image');}}})();"
+        "if(n.__synapseCanvasStyle){for(var entry of n.__synapseCanvasStyle){"
+        "if(entry[1])n.style.setProperty(entry[0],entry[1],entry[2]);else n.style.removeProperty(entry[0]);}"
+        "delete n.__synapseCanvasStyle;}}}})();"
     )
 
 
@@ -367,6 +493,7 @@ def sync_state(state: str) -> None:
         if active:
             _layer.lower()
     _set_page_transparency(active)
+    _sync_reviewer_background()
     # Anki can replace a WebEngine document shortly after its state hook. The
     # delayed pass evaluates the *current* state, so a rapid jump into Review
     # can never accidentally restore the dashboard background.
@@ -377,6 +504,7 @@ def sync_state(state: str) -> None:
             and has_image() and current in ACTIVE_STATES
         )
         _set_page_transparency(current_active)
+        _sync_reviewer_background()
     try:
         QTimer.singleShot(0, resync_document)
         QTimer.singleShot(100, resync_document)
@@ -449,7 +577,7 @@ html:has(body.synapse-custom-background.top-toolbar) #header:has(a#decks) .toolb
   border: 1px solid rgba(20, 24, 32, 0.12) !important;
   border-top: 0 !important;
   border-radius: 0 0 10px 10px !important;
-  box-shadow: 0 1px 4px rgba(18, 24, 32, 0.16) !important;
+  box-shadow: 0 1px 4px rgba(18, 24, 32, 0.12) !important;
   overflow: hidden !important;
 }
 body.nightMode.synapse-custom-background.top-toolbar .header .toolbar,
@@ -458,7 +586,7 @@ html:has(body.nightMode.synapse-custom-background.top-toolbar) .header:has(a#dec
 html:has(body.nightMode.synapse-custom-background.top-toolbar) #header:has(a#decks) .toolbar {
   background: #2c2c2e !important;
   border-color: rgba(255, 255, 255, 0.12) !important;
-  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.34) !important;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.27) !important;
 }
 body.synapse-custom-background.top-toolbar a.hitem,
 html:has(body.synapse-custom-background.top-toolbar) .header:has(a#decks) a.hitem,
@@ -516,7 +644,8 @@ def on_internal_page_styled(web) -> None:
 
 
 def cleanup() -> None:
-    global _layer, _settings
+    global _layer, _settings, _review_cache
+    _review_cache = (None, "")
     _set_page_transparency(False)
     if _layer is not None:
         try:

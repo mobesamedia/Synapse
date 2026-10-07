@@ -1,4 +1,5 @@
 from __future__ import annotations
+from . import workspace_preferences
 
 import base64
 import html
@@ -13,7 +14,6 @@ from typing import Callable, Optional
 
 import aqt
 from anki.collection import AddNoteRequest
-from anki.consts import MODEL_STD
 from aqt import mw
 from aqt.operations import CollectionOp
 from aqt.qt import (
@@ -32,6 +32,7 @@ except ImportError:
         return text
 
 from . import embedded_window
+from .task_schedule import normalize_tasks
 
 ADDON_NAME_FOR_BRIDGE = "notion_mini"
 DB_FILENAME = "notebook.sqlite"
@@ -167,6 +168,21 @@ def _build_i18n_script(tool_name: str) -> str:
             "recover_covers_title": _("Cover all revealed terms again"),
         },
         "todo": {
+            'task_options': _('Task settings'),
+            'auto_cleanup': _('Remove completed one-time tasks on the next day'),
+            'cleanup_note': _('Off by default. Recurring tasks and old tasks without a completion date are kept.'),
+            'repeat_title': _('Repeat task'),
+            'repeat_none': _('No repeat'),
+            'repeat_daily': _('Daily'),
+            'repeat_weekly': _('Weekly'),
+            'repeat_days': _('Selected weekdays'),
+            'repeat_note': _('Weekly tasks repeat on the weekday you configure them. Missed tasks remain open without extra copies.'),
+            'choose_day': _('Choose at least one weekday.'),
+            'cancel': _('Cancel'),
+            'save_repeat': _('Save'),
+            'recurring_task': _('Recurring task'),
+
+            "edit":            _("Edit"),
             "title":           _("Todo"),
             "delete":          _("Delete"),
             "filter_all":      _("All"),
@@ -220,6 +236,19 @@ def _build_i18n_script(tool_name: str) -> str:
             "draft_back":          _("Back side"),
             "select_text_first":   _("Select some PDF text first."),
             "discard_draft":       _("Discard the unfinished card draft?"),
+            'creator_type': _('Card type'),
+            'creator_basic': _('Basic (Front / Back)'),
+            'creator_reversed': _('Basic + Reversed'),
+            'creator_cloze': _('Cloze'),
+            'creator_new_cloze': _('New cloze'),
+            'creator_same_cloze': _('Same card'),
+            'creator_cloze_hint': _('Select text below, then add a cloze. Different numbers create separate cards; matching numbers hide together.'),
+            'creator_text': _('Text'),
+            'creator_extra': _('Extra'),
+            'creator_select_cloze': _('Select the text you want to hide first.'),
+            'creator_plain_cloze': _('Select plain text outside an existing cloze.'),
+            'creator_cloze_required': _('Add at least one cloze deletion, for example {{c1::answer}}.'),
+            'creator_reverse_required': _('Reversed cards need text on both sides.'),
             "card_creator":        _("Card Creator"),
             "creator_subtitle":    _("Build multiple cards while reading"),
             "creator_sidebar_hint": _("Tip: Card Creator works best in fullscreen."),
@@ -278,7 +307,7 @@ def _build_i18n_script(tool_name: str) -> str:
     }
     strings = dict(STRINGS.get(tool_name, {}))
     strings.update({
-        "error_title": _("SynapsePro error"),
+        "error_title": _("Synapse error"),
         "error_show": _("Show details"),
         "error_hide": _("Hide details"),
         "error_copy": _("Copy error"),
@@ -415,6 +444,10 @@ _NAV_STYLE = """
   }
   .snav-fs-btn:hover { background: var(--hover-bg, #efefef); }
   .snav-fs-btn svg { width: 15px; height: 15px; opacity: 0.65; }
+  body.nightMode .snav-btn { color:#7e7e7e; }
+  body.nightMode .snav-btn.snav-active,
+  body.nightMode .snav-btn:hover { color:#ffffff; }
+
 </style>
 """
 
@@ -478,6 +511,8 @@ def _build_nav_html(active_tool: str, fs_active: bool = False,
                     win_active: bool = False) -> str:
     buttons = ""
     for key in ("notebook", "todo", "pdf"):
+        if not workspace_preferences.enabled("notebook")[key]:
+            continue
         active_cls = " snav-active" if key == active_tool else ""
         icon  = _NAV_ICONS[key]
         label = _(_NAV_LABELS[key])
@@ -490,8 +525,12 @@ def _build_nav_html(active_tool: str, fs_active: bool = False,
     fs_title  = _("Exit Fullscreen") if fs_active else _("Fullscreen")
     win_icon  = _WIN_ICON_CLOSE if win_active else _WIN_ICON
     fs_icon   = _FS_ICON_EXIT if fs_active else _FS_ICON
+    settings_icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6l.7 2.4 2 .9L20 6l3 5-1.8 1.7.1 2.2 1.7 1.6-3 5-2.4-.6-1.9 1L15 24H9l-.7-3.1-1.9-1L4 21l-3-5 1.8-1.7-.1-2.2L1 10l3-5 2.4.6 1.9-1L9 3Z" transform="translate(2 0) scale(.83)"/><circle cx="12" cy="11" r="3"/></svg>'
+    settings_title = _("Settings")
     fs_btn = (
         f'<span class="snav-spacer"></span>'
+        f'<button class="snav-fs-btn" title="{settings_title}" aria-label="{settings_title}" '
+        f'onclick="pycmd(\'{ADDON_NAME_FOR_BRIDGE}:settings\')">{settings_icon}</button>'
         f'<button id="snav-win-btn" class="snav-fs-btn" title="{win_title}" '
         f'onclick="pycmd(\'{ADDON_NAME_FOR_BRIDGE}:window\')">'
         f'{win_icon}</button>'
@@ -622,8 +661,20 @@ def _apply_night_mode(html: str) -> str:
     except Exception:
         night = False
 
+    # Pass the same user-selected accent as the other SynapsePro features.
+    # Validate before interpolating a color into the page's stylesheet.
+    accent_style = ""
+    try:
+        from .theme import palette
+        accent = palette(night).get("blue_accent", "")
+        if isinstance(accent, str) and re.fullmatch(r"#[0-9a-fA-F]{6}", accent):
+            accent_style = ('<style id="synapse-primary-color">:root {'
+                            '--synapse-primary: ' + accent + ';}</style>')
+    except Exception:
+        pass
+
     flag_tag = ('<script id="synapse-night">window.__SYNAPSE_NIGHT__='
-                + ("true" if night else "false") + ';</script>')
+                + ("true" if night else "false") + ';</script>' + accent_style)
     new_html = re.sub(r'(<head[^>]*>)', lambda m: m.group(1) + flag_tag, html,
                       count=1, flags=re.IGNORECASE)
     if new_html == html:
@@ -764,6 +815,10 @@ def _clear_snapshot_recovery(
         # just-committed body keeps either source safe to load next time.
         _write_snapshot_recovery(table, committed_body, database_path)
 
+class SnapshotLoadError(RuntimeError):
+    """Existing snapshots could not be read; never replace them with defaults."""
+
+
 def _load_latest_snapshot(
     table: str, fallback: str, database_path: Optional[str] = None
 ) -> str:
@@ -779,10 +834,13 @@ def _load_latest_snapshot(
         row = con.execute(
             f"SELECT body FROM {table} ORDER BY updated_at DESC, id DESC LIMIT 1"
         ).fetchone()
-        return row[0] if row else fallback
+        body = row[0] if row else fallback
+        if not _valid_snapshot(table, body):
+            raise ValueError("Invalid stored snapshot")
+        return body
     except Exception as e:
         print(f"Notebook {table} Load Error: {e}")
-        return fallback
+        raise SnapshotLoadError(table) from e
     finally:
         if con is not None:
             con.close()
@@ -796,7 +854,10 @@ def _valid_snapshot(table: str, body: str) -> bool:
         return False
     if table == "notes":
         return isinstance(data, list) or (
-            isinstance(data, dict) and isinstance(data.get("pages"), list)
+            isinstance(data, dict) and (
+                isinstance(data.get("pages"), list)
+                or isinstance(data.get("blocks"), list)  # Legacy single-page notebooks.
+            )
         )
     if table == "todos":
         return isinstance(data, list)
@@ -849,8 +910,8 @@ def _save_snapshot(
 
 # ── Notes (Notebook) ──────────────────────────
 
-def load_latest_note() -> str:
-    return _load_latest_snapshot("notes", "[]")
+def load_latest_note(database_path: Optional[str] = None) -> str:
+    return _load_latest_snapshot("notes", "[]", database_path)
 
 
 def save_note(body: str) -> bool:
@@ -859,8 +920,41 @@ def save_note(body: str) -> bool:
 
 # ── Todos ─────────────────────────────────────
 
-def load_latest_todos() -> str:
-    return _load_latest_snapshot("todos", "[]")
+def _todo_cleanup_enabled():
+    from . import addon_settings
+    return bool(addon_settings.get("todo_auto_cleanup", False))
+
+
+def _normalize_todo_body(body):
+    tasks = json.loads(body)
+    if not isinstance(tasks, list):
+        return body
+    return json.dumps(normalize_tasks(tasks, _todo_cleanup_enabled()))
+
+
+def load_todo_preview_snapshot(normalize=True) -> str:
+    """Read dashboard data without schema writes or long waits on a busy DB."""
+    from pathlib import Path
+    path = db_path()
+    recovery = _load_snapshot_recovery("todos", path)
+    if recovery is not None:
+        return _normalize_todo_body(recovery) if normalize else recovery
+    if not os.path.exists(path):
+        return "[]"
+    con = None
+    try:
+        con = sqlite3.connect(Path(path).resolve().as_uri() + "?mode=ro", uri=True, timeout=0.05)
+        row = con.execute("SELECT body FROM todos ORDER BY updated_at DESC, id DESC LIMIT 1").fetchone()
+        return (_normalize_todo_body(row[0]) if normalize else row[0]) if row else "[]"
+    except sqlite3.Error:
+        return "null"
+    finally:
+        if con is not None:
+            con.close()
+
+
+def load_latest_todos(database_path: Optional[str] = None) -> str:
+    return _normalize_todo_body(_load_latest_snapshot("todos", "[]", database_path))
 
 
 def save_todos(body: str) -> bool:
@@ -869,11 +963,11 @@ def save_todos(body: str) -> bool:
 
 # ── PDFs ──────────────────────────────────────
 
-def load_pdf_list() -> str:
-    return _load_latest_snapshot("pdfs", "[]")
+def load_pdf_list(database_path: Optional[str] = None) -> str:
+    return _load_latest_snapshot("pdfs", "[]", database_path)
 
 
-def load_pdf_list_enriched() -> str:
+def load_pdf_list_enriched(database_path: Optional[str] = None) -> str:
     """Like load_pdf_list() but adds a transient ``_exists`` bool to every entry.
 
     Python checks os.path.isfile() for each stored path so the UI can show
@@ -881,7 +975,7 @@ def load_pdf_list_enriched() -> str:
     The ``_exists`` flag is stripped again by the save handler so it is never
     persisted back to the database.
     """
-    raw = load_pdf_list()
+    raw = load_pdf_list(database_path)
     try:
         data = json.loads(raw)
         if isinstance(data, dict) and "pdfs" in data:
@@ -955,6 +1049,10 @@ class _NotebookBackgroundWriter:
         self._lock = threading.Lock()
         self._pending: dict[tuple[str, str], _PendingSnapshotWrite] = {}
         self._thread: Optional[threading.Thread] = None
+
+    def is_idle(self) -> bool:
+        with self._lock:
+            return self._thread is None and not self._pending
 
     def submit(
         self,
@@ -1036,7 +1134,11 @@ _background_writer = _NotebookBackgroundWriter()
 # ── Misc ──────────────────────────────────────
 
 def export_data():
-    data = load_latest_note()
+    try:
+        data = load_latest_note()
+    except SnapshotLoadError:
+        tooltip(_("Could not load your data. Nothing has been overwritten. Please try again."))
+        return
     save_title  = _("Export Notebook")
     save_filter = _("JSON (*.json)")
     path, _filter = QFileDialog.getSaveFileName(
@@ -1083,7 +1185,7 @@ class NotebookFullscreenWindow(QWidget):
         self.panel    = panel
         self.web_view = web_view
         self.windowed = windowed
-        self.setWindowTitle(_("SynapsePro – Notebook"))
+        self.setWindowTitle(_("Synapse – Notebook"))
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -1112,6 +1214,8 @@ class NotebookPanel(QWidget):
         self.web: Optional[AnkiWebView] = None
         self.is_initialized    = False
         self.current_tool      = "notebook"
+        self._database_path = db_path()
+        self._load_failed = False
         self.is_in_fullscreen  = False
         self.is_embedded       = False
         self.fullscreen_window: Optional[NotebookFullscreenWindow] = None
@@ -1185,9 +1289,18 @@ class NotebookPanel(QWidget):
                 print(f"Notebook unload callback failed: {exc}")
 
     def _on_load_finished(self, ok: bool) -> None:
-        self._page_ready = bool(ok)
+        self._page_ready = bool(ok) and not self._load_failed
+        if ok and self.current_tool == "todo":
+            self._consume_dashboard_completions()
         if ok and self.current_tool == "pdf" and self._pending_pdf_reference:
             QTimer.singleShot(0, self._consume_pending_pdf_reference)
+
+    def _consume_dashboard_completions(self):
+        pending = getattr(self, "_dashboard_completions", set())
+        if not pending or not self.web or self.current_tool != "todo" or not self._page_ready:
+            return
+        self._dashboard_completions = set()
+        self.web.eval("if(window.completeDashboardTasks) window.completeDashboardTasks(" + json.dumps(list(pending)) + ");")
 
     def open_pdf_reference(self, file_path: str, page: int = 1) -> None:
         """Open a library PDF from a review-card source link."""
@@ -1247,16 +1360,21 @@ class NotebookPanel(QWidget):
     def _queue_tool_snapshot(
         self, tool: str, body: str, callback: Callable[[bool], None]
     ) -> None:
+        if self._load_failed:
+            callback(False)
+            return
         table = {"notebook": "notes", "todo": "todos", "pdf": "pdfs"}.get(tool)
         if table is None:
             callback(False)
             return
+        if tool == "todo":
+            body = _normalize_todo_body(body)
         if tool == "pdf":
             body = self._strip_pdf_transient_flags(body)
         try:
-            # Capture the profile path now, on the main thread. A delayed write
-            # therefore cannot accidentally follow mw.pm into another profile.
-            database_path = db_path()
+            # This page always writes to the profile that originally opened it,
+            # including callbacks arriving after Anki has switched profiles.
+            database_path = self._database_path
         except Exception as exc:
             print(f"Notebook could not determine save path: {exc}")
             callback(False)
@@ -1264,6 +1382,8 @@ class NotebookPanel(QWidget):
         _background_writer.submit(table, body, database_path, callback)
 
     def _notify_save_result(self, tool: str, saved: bool) -> None:
+        if tool == "todo" and saved:
+            _refresh_dashboard_tasks()
         if not self.web:
             return
         if tool == "notebook":
@@ -1284,7 +1404,8 @@ class NotebookPanel(QWidget):
         Python before a tool switch or WebView destruction. This avoids relying on
         a last asynchronous bridge message surviving page teardown.
         """
-        if not self.web:
+        if not self.web or self._load_failed:
+            # The error page has no editable document and must never be saved.
             on_complete(True)
             return
         if self._flush_in_progress:
@@ -1509,10 +1630,37 @@ class NotebookPanel(QWidget):
             self.parent_dock.raise_()
 
     def _load_tool(self, tool_name: str) -> None:
+        self._load_failed = False
+        try:
+            self._load_tool_content(tool_name)
+        except SnapshotLoadError:
+            self._load_failed = True
+            self._page_ready = False
+            message = html.escape(_("Could not load your data. Nothing has been overwritten. Please try again."))
+            retry = html.escape(_("Try again"))
+            error_page = (
+                '<html><head><style>body{margin:0;background:#fff;color:#252525}'
+                'html.nightMode body{background:#2c2c2c;color:#fff}'
+                'button{font:inherit;padding:8px 12px;border:1px solid #7e7e7e;border-radius:8px;cursor:pointer}'
+                'html.nightMode button{background:#414141;color:#fff}</style></head>'
+                '<body><main style="padding:24px;font:14px system-ui">'
+                f'<p>{message}</p><button onclick="pycmd(\'{ADDON_NAME_FOR_BRIDGE}:retry-load\')">{retry}</button>'
+                '</main></body></html>'
+            )
+            self.web.setHtml(_inject_nav(_apply_night_mode(_inject_body_column(error_page)), self.current_tool,
+                                        fs_active=self.is_in_fullscreen, win_active=self.is_embedded))
+
+    def _load_tool_content(self, tool_name: str) -> None:
         """Read the tool's HTML file, inject nav bar, and display it."""
         if not self.web:
             return
+        enabled = workspace_preferences.enabled("notebook")
+        if not enabled.get(tool_name):
+            tool_name = next(key for key, value in enabled.items() if value)
         self._page_ready = False
+        tracker = getattr(self.parent_dock, "_synapse_width", None)
+        if tracker is not None:
+            tracker.select(tool_name)
         self.current_tool = tool_name
         file_name = TOOL_FILES.get(tool_name, "index.html")
         html_path = os.path.join(addon_dir(), HTML_DIR, file_name)
@@ -1527,6 +1675,9 @@ class NotebookPanel(QWidget):
         with open(html_path, "r", encoding="utf-8") as fh:
             html = fh.read()
 
+        if tool_name == "todo":
+            with open(os.path.join(addon_dir(), HTML_DIR, "task_schedule.js"), encoding="utf-8") as source:
+                html = html.replace('<script src="task_schedule.js"></script>', '<script>' + source.read() + '</script>')
         html = _inject_body_column(html)
         html = _apply_night_mode(html)
         html = _inject_nav(html, tool_name,
@@ -1541,7 +1692,7 @@ class NotebookPanel(QWidget):
         # we embed the data directly so the page can initialise correctly
         # on first render.
         if tool_name == "notebook":
-            preload_data = load_latest_note()
+            preload_data = load_latest_note(self._database_path)
             preload_js   = _json_for_script(preload_data)
             preload_tag  = f'<script id="synapse-preload">window.__SYNAPSE_PRELOAD__={preload_js};</script>'
             # Use a lambda replacement so that JSON backslash-escapes (e.g. \u, \n)
@@ -1549,17 +1700,18 @@ class NotebookPanel(QWidget):
             html = re.sub(r'</head>', lambda m: preload_tag + m.group(0), html,
                           count=1, flags=re.IGNORECASE)
         elif tool_name == "todo":
-            preload_data = load_latest_todos()
+            preload_data = load_latest_todos(self._database_path)
             preload_js   = _json_for_script(preload_data)
             preload_tag  = (
                 f'<script id="synapse-preload">'
                 f'window.__SYNAPSE_TODO_PRELOAD__={preload_js};'
+                f'window.__SYNAPSE_TODO_AUTO_CLEANUP__={json.dumps(_todo_cleanup_enabled())};'
                 f'</script>'
             )
             html = re.sub(r'</head>', lambda m: preload_tag + m.group(0), html,
                           count=1, flags=re.IGNORECASE)
         elif tool_name == "pdf":
-            preload_data = load_pdf_list_enriched()
+            preload_data = load_pdf_list_enriched(self._database_path)
             preload_js   = _json_for_script(preload_data)
             deck_names_js = _json_for_script(_pdf_deck_names(), ensure_ascii=False)
             current_deck_js = _json_for_script(
@@ -1614,21 +1766,33 @@ class NotebookPanel(QWidget):
     def reload_from_db(self) -> None:
         if not self.web:
             return
-        body = load_latest_note()
+        try:
+            body = load_latest_note(self._database_path)
+        except SnapshotLoadError:
+            tooltip(_("Could not load your data. Nothing has been overwritten. Please try again."))
+            return
         json_str = json.dumps(body)
         self.web.eval(f"if(window.loadContent) window.loadContent({json_str});")
 
     def _reload_todos(self) -> None:
         if not self.web:
             return
-        body = load_latest_todos()
+        try:
+            body = load_latest_todos(self._database_path)
+        except SnapshotLoadError:
+            tooltip(_("Could not load your data. Nothing has been overwritten. Please try again."))
+            return
         json_str = json.dumps(body)
         self.web.eval(f"if(window.loadTodos) window.loadTodos({json_str});")
 
     def _reload_pdfs(self) -> None:
         if not self.web:
             return
-        body     = load_pdf_list_enriched()
+        try:
+            body = load_pdf_list_enriched(self._database_path)
+        except SnapshotLoadError:
+            tooltip(_("Could not load your data. Nothing has been overwritten. Please try again."))
+            return
         json_str = json.dumps(body)
         self.web.eval(f"if(window.loadPdfs) window.loadPdfs({json_str});")
 
@@ -1639,6 +1803,30 @@ class NotebookPanel(QWidget):
         if not cmd.startswith(prefix):
             return
         payload = cmd[len(prefix):]
+        if db_path() != self._database_path:
+            return
+        if payload == "retry-load":
+            if self._load_failed:
+                self._load_tool(self.current_tool)
+            return
+        if self._load_failed and not payload.startswith("switch:") and payload not in ("window", "fullscreen"):
+            return
+
+        if payload == "settings":
+            self.web.eval(workspace_preferences.popup_script('notebook'))
+            return
+        if payload.startswith("settings-save:"):
+            def saved(ok):
+                if not ok:
+                    self.web.eval(workspace_preferences.popup_error(_('Could not save the current page. Please try again.')))
+                    return
+                try:
+                    workspace_preferences.save_command('notebook', payload)
+                    QTimer.singleShot(0, lambda: self._load_tool(self.current_tool))
+                except Exception as error:
+                    self.web.eval(workspace_preferences.popup_error(error))
+            self._flush_current_state(saved)
+            return
 
         # ── Tab switching ──────────────────────
         if payload.startswith("switch:"):
@@ -1686,6 +1874,10 @@ class NotebookPanel(QWidget):
             )
 
         # ── Todo commands ──────────────────────
+        elif payload.startswith("todo:cleanup:"):
+            from . import addon_settings, save_addon_settings
+            addon_settings["todo_auto_cleanup"] = payload.endswith(":1")
+            save_addon_settings()
         elif payload == "todo:load":
             self._reload_todos()
         elif payload.startswith("todo:save:"):
@@ -1734,6 +1926,10 @@ class NotebookPanel(QWidget):
         self._pending_tool_switch = None
         if saved and target and target != self.current_tool:
             self._load_tool(target)
+        elif saved and self.current_tool == "todo":
+            self._consume_dashboard_completions()
+        elif not saved:
+            self._dashboard_completions = set()
 
     def _add_pdf_dialog(self) -> None:
         """Open a file-chooser and pass the chosen path back to JavaScript."""
@@ -2037,6 +2233,13 @@ class NotebookPanel(QWidget):
                     raise ValueError("PDF card fields must be strings")
                 front = front.strip()
                 back = back.strip()
+                from .pdf_card_types import validate, card_count
+                kind = raw_card.get('type', 'basic')
+                try:
+                    validate(kind, front, back)
+                except ValueError as error:
+                    self._notify_pdf_action(callback, False, _(str(error)))
+                    return
                 if not front:
                     self._notify_pdf_action(
                         callback, False, _("Every card needs a front side.")
@@ -2062,6 +2265,7 @@ class NotebookPanel(QWidget):
                 pages.sort()
                 cards.append(
                     {
+                        "type": kind,
                         "front": front,
                         "back": back,
                         "pages": pages,
@@ -2069,6 +2273,9 @@ class NotebookPanel(QWidget):
                     }
                 )
 
+            if sum(card_count(card) for card in cards) > MAX_PDF_BATCH_CARDS:
+                self._notify_pdf_action(callback, False, _("A PDF Card Creator session can contain at most {count} cards.").format(count=MAX_PDF_BATCH_CARDS))
+                return
             if total_chars > MAX_PDF_BATCH_CHARS:
                 self._notify_pdf_action(
                     callback,
@@ -2077,15 +2284,10 @@ class NotebookPanel(QWidget):
                 )
                 return
 
-            reviewer = getattr(mw, "reviewer", None)
-            defaults = mw.col.defaults_for_adding(
-                current_review_card=getattr(reviewer, "card", None)
-            )
-            preferred_notetype_id = defaults.notetype_id
             source_filename = os.path.basename(self._current_pdf_path) or _("PDF")
             undo_label = _("Create PDF cards")
             success_message = _("Created {count} cards in “{deck}”.").format(
-                count=len(cards), deck=deck_name
+                count=sum(card_count(c) for c in cards), deck=deck_name
             )
         except Exception as exc:
             print(f"Notebook PDF card batch validation failed: {exc}")
@@ -2095,39 +2297,19 @@ class NotebookPanel(QWidget):
             return
 
         def create_batch(col):
-            notetype = col.models.get(preferred_notetype_id)
-
-            def usable(candidate) -> bool:
-                return bool(
-                    candidate
-                    and candidate.get("type", MODEL_STD) == MODEL_STD
-                    and len(candidate.get("flds", [])) >= 2
-                )
-
-            if not usable(notetype):
-                notetype = next(
-                    (candidate for candidate in col.models.all() if usable(candidate)),
-                    None,
-                )
-            if not notetype:
-                raise RuntimeError("No standard Anki note type with two fields is available")
-
-            notes = []
-            for card in cards:
-                note = col.new_note(notetype)
-                if len(note.fields) < 2:
-                    raise RuntimeError("The selected Anki note type has fewer than two fields")
-                note.fields[0] = NotebookPanel._pdf_text_to_html(card["front"])
-                back_html = NotebookPanel._pdf_text_to_html(card["back"])
-                if card["include_source"]:
-                    back_html += _pdf_source_html(
-                        source_filename, card["pages"], pdf_id
-                    )
-                note.fields[1] = back_html
-                notes.append(note)
-
+            from .pdf_card_types import resolve
             undo_entry = col.add_custom_undo_entry(undo_label)
             try:
+                types = {kind: resolve(col, kind) for kind in dict.fromkeys(card['type'] for card in cards)}
+                notes = []
+                for card in cards:
+                    note = col.new_note(types[card['type']])
+                    note.fields[0] = NotebookPanel._pdf_text_to_html(card['front'])
+                    back_html = NotebookPanel._pdf_text_to_html(card['back'])
+                    if card['include_source']:
+                        back_html += _pdf_source_html(source_filename, card['pages'], pdf_id)
+                    note.fields[1] = back_html
+                    notes.append(note)
                 deck_result = col.decks.add_normal_deck_with_name(deck_name)
                 deck_id = deck_result.id
                 changes = col.add_notes(
@@ -2243,11 +2425,15 @@ def _ensure_dock() -> QDockWidget:
 
     _dock.visibilityChanged.connect(_on_visibility_changed)
 
+    from .sidebar_widths import attach
+    attach(mw, _dock, panel.current_tool,
+           lambda: panel.is_in_fullscreen or panel.is_embedded)
     mw.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, _dock)
     return _dock
 
 
 def _on_visibility_changed(visible: bool):
+    _sync_notebook_launcher()
     global _dock
     if not _dock:
         return
@@ -2261,9 +2447,161 @@ def _on_visibility_changed(visible: bool):
 
 # ── Integration Functions (called from __init__.py) ──
 
+_task_maintenance_timer = None
+_task_maintenance_day = None
+
+
+def _maintain_task_calendar():
+    global _task_maintenance_day
+    from datetime import date
+    if not mw or not mw.pm or not mw.col:
+        return
+    day = (db_path(), date.today().isoformat())
+    if day == _task_maintenance_day:
+        return
+    panel = _dock.widget() if _dock is not None else None
+    if isinstance(panel, NotebookPanel) and (panel._flush_in_progress or (panel.web and panel.current_tool == "todo")):
+        return  # The live manager applies the same rules and saves its own state.
+    if not _background_writer.is_idle():
+        return
+    try:
+        raw = load_todo_preview_snapshot(normalize=False)
+        if not isinstance(json.loads(raw), list):
+            return
+        normalized = _normalize_todo_body(raw)
+        if json.loads(raw) != json.loads(normalized):
+            if not _save_snapshot("todos", normalized, database_path=day[0], sqlite_timeout=0):
+                return
+        _task_maintenance_day = day
+        _refresh_dashboard_tasks()
+    except Exception as exc:
+        print(f"Task calendar maintenance failed: {exc}")
+
+
+def setup_task_calendar():
+    global _task_maintenance_timer, _task_maintenance_day
+    _task_maintenance_day = None
+    if _task_maintenance_timer is None:
+        _task_maintenance_timer = QTimer(mw)
+        _task_maintenance_timer.setInterval(60000)
+        _task_maintenance_timer.timeout.connect(_maintain_task_calendar)
+    _task_maintenance_timer.start()
+    QTimer.singleShot(0, _maintain_task_calendar)
+
+
 def setup_notebook_sidebar():
     # Verify the pinned offline dependency; never download executable JS at runtime.
     _ensure_pdfjs_async()
+
+
+def _sync_notebook_launcher():
+    try:
+        import importlib
+        launcher = getattr(importlib.import_module(__package__), "sidebar_widget_instance", None)
+        if launcher is not None:
+            launcher.sync_dock_button("IntegratedNotebookSidebarDock_Mobesa_v1")
+    except Exception as exc:
+        print(f"Notebook launcher sync failed: {exc}")
+
+
+def toggle_todo_sidebar():
+    panel = _dock.widget() if _dock is not None else None
+    if isinstance(panel, NotebookPanel) and panel.current_tool == "todo" and (
+        _dock.isVisible() or panel.is_in_fullscreen or panel.is_embedded
+    ):
+        if panel.fullscreen_window:
+            panel.fullscreen_window.close()
+        if panel.is_embedded:
+            panel.exit_window()
+        _dock.hide()
+        _sync_notebook_launcher()
+    else:
+        open_todo_sidebar()
+
+
+def _refresh_dashboard_tasks():
+    if not mw or mw.state != "deckBrowser":
+        return
+    try:
+        from . import addon_settings, daily_widgets
+        if addon_settings.get("daily_widget_content", "facts") == "tasks":
+            preview = daily_widgets.generate_todo_widget()
+            mw.deckBrowser.web.eval("document.querySelectorAll('.sp-todo-widget').forEach(el => {const t=document.createElement('template');t.innerHTML=" + json.dumps(preview) + ";el.replaceWith(t.content.querySelector('.sp-todo-widget'));});")
+    except Exception as exc:
+        print(f"Task preview refresh failed: {exc}")
+
+def complete_dashboard_task(task_id: str, _profile_path=None, _attempt=0):
+    """Complete against live editor state, or the latest durable snapshot.
+
+    Never create/show a dock. Deferred calls recheck both profile and editor
+    state, and wait for outstanding snapshot writes before reading from disk.
+    """
+    if not task_id or len(task_id) > 256 or not mw or not mw.pm:
+        return
+    path = db_path()
+    if _profile_path is not None and path != _profile_path:
+        return
+    panel = _dock.widget() if _dock is not None else None
+
+    def retry():
+        if _attempt < 50:
+            QTimer.singleShot(100, lambda: complete_dashboard_task(task_id, path, _attempt + 1))
+        else:
+            tooltip(_("Task could not be saved. Please try again."))
+
+    # Flushes can still enqueue a snapshot after their JS callback returns.
+    if isinstance(panel, NotebookPanel) and panel._flush_in_progress:
+        retry()
+        return
+    if isinstance(panel, NotebookPanel) and panel.web and panel.current_tool == "todo":
+        if not panel._page_ready:
+            retry()
+            return
+        pending = getattr(panel, "_dashboard_completions", set())
+        pending.add(task_id)
+        panel._dashboard_completions = pending
+        panel._consume_dashboard_completions()
+        return
+    if not _background_writer.is_idle():
+        retry()
+        return
+    try:
+        tasks = json.loads(load_todo_preview_snapshot())
+        if not isinstance(tasks, list):
+            retry()
+            return
+        changed = False
+        for item in tasks:
+            if isinstance(item, dict) and str(item.get("id")) == task_id and not item.get("done"):
+                item["done"] = True
+                from datetime import date
+                item["completed_on"] = date.today().isoformat()
+                changed = True
+        # This main-thread operation cannot interleave with opening/editing the
+        # manager. Use the existing transactional save and recovery fallback,
+        # without waiting on database locks or creating any additional WebView.
+        if changed and not _save_snapshot("todos", _normalize_todo_body(json.dumps(tasks)), database_path=path, sqlite_timeout=0):
+            tooltip(_("Task could not be saved. Please try again."))
+            return
+        _refresh_dashboard_tasks()
+    except Exception as exc:
+        print(f"Dashboard task completion failed: {exc}")
+        tooltip(_("Task could not be saved. Please try again."))
+
+
+def open_todo_sidebar():
+    dock = _ensure_dock()
+    panel = dock.widget()
+    if isinstance(panel, NotebookPanel) and not panel.web:
+        panel.current_tool = "todo"
+    dock.show()
+    dock.raise_()
+    if isinstance(panel, NotebookPanel):
+        panel.load_content()
+        panel._on_bridge_cmd(f"{ADDON_NAME_FOR_BRIDGE}:switch:todo")
+        if panel.fullscreen_window:
+            panel.fullscreen_window.raise_()
+    _sync_notebook_launcher()
 
 
 def toggle_notebook_dock():
@@ -2276,6 +2614,8 @@ def toggle_notebook_dock():
 
 
 def cleanup_notebook_sidebar():
+    if _task_maintenance_timer is not None:
+        _task_maintenance_timer.stop()
     global _dock
     if not _dock:
         return

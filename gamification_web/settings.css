@@ -1,0 +1,25 @@
+/* Match the dashboard statistics controls; retain the original hero grid. */
+.hero {position:relative;--hero-control-inset:16px;}
+.hero-actions {position:absolute;top:var(--hero-control-inset);right:var(--hero-control-inset);display:flex;align-items:center;gap:7px;}
+.hero-actions .stats-control-btn {width:20px;height:20px;min-height:0;padding:0;border:0;border-radius:50%;display:grid;place-items:center;font-family:inherit;font-size:12px;font-weight:600;line-height:1;color:var(--stats-control-color,#86868B);background:var(--stats-control-bg,#E5E5EA);cursor:pointer;user-select:none;opacity:.8;transition:opacity .2s ease;}
+html.dark .hero-actions .stats-control-btn {color:var(--stats-control-color,#AAAAAA);background:var(--stats-control-bg,#404040);}
+.hero-actions .stats-control-btn:hover {opacity:1;}
+.hero-actions .stats-control-btn svg {width:12px;height:12px;display:block;}
+.hero-actions button:focus-visible,.gamification-overlay button:focus-visible,.gamification-overlay input:focus-visible {outline:2px solid var(--accent-bright);outline-offset:2px;}
+.gamification-overlay {position:fixed;inset:10px 10px auto;margin:0 auto;width:calc(100% - 20px);max-width:560px;max-height:calc(100% - 20px);padding:0;border:1px solid var(--border);border-radius:14px;background:var(--bg);color:var(--text);box-shadow:0 12px 40px #0003;overflow:hidden;}
+.gamification-overlay[open] {display:flex;flex-direction:column;}
+.gamification-overlay::backdrop {background:#0005;}
+.gami-dialog-body {overflow-y:auto;padding:12px;min-height:0;scrollbar-width:thin;}
+.gami-dialog-body::-webkit-scrollbar {width:4px;}
+.gami-dialog-body::-webkit-scrollbar-thumb {background:var(--border);border-radius:4px;}
+.gami-dialog-body .card {padding:12px;border-radius:10px;}
+.gami-dialog-body .card:last-child {margin-bottom:0;}
+.gami-close {border:0;background:transparent;color:var(--muted);width:28px;height:28px;font-size:22px;cursor:pointer;border-radius:6px;}
+.gami-close:hover {background:var(--track);color:var(--text);}
+.gami-section-title {font-size:13px;font-weight:650;margin:0 0 12px;}
+.gami-hint {font-size:12px;line-height:1.5;color:var(--muted);margin:10px 0 0;}
+.gami-dialog-body .guide-body {margin:0;font-size:12px;}
+.gami-dialog-body input:disabled {opacity:.5;}
+body.gami-dialog-open {overflow:hidden;}
+
+@media(max-width:359px) {.hero {--hero-control-inset:12px;}}

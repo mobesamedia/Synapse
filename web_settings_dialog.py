@@ -35,7 +35,7 @@ try:
     from . import constants
 except Exception:
     class _C:  # pragma: no cover - safety fallback
-        addon_path = "."; icons_folder = "."; ADDON_DISPLAY_NAME = "SynapsePro"; ADDON_VERSION = ""
+        addon_path = "."; icons_folder = "."; ADDON_DISPLAY_NAME = "Synapse"; ADDON_VERSION = ""
     constants = _C()  # type: ignore
 
 try:
@@ -65,7 +65,7 @@ try:
     from aqt.qt import (
         QDialog, QDialogButtonBox, QKeySequence, QKeySequenceEdit, QLabel,
         QPushButton, QVBoxLayout, QDesktopServices, QUrl, Qt, pyqtSignal,
-        QBuffer, QIODevice, QSize,
+        QBuffer, QIODevice, QSize, QTimer,
     )
     from PyQt6.QtWebEngineWidgets import QWebEngineView
     from PyQt6.QtWebEngineCore import QWebEnginePage, QWebEngineSettings
@@ -129,7 +129,7 @@ SUPPORTERS = [
         "name": "FleggaBDog69",
         "description": (
             "Contributed feature ideas through a GitHub pull request. The concepts "
-            "were reviewed and adapted to fit SynapsePro."
+            "were reviewed and adapted to fit Synapse."
         ),
         "contributions": [
             "Configurable keyboard shortcuts for individual features",
@@ -143,7 +143,7 @@ SUPPORTERS = [
         "name": "o3LL",
         "description": (
             "Helped through a GitHub pull request. The changes were reviewed "
-            "and adapted to fit SynapsePro."
+            "and adapted to fit Synapse."
         ),
         "contributions": [
             "llama.cpp server support as a local AI provider",
@@ -153,24 +153,62 @@ SUPPORTERS = [
         "name": "betterpull10",
         "description": (
             "Helped through a GitHub issue report and pull request. The changes "
-            "were reviewed and adapted to fit SynapsePro."
+            "were reviewed and adapted to fit Synapse."
         ),
         "contributions": [
             "Excluded manual rescheduling entries from the Consistency chart",
         ],
     },
+    {
+        "name": "Norbiox",
+        "description": "Recommended and helped implement Polish language support through GitHub. The contribution was reviewed and adapted to fit Synapse.",
+        "contributions": [
+            "Polish language integration"
+        ]
+    },
+    {
+        "name": "Eduardo5665",
+        "description": "Suggested this feature on Reddit. Thank you for helping shape Synapse.",
+        "contributions": [
+            "The Roadmap concept that developed into FreeMap"
+        ]
+    },
+    {
+        "name": "Chemical_Pea_7969",
+        "description": "Suggested this feature on Reddit. Thank you for helping shape Synapse.",
+        "contributions": [
+            "Image nodes for visual maps"
+        ]
+    },
+    {
+        "name": "MeepPleasechooseme",
+        "description": "Suggested this feature on Reddit. Thank you for helping shape Synapse.",
+        "contributions": [
+            "Timer Analytics showing recorded study time by deck"
+        ]
+    },
+    {
+        "name": "RuL4",
+        "description": "Suggested this feature on Reddit. Thank you for helping shape Synapse.",
+        "contributions": [
+            "Additional card types in the PDF Card Creator"
+        ]
+    },
 ]
 
 SUPPORTERS_NOTE = (
     "Thank you as well to everyone else who shares suggestions. I always need some "
-    "time to review each idea and adapt it to fit the direction of SynapsePro, so "
+    "time to review each idea and adapt it to fit the direction of Synapse, so "
     "please do not take it personally if I cannot implement everything. It is a "
     "great honor that people want to contribute to my project."
 )
 
 # Config keys that are simple on/off toggles.
 _TOGGLE_KEYS = [
-    "minimal_dashboard_enabled",
+    "workspace_mindmap_tab", "workspace_roadmap_tab",
+    "gamification_popups_enabled", "gamification_popup_rank",
+    "gamification_popup_level", "gamification_popup_challenge",
+    "minimal_dashboard_enabled", "dashboard_wide_deck_list",
     "gamification_widgets_enabled", "study_plan_widget_enabled",
     "daily_fact_widget_enabled", "deadline_bar_enabled",
     "statistics_widget_enabled", "deck_overview_enabled", "mindmap_enabled",
@@ -225,7 +263,7 @@ if _QT_AVAILABLE:
                 print(f"WebSettings: not available (html exists={os.path.exists(html)})")
                 return
 
-            self.setWindowTitle(f"{getattr(constants, 'ADDON_DISPLAY_NAME', 'SynapsePro')} - {_('Settings')}")
+            self.setWindowTitle(f"{getattr(constants, 'ADDON_DISPLAY_NAME', 'Synapse')} - {_('Settings')}")
             self.resize(900, 640)
             self.setMinimumSize(640, 460)
 
@@ -258,7 +296,7 @@ if _QT_AVAILABLE:
             # otherwise the view flashes white in dark mode while loading.
             try:
                 self._page.setBackgroundColor(
-                    QColor("#1c1c1e") if self._is_night() else QColor("#ffffff"))
+                    QColor("#2c2c2c") if self._is_night() else QColor("#ffffff"))
             except Exception:
                 pass
 
@@ -270,6 +308,8 @@ if _QT_AVAILABLE:
 
         def get_new_settings(self) -> Dict:
             s = dict(self._result or {})
+            from .deck_overview_options import normalize
+            s.update(normalize(s))
             # custom colours are managed natively (see _edit_theme), not in JS.
             s["custom_theme_colors"] = self._custom_theme_colors
             try:
@@ -302,6 +342,12 @@ if _QT_AVAILABLE:
                     self._on_save(payload)
                 elif action == "cancel":
                     self.reject()
+                elif action == "developerUnlock":
+                    if not getattr(self, '_developer_opening', False):
+                        self._developer_opening = True
+                        # Leave the WebEngine console callback before opening
+                        # another dialog with its own event loop.
+                        QTimer.singleShot(0, self._open_developer_console)
                 elif action == "editTheme":
                     self._edit_theme()
                 elif action == "editShortcut":
@@ -317,6 +363,23 @@ if _QT_AVAILABLE:
                         QDesktopServices.openUrl(QUrl(payload))
             except Exception as e:
                 print(f"WebSettings: error handling '{action}': {e}")
+
+        def _open_developer_console(self):
+            try:
+                from . import developer_console
+                developer_console.unlock()
+                message = _("Developer console unlocked")
+                self._page.runJavaScript(
+                    "window.developerConsoleStatus && developerConsoleStatus(%s, true);" % json.dumps(message))
+                developer_console.open_console(self)
+            except Exception as exc:
+                from aqt.utils import showWarning
+                message = _("Could not open the developer console: {}" ).format(str(exc))
+                self._page.runJavaScript(
+                    "window.developerConsoleStatus && developerConsoleStatus(%s, true);" % json.dumps(message))
+                showWarning(message, parent=self)
+            finally:
+                self._developer_opening = False
 
         def _inject(self):
             if self._injected:
@@ -541,6 +604,8 @@ if _QT_AVAILABLE:
                     | QDialogButtonBox.StandardButton.Cancel,
                     parent=dlg,
                 )
+                from .locales import translate_standard_buttons
+                translate_standard_buttons(buttons)
                 clear_button = buttons.addButton(
                     _("Clear Shortcut"), QDialogButtonBox.ButtonRole.ResetRole
                 )
@@ -686,18 +751,30 @@ if _QT_AVAILABLE:
 
         def _build_payload(self) -> Dict[str, Any]:
             cfg = self.current_config
+            from .deck_overview_options import payload as deck_payload
+            from .dashboard_appearance import surface_effects_css
             active = cfg.get("active_color_theme", "ocean")
             accent, accent_press = self._accent_for(active)
             conf = {
                 "language": cfg.get("language", "auto"),
                 "fact_theme": cfg.get("fact_theme", "Medical"),
+                "daily_widget_content": cfg.get("daily_widget_content", "facts"),
                 "stats_time_range": int(cfg.get("stats_time_range", 7) or 7),
                 "sidebar_visibility_mode": cfg.get("sidebar_visibility_mode", "always_show"),
                 "active_theme": cfg.get("active_theme", "medical_theme.css"),
                 "active_color_theme": active,
                 "custom_bg_light": cfg.get("custom_bg_light", "#f5f5f7"),
                 "custom_bg_dark": cfg.get("custom_bg_dark", "#1f1f21"),
+                "dashboard_surface_controls_expanded": cfg.get("dashboard_surface_controls_expanded"),
+                "dashboard_surface_opacity": cfg.get("dashboard_surface_opacity", 100),
+                "dashboard_glass_enabled": cfg.get("dashboard_glass_enabled", False) is True,
+                "dashboard_glass_strength": cfg.get("dashboard_glass_strength", 6),
+                "dashboard_widget_shadow": cfg.get("dashboard_widget_shadow", 0),
+                "surface_effects_css": surface_effects_css(),
                 "custom_background_enabled": bool(cfg.get("custom_background_enabled", False)),
+                "custom_background_review_enabled": bool(cfg.get("custom_background_review_enabled", False)),
+                "custom_background_review_intensity": cfg.get("custom_background_review_intensity", 20),
+                "custom_background_review_blur": cfg.get("custom_background_review_blur", 8),
                 "custom_background_blur": int(cfg.get("custom_background_blur", 0) or 0),
                 "custom_background_overlay": int(cfg.get("custom_background_overlay", 0) or 0),
                 "custom_background_position": (
@@ -715,12 +792,19 @@ if _QT_AVAILABLE:
             for key, fallback in _COUNTER_COLOR_DEFAULTS.items():
                 conf[key] = _safe_counter_color(cfg.get(key), fallback)
             for k in _TOGGLE_KEYS:
-                default = False if k == "minimal_dashboard_enabled" else True
+                default = k not in ("minimal_dashboard_enabled", "gamification_popup_level")
                 conf[k] = bool(cfg.get(k, default))
             banner_fallback = self._banner_fallback_uri()
             return {
-                "displayName": getattr(constants, "ADDON_DISPLAY_NAME", "SynapsePro"),
+                "deckOverview": deck_payload(cfg, _),
+                "initialPage": getattr(self, "_initial_page", None),
+                "initialSection": getattr(self, "_initial_section", None),
+                "displayName": getattr(constants, "ADDON_DISPLAY_NAME", "Synapse"),
                 "version": getattr(constants, "ADDON_VERSION", ""),
+                "developerLabels": {
+                    "opening": _("Opening developer console..."),
+                    "open": _("Open developer console"),
+                },
                 "isDark": self._is_night(),
                 "translations": _web_translations("settings"),
                 "accent": accent,

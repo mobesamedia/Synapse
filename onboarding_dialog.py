@@ -26,17 +26,15 @@ import json
 
 # --- Translation ---
 try:
-    from .locales import _, TRANSLATIONS
+    from .locales import _, translate_for_language
 except ImportError:
     def _(text): return text  # type: ignore
-    TRANSLATIONS = {}  # type: ignore
+    def translate_for_language(text, lang): return text  # type: ignore
 
 try:
     from .onboarding_terms import TERMS_TRANSLATIONS
-    from .web_translations import WEB_TRANSLATIONS
 except ImportError:
     from onboarding_terms import TERMS_TRANSLATIONS  # type: ignore
-    from web_translations import WEB_TRANSLATIONS  # type: ignore
 
 # ── Theme mapping ──────────────────────────────────────────────────────────────
 # Maps the 1-based index of the theme card (img_theme_N.png) to the
@@ -113,7 +111,7 @@ if _QT_AVAILABLE:
             self.addon_path = addon_path
             self._result: dict = {}
 
-            self.setWindowTitle(_("SynapsePro"))
+            self.setWindowTitle(_("Synapse"))
             self.setWindowFlags(
                 Qt.WindowType.Dialog |
                 Qt.WindowType.WindowCloseButtonHint
@@ -138,7 +136,7 @@ if _QT_AVAILABLE:
                 try:
                     dark = bool(parent and parent.pm and parent.pm.night_mode())
                     self._page.setBackgroundColor(
-                        QColor("#1f2329") if dark else QColor("#ffffff"))
+                        QColor("#2c2c2c") if dark else QColor("#ffffff"))
                 except Exception:
                     pass
                 self.view.load(QUrl.fromLocalFile(html_path))
@@ -150,25 +148,25 @@ if _QT_AVAILABLE:
             if not ok:
                 return
             error_sources = (
-                "SynapsePro error", "Show details", "Hide details", "Copy error",
+                "Synapse error", "Show details", "Hide details", "Copy error",
                 "Copied!", "Dismiss", "Unexpected error", "Unexpected error (async)",
                 "Your data is safe. Please screenshot the details and send them to help.synapse.pro@gmail.com.",
                 "(no stack trace available)",
             )
             errors = {
                 lang: {
-                    source: source if lang == "en" else WEB_TRANSLATIONS[source][lang]
+                    source: translate_for_language(source, lang)
                     for source in error_sources
                 }
-                for lang in ("en", "de", "es", "ko", "pt", "fr", "vi", "zh", "hi")
+                for lang in ("en", "de", "es", "ko", "pt", "fr", "vi", "zh", "hi", "pl")
             }
             theme_sources = ("Ocean", "Horizon", "Forest", "Dusty", "Deluge", "Orchid")
             themes = {
                 lang: [
-                    source if lang == "en" else TRANSLATIONS.get(source, {}).get(lang, source)
+                    translate_for_language(source, lang)
                     for source in theme_sources
                 ]
-                for lang in ("en", "de", "es", "ko", "pt", "fr", "vi", "zh", "hi")
+                for lang in ("en", "de", "es", "ko", "pt", "fr", "vi", "zh", "hi", "pl")
             }
             try:
                 dark = bool(self.parent() and self.parent().pm and self.parent().pm.night_mode())

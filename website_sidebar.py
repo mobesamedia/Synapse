@@ -8,8 +8,11 @@ from typing import Optional, List, Dict, Tuple
 import os
 import urllib.parse
 
+BROWSER_HOME_URL = "https://www.synapse-pro.de/browser"
+
 # --- Local Imports ---
-from . import constants
+from . import constants, diagnostics
+from .browser_fallback import is_google_url, needs_search_help, duckduckgo_url
 
 try:
     from .locales import _
@@ -20,10 +23,10 @@ except ImportError:
 # --- PyQt Imports ---
 _qt_available = False
 try:
-    from aqt.qt import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton,
+    from aqt.qt import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel,
                         QInputDialog, QDockWidget, QSizePolicy, QMessageBox,
                         QMenu, QAction, QIcon, QPixmap, QPainter, QUrl, QTimer,
-                        QSize, Qt, QByteArray)
+                        QSize, Qt, QByteArray, QDesktopServices)
     from PyQt6.QtWebEngineWidgets import QWebEngineView
     from PyQt6.QtWebEngineCore import QWebEngineProfile, QWebEnginePage, QWebEngineSettings
     WebAction = QWebEnginePage.WebAction
@@ -34,6 +37,7 @@ except ImportError as e:
     QWidget, QVBoxLayout, QHBoxLayout, QPushButton = object, object, object, object
     QInputDialog, QDockWidget, QSizePolicy, QMessageBox = object, object, object, object
     QUrl, QTimer, QSize, Qt = object, object, object, None
+    QDesktopServices = object
     QByteArray = object; QIcon = object; QPixmap = object; QPainter = object
     QWebEngineView, QWebEngineProfile, QWebEnginePage, QWebEngineSettings = object, object, object, object
     QAction = object; WebAction = object; QMenu = object
@@ -72,9 +76,9 @@ def _toolbar_palette() -> dict:
         night = False
     if night:
         return {
-            "bar": "#2c2c2e", "line": "rgba(255,255,255,0.12)",
-            "text": "#e6e6e6", "hover": "#3a3a3c", "pressed": "#48484a",
-            "muted": "#6a6a6a", "select_bg": "#3a3a3c",
+            "bar": "#252525", "line": "rgba(255,255,255,0.12)",
+            "text": "#ffffff", "hover": "#414141", "pressed": "#505050",
+            "muted": "#7e7e7e", "select_bg": "#414141",
         }
     return {
         "bar": "#f2f2f2", "line": "rgba(0,0,0,0.10)",
@@ -355,6 +359,8 @@ def _load_website_state() -> Dict:
             raw_url = mw.col.get_config(constants.CONFIG_KEY_LAST_OPENED_URL)
             if isinstance(raw_url, str):
                 state["last_url"] = raw_url
+            if not _save_website_state(state, verify=True):
+                return state
             for key in (constants.CONFIG_KEY_CUSTOM_SITES,
                         constants.CONFIG_KEY_LAST_OPENED_URL):
                 remover = getattr(mw.col, "remove_config", None)
@@ -362,24 +368,31 @@ def _load_website_state() -> Dict:
                 else: mw.col.set_config(key, None)
         except Exception as exc:
             print(f"WS Warn: Could not migrate website state: {exc}")
-    _save_website_state(state)
     return state
 
 
-def _save_website_state(state: Dict) -> None:
+def _save_website_state(state: Dict, *, verify: bool = False) -> bool:
     path = _website_state_path()
     if not path:
-        return
+        return False
     tmp = path + ".tmp"
     try:
         with open(tmp, "w", encoding="utf-8") as handle:
             json.dump(state, handle, indent=2, ensure_ascii=False)
+            if verify:
+                handle.flush()
+                os.fsync(handle.fileno())
         os.replace(tmp, path)
+        if verify:
+            with open(path, "r", encoding="utf-8") as handle:
+                return json.load(handle) == state
+        return True
     except Exception as exc:
         print(f"WS Warn: Could not save local website state: {exc}")
         try:
             if os.path.exists(tmp): os.remove(tmp)
         except OSError: pass
+        return False
 
 def load_custom_sites() -> List[Dict[str, str]]:
     sites = _load_website_state().get("custom_sites")
@@ -467,6 +480,37 @@ def load_url_in_webview(webview: Optional[QWebEngineView], url_str: str):
         webview.setHtml(error_html)
 
 # --- UI Construction Helpers ---
+def _open_browser_url(url: str) -> None:
+    if not _qt_available or QDesktopServices is object:
+        return
+    target = QUrl(url)
+    if target.isValid() and target.scheme() in ("http", "https") and target.host():
+        if not QDesktopServices.openUrl(target):
+            showWarning(_("Could not open the system browser."))
+
+
+def open_current_in_browser() -> None:
+    if sidebar_webview is None:
+        return
+    url = sidebar_webview.url().toString()
+    # Use Google's original destination instead of moving its CAPTCHA/session
+    # token to another browser, where that challenge may no longer be valid.
+    parsed = urllib.parse.urlsplit(url)
+    host = (parsed.hostname or "").lower()
+    if host in ("www.google.com", "google.com") and parsed.path.startswith("/sorry/"):
+        candidate = urllib.parse.parse_qs(parsed.query).get("continue", [""])[0]
+        destination = urllib.parse.urlsplit(candidate)
+        if destination.scheme in ("http", "https") and destination.hostname in ("www.google.com", "google.com"):
+            url = candidate
+    _open_browser_url(url)
+
+
+def search_in_browser(text: str) -> None:
+    if text and QTimer is not object:
+        url = "https://www.google.com/search?" + urllib.parse.urlencode({"q": text})
+        QTimer.singleShot(0, lambda: _open_browser_url(url))
+
+
 def create_button_pair(name: str, url: str, index: int) -> Optional[QWidget]:
     if QWidget is object or QHBoxLayout is object or QPushButton is object or QSizePolicy is object or not sidebar_webview or not _qt_available:
         return None
@@ -646,6 +690,13 @@ def create_website_dock() -> Optional[QDockWidget]:
         _apply_window_icon(window_button)
         nav_button_layout.addWidget(back_button); nav_button_layout.addWidget(forward_button)
         nav_button_layout.addWidget(refresh_button); nav_button_layout.addStretch(1)
+        external_button = QPushButton("↗")
+        external_button.setObjectName("synapseOpenBrowser")
+        external_button.setStyleSheet(_icon_style)
+        external_button.setToolTip(_("Open in browser"))
+        external_button.setAccessibleName(_("Open in browser"))
+        qconnect(external_button.clicked, open_current_in_browser)
+        nav_button_layout.addWidget(external_button)
         nav_button_layout.addWidget(window_button)
         toolbar_layout.addLayout(nav_button_layout)
         main_layout.addWidget(toolbar_widget)
@@ -656,6 +707,7 @@ def create_website_dock() -> Optional[QDockWidget]:
         sidebar_webview.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         page = QWebEnginePage(website_profile, sidebar_webview)
         sidebar_webview.setPage(page)
+        diagnostics.attach_webview(sidebar_webview)
         settings = sidebar_webview.settings()
         attrs_to_set = [
             (QWebEngineSettings.WebAttribute.JavascriptEnabled, True),
@@ -667,10 +719,64 @@ def create_website_dock() -> Optional[QDockWidget]:
             try: settings.setAttribute(attr, value)
             except AttributeError: pass
         sidebar_webview.setUrl(QUrl("about:blank"))
+        fallback = QWidget(container_widget)
+        fallback.setObjectName("synapseSearchHelp")
+        hint_layout = QVBoxLayout(fallback)
+        hint_layout.setContentsMargins(12, 10, 12, 10)
+        hint_layout.setSpacing(8)
+        hint = QLabel(_("Google is having trouble loading or requests verification. You can try DuckDuckGo instead. Home stays unchanged."))
+        hint.setWordWrap(True)
+        hint.setMinimumWidth(0)
+        hint.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Preferred)
+        hint_layout.addWidget(hint)
+        actions = QHBoxLayout()
+        switch_button = QPushButton(_("Try DuckDuckGo"))
+        dismiss_button = QPushButton("×")
+        dismiss_button.setAccessibleName(_("Dismiss"))
+        dismiss_button.setToolTip(_("Dismiss"))
+        dismiss_button.setFixedWidth(28)
+        actions.addWidget(switch_button)
+        actions.addStretch(1)
+        actions.addWidget(dismiss_button)
+        hint_layout.addLayout(actions)
+        fallback.setStyleSheet(_search_help_style())
+        fallback.hide()
+        main_layout.addWidget(fallback)
+        view = sidebar_webview
+        dismissed_url = [None]
+        def offer_fallback(url=None, ok=True):
+            current = view.url().toString()
+            if url is not None:
+                dismissed_url[0] = None
+            fallback.setVisible(current != dismissed_url[0] and needs_search_help(current, ok))
+        def inspect_loaded_page(ok):
+            offer_fallback(ok=ok)
+            if ok:
+                _sync_browser_home_theme()
+            current = view.url().toString()
+            if not ok or not is_google_url(current):
+                return
+            # One small check after a Google load, not a polling loop or a
+            # text scan of search results that might merely discuss CAPTCHAs.
+            def inspected(blocked):
+                if sidebar_webview is not view:
+                    return
+                if current == view.url().toString() and current != dismissed_url[0]:
+                    fallback.setVisible(needs_search_help(current, ok, bool(blocked)))
+            view.page().runJavaScript("Boolean(document.querySelector('form[action*=\"/sorry/\"], #captcha-form, .g-recaptcha, iframe[src*=\"recaptcha/api2/anchor\"]'))", inspected)
+        def switch_search():
+            load_url_in_webview(view, duckduckgo_url(view.url().toString()))
+        def dismiss_hint():
+            dismissed_url[0] = view.url().toString()
+            fallback.hide()
+        qconnect(view.urlChanged, offer_fallback)
+        qconnect(view.loadFinished, inspect_loaded_page)
+        qconnect(switch_button.clicked, switch_search)
+        qconnect(dismiss_button.clicked, dismiss_hint)
         main_layout.addWidget(sidebar_webview)
 
         if qconnect and sidebar_webview:
-             qconnect(home_button_widget.clicked, partial(load_url_in_webview, webview=sidebar_webview, url_str="https://www.synapse-pro.de/browser"))
+             qconnect(home_button_widget.clicked, partial(load_url_in_webview, webview=sidebar_webview, url_str=BROWSER_HOME_URL))
         else:
              home_button_widget.setEnabled(False)
 
@@ -686,6 +792,9 @@ def create_website_dock() -> Optional[QDockWidget]:
             forward_action = page.action(action_enum.Forward)
             reload_action = page.action(action_enum.Reload)
             if qconnect and back_button and forward_button and refresh_button:
+                qconnect(back_button.clicked, lambda: diagnostics.record('browser.back'))
+                qconnect(forward_button.clicked, lambda: diagnostics.record('browser.forward'))
+                qconnect(refresh_button.clicked, lambda: diagnostics.record('browser.reload'))
                 qconnect(back_button.clicked, back_action.trigger)
                 qconnect(forward_button.clicked, forward_action.trigger)
                 qconnect(refresh_button.clicked, reload_action.trigger)
@@ -698,6 +807,8 @@ def create_website_dock() -> Optional[QDockWidget]:
 
         sidebar_dock.setWidget(container_widget)
         sidebar_dock.setVisible(False)
+        from .sidebar_widths import attach
+        attach(mw, sidebar_dock, "website", lambda: website_window is not None)
         mw.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, sidebar_dock)
         print(f"WS Info: New dock created and added successfully.")
 
@@ -758,11 +869,7 @@ def open_website_window():
     except Exception:
         cur = ""
     if not cur or cur == "about:blank" or cur.startswith("data:text/html"):
-        last_url = load_last_opened_url()
-        target = last_url if (last_url and last_url != "about:blank"
-                              and not last_url.startswith("data:text/html")) \
-            else "https://www.synapse-pro.de/browser"
-        load_url_in_webview(sidebar_webview, target)
+        load_url_in_webview(sidebar_webview, BROWSER_HOME_URL)
 
     # Detach the dock's content widget and hide the (now empty) dock.
     content = sidebar_dock.widget()
@@ -845,24 +952,52 @@ def toggle_website_dock():
             sidebar_dock.show()
             sidebar_dock.raise_()
 
-            if sidebar_webview:
-                last_url = load_last_opened_url()
-                if last_url and last_url != "about:blank" and not last_url.startswith("data:text/html"):
-                    print(f"WS Info: Loading last opened URL: {last_url}")
-                    load_url_in_webview(sidebar_webview, last_url)
-                else:
-                    print("WS Info: No last URL found. Loading default start page: Synapse Browser.")
-                    load_url_in_webview(sidebar_webview, "https://www.synapse-pro.de/browser")
-            else:
+            if sidebar_webview and sidebar_webview.url().toString() in ("", "about:blank"):
+                load_url_in_webview(sidebar_webview, BROWSER_HOME_URL)
+            elif not sidebar_webview:
                 print("WS Warn: Sidebar webview not available on toggle show.")
     except Exception as e:
         print(f"WS Error toggling dock visibility: {e}")
         traceback.print_exc()
 
+def _sync_browser_home_theme() -> None:
+    """Style only our home page, never sites visited by the user."""
+    if sidebar_webview is None:
+        return
+    try:
+        from .browser_appearance import home_theme_script, is_home_url
+        if not is_home_url(sidebar_webview.url().toString()):
+            return
+        night = bool(mw and mw.pm.night_mode())
+        sidebar_webview.page().runJavaScript(home_theme_script(night))
+    except Exception as error:
+        print(f"SynapsePro: browser home theme refresh failed: {error}")
+
+
 # --- Theme Refresh Function ---
+def _search_help_style():
+    c = _toolbar_palette()
+    return f"""
+    QWidget#synapseSearchHelp {{ background:{c['bar']}; border:1px solid {c['line']}; border-radius:8px; }}
+    QWidget#synapseSearchHelp QLabel {{ background:transparent; color:{c['text']}; border:0; }}
+    QWidget#synapseSearchHelp QPushButton {{ background:{c['select_bg']}; color:{c['text']}; border:1px solid {c['line']}; border-radius:6px; padding:5px; min-height:18px; }}
+    QWidget#synapseSearchHelp QPushButton:hover {{ background:{c['hover']}; }}
+    QWidget#synapseSearchHelp QPushButton:focus {{ border:1px solid {c['text']}; }}
+    """
+
+
 def refresh_website_theme() -> None:
     """Re-apply theme-aware button styles after a colour-theme change."""
+    _sync_browser_home_theme()
     icon_style = _get_icon_button_style()
+    if sidebar_webview is not None and sidebar_webview.parentWidget() is not None:
+        hint = sidebar_webview.parentWidget().findChild(QWidget, "synapseSearchHelp")
+        if hint is not None:
+            hint.setStyleSheet(_search_help_style())
+    if sidebar_dock is not None:
+        external_button = sidebar_dock.findChild(QPushButton, "synapseOpenBrowser")
+        if external_button is not None:
+            external_button.setStyleSheet(icon_style)
     if home_button_widget is not None:
         try: home_button_widget.setStyleSheet(_get_raised_text_button_style())
         except Exception: pass
@@ -899,6 +1034,8 @@ def cleanup_website_sidebar():
     global back_button, forward_button, refresh_button
     global custom_button_containers
     global website_main_layout, website_window, window_button
+
+    diagnostics.record('browser.cleanup')
 
     # Only close the embedded Browser owned by this module.  A Notebook or
     # Mind Map may be the active embedded tool; restoring its container here
@@ -952,12 +1089,14 @@ def search_in_sidebar(text: str):
     active WebEngine event, which causes a silent C++ crash with no Python
     traceback. Always defer via QTimer.singleShot(0, …) instead.
     """
-    if not text: return
+    if not text or not mw or not getattr(mw, "col", None): return
+    collection = mw.col
     # Defer the actual work to the next event-loop tick so that Qt has fully
     # closed the context menu and the WebView is no longer in an active event
     # handler. This prevents the silent C++ crash.
     if QTimer is not object:
-        QTimer.singleShot(0, lambda: _execute_search_in_sidebar(text))
+        QTimer.singleShot(0, lambda: _execute_search_in_sidebar(text)
+                          if getattr(mw, "col", None) is collection else None)
     else:
         _execute_search_in_sidebar(text)
 
@@ -1033,6 +1172,8 @@ def on_context_menu(webview, menu):
 
         # Capture selected_text in the closure explicitly to avoid late-binding issues.
         qconnect(action.triggered, lambda checked=False, t=selected_text: search_in_sidebar(t))
+        browser_action = menu.addAction(_("Search '{}' in browser").format(display_text))
+        qconnect(browser_action.triggered, lambda checked=False, t=selected_text: search_in_browser(t))
 
 # --- Hooks registrieren ---
 if gui_hooks:

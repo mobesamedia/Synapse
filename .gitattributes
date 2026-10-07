@@ -1,2 +1,12 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Deferred source features are not part of release archives.
+archived_features export-ignore
+
+# Keep development material on GitHub, but omit it from source ZIP downloads.
+/tests export-ignore
+/docs export-ignore
+/scripts export-ignore
+/.gitignore export-ignore
+/.gitattributes export-ignore

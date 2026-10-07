@@ -24,7 +24,7 @@ except Exception as _e:
 
 # ── Local imports ─────────────────────────────────────────────────────────────
 try:
-    from .theme import palette as _palette, COLOR_THEMES, FONT_FAMILY as _FONT_FAMILY
+    from .theme import dialog_palette as _palette, COLOR_THEMES, FONT_FAMILY as _FONT_FAMILY
 except ImportError:
     def _palette(n): return {}  # type: ignore
     COLOR_THEMES = {}

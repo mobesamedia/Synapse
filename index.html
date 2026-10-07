@@ -3,11 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Pro Mind Map Tool - Complete (Dark Mode & Optimized Learning)</title>
+    <title>Pro MindMap Tool - Complete (Dark Mode & Optimized Learning)</title>
     <script>
+      const tutorialPractice = new URLSearchParams(location.search).get('practice') === '1';
+      if(tutorialPractice)window.workspaceText=text=>window.__WORKSPACE_I18N__?.[text]||text;
+      const practiceMemory = new Map();
+      const mindmapStorage = tutorialPractice ? {
+        getItem: key => practiceMemory.get(key) ?? null,
+        setItem: (key, value) => practiceMemory.set(key, String(value)),
+        removeItem: key => practiceMemory.delete(key)
+      } : {
+        getItem: key => window.localStorage.getItem(key),
+        setItem: (key, value) => window.localStorage.setItem(key, value),
+        removeItem: key => window.localStorage.removeItem(key)
+      };
       (function () {
         const root = document.documentElement;
-        if (window.__SYNAPSE_MM_DARK__ ||
+        if (typeof window.__SYNAPSE_MM_DARK__==='boolean' ? window.__SYNAPSE_MM_DARK__ :
             (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
           root.classList.add('dark');
         }
@@ -92,60 +104,60 @@
         }
 
         @media (prefers-color-scheme: dark) {
-            :root {
+            :root.dark {
                 --primary-color: #4da3ff; 
                 --primary-color-dark: #0056a4;
-                --secondary-color: #2C2C2C; 
+                --secondary-color: #252525; 
                 --danger-color: #e74c3c;
                 --success-color: #2ecc71;
-                --text-color: #e0e0e0;
-                --text-muted: #aaaaaa;
+                --text-color: #ffffff;
+                --text-muted: #b0b0b0;
                 --line-color: #555555;
-                --background-color: #191919; 
-                --canvas-bg: #191919; 
-                --grid-dot: #303030; 
+                --background-color: #2c2c2c; 
+                --canvas-bg: #2c2c2c; 
+                --grid-dot: #606060; 
                 --node-shadow: 0 4px 8px rgba(0,0,0,0.5);
                 --modal-bg: #2C2C2C; 
-                --input-bg: #404040; 
-                --input-border: #555;
-                --button-bg: #303030; 
-                --button-text: #e0e0e0;
-                --button-hover: #404040;
-                --header-border: #303030;
+                --input-bg: #414141; 
+                --input-border: #414141;
+                --button-bg: #252525; 
+                --button-text: #ffffff;
+                --button-hover: #414141;
+                --header-border: #414141;
                 --scrollbar-thumb: #555;
-                --snav-bg: #2c2c2e;
+                --snav-bg: #252525;
                 --snav-border: rgba(255,255,255,0.12);
-                --snav-text: #e6e6e6;
-                --snav-hover: #3a3a3c;
-                --snav-select-bg: #3a3a3c;
+                --snav-text: #ffffff;
+                --snav-hover: #414141;
+                --snav-select-bg: #414141;
             }
         }
         :root.dark {
             --primary-color: #4da3ff;
             --primary-color-dark: #0056a4;
-            --secondary-color: #2C2C2C;
+            --secondary-color: #252525;
             --danger-color: #e74c3c;
             --success-color: #2ecc71;
-            --text-color: #e0e0e0;
-            --text-muted: #aaaaaa;
+            --text-color: #ffffff;
+            --text-muted: #b0b0b0;
             --line-color: #555555;
-            --background-color: #191919;
-            --canvas-bg: #191919;
-            --grid-dot: #303030;
+            --background-color: #2c2c2c;
+            --canvas-bg: #2c2c2c;
+            --grid-dot: #606060;
             --node-shadow: 0 4px 8px rgba(0,0,0,0.5);
             --modal-bg: #2C2C2C;
-            --input-bg: #404040;
-            --input-border: #555;
-            --button-bg: #303030;
-            --button-text: #e0e0e0;
-            --button-hover: #404040;
-            --header-border: #303030;
+            --input-bg: #414141;
+            --input-border: #414141;
+            --button-bg: #252525;
+            --button-text: #ffffff;
+            --button-hover: #414141;
+            --header-border: #414141;
             --scrollbar-thumb: #555;
-            --snav-bg: #2c2c2e;
+            --snav-bg: #252525;
             --snav-border: rgba(255,255,255,0.12);
-            --snav-text: #e6e6e6;
-            --snav-hover: #3a3a3c;
-            --snav-select-bg: #3a3a3c;
+            --snav-text: #ffffff;
+            --snav-hover: #414141;
+            --snav-select-bg: #414141;
         }
         
         body {
@@ -156,7 +168,7 @@
         }
 
         #mindmap-loading-overlay {
-            position: fixed; inset: 0; z-index: 10000;
+            position: absolute; inset: 0; z-index: 10000;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             gap: 13px; background: var(--background-color); color: var(--text-muted);
             opacity: 1; visibility: visible; pointer-events: all;
@@ -207,32 +219,6 @@
         }
         #new-map-btn, #new-map-btn:hover { box-shadow: none !important; }
         #fullscreen-btn { display: inline-flex; align-items: center; justify-content: center; line-height: 1; }
-
-        /* Custom dropdown for the map switcher — the native <select> popup
-           renders mis-scaled in QtWebEngine (same bug as in the settings). */
-        #mindmap-select { display: none; }
-        #mindmap-select-btn {
-            padding: 5px 26px 5px 8px; border-radius: 6px; border: 1px solid var(--snav-border);
-            background-color: var(--snav-select-bg); color: var(--snav-text);
-            font-size: 13px; font-family: inherit; cursor: pointer; text-align: left;
-            max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%238e8e93' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
-            background-repeat: no-repeat; background-position: right 8px center;
-        }
-        #mindmap-select-menu {
-            position: fixed; z-index: 10000; background: var(--modal-bg);
-            border: 1px solid var(--snav-border); border-radius: 8px; padding: 4px;
-            overflow-y: auto; overflow-x: hidden;
-        }
-        .mm-dd-item {
-            position: relative; padding: 6px 12px 6px 24px; border-radius: 5px;
-            font-size: 13px; color: var(--text-color); cursor: pointer; white-space: nowrap;
-        }
-        .mm-dd-item:hover { background: var(--button-hover); }
-        .mm-dd-item.sel::before {
-            content: "✓"; position: absolute; left: 8px; top: 50%; transform: translateY(-50%);
-            font-size: 11px; font-weight: 700; color: var(--primary-color);
-        }
 
         .button {
             background-color: var(--button-bg); color: var(--primary-color); border: 1px solid var(--input-border); padding: 8px 14px;
@@ -374,7 +360,7 @@
         .zoom-controls { position: fixed; bottom: 58px; left: 20px; z-index: 100; display: flex; flex-direction: column; gap: 8px; transition: opacity 0.3s ease; }
         .zoom-btn { width: 42px; height: 42px; font-size: 22px; padding: 0; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15); color: var(--button-text); background-color: var(--button-bg); margin: 0; border-radius: 10px; }
         .zoom-btn:hover { box-shadow: 0 6px 18px rgba(0,0,0,0.22); }
-        .history-controls { position: fixed; bottom: 178px; left: 20px; z-index: 100; display: flex; flex-direction: column; gap: 8px; transition: opacity 0.3s ease; }
+        .history-controls { position: fixed; bottom: 228px; left: 20px; z-index: 100; display: flex; flex-direction: column; gap: 8px; transition: opacity 0.3s ease; }
         .history-btn { width: 34px; height: 34px; font-size: 16px; padding: 0; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15); color: var(--button-text); background-color: var(--button-bg); margin: 0; border-radius: 8px; }
         .history-btn:hover { box-shadow: 0 6px 18px rgba(0,0,0,0.22); }
 
@@ -622,14 +608,82 @@
             padding: 4px 12px; font-size: 0.9em; cursor: pointer; font-family: inherit;
         }
         #mm-error-banner .mm-eb-actions button:hover { background: var(--button-hover); }
+#context-menu {position:fixed;width:260px;box-sizing:border-box;padding:12px;max-height:calc(100vh - 115px);overflow:auto;max-width:calc(100vw - 28px);background:var(--workspace-menu,var(--modal-bg,#fff));color:var(--workspace-text,var(--text-color,#333));}
+#context-menu .node-menu-section + .node-menu-section{border-top:1px solid var(--workspace-border,var(--header-border,#ccc));margin-top:12px;padding-top:12px}
+#context-menu .context-menu-title{font:600 11px system-ui;color:var(--workspace-muted,var(--text-muted,#666));letter-spacing:.04em;margin:0 0 8px;padding:0;text-transform:uppercase}
+#context-menu button,#context-menu select {box-sizing:border-box;font:13px system-ui;color:var(--workspace-text,var(--text-color,#333));cursor:pointer;margin:0}
+#context-menu button:disabled,#context-menu input:disabled{opacity:.45;cursor:default}
+#context-menu button:focus-visible,#context-menu select:focus-visible,#context-menu input:focus-visible{outline:2px solid var(--primary-color);outline-offset:2px}
+#context-menu .node-menu-palette{display:flex;align-items:center;justify-content:space-between;gap:5px;padding:2px}
+#context-menu .color-swatch{flex:0 0 26px;width:26px;height:26px;border:2px solid var(--workspace-button,var(--button-bg,#fff));border-radius:50%;font-size:0;padding:0;box-shadow:0 1px 3px #0003}
+#context-menu .color-swatch[aria-pressed=true]{outline:2px solid var(--primary-color);outline-offset:2px}
+#context-menu .node-menu-setting{display:flex;align-items:center;justify-content:space-between;gap:12px;font:13px system-ui;margin-top:12px}
+#context-menu select{height:32px;border:1px solid var(--workspace-border,var(--header-border,#ccc));border-radius:7px;padding:0 8px;background:var(--workspace-button,var(--button-bg,#fff));min-width:0}
+#context-menu .node-menu-setting select{width:112px}
+#context-menu .node-menu-type{display:grid;grid-template-columns:32px 32px 1fr 32px;gap:7px;align-items:center}
+#context-menu .node-menu-toggle{height:32px;border:1px solid var(--workspace-border,var(--header-border,#ccc));border-radius:7px;background:var(--workspace-button,var(--button-bg,#fff));padding:0;font-size:14px}
+#context-menu .node-menu-toggle[aria-pressed=true]{background:var(--primary-color);border-color:var(--primary-color);color:white}
+#context-menu input[type=color]{box-sizing:border-box;width:32px;height:32px;padding:4px;border:1px solid var(--workspace-border,var(--header-border,#ccc));border-radius:7px;background:var(--workspace-button,var(--button-bg,#fff))}
+#context-menu input[type=color]::-webkit-color-swatch-wrapper{padding:0}#context-menu input[type=color]::-webkit-color-swatch{border:0;border-radius:3px}
+#context-menu .node-menu-reset{display:block;margin:8px 0 0 auto;padding:2px 0;min-height:24px;border:0;background:transparent;color:var(--workspace-muted,var(--text-muted,#666));font-size:12px}
+#context-menu .node-menu-action-row{display:flex;gap:4px}
+#context-menu .node-menu-action{display:flex;gap:9px;align-items:center;text-align:left;min-height:34px;padding:6px 8px;border:0;border-radius:7px;background:transparent;width:100%}
+#context-menu .node-menu-action svg{flex:none}
+#context-menu .node-menu-remove{display:grid;place-items:center;flex:0 0 32px;padding:0;border:0;border-radius:7px;background:transparent}
+#context-menu .node-menu-action:hover,#context-menu .node-menu-remove:hover,#context-menu .node-menu-toggle:hover{background:var(--workspace-hover,var(--button-hover,#eee))}
+#context-menu .node-menu-toggle[aria-pressed=true]:hover{background:var(--primary-color)}
+
     </style>
+<style id="synapse-keyboard-focus">
+body button:focus-visible, body input:focus-visible, body select:focus-visible,
+body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-visible {
+  outline: 2px solid var(--accent, var(--primary-color, #0071d3));
+  outline-offset: 2px;
+}
+</style>
+<style id="mindmap-guided-tutorial">
+.tour-dialog,.tour-invitation {box-sizing:border-box;color:var(--text-color);background:var(--background-color);border:1px solid var(--header-border);border-radius:12px;max-width:calc(100vw - 16px);padding:16px;}
+.tour-dialog[open] {display:flex;flex-direction:column;width:1000px;height:calc(100vh - 16px);max-height:900px;padding:0;overflow:hidden;}
+.tour-dialog::backdrop,.tour-invitation::backdrop {background:rgba(0,0,0,.35);}
+.tour-dialog-bar {display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px;flex-shrink:0;font-size:13px;}
+.tour-dialog-bar button {flex-shrink:0;}
+.tour-dialog iframe {border:0;width:100%;flex:1;min-height:0;}
+.tour-invitation {width:460px;line-height:1.5;padding:24px;max-height:calc(100vh - 24px);overflow:auto;}
+.tour-invitation h2 {font-size:20px;line-height:1.25;margin:0 0 12px;}
+.tour-invitation h3 {font-size:14px;margin:0 0 8px;}
+.tour-intro-summary {margin:0 0 20px;}
+.tour-intro-steps {margin-bottom:20px;}
+.tour-intro-steps ul {padding-left:20px;margin:0;}
+.tour-intro-steps li + li {margin-top:6px;}
+.tour-intro-note {padding:12px 14px;border:1px solid var(--header-border);border-radius:8px;background:var(--button-bg);}
+.tour-intro-note p {font-size:13px;margin:0;}
+.tour-intro-exit {font-size:13px;margin:12px 0 20px;}
+.tour-invitation .tour-actions {flex-wrap:wrap;gap:10px;}
+@media(max-width:400px) {.tour-invitation {padding:18px;}}
+#tour-guide {flex-shrink:0;padding:12px 14px;border-bottom:1px solid var(--header-border);font-size:13px;line-height:1.4;background:var(--background-color);z-index:101;}
+#tour-guide p {margin:7px 0;}
+#tour-progress {display:block;width:100%;height:6px;margin:8px 0;accent-color:var(--primary-color);}
+#tour-next.tour-complete {background:#20743d;color:#fff;border-color:#20743d;}
+#tour-next.tour-complete:hover {background:#185d30;}
+#tour-status {min-height:18px;color:var(--primary-color);}
+.tour-actions {display:flex;justify-content:space-between;gap:8px;margin-top:6px;}
+.tour-highlight {outline:3px solid var(--primary-color) !important;outline-offset:5px;}
+.tutorial-practice .map-selector-container,.tutorial-practice #window-btn,.tutorial-practice #fullscreen-btn,
+.tutorial-practice .dropdown-item:not(#start-learning-btn),.tutorial-practice .dropdown-divider,
+.tutorial-practice .hint-footer,.tutorial-practice .history-controls {display:none !important;}
+.tutorial-practice .header {justify-content:flex-end;}
+.tutorial-practice .drag-handle {opacity:1;}
+.tutorial-practice .mindmap-container {min-height:80px;}
+@media(max-height:500px) {#tour-guide {max-height:38vh;overflow:auto;padding:6px 10px;}}
+</style>
+
+<link rel="stylesheet" href="web_roadmap/tool_nav.css">
+<script src="web_roadmap/i18n.js"></script>
+<script src="web_roadmap/host_bridge.js"></script>
+<link rel="stylesheet" href="web_roadmap/workspace_ui.css">
+<script src="web_roadmap/workspace_ui.js"></script><script src="web_roadmap/workspace_images.js"></script><script src="web_roadmap/workspace_links.js"></script>
 </head>
 <body>
-
-    <div id="mindmap-loading-overlay" role="status" aria-live="polite" aria-label="Loading mind map">
-        <div class="mindmap-loading-spinner" aria-hidden="true"></div>
-        <div class="mindmap-loading-label" data-i18n="loading_map">Loading mind map…</div>
-    </div>
 
     <div class="header">
         <div class="map-selector-container">
@@ -637,6 +691,7 @@
             <button class="button primary" id="new-map-btn" data-i18n="new_map">New</button>
         </div>
         <div class="map-switcher">
+            <span id="mindmap-save-status" role="status" aria-live="polite"></span>
             <div class="hamburger-menu">
                 <button class="button hamburger-btn" id="hamburger-btn" data-i18n-title="menu_title" title="Menu">&#9776;</button>
                 <div class="hamburger-dropdown" id="hamburger-dropdown">
@@ -661,6 +716,9 @@
                         <span class="dropdown-icon">✕</span> <span data-i18n="delete_map">Delete Map</span>
                     </button>
                     <div class="dropdown-divider"></div>
+                    <button class="dropdown-item" id="tutorial-btn">
+                        <span class="dropdown-icon" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg></span> <span data-i18n="tutorial">Tutorial</span>
+                    </button>
                     <button class="dropdown-item" id="info-btn">
                         <span class="dropdown-icon">ℹ</span> <span data-i18n="information">Information</span>
                     </button>
@@ -686,6 +744,10 @@
     </div>
 
     <div class="mindmap-container" id="mindmap-container">
+        <div id="mindmap-loading-overlay" role="status" aria-live="polite" aria-label="Loading mind map">
+            <div class="mindmap-loading-spinner" aria-hidden="true"></div>
+            <div class="mindmap-loading-label" data-i18n="loading_map">Loading mind map…</div>
+        </div>
         <canvas id="mindmap-canvas"></canvas>
         <div id="mindmap-viewport"></div>
         <div id="selection-rect"></div>
@@ -697,9 +759,10 @@
     </div>
 
     <button class="button" id="center-view-btn" data-i18n="center_view">Center View</button>
-    <div class="zoom-controls"> 
+    <div class="zoom-controls"><output id="mindmap-zoom-label">100%</output>
         <button class="button zoom-btn" id="zoom-in-btn">+</button> 
-        <button class="button zoom-btn" id="zoom-out-btn">−</button> 
+        <button class="button zoom-btn" id="zoom-out-btn">−</button>
+        <button class="button zoom-btn" id="fit-map-btn" data-i18n-title="fit_map" title="Show entire map" aria-label="Show entire map">⛶</button> 
     </div>
     
     <div id="learning-ui">
@@ -817,7 +880,7 @@
                 if (b) return b;
                 b = document.createElement('div');
                 b.id = 'mm-error-banner';
-                b.innerHTML = '<div class="mm-eb-title">' + mm('error_title', 'Mind Map error') + '</div>'
+                b.innerHTML = '<div class="mm-eb-title">' + mm('error_title', 'MindMap error') + '</div>'
                     + '<div class="mm-eb-msg"></div><pre></pre>'
                     + '<div class="mm-eb-actions">'
                     + '<button data-act="details">' + mm('error_show', 'Show details') + '</button>'
@@ -846,17 +909,17 @@
                     var b = ensureBanner();
                     b.querySelector('.mm-eb-msg').textContent =
                         (context ? context + ': ' : '') + msg
-                        + ' — ' + mm('error_safe', 'Your data is safe. Please screenshot the details and send them to help.synapse.pro@gmail.com.');
+                        + ' — ' + mm('error_safe', 'Please keep this window open and export your changes. Send the error details to help.synapse.pro@gmail.com.');
                     b.querySelector('pre').textContent = stack;
                     b.classList.add('visible');
                 } catch (e) { console.error('[MindMap] error while reporting error', e, err); }
             };
             window.addEventListener('error', function(e) {
-                if (e.error && (e.error.message || e.error.stack)) window.__mmReportError(e.error, mm('error_unexpected', 'Unexpected error'));
+                if (e.error && (e.error.message || e.error.stack)) { window.__mindmapFaulted=true; window.__mmReportError(e.error, mm('error_unexpected', 'Unexpected error')); }
                 else console.warn('[MindMap] Background browser error:', e.message || e);
             });
             window.addEventListener('unhandledrejection', function(e) {
-                if (e.reason && e.reason.synapseCritical === true) window.__mmReportError(e.reason, mm('error_unexpected_async', 'Unexpected error (async)'));
+                if (e.reason && e.reason.synapseCritical === true) { window.__mindmapFaulted=true; window.__mmReportError(e.reason, mm('error_unexpected_async', 'Unexpected error (async)')); }
                 else console.warn('[MindMap] Background task rejected:', e.reason);
                 e.preventDefault();
             });
@@ -864,9 +927,9 @@
     </script>
     <script>
         const TUTORIAL_DATA = {
-          "name": mm('tutorial_name', 'Mind Map Tutorial'),
+          "name": mm('tutorial_name', 'MindMap Tutorial'),
           "nodes": [
-            { "id": 1, "text": mm('tutorial_welcome', 'Welcome to the Mind Map Tool!'), "parent": null, "x": 1193, "y": -93, "width": 194, "height": 73, "size": "large" },
+            { "id": 1, "text": mm('tutorial_welcome', 'Welcome to the MindMap Tool!'), "parent": null, "x": 1193, "y": -93, "width": 194, "height": 73, "size": "large" },
             { "id": 2, "text": mm('info_basic', 'Basic Controls'), "parent": 1, "x": 1191, "y": 149, "width": 194, "height": 51, "color": "#28a745", "size": "large" },
             { "id": 3, "text": mm('info_pan', 'Pan View: Click and drag on the empty background.'), "parent": 2, "x": 453, "y": 401, "width": 154, "height": 119, "color": "#28a745" },
             { "id": 4, "text": mm('info_zoom', 'Zoom View: Use the mouse wheel or the +/- buttons.'), "parent": 2, "x": 730, "y": 400, "width": 154, "height": 100, "color": "#28a745" },
@@ -898,7 +961,7 @@
         };
 
         document.addEventListener('DOMContentLoaded', () => {
-            document.title = mm('app_title', 'Mind Map');
+            document.title = mm('app_title', 'MindMap');
             const container = document.getElementById('mindmap-container');
             const viewport = document.getElementById('mindmap-viewport');
             const canvas = document.getElementById('mindmap-canvas');
@@ -919,16 +982,24 @@
             let historyStack = [];
             let redoStack = [];
 
+            function trimMindmapHistory() {
+                if(window.workspaceTrimHistory){window.workspaceTrimHistory(historyStack,redoStack);return;}
+                // Sandboxed file:// tutorial frames may block external scripts.
+                // Keep the same memory limit without weakening storage isolation.
+                let size=historyStack.concat(redoStack).reduce((sum,state)=>sum+state.length,0);
+                while(historyStack.length+redoStack.length>50||size>8000000){const stack=historyStack.length>=redoStack.length?historyStack:redoStack;if(!stack.length)break;size-=stack.shift().length;}
+            }
             function pushState() {
                 historyStack.push(JSON.stringify(nodes));
                 redoStack = [];
-                if (historyStack.length > 50) historyStack.shift(); 
+                trimMindmapHistory(); 
             }
 
             function undo() {
                 if (historyStack.length === 0) return;
                 redoStack.push(JSON.stringify(nodes));
                 const state = JSON.parse(historyStack.pop());
+                trimMindmapHistory();
                 applyState(state);
             }
 
@@ -936,6 +1007,7 @@
                 if (redoStack.length === 0) return;
                 historyStack.push(JSON.stringify(nodes));
                 const state = JSON.parse(redoStack.pop());
+                trimMindmapHistory();
                 applyState(state);
             }
 
@@ -958,12 +1030,12 @@
                 }
                 // Never let corrupted storage take the whole feature down.
                 let raw = null;
-                try { raw = localStorage.getItem('mindmaps'); } catch (e) { window.__mmReportError(e, mm('storage_read_failed', 'Storage read failed')); return {}; }
+                try { raw = mindmapStorage.getItem('mindmaps'); } catch (e) { window.__mmReportError(e, mm('storage_read_failed', 'Storage read failed')); return {}; }
                 if (!raw) return {};
                 let parsed;
                 try { parsed = JSON.parse(raw); } catch (e) {
                     // Root storage is corrupt: quarantine the raw data instead of losing it.
-                    try { localStorage.setItem('mindmaps_corrupt_backup_' + Date.now(), raw); localStorage.removeItem('mindmaps'); } catch (e2) {}
+                    try { mindmapStorage.setItem('mindmaps_corrupt_backup_' + Date.now(), raw); mindmapStorage.removeItem('mindmaps'); } catch (e2) {}
                     window.__mmToast(mm('storage_corrupt', 'Stored mind map data was corrupted and has been backed up. Starting fresh.'), 'error', 9000);
                     return {};
                 }
@@ -972,22 +1044,25 @@
             }
             let mindmapSaveTimer = null;
             let lastMindmapSaveAt = (() => {
-                try { return Number(localStorage.getItem('mindmaps_saved_at')) || 0; }
+                try { return Number(mindmapStorage.getItem('mindmaps_saved_at')) || 0; }
                 catch (e) { return 0; }
             })();
 
             function saveMindmaps(mindmaps, savedAt = Date.now()) {
+                if(window.__mindmapFaulted){window.__mindmapSaveStatus?.("error");return false;}
+                window.__mindmapSaveStatus?.("pending");
                 try {
                     const serialized = JSON.stringify(mindmaps);
-                    localStorage.setItem('mindmaps', serialized);
+                    mindmapStorage.setItem('mindmaps', serialized);
                     // Verify the write. QtWebEngine normally throws on quota errors,
                     // but explicit verification also catches silent storage failure.
-                    if (localStorage.getItem('mindmaps') !== serialized) {
+                    if (mindmapStorage.getItem('mindmaps') !== serialized) {
                         throw new Error('Stored data did not match the saved snapshot.');
                     }
                     volatileMindmaps = null;
                     lastMindmapSaveAt = Number(savedAt) || Date.now();
-                    try { localStorage.setItem('mindmaps_saved_at', String(lastMindmapSaveAt)); } catch (e) {}
+                    try { mindmapStorage.setItem('mindmaps_saved_at', String(lastMindmapSaveAt)); } catch (e) {}
+                    window.__mindmapSaveStatus?.('saved');
                     return true;
                 } catch (e) {
                     // Most likely QuotaExceededError (webview storage limit).
@@ -998,6 +1073,7 @@
                     // Preserve the attempted snapshot in memory. A later flush also
                     // mirrors it to the profile recovery file before WebView teardown.
                     try { volatileMindmaps = JSON.parse(JSON.stringify(mindmaps)); } catch (copyError) {}
+                    window.__mindmapSaveStatus?.('error');
                     console.error('[MindMap] saveMindmaps failed', e);
                     return false;
                 }
@@ -1026,6 +1102,7 @@
             }
 
             function saveCurrentMindmap() {
+                window.workspaceCheckSize?.(nodes, activeMindmapId);
                 clearTimeout(mindmapSaveTimer);
                 mindmapSaveTimer = null;
                 if (!activeMindmapId) return true;
@@ -1033,11 +1110,13 @@
             }
 
             function scheduleCurrentMindmapSave() {
+                window.__mindmapSaveStatus?.("pending");
                 clearTimeout(mindmapSaveTimer);
                 mindmapSaveTimer = setTimeout(saveCurrentMindmap, 350);
             }
 
             window.__synapseFlushMindmap = function() {
+                if(window.__mindmapFaulted)return {saved:false,snapshot:null};
                 clearTimeout(mindmapSaveTimer);
                 mindmapSaveTimer = null;
                 const mindmaps = currentMindmapSnapshot();
@@ -1046,17 +1125,20 @@
                 return { saved, savedAt, snapshot: JSON.stringify(mindmaps) };
             };
 
-            window.__synapseRestoreMindmapRecovery = function(snapshotJson, savedAt) {
+            window.__synapseRestoreMindmapRecovery = function(snapshotJson, savedAt, render = true) {
                 const recoveryTime = Number(savedAt) || 0;
                 let storedTime = 0;
-                try { storedTime = Number(localStorage.getItem('mindmaps_saved_at')) || 0; } catch (e) {}
-                if (!recoveryTime || recoveryTime <= storedTime) return false;
+                try { storedTime = Number(mindmapStorage.getItem('mindmaps_saved_at')) || 0; } catch (e) {}
+                // An orphaned timestamp must not outweigh the only remaining
+                // map collection (for example after browser storage was lost).
+                if (!recoveryTime || (Object.keys(getMindmaps()).length > 0 && recoveryTime <= storedTime)) return false;
                 let recovered;
                 try { recovered = JSON.parse(snapshotJson); }
                 catch (e) { window.__mmReportError(e, mm('recovery_invalid', 'Recovery data is invalid')); return false; }
                 if (!recovered || typeof recovered !== 'object' || Array.isArray(recovered)) return false;
                 const persisted = saveMindmaps(recovered, recoveryTime);
                 if (!persisted) volatileMindmaps = recovered;
+                if (!render) return true; // init() loads the selected map once.
                 loadMindmapList();
                 const ids = Object.keys(recovered);
                 if (ids.length) {
@@ -1104,6 +1186,7 @@
                 if (nodesArr.length === 0) {
                     return { ok: false, error: 'The "nodes" array contains no valid node objects.' };
                 }
+                if(nodesArr.some(n=>n.ankiLinks!==undefined&&!window.workspaceValidLinks(n.ankiLinks)))return {ok:false,error:window.workspaceText('Invalid Anki link.')};
                 // Normalize ids/parents: numeric strings → numbers, "null"/undefined parent → null.
                 const normId = v => (typeof v === 'string' && v.trim() !== '' && !isNaN(v)) ? Number(v) : v;
                 nodesArr.forEach(n => {
@@ -1155,6 +1238,11 @@
                     if (typeof n.x !== 'number' || !isFinite(n.x) || typeof n.y !== 'number' || !isFinite(n.y)) needsLayout = true;
                     if (n.size !== undefined && !['small', 'medium', 'large'].includes(n.size)) delete n.size;
                     if (n.color !== undefined && typeof n.color !== 'string') delete n.color;
+                    if(n.image&&!/^[a-f0-9]{64}\.(png|jpg)$/.test(n.image))delete n.image;
+                    if(n.fill&&!['#ffffff','#e7f2ff','#e4f5e9','#fff4cc','#fbe4e4','#eee7fa','#fce8d5'].includes(n.fill))delete n.fill;
+                    if(n.textColor&&!/^#[0-9a-f]{6}$/i.test(n.textColor))delete n.textColor;
+                    if(n.fontSize)n.fontSize=Math.max(12,Math.min(40,Number(n.fontSize)||16));
+                    n.bold=!!n.bold;n.italic=!!n.italic;
                     if (n.hint !== undefined && typeof n.hint !== 'string') delete n.hint;
                 });
                 const name = (typeof data.name === 'string' && data.name.trim()) ? data.name : mm('unnamed_map', 'Unnamed Map');
@@ -1182,7 +1270,7 @@
                 for (const id of Object.keys(mindmaps)) {
                     const res = sanitizeMindmap(mindmaps[id]);
                     if (!res.ok) {
-                        try { localStorage.setItem('mindmap_quarantine_' + id, JSON.stringify(mindmaps[id])); } catch (e) {}
+                        try { mindmapStorage.setItem('mindmap_quarantine_' + id, JSON.stringify(mindmaps[id])); } catch (e) {}
                         delete mindmaps[id];
                         quarantined++; changed = true;
                     } else if (res.healed.length > 0) {
@@ -1196,13 +1284,24 @@
             }
 
             function init() {
+                if (tutorialPractice) {
+                    setupEventListeners(); setupLearningOptionButtons();
+                    initializePractice();
+                    return;
+                }
+                const recovery = window.__SYNAPSE_MM_RECOVERY__;
+                if (recovery && recovery.mindmaps) {
+                    window.__synapseRestoreMindmapRecovery(JSON.stringify(recovery.mindmaps), recovery.saved_at, false);
+                }
+                window.__SYNAPSE_MM_RECOVERY__ = null;
+                const existingMaps = Object.keys(getMindmaps()).length > 0;
                 try { healStoredMindmaps(); } catch (e) { window.__mmReportError(e, mm('startup_check', 'Startup check')); }
                 loadMindmapList();
                 // Loading map data must never prevent the UI from being wired up,
                 // so everything below runs even if this block throws.
                 try {
                     let lastOpened = null;
-                    try { lastOpened = localStorage.getItem('lastOpenedMindmap'); } catch (e) {}
+                    try { lastOpened = mindmapStorage.getItem('lastOpenedMindmap'); } catch (e) {}
                     const mindmaps = getMindmaps();
 
                     if (lastOpened && mindmaps[lastOpened]) {
@@ -1218,6 +1317,9 @@
                 setupEventListeners();
                 setupLearningOptionButtons();
                 updateLineColors();
+                if (window.__SYNAPSE_MM_HOSTED__) {
+                    setTimeout(() => { window.__synapseMindmapCommand('tutorial-init:' + (existingMaps ? '1' : '0')); }, 0);
+                }
             }
 
             function loadTutorialMap() {
@@ -1256,7 +1358,7 @@
                     </ul>
                 `;
                 const modal = { overlay: document.getElementById('modal-overlay'), title: document.getElementById('modal-title'), infoContent: document.getElementById('modal-info-content'), text: document.getElementById('modal-text'), input: document.getElementById('modal-input'), jsonTextarea: document.getElementById('json-textarea'), aiHelperContent: document.getElementById('modal-ai-helper-content'), confirmBtn: document.getElementById('modal-confirm'), cancelBtn: document.getElementById('modal-cancel') };
-                modal.title.textContent = mm('info_title', 'Mind Map Information');
+                modal.title.textContent = mm('info_title', 'MindMap Information');
                 modal.infoContent.innerHTML = infoContent;
                 modal.infoContent.style.display = 'block';
                 modal.text.style.display = 'none';
@@ -1279,7 +1381,7 @@ ${mm('ai_prompt_json_only', 'The output must be one valid JSON object and nothin
 
 ${mm('ai_prompt_structure', 'Use this JSON structure:')}
 {
-  "name": "${mm('ai_sample_name', 'Name of the Mind Map')}",
+  "name": "${mm('ai_sample_name', 'Name of the MindMap')}",
   "nodes": [
     { "id": 1, "text": "${mm('ai_sample_central', 'Central Topic')}", "parent": null },
     { "id": 2, "text": "${mm('ai_sample_branch', 'Main Branch')} 1", "parent": 1 },
@@ -1308,7 +1410,7 @@ ${mm('ai_prompt_generate', 'Generate the mind map JSON now.')}`;
                     setTimeout(() => { btn.textContent = mm('copy_prompt', 'Copy Prompt'); }, 2000);
                 };
                 modal.confirmBtn.style.display = 'inline-block';
-                modal.confirmBtn.textContent = mm('import_mindmap', 'Import Mind Map');
+                modal.confirmBtn.textContent = mm('import_mindmap', 'Import MindMap');
                 modal.cancelBtn.textContent = mm('cancel', 'Cancel');
                 modal.confirmBtn.onclick = handleAiImport;
                 modal.cancelBtn.onclick = () => modal.overlay.classList.remove('visible');
@@ -1359,6 +1461,7 @@ ${mm('ai_prompt_generate', 'Generate the mind map JSON now.')}`;
                     showError(mm('invalid_json', 'Invalid JSON: {error}. Make sure you copied the complete JSON object.').replace('{error}', e.message));
                     return false;
                 }
+                if(data.assets&&Object.keys(data.assets).length){showError(window.workspaceText('Images require Anki.'));return false;}
                 const res = sanitizeMindmap(data);
                 if (!res.ok) { showError(mm('invalid_map', 'This JSON is not a valid mind map: {error}').replace('{error}', res.error)); return false; }
                 if (res.needsLayout) { try { autoLayoutNodes(res.map.nodes); } catch (e) { console.error('[MindMap] auto layout failed', e); } }
@@ -1402,7 +1505,7 @@ ${mm('ai_prompt_generate', 'Generate the mind map JSON now.')}`;
                 if (!saveCurrentMindmap()) return;
                 modal.input.value = '';
                 const name = await new Promise(resolve => {
-                    setupModal({ title: mm('create_title', 'Create New Mind Map'), text: mm('enter_name', 'Please enter a name.'), showInput: true, confirmText: mm('create', 'Create'), onConfirm: () => {
+                    setupModal({ title: mm('create_title', 'Create New MindMap'), text: mm('enter_name', 'Please enter a name.'), showInput: true, confirmText: mm('create', 'Create'), onConfirm: () => {
                         const v = document.getElementById('modal-input').value.trim();
                         if (!v) { modal.modalError.textContent = mm('enter_name', 'Please enter a name.'); modal.modalError.style.display = 'block'; return; }
                         resolve(v);
@@ -1468,14 +1571,37 @@ ${mm('ai_prompt_generate', 'Generate the mind map JSON now.')}`;
                 modal.cancelBtn.onclick = () => modal.overlay.classList.remove('visible');
                 modal.overlay.classList.add('visible');
             }
-            function showImportModal() { modal.jsonTextarea.value = ''; modal.jsonTextarea.readOnly = false; setupModal({ title: mm('import_json', 'Import from JSON'), text: mm('paste_map_json', 'Paste your mind map JSON data below.'), showJsonArea: true, confirmText: mm('import_map', 'Import'), onConfirm: handleImport }); }
-            function showExportModal() { if (!activeMindmapId) return; if (!saveCurrentMindmap()) return; const mindmap = getMindmaps()[activeMindmapId]; if (!mindmap) { window.__mmToast(mm('nothing_export', 'Nothing to export: the current mind map was not found in storage.'), 'error'); return; } modal.jsonTextarea.value = JSON.stringify(mindmap, null, 2); modal.jsonTextarea.readOnly = true; setupModal({ title: mm('export_json', 'Export to JSON'), text: mm('copy_json', 'Copy the JSON data below.'), showJsonArea: true, confirmText: mm('copy_clipboard', 'Copy to Clipboard'), cancelText: mm('close', 'Close'), onConfirm: handleCopyToClipboard }); }
+            window.__workspaceDocument=()=>{saveCurrentMindmap();return currentMindmapSnapshot()[activeMindmapId]||null;};
+            window.__workspaceImported=payload=>importMindmap(JSON.stringify(payload),modal.modalError);
+            function showImportModal() { if(window.__SYNAPSE_MM_HOSTED__){window.__synapseMindmapCommand('workspace-import');return;} modal.jsonTextarea.value = ''; modal.jsonTextarea.readOnly = false; setupModal({ title: mm('import_json', 'Import from JSON'), text: mm('paste_map_json', 'Paste your mind map JSON data below.'), showJsonArea: true, confirmText: mm('import_map', 'Import'), onConfirm: handleImport }); }
+            function showExportModal() { if(window.__SYNAPSE_MM_HOSTED__){window.__synapseMindmapCommand('workspace-export');return;} if (!activeMindmapId) return; if (!saveCurrentMindmap()) return; const mindmap = getMindmaps()[activeMindmapId]; if (!mindmap) { window.__mmToast(mm('nothing_export', 'Nothing to export: the current mind map was not found in storage.'), 'error'); return; } modal.jsonTextarea.value = JSON.stringify(mindmap, null, 2); modal.jsonTextarea.readOnly = true; setupModal({ title: mm('export_json', 'Export to JSON'), text: mm('copy_json', 'Copy the JSON data below.'), showJsonArea: true, confirmText: mm('copy_clipboard', 'Copy to Clipboard'), cancelText: mm('close', 'Close'), onConfirm: handleCopyToClipboard }); }
             function handleImport() {
                 const ok = importMindmap(modal.jsonTextarea.value, modal.modalError);
                 if (ok) modal.overlay.classList.remove('visible');
             }
             function handleCopyToClipboard() { navigator.clipboard.writeText(modal.jsonTextarea.value).then(() => { modal.confirmBtn.textContent = mm('error_copied', 'Copied!'); setTimeout(() => { modal.confirmBtn.textContent = mm('copy_clipboard', 'Copy to Clipboard'); }, 2000); }); }
             function centerOnNode(nodeId, immediate = false) { const node = nodes.find(n => n.id === nodeId); if (!node || !node.width) return; const containerRect = container.getBoundingClientRect(); const targetX = (containerRect.width / 2) - (node.x + node.width / 2) * view.scale; const targetY = (containerRect.height / 2) - (node.y + node.height / 2) * view.scale; if (immediate) { view.x = targetX; view.y = targetY; updateView(); return; } const startX = view.x; const startY = view.y; const duration = 400; let startTime = null; function animate(currentTime) { if (!startTime) startTime = currentTime; const elapsed = currentTime - startTime; const progress = Math.min(elapsed / duration, 1); const ease = t => t<.5 ? 2*t*t : -1+(4-2*t)*t; view.x = startX + (targetX - startX) * ease(progress); view.y = startY + (targetY - startY) * ease(progress); updateView(); if (progress < 1) requestAnimationFrame(animate); } requestAnimationFrame(animate); }
+            function fitEntireMap() {
+                if (!nodes.length || !container.clientWidth || !container.clientHeight) return;
+                let left=Infinity, top=Infinity, right=-Infinity, bottom=-Infinity;
+                nodes.forEach(n => {
+                    left=Math.min(left,n.x); top=Math.min(top,n.y);
+                    right=Math.max(right,n.x+(n.width || 154)); bottom=Math.max(bottom,n.y+(n.height || 60));
+                });
+                const padding=32;
+                const scale=Math.min(1.5, Math.max(0.000001, Math.min(
+                    Math.max(1,container.clientWidth-padding*2)/Math.max(1,right-left),
+                    Math.max(1,container.clientHeight-padding*2)/Math.max(1,bottom-top))));
+                view.scale=scale;
+                view.x=container.clientWidth/2-(left+right)/2*scale;
+                view.y=container.clientHeight/2-(top+bottom)/2*scale;
+                updateView();
+            }
+
+            window.__workspaceCenterView = () => {
+                const root = nodes.find(node => node.parent === null);
+                if (root) centerOnNode(root.id, true);
+            };
             function centerOnRootNode() { const rootNode = nodes.find(node => node.parent === null); if (rootNode) centerOnNode(rootNode.id); }
             
             function setupEventListeners() {
@@ -1489,6 +1615,8 @@ ${mm('ai_prompt_generate', 'Generate the mind map JSON now.')}`;
                 importBtn.onclick = showImportModal;
                 exportBtn.onclick = showExportModal;
                 centerViewBtn.onclick = centerOnRootNode;
+                document.getElementById('fit-map-btn').onclick = () => { fitEntireMap(); tutorialAction('fit'); };
+                document.getElementById('tutorial-btn').onclick = () => window.__synapseOfferTutorial();
                 zoomInBtn.onclick = () => applyZoom(1.25);
                 zoomOutBtn.onclick = () => applyZoom(1 / 1.25);
                 undoBtn.onclick = undo;
@@ -1582,32 +1710,81 @@ ${mm('ai_prompt_generate', 'Generate the mind map JSON now.')}`;
                 }
             }
 
+            const nodeFills=['#ffffff','#e7f2ff','#e4f5e9','#fff4cc','#fbe4e4','#eee7fa','#fce8d5'];
+            function applyNodeAppearance(node, element) {
+                element.style.backgroundColor=nodeFills.includes(node.fill)?node.fill:'';
+                element.style.color=node.fill?'#111111':(node.textColor||'');
+                const input=element.querySelector('.node-textarea');
+                if(input){input.style.fontWeight=node.bold?'700':'';input.style.fontStyle=node.italic?'italic':'';input.style.fontSize=node.fontSize?node.fontSize+'px':'';input.style.color=node.fill?'#111111':(node.textColor||'');}
+            }
+            function addNodeImage(node) {
+                const mapId=activeMindmapId;
+                window.workspacePickImage?.(image=>{
+                    if(activeMindmapId!==mapId||!nodes.includes(node))return;
+                    if(!window.workspaceCanAddImage(nodes,image,node)){window.__workspaceError(window.workspaceText('Image budget exceeded (40 images / 24 megapixels).'));return;}
+                    pushState();node.image=image.image;node.imageWidth=image.width;node.imageHeight=image.height;
+                    viewport.innerHTML='';nodes.forEach(createNodeElement);saveCurrentMindmap();
+                });
+            }
+            function editAnkiLinks(node) {
+                if(tutorialPractice||isLearningMode||window.__mindmapFaulted)return;
+                const mapId=activeMindmapId;
+                window.workspacePickLinks(node.ankiLinks,node.text,links=>{
+                    if(activeMindmapId!==mapId||!nodes.includes(node)||window.__mindmapFaulted)return;
+                    if(JSON.stringify(node.ankiLinks||[])===JSON.stringify(links))return;
+                    pushState();
+                    if(links.length)node.ankiLinks=links;else delete node.ankiLinks;
+                    viewport.innerHTML='';nodes.forEach(createNodeElement);drawLines();saveCurrentMindmap();
+                });
+            }
             function showContextMenu(e, nodeId) {
-                if (isLearningMode) return; e.preventDefault(); e.stopPropagation(); contextNodeId = nodeId;
-                contextMenu.innerHTML = `<div class="context-menu-section"><div class="context-menu-title">${mm('color', 'Color')}</div><div class="context-menu-colors"><div class="color-swatch" data-color="#0071D3" style="background-color: #0071D3;"></div><div class="color-swatch" data-color="#28a745" style="background-color: #28a745;"></div><div class="color-swatch" data-color="#ffc107" style="background-color: #ffc107;"></div><div class="color-swatch" data-color="#dc3545" style="background-color: #dc3545;"></div><div class="color-swatch" data-color="#6f42c1" style="background-color: #6f42c1;"></div></div></div><div class="context-menu-section"><div class="context-menu-title">${mm('size', 'Size')}</div><div class="context-menu-item" data-size="small">${mm('small', 'Small')}</div><div class="context-menu-item" data-size="medium">${mm('medium', 'Medium')}</div><div class="context-menu-item" data-size="large">${mm('large', 'Large')}</div></div>`;
-                contextMenu.style.display = 'block'; 
-                const rect = container.getBoundingClientRect(); 
-                let left = e.clientX - rect.left; let top = e.clientY - rect.top; 
-                contextMenu.style.left = `${left}px`; contextMenu.style.top = `${top}px`; 
+                if(isLearningMode)return;
+                e.preventDefault();e.stopPropagation();
+                const node=nodes.find(n=>n.id===nodeId);if(!node)return;
+                contextNodeId=nodeId;contextMenu.replaceChildren();
+                contextMenu.setAttribute('role','dialog');contextMenu.setAttribute('aria-label',(window.workspaceText||String)('Object actions'));
+                const t=window.workspaceText||(s=>s),nodeEl=document.getElementById('node-'+node.id);
+                const section=title=>{const group=document.createElement('div');group.className='node-menu-section';if(title){const heading=document.createElement('div');heading.className='context-menu-title';heading.textContent=title;group.append(heading);}contextMenu.append(group);return group;};
+                const button=(parent,label,fn,cls='')=>{const b=document.createElement('button');b.type='button';b.className=cls;b.textContent=label;b.setAttribute('aria-label',label);b.title=label;b.onclick=event=>{event.stopPropagation();fn();};parent.append(b);return b;};
+                const commit=fn=>{if(window.__mindmapFaulted)return;pushState();fn();applyNodeAppearance(node,nodeEl);nodeEl.querySelector('.node-textarea')?.dispatchEvent(new Event('input'));updateNodeDimensions(node);drawLines();saveCurrentMindmap();sync();};
+                const border=section(t('Border')),borderRow=document.createElement('div');borderRow.className='node-menu-palette';border.append(borderRow);
+                for(const color of ['#0071D3','#28a745','#ffc107','#dc3545','#6f42c1']){const b=button(borderRow,color,()=>commit(()=>{node.color=color;nodeEl.style.borderColor=color;tutorialAction('style');}),'color-swatch');b.dataset.color=color;b.style.backgroundColor=color;}
+                const sizing=document.createElement('label');sizing.className='node-menu-setting';const sizeLabel=document.createElement('span');sizeLabel.textContent=mm('size','Size');sizing.append(sizeLabel);
+                const nodeSize=document.createElement('select');nodeSize.id='node-size-select';nodeSize.setAttribute('aria-label',mm('size','Size'));
+                for(const key of ['small','medium','large'])nodeSize.add(new Option(mm(key,key[0].toUpperCase()+key.slice(1)),key));
+                nodeSize.value=node.size||'medium';nodeSize.onchange=()=>commit(()=>{node.size=nodeSize.value;nodeEl.classList.remove('small','medium','large');nodeEl.classList.add(node.size);tutorialAction('style');});sizing.append(nodeSize);border.append(sizing);
+                const text=section(t('Text')),tools=document.createElement('div');tools.className='node-menu-type';text.append(tools);
+                const bold=button(tools,t('Bold'),()=>commit(()=>node.bold=!node.bold),'node-menu-toggle');bold.textContent='B';bold.style.fontWeight='700';
+                const italic=button(tools,t('Italic'),()=>commit(()=>node.italic=!node.italic),'node-menu-toggle');italic.textContent='I';italic.style.fontStyle='italic';
+                const size=document.createElement('select');size.id='node-font-size';size.setAttribute('aria-label',t('Font size'));size.title=t('Font size');for(const value of [12,14,16,18,20,24,28,32,40])size.add(new Option(value+' px',value));
+                size.value=String(node.fontSize||16);size.onchange=()=>commit(()=>node.fontSize=Number(size.value));tools.append(size);
+                const colors=document.createElement('input');colors.type='color';colors.setAttribute('aria-label',t('Text color'));colors.title=t('Text color');colors.onchange=()=>commit(()=>node.textColor=colors.value);tools.append(colors);
+                const fill=section(t('Node fill')),fills=document.createElement('div');fills.className='node-menu-palette';fill.append(fills);
+                for(const color of nodeFills){const b=button(fills,color,()=>commit(()=>{node.fill=color;node.textColor='#111111';}),'color-swatch');b.dataset.fill=color;b.style.backgroundColor=color;}
+                const reset=button(fill,t('Default'),()=>commit(()=>{delete node.fill;delete node.textColor;delete node.fontSize;delete node.bold;delete node.italic;size.value='16';}),'node-menu-reset');
+                const actions=section('');actions.classList.add('node-menu-actions');
+                const svg=body=>'<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+body+'</svg>';
+                const imageRow=document.createElement('div');imageRow.className='node-menu-action-row';actions.append(imageRow);
+                const image=button(imageRow,t(node.image?'Replace image':'Add image'),()=>{hideContextMenu();addNodeImage(node);},'node-menu-action');image.disabled=tutorialPractice;
+                image.insertAdjacentHTML('afterbegin',svg('<rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8" cy="8" r="1.5"/><path d="m3 17 5-5 4 4 4-6 5 7"/>'));
+                if(node.image){const remove=button(imageRow,t('Remove image'),()=>{commit(()=>{delete node.image;delete node.imageWidth;delete node.imageHeight;delete node.imageDisplayWidth;nodeEl.querySelector('.node-image')?.remove();nodeEl.classList.remove('has-image');});showContextMenu(e,nodeId);},'node-menu-remove');remove.innerHTML=svg('<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 10v7M14 10v7"/>');}
+                const link=button(actions,t('Link Card'),()=>{hideContextMenu();editAnkiLinks(node);},'node-menu-action');link.dataset.action='link-card';link.disabled=tutorialPractice;
+                link.insertAdjacentHTML('afterbegin',svg('<rect x="3" y="4" width="18" height="16" rx="3"/><path d="M7 9h10M7 13h5"/>'));
+                function sync(){bold.setAttribute('aria-pressed',String(!!node.bold));italic.setAttribute('aria-pressed',String(!!node.italic));colors.value=node.textColor||'#111111';colors.disabled=!!node.fill;for(const b of borderRow.children)b.setAttribute('aria-pressed',String(String(node.color||'#0071D3').toLowerCase()===b.dataset.color.toLowerCase()));for(const b of fills.children)b.setAttribute('aria-pressed',String(node.fill===b.dataset.fill));}
+                sync();contextMenu.style.display='block';
+                const rect=container.getBoundingClientRect();
+                contextMenu.style.left=Math.max(8,Math.min(e.clientX,window.innerWidth-contextMenu.offsetWidth-8))+'px';contextMenu.style.top=Math.max(rect.top+4,Math.min(e.clientY,window.innerHeight-contextMenu.offsetHeight-8))+'px';
             }
             function hideContextMenu() { if (contextMenu.style.display === 'block') { contextMenu.style.display = 'none'; contextNodeId = null; } }
             
-            contextMenu.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const node = nodes.find(n => n.id === contextNodeId);
-                const nodeEl = document.getElementById(`node-${contextNodeId}`);
-                if (!node || !nodeEl) return;
-                if (e.target.dataset.color || e.target.dataset.size) pushState();
-                if (e.target.dataset.color) { node.color = e.target.dataset.color; nodeEl.style.borderColor = node.color; saveCurrentMindmap(); }
-                if (e.target.dataset.size) { node.size = e.target.dataset.size; nodeEl.classList.remove('small', 'medium', 'large'); nodeEl.classList.add(node.size); nodeEl.querySelector('textarea')?.dispatchEvent(new Event('input')); saveCurrentMindmap(); }
-                hideContextMenu();
-            });
+            contextMenu.addEventListener('click',e=>e.stopPropagation());
+            contextMenu.addEventListener('keydown',e=>{e.stopPropagation();if(e.key==='Escape'){e.preventDefault();const id=contextNodeId;hideContextMenu();document.getElementById('node-'+id)?.focus();}});
 
             function startPan(e) { if (isLearningMode || isSelectionMode || e.target.closest('.node') || e.button !== 0) return; hideContextMenu(); isPanning = true; panStart.x = e.clientX - view.x; panStart.y = e.clientY - view.y; container.style.cursor = 'grabbing'; }
             function pan(e) { if (isPanning && !isLearningMode) { e.preventDefault(); view.x = e.clientX - panStart.x; view.y = e.clientY - panStart.y; updateView(); } }
-            function endPan() { isPanning = false; if (!isLearningMode) container.style.cursor = 'grab'; }
-            function applyZoom(zoomFactor, zoomCenterX, zoomCenterY) { const rect = container.getBoundingClientRect(); const centerX = typeof zoomCenterX === 'undefined' ? rect.width / 2 : zoomCenterX; const centerY = typeof zoomCenterY === 'undefined' ? rect.height / 2 : zoomCenterY; const newScale = view.scale * zoomFactor; if (newScale < 0.2 || newScale > 3) return; const worldX = (centerX - view.x) / view.scale; const worldY = (centerY - view.y) / view.scale; view.x = centerX - worldX * newScale; view.y = centerY - worldY * newScale; view.scale = newScale; updateView(); }
-            function zoom(e) { e.preventDefault(); const zoomFactor = 1 - (e.deltaY * 0.0005); const rect = container.getBoundingClientRect(); applyZoom(zoomFactor, e.clientX - rect.left, e.clientY - rect.top); }
+            function endPan() { if (isPanning) tutorialAction('navigate'); isPanning = false; if (!isLearningMode) container.style.cursor = 'grab'; }
+            function applyZoom(zoomFactor, zoomCenterX, zoomCenterY) { tutorialAction('navigate'); const rect = container.getBoundingClientRect(); const centerX = typeof zoomCenterX === 'undefined' ? rect.width / 2 : zoomCenterX; const centerY = typeof zoomCenterY === 'undefined' ? rect.height / 2 : zoomCenterY; const newScale = view.scale * zoomFactor; if (newScale < Math.min(0.2, view.scale) || newScale > 3) return; const worldX = (centerX - view.x) / view.scale; const worldY = (centerY - view.y) / view.scale; view.x = centerX - worldX * newScale; view.y = centerY - worldY * newScale; view.scale = newScale; updateView(); }
+            function zoom(e) { tutorialAction('navigate'); e.preventDefault(); const zoomFactor = 1 - (e.deltaY * 0.0005); const rect = container.getBoundingClientRect(); applyZoom(zoomFactor, e.clientX - rect.left, e.clientY - rect.top); }
             
             async function deleteCurrentMindmap() { 
                 if (!activeMindmapId) return; 
@@ -1616,7 +1793,7 @@ ${mm('ai_prompt_generate', 'Generate the mind map JSON now.')}`;
                     const mindmaps = getMindmaps();
                     delete mindmaps[activeMindmapId];
                     if (!saveMindmaps(mindmaps)) return;
-                    try { if (localStorage.getItem('lastOpenedMindmap') === activeMindmapId) localStorage.removeItem('lastOpenedMindmap'); } catch (e) {}
+                    try { if (mindmapStorage.getItem('lastOpenedMindmap') === activeMindmapId) mindmapStorage.removeItem('lastOpenedMindmap'); } catch (e) {}
                     activeMindmapId = null;
                     viewport.innerHTML = ''; nodes = []; drawLines();
                     if (Object.keys(mindmaps).length > 0) { loadMindmapList(); loadMindmap(Object.keys(mindmaps)[0]); } else createNewMindmap();
@@ -1628,7 +1805,7 @@ ${mm('ai_prompt_generate', 'Generate the mind map JSON now.')}`;
                 // Validate before rendering; heal or fall back instead of crashing.
                 const res = sanitizeMindmap(map);
                 if (!res.ok) {
-                    try { localStorage.setItem('mindmap_quarantine_' + id, JSON.stringify(map)); } catch (e) {}
+                    try { mindmapStorage.setItem('mindmap_quarantine_' + id, JSON.stringify(map)); } catch (e) {}
                     delete mindmaps[id];
                     if (!saveMindmaps(mindmaps)) return;
                     window.__mmToast(mm('corrupt_map_removed', 'This mind map was corrupted and has been removed. A backup was kept in storage.'), 'error', 9000);
@@ -1644,12 +1821,13 @@ ${mm('ai_prompt_generate', 'Generate the mind map JSON now.')}`;
                 map = res.map;
                 activeMindmapId = id; mindmapSelect.value = id;
                 nodes = map.nodes;
+                window.workspaceCheckSize?.(nodes,id);
                 historyStack = []; redoStack = [];
                 viewport.innerHTML = ''; nodes.forEach(createNodeElement);
                 updateView();
                 // Only remember this map as "last opened" after it loaded successfully,
                 // so a broken map can never become the permanent startup map.
-                try { localStorage.setItem('lastOpenedMindmap', id); } catch (e) {}
+                try { mindmapStorage.setItem('lastOpenedMindmap', id); } catch (e) {}
                 setTimeout(() => {
                     const rootNode = nodes.find(n => n.parent === null);
                     if (rootNode) centerOnNode(rootNode.id, true);
@@ -1683,6 +1861,8 @@ ${mm('ai_prompt_generate', 'Generate the mind map JSON now.')}`;
                     node.userWidth = Math.round(newW); node.userHeight = Math.round(newH);
                     el.style.width = `${node.userWidth}px`; el.style.maxWidth = 'none';
                     el.style.minHeight = `${node.userHeight}px`;
+                    const picture=el.querySelector('.node-image');
+                    if(picture){node.imageDisplayWidth=Math.min(1600,Math.max(40,node.userWidth-32));picture.style.width=node.imageDisplayWidth+'px';picture.style.maxWidth='100%';picture.style.maxHeight='none';}
                     updateNodeDimensions(node); drawLines();
                 }
                 function onUp() {
@@ -1696,10 +1876,12 @@ ${mm('ai_prompt_generate', 'Generate the mind map JSON now.')}`;
             
             function createNodeElement(node) { 
                 const nodeEl = document.createElement('div'); nodeEl.id = `node-${node.id}`; nodeEl.className = 'node'; nodeEl.classList.add(node.size || 'medium'); 
+                nodeEl.tabIndex = -1; // Escape from text editing returns here.
                 nodeEl.style.left = `${node.x}px`; nodeEl.style.top = `${node.y}px`; nodeEl.style.borderColor = node.color || 'var(--primary-color)'; 
                 if (node.parent === null) nodeEl.classList.add('root'); 
                 nodeEl.addEventListener('contextmenu', (e) => showContextMenu(e, node.id)); 
                 const textArea = document.createElement('textarea'); textArea.className = 'node-textarea'; textArea.value = node.text; textArea.rows = 1;
+                textArea.addEventListener('focus', () => selectNode(node.id));
                 let textUndoCaptured = false;
                 textArea.addEventListener('input', (e) => {
                     e.target.style.height = 'auto';
@@ -1709,6 +1891,7 @@ ${mm('ai_prompt_generate', 'Generate the mind map JSON now.')}`;
                         // session, then update the model on every keystroke.
                         if (!textUndoCaptured) { pushState(); textUndoCaptured = true; }
                         node.text = textArea.value;
+                        tutorialAction('edit');
                         scheduleCurrentMindmapSave();
                     }
                     updateNodeDimensions(node);
@@ -1718,7 +1901,14 @@ ${mm('ai_prompt_generate', 'Generate the mind map JSON now.')}`;
                     if (textUndoCaptured) saveCurrentMindmap();
                     textUndoCaptured = false;
                 });
-                nodeEl.appendChild(textArea); 
+                if(node.image&&window.workspaceImageURL){
+                    const image=document.createElement('img');image.className='node-image';image.src=window.workspaceImageURL(node.image);image.alt=node.text||'';image.loading='lazy';image.decoding='async';image.draggable=false;
+                    if(Number.isFinite(node.imageDisplayWidth)){image.style.width=Math.max(40,Math.min(1600,node.imageDisplayWidth))+'px';image.style.maxWidth='100%';image.style.maxHeight='none';}
+                    image.onload=()=>{updateNodeDimensions(node);drawLines();};nodeEl.append(image);nodeEl.classList.add('has-image');
+                }
+                nodeEl.appendChild(textArea);applyNodeAppearance(node,nodeEl);
+                const linkBadge=window.workspaceLinkBadge?.(node.ankiLinks,()=>editAnkiLinks(node));
+                if(linkBadge){nodeEl.classList.add('has-anki-links');nodeEl.append(linkBadge);}
                 const dragHandle = document.createElement('div'); dragHandle.className = 'drag-handle'; 
                 dragHandle.addEventListener('mousedown', (e) => startNodeCreation(e, node.id)); 
                 nodeEl.appendChild(dragHandle); 
@@ -1751,7 +1941,7 @@ ${mm('ai_prompt_generate', 'Generate the mind map JSON now.')}`;
                 el.onmousedown = (e) => {
                     if (isHintEditMode) return;
                     if (isSelectionMode) { e.stopPropagation(); handleSelectionModeClick(node.id); return; }
-                    if (isLearningMode || e.target.closest('.drag-handle, .node-resize-handle, .control-btn, .node-textarea') || isPanning || e.button !== 0) return;
+                    if (isLearningMode || e.target.closest('.drag-handle, .node-resize-handle, .control-btn, .node-textarea, .workspace-anki-link') || isPanning || e.button !== 0) return;
                     e.stopPropagation(); hideContextMenu(); 
                     let startX = e.clientX, startY = e.clientY; 
                     let hasMoved = false;
@@ -1773,11 +1963,27 @@ ${mm('ai_prompt_generate', 'Generate the mind map JSON now.')}`;
                 }; 
             }
             
-            function handleKeyDown(e) { 
-                if (modal.overlay.classList.contains('visible') || isLearningMode) return; 
-                if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); undo(); }
-                if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') { e.preventDefault(); redo(); }
+            function handleKeyDown(e) {
+                if (e.isComposing || e.defaultPrevented || practiceDialog?.open || document.querySelector('.tour-invitation[open]') || modal.overlay.classList.contains('visible') ||
+                    document.querySelector('#learning-options-overlay.visible') || isLearningMode) return;
+                if (e.target.closest?.('input, textarea, select, [contenteditable="true"]')) {
+                    if (e.key === 'Escape' && e.target.classList.contains('node-textarea')) {
+                        e.preventDefault(); e.stopPropagation();
+                        e.target.closest('.node').focus();
+                    }
+                    return;
+                }
+                const key = e.key.toLowerCase();
+                if ((e.ctrlKey || e.metaKey) && !e.altKey && (key === 'z' || key === 'y')) {
+                    e.preventDefault(); e.stopPropagation();
+                    if (key === 'y' || e.shiftKey) redo(); else undo();
+                    return;
+                }
                 if (!selectedNodeId) return;
+                if((e.ctrlKey||e.metaKey)&&key==='k'){const node=nodes.find(n=>n.id===selectedNodeId);if(node){e.preventDefault();editAnkiLinks(node);}return;}
+                if (e.key === 'Enter' && e.target.classList.contains('node')) {
+                    e.preventDefault(); e.target.querySelector('.node-textarea')?.focus(); return;
+                }
                 if (e.key === 'Delete' || (e.key === 'Backspace' && (e.metaKey || e.ctrlKey))) { e.preventDefault(); deleteNode(selectedNodeId); } 
             }
             
@@ -1786,7 +1992,7 @@ ${mm('ai_prompt_generate', 'Generate the mind map JSON now.')}`;
                 const parentNode = nodes.find(n => n.id === parentId); if (!parentNode) return; 
                 const newId = (nodes.length > 0 ? Math.max(...nodes.map(n => n.id)) : 0) + 1; 
                 const newNode = { id: newId, text: mm('new_node', 'New Node'), x: position.x - 68, y: position.y - 21, parent: parentId, color: parentNode.color, size: 'medium' }; 
-                nodes.push(newNode); createNodeElement(newNode); saveCurrentMindmap(); selectNode(newId); 
+                nodes.push(newNode); createNodeElement(newNode); saveCurrentMindmap(); selectNode(newId); tutorialAction('child'); 
                 setTimeout(() => document.querySelector(`#node-${newId} textarea`)?.focus(), 0); 
             }
             async function deleteNode(nodeId) { 
@@ -1809,18 +2015,19 @@ ${mm('ai_prompt_generate', 'Generate the mind map JSON now.')}`;
             function finishNodeCreation(e) { if (!isCreatingNode) return; addNode(creationStartNodeId, getMouseWorldPosition(e)); isCreatingNode = false; creationStartNodeId = null; document.removeEventListener('mousemove', handleNodeCreationDrag); document.removeEventListener('mouseup', finishNodeCreation); drawLines(); }
             function selectNode(id) { if (selectedNodeId) document.getElementById(`node-${selectedNodeId}`)?.classList.remove('selected'); selectedNodeId = id; document.getElementById(`node-${selectedNodeId}`)?.classList.add('selected'); }
             function updateView() {
+                const zoomLabel=document.getElementById("mindmap-zoom-label");if(zoomLabel)zoomLabel.textContent=Math.round(view.scale*100)+"%";
                 viewport.style.transform = `translate(${view.x}px, ${view.y}px) scale(${view.scale})`;
-                // Grid dots: scale, pan, and fade with zoom level
-                const gridSize = 20 * view.scale;
-                container.style.backgroundSize = `${gridSize}px ${gridSize}px`;
-                container.style.backgroundPosition = `${view.x % gridSize}px ${view.y % gridSize}px`;
-                const dotOpacity = Math.min(1, Math.max(0, (view.scale - 0.2) / 0.5));
-                const isDark = document.documentElement.classList.contains('dark') ||
-                    window.matchMedia('(prefers-color-scheme: dark)').matches;
-                const dotColor = isDark
-                    ? `rgba(48, 48, 48, ${dotOpacity})`
-                    : `rgba(215, 215, 215, ${dotOpacity})`;
-                container.style.backgroundImage = `radial-gradient(${dotColor} 1px, transparent 0)`;
+                if (window.__workspaceGrid) window.__workspaceGrid(container, view);
+                else {
+                    // Local scripts can be blocked inside the sandboxed practice frame.
+                    // Keep its canvas independent without granting access to user storage.
+                    const size = 20 * view.scale;
+                    const opacity = Math.min(1, Math.max(0, (view.scale - .2) / .5));
+                    const dark = document.documentElement.classList.contains('dark');
+                    container.style.backgroundSize = `${size}px ${size}px`;
+                    container.style.backgroundPosition = `${view.x % size}px ${view.y % size}px`;
+                    container.style.backgroundImage = `radial-gradient(rgba(${dark ? '96,96,96' : '215,215,215'},${opacity}) 1px, transparent 0)`;
+                }
                 drawLines();
             }
             
@@ -1991,6 +2198,7 @@ ${mm('ai_prompt_generate', 'Generate the mind map JSON now.')}`;
                 wrongQueue = [];
                 currentLearningNode = null;
                 isLearningMode = true;
+                tutorialAction('learn');
                 document.body.classList.add('learning-mode');
                 learningUI.style.display = 'flex';
                 document.querySelectorAll('.node .node-textarea').forEach(ta => ta.classList.add('node-text-hidden'));
@@ -2078,6 +2286,134 @@ ${mm('ai_prompt_generate', 'Generate the mind map JSON now.')}`;
                 centerOnRootNode();
             }
 
+            // The parent map remains mounted. Practice runs in a sandboxed frame
+            // with its own in-memory storage adapter, never the user's store.
+            let practiceDialog = null;
+            let tutorialStep = 0;
+            const tutorialCompleted = new Set();
+            const tutorialSteps = [
+                ['edit', 'tour_edit', 'Click the main topic and change its text.', '#node-1'],
+                ['child', 'tour_child', 'Drag the small blue dot on the main topic into an empty area to create a child node.', '#node-1 .drag-handle'],
+                ['style', 'tour_style', 'Right click a node and choose a different color or size.', '#node-1'],
+                ['navigate', 'tour_navigate', 'Drag the empty canvas to move the view. Use the mouse wheel or the zoom buttons to zoom.', '.zoom-controls'],
+                ['fit', 'tour_fit', 'Click Show entire map to bring every node into view. Node positions stay unchanged.', '#fit-map-btn'],
+                ['learn', 'tour_learn', 'Open the highlighted menu and choose Start Learning. Try revealing a hidden answer.', '#hamburger-btn']
+            ];
+            function tutorialAction(action) {
+                if (!tutorialPractice || action !== tutorialSteps[tutorialStep][0]) return;
+                tutorialCompleted.add(tutorialStep);
+                updateTutorialProgress();
+            }
+            function updateTutorialProgress() {
+                const done = tutorialCompleted.has(tutorialStep);
+                document.getElementById('tour-status').textContent = done ? mm('tour_done', 'Done. Continue when you are ready.') : '';
+                const next = document.getElementById('tour-next');
+                next.textContent = tutorialStep === tutorialSteps.length - 1 ? mm('tour_finish','Finish tutorial') : done ? mm('tour_next','Next') : mm('tour_skip','Skip step');
+                next.classList.toggle('tour-complete', done);
+                document.getElementById('tour-progress').value = tutorialStep + (done ? 1 : 0);
+            }
+            function renderTutorialStep() {
+                document.querySelectorAll('.tour-highlight').forEach(el => el.classList.remove('tour-highlight'));
+                const step = tutorialSteps[tutorialStep];
+                document.getElementById('tour-heading').textContent = mm('tour_step','Step {current} of {total}').replace('{current}',tutorialStep + 1).replace('{total}',tutorialSteps.length);
+                const progress = document.getElementById('tour-progress');
+                progress.max = tutorialSteps.length;
+                progress.setAttribute('aria-label', document.getElementById('tour-heading').textContent);
+                document.getElementById('tour-text').textContent = mm(step[1],step[2]);
+                document.getElementById('tour-back').textContent = mm('tour_back','Back');
+                document.getElementById('tour-back').disabled = tutorialStep === 0;
+                document.querySelector(step[3])?.classList.add('tour-highlight');
+                if (tutorialStep < 3) fitEntireMap();
+                document.getElementById('hamburger-dropdown').classList.remove('open');
+                hideContextMenu();
+                updateTutorialProgress();
+            }
+            function initializePractice() {
+                document.body.classList.add('tutorial-practice');
+                const guide = document.createElement('section'); guide.id='tour-guide';
+                guide.innerHTML='<strong id="tour-heading"></strong><progress id="tour-progress" value="0" max="6"></progress><p id="tour-text"></p><div id="tour-status" role="status"></div><div class="tour-actions"><button class="button" id="tour-back"></button><button class="button primary" id="tour-next"></button></div>';
+                document.body.insertBefore(guide, document.querySelector('.header'));
+                const changeStep = delta => {
+                    if (isLearningMode) stopLearningMode();
+                    if (isSelectionMode) exitNodeSelectionMode();
+                    hideLearningOptionsModal();
+                    tutorialStep=Math.max(0,Math.min(tutorialSteps.length - 1,tutorialStep+delta));
+                    renderTutorialStep();
+                };
+                document.getElementById('tour-back').onclick=()=>changeStep(-1);
+                document.getElementById('tour-next').onclick=()=>{
+                    if(tutorialStep===tutorialSteps.length - 1) parent.postMessage({type:'synapse-tour-close'}, '*');
+                    else changeStep(1);
+                };
+                const sample={name:'Practice',nodes:[
+                    {id:1,text:mm('tour_topic','My learning topic'),parent:null,x:0,y:0,color:'#0071d3',size:'medium'},
+                    {id:2,text:mm('tour_example','An example'),parent:1,x:220,y:140,color:'#0071d3',size:'medium'}
+                ]};
+                saveMindmaps({practice:sample}); loadMindmap('practice');
+                setTimeout(()=>{fitEntireMap();renderTutorialStep();}, 80);
+                window.__synapseMarkMindmapThemeReady?.();
+                window.addEventListener('message', event=>{
+                    if(event.source!==parent || event.data?.type!=='synapse-tour-init') return;
+                    window.__SYNAPSE_MM_I18N__=event.data.i18n || {};
+                    window.__WORKSPACE_I18N__=event.data.workspaceI18n||{};
+                    document.documentElement.classList.toggle('dark',!!event.data.dark);
+                    if(event.data.accent) document.documentElement.style.setProperty('--primary-color',event.data.accent);
+                    window.applyMindmapI18n?.();
+                    // Translate untouched sample labels only; never undo an exercise edit.
+                    nodes.forEach(node => {
+                        const key = node.text === 'My learning topic' ? 'tour_topic' : node.text === 'An example' ? 'tour_example' : null;
+                        if (!key) return;
+                        node.text = mm(key, node.text);
+                        const input = document.querySelector(`#node-${node.id} .node-textarea`);
+                        if (input) { input.value=node.text; input.dispatchEvent(new Event('input')); }
+                    });
+                    document.getElementById('fit-map-btn').setAttribute('aria-label',mm('fit_map','Show entire map'));
+                    renderTutorialStep();
+                });
+            }
+            function openPractice() {
+                if(tutorialPractice || practiceDialog) return;
+                if(isLearningMode || isHintEditMode || isSelectionMode || isCreatingNode) {
+                    window.__mmToast(mm('tour_busy','Finish the current editing or learning mode before opening the tutorial.'),'info'); return;
+                }
+                const dialog=document.createElement('dialog'); dialog.className='tour-dialog';
+                dialog.setAttribute('aria-label',mm('tutorial','Tutorial'));
+                const bar=document.createElement('div'); bar.className='tour-dialog-bar';
+                const title=document.createElement('strong');title.textContent=mm('tutorial','Tutorial');
+                const close=document.createElement('button');close.className='button';close.textContent=mm('tour_exit','Exit tutorial');
+                bar.append(title,close);
+                const frame=document.createElement('iframe');frame.title=mm('tutorial','Tutorial');
+                frame.setAttribute('sandbox','allow-scripts allow-modals');
+                const url=new URL(location.href);url.search='?practice=1';url.hash='';frame.src=url.href;
+                const receive=event=>{if(event.source===frame.contentWindow && event.data?.type==='synapse-tour-close') dialog.close();};
+                frame.onload=()=>frame.contentWindow.postMessage({type:'synapse-tour-init',i18n:window.__SYNAPSE_MM_I18N__,workspaceI18n:window.__WORKSPACE_I18N__,dark:document.documentElement.classList.contains('dark'),accent:getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim()},'*');
+                close.onclick=()=>dialog.close();
+                dialog.addEventListener('close',()=>{window.removeEventListener('message',receive);frame.remove();dialog.remove();practiceDialog=null;document.getElementById('hamburger-btn').focus();},{once:true});
+                window.addEventListener('message',receive);dialog.append(bar,frame);document.body.append(dialog);practiceDialog=dialog;dialog.showModal();close.focus();
+            }
+            window.__synapseOfferTutorial = function() {
+                if(tutorialPractice || practiceDialog || document.querySelector('.tour-invitation')) return;
+                const dialog=document.createElement('dialog');dialog.className='tour-invitation';dialog.setAttribute('aria-labelledby','tour-intro-title');
+                const title=document.createElement('h2');title.id='tour-intro-title';title.textContent=mm('tour_invite','Discover Mindmaps');
+                const text=document.createElement('p');text.className='tour-intro-summary';text.textContent=mm('tour_intro_summary','Connect ideas visually and test your knowledge with hidden answers.');
+                const steps=document.createElement('section');steps.className='tour-intro-steps';
+                const heading=document.createElement('h3');heading.textContent=mm('tour_intro_steps','Six short steps');
+                const list=document.createElement('ul');
+                [['tour_intro_create','Create and connect nodes'],['tour_intro_style','Adjust colors and sizes'],['tour_intro_navigate','Navigate your map and try learning mode']].forEach(([key,fallback])=>{
+                    const item=document.createElement('li');item.textContent=mm(key,fallback);list.append(item);
+                });
+                steps.append(heading,list);
+                const note=document.createElement('section');note.className='tour-intro-note';
+                const noteTitle=document.createElement('h3');noteTitle.textContent=mm('tour_intro_safe_title','Practice with sample data');
+                const noteText=document.createElement('p');noteText.textContent=mm('tour_intro_safe','Your own maps stay untouched. Practice changes are not saved.');
+                note.append(noteTitle,noteText);
+                const exitHint=document.createElement('p');exitHint.className='tour-intro-exit';exitHint.textContent=mm('tour_intro_exit','You can exit at any time and restart from the menu.');
+                const yes=document.createElement('button');yes.className='button primary';yes.textContent=mm('tour_start','Start tutorial');
+                const no=document.createElement('button');no.className='button';no.textContent=mm('tour_not_now','Not now');
+                yes.onclick=()=>{dialog.close();openPractice();};no.onclick=()=>dialog.close();
+                dialog.addEventListener('close',()=>dialog.remove(),{once:true});const actions=document.createElement('div');actions.className='tour-actions';actions.append(no,yes);dialog.append(title,text,steps,note,exitHint,actions);document.body.append(dialog);dialog.showModal();no.focus();
+            };
+
             try {
                 init();
             } catch (e) {
@@ -2101,7 +2437,7 @@ ${mm('ai_prompt_generate', 'Generate the mind map JSON now.')}`;
         var _FS_SVG_COLLAPSE = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 14 10 14 10 20"></polyline><polyline points="20 10 14 10 14 4"></polyline><line x1="10" y1="14" x2="3" y2="21"></line><line x1="21" y1="3" x2="14" y2="10"></line></svg>';
 
         function __synapseFsToggle() {
-            window.location.href = window.__mindmapFs ? 'mindmap://exitfullscreen' : 'mindmap://fullscreen';
+            window.__synapseMindmapCommand(window.__mindmapFs ? 'exitfullscreen' : 'fullscreen');
         }
 
         function __synapseSetFullscreen(active, t) {
@@ -2117,7 +2453,7 @@ ${mm('ai_prompt_generate', 'Generate the mind map JSON now.')}`;
         var _WIN_SVG_CLOSE = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>';
 
         function __synapseWinToggle() {
-            window.location.href = window.__mindmapWin ? 'mindmap://exitwindow' : 'mindmap://window';
+            window.__synapseMindmapCommand(window.__mindmapWin ? 'exitwindow' : 'window');
         }
 
         function __synapseSetWindow(active, t) {
@@ -2141,7 +2477,7 @@ ${mm('ai_prompt_generate', 'Generate the mind map JSON now.')}`;
             });
             document.querySelectorAll('[data-i18n-title]').forEach(function(el) {
                 var key = el.getAttribute('data-i18n-title');
-                if (t[key] !== undefined) el.title = t[key];
+                if (t[key] !== undefined) { el.title = t[key]; if (el.id === 'fit-map-btn') el.setAttribute('aria-label', t[key]); }
             });
             document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el) {
                 var key = el.getAttribute('data-i18n-placeholder');
@@ -2155,67 +2491,8 @@ ${mm('ai_prompt_generate', 'Generate the mind map JSON now.')}`;
         }
     </script>
     <script>
-    /* Custom HTML dropdown replacing the native #mindmap-select popup
-       (QtWebEngine renders native select popups mis-scaled). The hidden
-       <select> stays the source of truth: options are read lazily when the
-       menu opens, value changes dispatch a normal 'change' event, and a
-       MutationObserver keeps the button label in sync with loadMindmapList(). */
-    (function() {
-        var sel = document.getElementById('mindmap-select');
-        if (!sel) return;
-        var btn = document.createElement('button');
-        btn.type = 'button'; btn.id = 'mindmap-select-btn';
-        sel.parentNode.insertBefore(btn, sel.nextSibling);
-        var menu = null;
-
-        function label() { var o = sel.options[sel.selectedIndex]; return o ? o.textContent : ''; }
-        function sync() { btn.textContent = label() || '…'; btn.title = label(); }
-        function close() { if (menu && menu.parentNode) menu.parentNode.removeChild(menu); menu = null; }
-        function open() {
-            close();
-            menu = document.createElement('div'); menu.id = 'mindmap-select-menu';
-            Array.prototype.forEach.call(sel.options, function(o) {
-                var d = document.createElement('div');
-                d.className = 'mm-dd-item' + (o.selected ? ' sel' : '');
-                d.textContent = o.textContent;
-                d.addEventListener('click', function(ev) {
-                    ev.stopPropagation();
-                    sel.value = o.value; sync(); close();
-                    sel.dispatchEvent(new Event('change'));
-                });
-                menu.appendChild(d);
-            });
-            menu.addEventListener('click', function(e) { e.stopPropagation(); });
-            menu.style.maxHeight = '300px';
-            document.body.appendChild(menu);
-            var r = btn.getBoundingClientRect();
-            menu.style.minWidth = Math.max(r.width, 160) + 'px';
-            var h = menu.offsetHeight;
-            var below = window.innerHeight - r.bottom - 10;
-            if (h <= below) { menu.style.top = (r.bottom + 4) + 'px'; }
-            else if (h <= r.top - 10) { menu.style.top = (r.top - h - 4) + 'px'; }
-            else { menu.style.maxHeight = Math.max(below, 120) + 'px'; menu.style.top = (r.bottom + 4) + 'px'; }
-            var left = Math.min(r.left, window.innerWidth - menu.offsetWidth - 10);
-            menu.style.left = Math.max(8, left) + 'px';
-            var s = menu.querySelector('.sel');
-            if (s && s.scrollIntoView) s.scrollIntoView({ block: 'nearest' });
-        }
-
-        btn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            if (menu) { close(); } else { open(); }
-        });
-        document.addEventListener('click', close);
-        document.addEventListener('keydown', function(e) { if (e.key === 'Escape') close(); });
-        window.addEventListener('resize', close);
-        // Close when the page behind scrolls — but not when scrolling the menu.
-        document.addEventListener('scroll', function(e) {
-            if (menu && e.target && menu.contains(e.target)) return;
-            close();
-        }, true);
-        new MutationObserver(sync).observe(sel, { childList: true, subtree: true });
-        sync();
-    })();
+    // Document selector is shared with Roadmap in workspace_ui.js.
     </script>
+<script src="web_roadmap/tool_nav.js"></script>
 </body>
 </html>

@@ -1,7 +1,7 @@
-# SynapsePro for Anki
+# Synapse for Anki
 
 <p align="center">
-  <img src="docs/images/SynapsePro_README.png" alt="SynapsePro – The Ultimate Anki Workspace" width="100%">
+  <img src="docs/images/SynapsePro_README.png" alt="Synapse – The Ultimate Anki Workspace" width="100%">
 </p>
 
 <p align="center">
@@ -15,9 +15,9 @@
   <a href="mailto:help.synapse.pro@gmail.com">Support</a>
 </p>
 
-## About SynapsePro
+## About Synapse
 
-SynapsePro extends Anki with an integrated productivity environment designed to
+Synapse extends Anki with an integrated productivity environment designed to
 keep your study workflow in one place. Plan sessions, track progress, organize
 notes and PDFs, create mind maps, use focus tools, and stay motivated through
 gamification—without leaving Anki.
@@ -34,20 +34,20 @@ gamification—without leaving Anki.
 Additional features include:
 
 - A configurable launcher sidebar with keyboard shortcuts
-- An optional AI assistant supporting OpenAI, Gemini, Anthropic, OpenRouter,
+- An optional AI assistant supporting OpenAI, Gemini, Anthropic, OpenRouter, DeepSeek,
   Ollama, and llama.cpp-compatible servers
 - A redesigned music player with local audio and optional SoundCloud support
 - Light and dark modes, multiple color themes, and multilingual interface text
 - Full-screen workspaces for Notebook, Mind Map, and Website Viewer
 
-## What's new in 1.5.0
+## What's new in 1.6.0
 
-- Optional Minimalist Dashboard for a cleaner, distraction-reduced layout
-- Custom background images with performance-conscious optimization and display controls
-- Dedicated settings for statistics periods and visible Dashboard insights
-- Improved PDF card creation with page selection, source links, and easier deck navigation
-- Independent Study Plan and Daily Fact widgets, remembered sidebar state, and theme-aware branding
-- Mind Map loading feedback and fixes for statistics, SoundCloud, and sidebar icons
+- FreeMap for diagrams and visual notes, with images, local icons, and Anki links
+- Classic, Focus, and Overview layouts for the Custom Deck Overview
+- Timer Analytics with study time by deck
+- AI formula rendering, answer copying, layout settings, and DeepSeek API support
+- Basic, reversed, and Cloze cards in the PDF Card Creator
+- More consistent Dark Mode, per-feature sidebar widths, and Polish as the tenth language
 
 ## Requirements
 
@@ -63,18 +63,18 @@ AnkiMobile and AnkiDroid do not load desktop add-ons.
 ### AnkiWeb
 
 1. In Anki Desktop, open **Tools → Add-ons → Get Add-ons**.
-2. Enter the SynapsePro add-on code shown on its AnkiWeb page.
+2. Enter the Synapse add-on code shown on its AnkiWeb page.
 3. Restart Anki.
 
 ### Manual installation
 
 1. Quit Anki completely.
-2. Place the downloaded SynapsePro folder inside Anki's `addons21` directory.
+2. Place the downloaded Synapse folder inside Anki's `addons21` directory.
 3. Start Anki again.
 
 ## Privacy and online features
 
-SynapsePro is primarily a local desktop add-on. After you accept the onboarding
+Synapse is primarily a local desktop add-on. After you accept the onboarding
 privacy notice, it sends selected setup categories and version information once
 to the developer's Supabase database. It does not include card content,
 learning statistics, names, email addresses, credentials, or device identifiers.
@@ -90,7 +90,7 @@ not medical, legal, or other professional advice.
 ## Support
 
 If you encounter a problem, please include your operating system, Anki version,
-SynapsePro version, steps to reproduce the issue, and relevant lines from
+Synapse version, steps to reproduce the issue, and relevant lines from
 **Help → About → Copy Debug Info**.
 
 Never include API keys, private card content, or personal URLs in a report.
@@ -101,7 +101,7 @@ Never include API keys, private card content, or personal URLs in a report.
 
 ## License
 
-The source code is licensed under the [MIT License](LICENSE). SynapsePro
+The source code is licensed under the [MIT License](LICENSE). Synapse
 branding, images, animations, and audio are excluded and remain All Rights
 Reserved by MobesaMedia. Licenses for bundled third-party libraries are listed
 in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

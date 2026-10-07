@@ -1,0 +1,12 @@
+.deck-option-heading {font-size:13px;font-weight:600;margin:0;padding:16px 18px 8px;}
+.deck-number {width:80px;max-width:100%;border:1px solid var(--group-border);border-radius:8px;background:var(--field-bg);color:var(--text);font:inherit;padding:7px 9px;}
+.deck-settings-hint,.deck-settings-help {font-size:12px;color:var(--muted);line-height:1.55;padding:0 18px 16px;margin:8px 0 0;}
+.deck-settings-help summary {cursor:pointer;width:fit-content;}
+.deck-settings-help p {margin:10px 0 0;}
+#deckOverviewOptions {margin-top:16px;}
+#deckOverviewOptions>.group {margin-bottom:16px;}
+#deckOverviewOptions.deck-disabled {opacity:.48;}
+#deckOverviewOptions .switch input:focus-visible+.slider {outline:2px solid var(--accent);outline-offset:3px;}
+
+#deckOverviewOptions .row[hidden]{display:none;}
+#deckOverviewOptions .deck-color{width:54px;height:32px;padding:3px;border:1px solid var(--group-border);border-radius:7px;background:var(--field-bg);cursor:pointer;}

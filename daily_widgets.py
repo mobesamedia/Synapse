@@ -120,22 +120,22 @@ MEDICAL_FACTS = [
 # --- Jura Fakten Liste ---
 LAW_FACTS = [
     {"text": "The word 'lawyer' comes from the Middle English 'lawe,' meaning 'that which is laid down,' highlighting how laws were seen as fixed foundations of society.", "image": "lawyer_etymology.png"},
-    {"text": "The first-year law curriculum is notoriously intense; it’s designed less to teach content and more to train the mind to 'think like a lawyer.'", "image": "think_like_a_lawyer.png"},
+    {"text": "The first-year law curriculum is notoriously intense; it's designed less to teach content and more to train the mind to 'think like a lawyer.'", "image": "think_like_a_lawyer.png"},
     {"text": "Some students experience 'law school syndrome' — jokingly believing they have every legal condition they study, similar to medical student syndrome.", "image": "law_school_syndrome.png"},
     {"text": "Legal language, often mocked for being confusing, is intentionally precise, as small word choices can completely change a statute's interpretation.", "image": "legal_language_precision.png"},
     {"text": "The scales of justice, a symbol recognized globally, date back to ancient Egypt, representing the weighing of truth and fairness before the gods.", "image": "scales_of_justice.png"},
     {"text": "The adversarial system, where two sides argue before a neutral judge, is based on the belief that truth emerges from conflict, not harmony.", "image": "adversarial_system.png"},
     {"text": "In legal philosophy, a core debate exists between natural law (law based on morality) and legal positivism (law based on human-made rules).", "image": "natural_law_positivism.png"},
     {"text": "The phrase 'ignorance of the law is no excuse' exists in most legal systems, even though no one can possibly know all the laws that apply to them.", "image": "ignorance_no_excuse.png"},
-    {"text": "Many of the world’s influential legal systems, from civil law to common law, ultimately trace their roots back to Roman law.", "image": "roman_law_roots.png"},
+    {"text": "Many of the world's influential legal systems, from civil law to common law, ultimately trace their roots back to Roman law.", "image": "roman_law_roots.png"},
     {"text": "The Latin phrases still used in modern law—like habeas corpus or mens rea—survive from medieval times, when Latin was the universal language of educated discourse.", "image": "latin_in_law.png"},
     {"text": "The first recorded 'law school' dates back to ancient Rome around 450 BCE, when the Twelve Tables were taught as the foundation of Roman law.", "image": "roman_law_school.png"},
     {"text": "Most legal disputes never reach a courtroom; the vast majority are settled privately through negotiation or mediation.", "image": "private_settlement.png"},
-    {"text": "There’s a famous saying in legal circles: 'Hard cases make bad law,' meaning emotionally charged cases often lead to poor general rules.", "image": "hard_cases_bad_law.png"},
+    {"text": "There's a famous saying in legal circles: 'Hard cases make bad law,' meaning emotionally charged cases often lead to poor general rules.", "image": "hard_cases_bad_law.png"},
     {"text": "In France, it is illegal to name a pig 'Napoleon' out of respect for the famous emperor.", "image": "napoleon_pig_law.png"},
-    {"text": "In Samoa, it’s illegal to forget your wife’s birthday—a law meant to protect marital harmony.", "image": "samoa_birthday_law.png"},
+    {"text": "In Samoa, it's illegal to forget your wife's birthday—a law meant to protect marital harmony.", "image": "samoa_birthday_law.png"},
     {"text": "The United States has more lawyers than any other country—roughly 1.3 million—which means about one lawyer for every 240 people.", "image": "usa_lawyer_count.png"},
-    {"text": "In ancient Greece, lawyers didn’t exist; citizens had to represent themselves in court, though they could hire speechwriters to craft their arguments.", "image": "ancient_greece_law.png"},
+    {"text": "In ancient Greece, lawyers didn't exist; citizens had to represent themselves in court, though they could hire speechwriters to craft their arguments.", "image": "ancient_greece_law.png"},
     {"text": "International law technically lacks a global 'police force'; compliance depends largely on mutual agreement and political pressure.", "image": "international_law.png"},
     {"text": "Lawyers are sometimes called 'professional pessimists,' as their job is to imagine every possible way something could go wrong to protect their clients.", "image": "professional_pessimist.png"},
     {"text": "The correct answer to almost any complex legal question is: 'It depends.'", "image": "it_depends.png"},
@@ -143,7 +143,7 @@ LAW_FACTS = [
     {"text": "The phrase 'law and order' is misleading—in reality, law often creates conflict before it restores order, since every rule can be challenged or reinterpreted.", "image": "law_conflict_order.png"},
     {"text": "Law students often spend more time reading cases than attending lectures—a single case can run dozens of pages, filled with historical reasoning.", "image": "case_law_reading.png"},
     {"text": "In South Korea, law students may study for up to 20 hours a day before bar exams, preparing for years before even sitting the test.", "image": "south_korea_bar_exam.png"},
-    {"text": "The shortest U.S. Supreme Court decision ever written contained only one word: 'Affirmed.' It meant the lower court’s decision stood.", "image": "shortest_scotus_decision.png"},
+    {"text": "The shortest U.S. Supreme Court decision ever written contained only one word: 'Affirmed.' It meant the lower court's decision stood.", "image": "shortest_scotus_decision.png"},
     {"text": "In China, law students must study Marxist legal theory as part of their curriculum, as it is a foundation for the country's legal philosophy.", "image": "china_marxist_law.png"}
 ]
 
@@ -154,25 +154,25 @@ GENERAL_FACTS = [
     {"text": "The average cloud weighs around one million pounds, but floats because the air below it is even heavier.", "image": "cloud_weight.png"},
     {"text": "There are more trees on Earth than stars in the Milky Way — roughly three trillion versus 100–400 billion.", "image": "trees_vs_stars.png"},
     {"text": "A single strand of spider silk, if scaled up to the thickness of a pencil, could stop a passenger plane in flight.", "image": "spider_silk_plane.png"},
-    {"text": "In Antarctica, there’s a waterfall that runs red as blood — it’s actually caused by oxidized iron in saltwater.", "image": "blood_falls_antarctica.png"},
-    {"text": "Time passes slightly faster at your head than at your feet — thanks to Einstein’s theory of relativity and gravity’s effect on time.", "image": "time_relativity.png"},
-    {"text": "Bananas are berries, but strawberries aren’t — botanically speaking.", "image": "banana_berry.png"},
-    {"text": "Wombat poop is cube-shaped, so it doesn’t roll away and can be used to mark territory.", "image": "wombat_cube_poop.png"},
+    {"text": "In Antarctica, there's a waterfall that runs red as blood — it's actually caused by oxidized iron in saltwater.", "image": "blood_falls_antarctica.png"},
+    {"text": "Time passes slightly faster at your head than at your feet — thanks to Einstein's theory of relativity and gravity's effect on time.", "image": "time_relativity.png"},
+    {"text": "Bananas are berries, but strawberries aren't — botanically speaking.", "image": "banana_berry.png"},
+    {"text": "Wombat poop is cube-shaped, so it doesn't roll away and can be used to mark territory.", "image": "wombat_cube_poop.png"},
     {"text": "Octopuses have three hearts and blue blood; two hearts pump to the gills, one to the rest of the body.", "image": "octopus_hearts.png"},
     {"text": "Cleopatra lived closer in time to the invention of the iPhone than to the construction of the Great Pyramid.", "image": "cleopatra_iphone.png"},
     {"text": "There are more possible ways to shuffle a deck of cards than there are atoms on Earth.", "image": "card_shuffle.png"},
     {"text": "Sharks existed before trees did — by about 50 million years.", "image": "shark_before_trees.png"},
     {"text": "In theory, if you could fold a piece of paper 42 times, it would reach the Moon.", "image": "paper_fold_moon.png"},
     {"text": "The Eiffel Tower grows taller in summer; heat expands the metal by about 15 centimeters.", "image": "eiffel_tower_summer.png"},
-    {"text": "Honey never spoils — archaeologists have found 3,000-year-old honey that’s still edible.", "image": "honey_never_spoils.png"},
+    {"text": "Honey never spoils — archaeologists have found 3,000-year-old honey that's still edible.", "image": "honey_never_spoils.png"},
     {"text": "A day on Venus is longer than a year on Venus — it rotates so slowly that it spins once per orbit.", "image": "venus_day_year.png"},
-    {"text": "The fingerprints of koalas are so similar to humans’ that they’ve confused crime scene investigators.", "image": "koala_fingerprint.png"},
-    {"text": "You can’t hum while holding your nose closed — try it, it’s impossible.", "image": "hum_nose.png"},
-    {"text": "Some turtles can breathe through their rear ends during hibernation — it’s called cloacal respiration.", "image": "turtle_breathe_rear.png"},
-    {"text": "There’s enough DNA in your body to stretch from the Sun to Pluto and back — 17 times.", "image": "dna_stretch.png"},
+    {"text": "The fingerprints of koalas are so similar to humans' that they've confused crime scene investigators.", "image": "koala_fingerprint.png"},
+    {"text": "You can't hum while holding your nose closed — try it, it's impossible.", "image": "hum_nose.png"},
+    {"text": "Some turtles can breathe through their rear ends during hibernation — it's called cloacal respiration.", "image": "turtle_breathe_rear.png"},
+    {"text": "There's enough DNA in your body to stretch from the Sun to Pluto and back — 17 times.", "image": "dna_stretch.png"},
     {"text": "A teaspoon of neutron star material would weigh about six billion tons.", "image": "neutron_star_weight.png"},
     {"text": "The shortest war in history was between Britain and Zanzibar in 1896 — it lasted 38 minutes.", "image": "shortest_war.png"},
-    {"text": "Cows have best friends and get stressed when they’re separated.", "image": "cow_friends.png"},
+    {"text": "Cows have best friends and get stressed when they're separated.", "image": "cow_friends.png"},
     {"text": "Space smells like seared steak — astronauts report the odor comes from dying stars and cosmic dust.", "image": "space_smell.png"}
 ]
 
@@ -618,11 +618,14 @@ def generate_learning_plan_widget(plan_data: List[Dict]) -> str:
     widget_html = f'''<div class="daily-widget plan-widget{plan_state_class}" style="{widget_style}">{header_html}{rows_html}</div>'''
     return widget_html
 
-def generate_fact_widget(fact_theme: str = "Medical") -> str:
+def generate_fact_widget(fact_theme: str = "Medical", display_index=None) -> str:
     """Generiert das HTML für das Fakten-Widget basierend auf dem gewählten Thema."""
     global _debug_day_offset
 
-    if fact_theme == "Law":
+    if fact_theme == "Random":
+        active_facts = MEDICAL_FACTS + LAW_FACTS + GENERAL_FACTS + COUNTRY_FACTS
+        fact_title = _("Daily Fact")
+    elif fact_theme == "Law":
         active_facts = LAW_FACTS
         fact_title = _("Daily Legal Fact")
     elif fact_theme == "General":
@@ -648,7 +651,14 @@ def generate_fact_widget(fact_theme: str = "Medical") -> str:
             num_facts = len(active_facts)
             day_of_year = date.today().timetuple().tm_yday
             effective_day = day_of_year + _debug_day_offset
-            fact_index = (effective_day - 1) % num_facts
+            if fact_theme == "Random":
+                # Stable for the day, mixed across the complete catalog.
+                seed = str(date.today().toordinal() + _debug_day_offset).encode('ascii')
+                fact_index = int(hashlib.sha256(seed).hexdigest(), 16) % num_facts
+            else:
+                fact_index = (effective_day - 1) % num_facts
+            if display_index is not None:
+                fact_index = max(0, min(len(active_facts)-1, int(display_index)))
             selected_fact = active_facts[fact_index]
             # Translate the fact text on read. Wrapping the dict literals
             # with _() would freeze translations at module-import time; this
@@ -717,10 +727,61 @@ def generate_fact_widget(fact_theme: str = "Medical") -> str:
     '''
     return widget_html
 
+def generate_todo_widget() -> str:
+    """Read the existing snapshot without creating a second task store."""
+    failed = False
+    try:
+        from .notebook_sidebar import load_todo_preview_snapshot
+        tasks = json.loads(load_todo_preview_snapshot())
+        if not isinstance(tasks, list):
+            raise ValueError("Invalid task list")
+        completed_count = sum(1 for t in tasks if isinstance(t, dict) and t.get("done"))
+        tasks = [t for t in tasks if isinstance(t, dict) and not t.get("done") and t.get("due_on", date.today().isoformat()) <= date.today().isoformat() and isinstance(t.get("text"), str)]
+    except Exception:
+        tasks = []
+        failed = True
+        completed_count = 0
+    esc = lambda value: html.escape(str(value), quote=True)
+    rows = ''.join(
+        f'<li><button type="button" class="sp-task-check" data-task-id="{esc(t.get("id", ""))}" aria-label="{esc(_("Complete task") + ": " + t["text"])}" onclick="event.stopPropagation();pycmd(&quot;pycmd:synapsepro:todo_complete:&quot;+encodeURIComponent(this.dataset.taskId));" {"disabled" if not t.get("id") else ""}></button><span class="sp-task-label" title="{esc(t["text"])}">{esc(t["text"])}</span>{chr(32) + "<span class=sp-task-repeat title=" + chr(34) + esc(_("Recurring task")) + chr(34) + ">↻</span>" if t.get("repeat") in ("daily", "weekly", "weekdays") else ""}</li>'
+        for t in tasks[:8]
+    )
+    if not rows:
+        message = _("Open Tasks to view your list.") if failed else _("All done. No open tasks.")
+        rows = f'<li class="sp-task-empty">{esc(message)}</li>'
+    count = '' if failed else f'<span class="sp-task-count" title="{esc(_("Open tasks"))}" aria-label="{esc(_("Open tasks"))}: {len(tasks)}">{len(tasks)}</span><span class="sp-task-count sp-task-completed" title="{esc(_("Completed tasks"))}" aria-label="{esc(_("Completed tasks"))}: {completed_count}">{completed_count}</span>'
+    return f'''<style>
+    .sp-todo-widget {{box-sizing:border-box;min-width:0;width:100%;max-width:100%;flex:1 1 300px;padding:12px 16px 16px;background:var(--stat-bg,var(--sp-min-surface));color:var(--text-color,var(--sp-min-text));border:1px solid var(--stat-border,var(--sp-min-border));border-radius:12px;text-align:left;}}
+    .sp-task-heading {{display:flex;align-items:center;gap:8px;margin:0 0 12px;flex-wrap:wrap;}}
+    .sp-task-heading h5 {{margin:0 auto 0 0;font-size:1.1em;}}
+    .sp-task-manager {{font:inherit;font-size:10px;line-height:1.2;min-height:0;background:transparent;color:inherit;border:1px solid var(--stat-border,var(--sp-min-border));border-radius:5px;padding:2px 5px;cursor:pointer;}}
+    .sp-task-completed {{color:var(--plan-date-color,var(--sp-min-accent));}}
+    .sp-task-count {{font-size:12px;font-weight:500;border:1px solid currentColor;border-radius:12px;padding:1px 7px;}}
+    .sp-todo-widget ul {{display:flex;flex-wrap:wrap;gap:8px 22px;list-style:none;margin:0;padding:0;}}
+    .sp-todo-widget li {{display:flex;align-items:flex-start;gap:9px;min-width:0;flex:0 1 auto;max-width:100%;padding:5px 0;font-size:14px;line-height:1.4;}}
+    .sp-task-check {{appearance:none;box-sizing:border-box;width:18px;height:18px;flex:0 0 18px;min-width:0;min-height:0;margin:1px 0 0;padding:0;background:transparent;color:inherit;border:1px solid currentColor;border-radius:4px;box-shadow:none;cursor:pointer;}}
+    .sp-task-check:hover {{border-color:var(--plan-date-color,var(--sp-min-accent));}}
+    .sp-todo-widget .sp-task-check,.sp-todo-widget .sp-task-manager,
+    .sp-todo-widget .sp-task-check:hover,.sp-todo-widget .sp-task-manager:hover,
+    .sp-todo-widget .sp-task-check:active,.sp-todo-widget .sp-task-manager:active,
+    .sp-todo-widget .sp-task-check:focus,.sp-todo-widget .sp-task-manager:focus {{box-shadow:none !important;filter:none !important;transform:none !important;}}
+    .sp-todo-widget .sp-task-check {{border-radius:4px !important;width:18px !important;height:18px !important;}}
+    .sp-task-check:focus-visible,.sp-task-manager:focus-visible {{outline:2px solid currentColor;outline-offset:3px;}}
+    .sp-task-repeat {{color:var(--plan-date-color,var(--sp-min-accent));flex-shrink:0;}}
+    .sp-task-label {{min-width:0;white-space:normal;overflow-wrap:anywhere;}}
+    .sp-min-plan-fact-row.sp-min-tasks-row {{grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:stretch;}}
+    @media(max-width:650px) {{.sp-min-plan-fact-row.sp-min-tasks-row {{grid-template-columns:minmax(0,1fr);}}}}
+    </style><div class="daily-widget sp-todo-widget">
+    <div class="sp-task-heading"><h5>{esc(_('Tasks'))}</h5><button type="button" class="sp-task-manager" onclick="event.stopPropagation();pycmd('pycmd:synapsepro:todo_viewer')">{esc(_('Open Manager'))}</button>{count}</div>
+    <ul>{rows}</ul></div>''' 
+
+
 # --- Entry point ---
 def generate_daily_widgets_html(
     learning_plan_data: List[Dict], fact_theme: str,
     show_study_plan: bool = True, show_daily_fact: bool = True,
+    widget_content: str = "facts",
+    display_fact_index=None,
 ) -> str:
     _cl = _palette(False)
     _cd = _palette(True)
@@ -905,7 +966,7 @@ def generate_daily_widgets_html(
         try: plan_widget_html = generate_learning_plan_widget(learning_plan_data)
         except Exception as e: print(f"ERROR generating plan widget: {e}"); traceback.print_exc(); plan_widget_html = "<!-- Error -->"
     if show_daily_fact:
-        try: fact_widget_html = generate_fact_widget(fact_theme)
+        try: fact_widget_html = generate_todo_widget() if widget_content == "tasks" else generate_fact_widget(fact_theme, display_fact_index)
         except Exception as e: print(f"ERROR generating fact widget: {e}"); traceback.print_exc(); fact_widget_html = "<!-- Error -->"
 
     container_style = f"""

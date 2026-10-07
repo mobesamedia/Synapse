@@ -19,8 +19,8 @@
   }
   html.dark{
     color-scheme:dark;
-    --bg:#191919; --card:#2C2C2C; --border:rgba(255,255,255,0.09);
-    --text:#E0E0E0; --muted:#AAAAAA; --track:#404040;
+    --bg:#2C2C2C; --card:#252525; --border:rgba(255,255,255,0.09);
+    --text:#FFFFFF; --muted:#B0B0B0; --track:#414141;
   }
   *{box-sizing:border-box;-webkit-user-select:none;user-select:none;}
   html,body{height:100%;margin:0;}
@@ -39,6 +39,11 @@
   }
   .seg button.on{background:var(--card);color:var(--text);}
   .seg button:disabled{opacity:.4;cursor:default;}
+  html.dark .seg{background:#252525;}
+  html.dark .seg button{color:#7e7e7e;}
+  html.dark .seg button.on{background:#414141;color:#fff;}
+  html.dark .seg button:hover:not(:disabled){color:#fff;}
+
 
   .panel{display:none;flex:1;min-height:0;flex-direction:column;}
   .panel.on{display:flex;}
@@ -195,6 +200,13 @@
     flex-shrink:0;min-height:18px;
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .schint{font-size:10.5px;color:var(--muted);opacity:.7;text-align:center;padding-top:2px;}
+</style>
+<style id="synapse-keyboard-focus">
+body button:focus-visible, body input:focus-visible, body select:focus-visible,
+body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-visible {
+  outline: 2px solid var(--accent, var(--primary-color, #0071d3));
+  outline-offset: 2px;
+}
 </style>
 </head>
 <body>

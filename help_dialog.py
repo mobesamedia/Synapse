@@ -10,14 +10,14 @@ except ImportError:
 
 HELP_TEXT = """
 <h2>Troubleshooting & Manual Removal</h2>
-<p>If you are unable to activate the addon or close Anki, you can manually remove SynapsePro to regain access.</p>
+<p>If you are unable to activate the addon or close Anki, you can manually remove Synapse to regain access.</p>
 
 <b>Follow these steps:</b>
 <ol>
     <li>Close this window and click the "Quit Anki" button in the activation dialog. If that fails, force-quit Anki (e.g., via Activity Monitor on Mac or Task Manager on Windows).</li>
     <li>Open Anki while holding down the <b>Shift key</b>. This will temporarily disable all addons.</li>
     <li>Go to <b>Tools > Add-ons</b> from the Anki menu.</li>
-    <li>Select "SynapsePro" from the list.</li>
+    <li>Select "Synapse" from the list.</li>
     <li>Click the "Delete" button on the right side.</li>
     <li>Restart Anki normally.</li>
 </ol>
@@ -29,7 +29,7 @@ HELP_TEXT = """
 class HelpDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle(_("SynapsePro - Help"))
+        self.setWindowTitle(_("Synapse - Help"))
         self.setMinimumWidth(500)
 
         layout = QVBoxLayout()
@@ -39,6 +39,8 @@ class HelpDialog(QDialog):
         label.setOpenExternalLinks(True)
         
         button_box = QDialogButtonBox(QDialogButtonBox.StandardButton.Close)
+        from .locales import translate_standard_buttons
+        translate_standard_buttons(button_box)
         button_box.rejected.connect(self.reject)
 
         layout.addWidget(label)

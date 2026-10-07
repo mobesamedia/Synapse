@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Ebene_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 120 120">
+  <!-- Generator: Adobe Illustrator 30.8.1, SVG Export Plug-In . SVG Version: 2.1.4 Build 1)  -->
+  <defs>
+    <style>
+      .st0 {
+        fill: #818c9c;
+      }
+
+      .st1 {
+        fill: url(#Unbenannter_Verlauf);
+      }
+
+      .st2 {
+        fill: none;
+        stroke: #f6f7fa;
+        stroke-opacity: .55;
+      }
+
+      .st3 {
+        fill: #58626d;
+      }
+
+      .st4 {
+        fill: #f9f9f9;
+      }
+
+      .st5 {
+        fill: #f0f0f0;
+      }
+
+      .st6 {
+        fill: url(#Unbenannter_Verlauf1);
+      }
+    </style>
+    <linearGradient id="Unbenannter_Verlauf" data-name="Unbenannter Verlauf" x1="-356.63" y1="356.19" x2="-355.93" y2="355.19" gradientTransform="translate(39245 39178.3131) scale(110 -110)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f6f7fa"/>
+      <stop offset=".48" stop-color="#bcc4cf"/>
+      <stop offset="1" stop-color="#818c9c"/>
+    </linearGradient>
+    <linearGradient id="Unbenannter_Verlauf1" data-name="Unbenannter Verlauf" x1="35.49" y1="63.14" x2="79.01" y2="63.14" gradientTransform="matrix(1,0,0,1,0,0)" xlink:href="#Unbenannter_Verlauf"/>
+  </defs>
+  <g id="rim">
+    <circle class="st1" cx="60" cy="60" r="55"/>
+    <circle class="st2" cx="60" cy="60" r="53.5"/>
+  </g>
+  <g id="center">
+    <circle class="st0" cx="60" cy="60" r="44.5"/>
+    <circle class="st5" cx="60" cy="60" r="43"/>
+  </g>
+  <g id="icon">
+    <path class="st3" d="M62,25c17,15,11,27,18,34,2-5,3-9,2-13,14,16,10,43-11,48-23,6-42-10-35-30,3-8,9-15,14-20-4,12-1,17,3,20,12-13,15-25,9-39Z"/>
+    <path class="st6" d="M61,30c8,17,1,26-9,39-5-3-7-8-6-15-15,15-13,32,0,39,9,5,21,4,29-1,10-17-2-23-1-35-4,5-6,10-9,12,3-14,9-20-4-39Z"/>
+    <path class="st4" d="M63,56c6,17-12,20-6,29,3,4,5,0,6-2,9,13-5,18-13,10-13-14,11-22,13-37Z"/>
+  </g>
+</svg>

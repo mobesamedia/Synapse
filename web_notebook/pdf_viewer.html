@@ -23,7 +23,7 @@
       --hover-bg:     #efefef;
       --border:       rgba(0,0,0,0.08);
       --font:         -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-      --accent:       #0071D3;
+      --accent:       var(--synapse-primary, #0071D3);
       --danger:       #e03e3e;
       --input-bg:     #f7f7f5;
       --card-bg:      #ffffff;
@@ -33,16 +33,16 @@
       --folder-border:#fcd34d;
     }
     body.nightMode {
-      --bg:           #191919;
+      --bg:           #2c2c2c;
       --header-bg:    #252525;
-      --text:         #ececec;
-      --text-gray:    #888;
-      --hover-bg:     #2c2c2c;
+      --text:         #ffffff;
+      --text-gray:    #b0b0b0;
+      --hover-bg:     #414141;
       --border:       rgba(255,255,255,0.09);
-      --accent:       #4a9eff;
+      --accent:       var(--synapse-primary, #4a9eff);
       --danger:       #e05a5a;
-      --input-bg:     #252525;
-      --card-bg:      #222222;
+      --input-bg:     #414141;
+      --card-bg:      #252525;
       --card-shadow:  0 1px 4px rgba(0,0,0,0.35);
       --folder-bg:    #2a2010;
       --folder-text:  #fbbf24;
@@ -266,6 +266,10 @@
       display: flex; flex-direction: column; align-items: safe center; gap: 8px;
     }
     #canvas-wrap::-webkit-scrollbar { width: 7px; height: 7px; }
+    body.nightMode #canvas-wrap { background:#252525; }
+    body.nightMode #viewer-loading { background:rgba(37,37,37,.9); }
+    body.nightMode #canvas-wrap::-webkit-scrollbar-track { background:#252525; }
+    body.nightMode #canvas-wrap::-webkit-scrollbar-thumb { background:#414141; }
     #canvas-wrap::-webkit-scrollbar-track { background: #404040; }
     #canvas-wrap::-webkit-scrollbar-thumb { background: #666; border-radius: 4px; }
 
@@ -277,7 +281,7 @@
     }
     #canvas-wrap.source-page-selection .page-wrapper { cursor: pointer; }
     #canvas-wrap.source-page-selection .page-wrapper:hover {
-      outline-color: rgba(0,113,211,.48);
+      outline-color: color-mix(in srgb, var(--accent) 48%, transparent);
     }
     .page-wrapper.source-page-selected {
       outline-color: var(--accent) !important;
@@ -303,7 +307,7 @@
       color: #999; font-size: 11px; font-family: var(--font);
     }
     .page-placeholder-spinner {
-      width: 24px; height: 24px; border: 3px solid rgba(0,113,211,0.25);
+      width: 24px; height: 24px; border: 3px solid color-mix(in srgb, var(--accent) 25%, transparent);
       border-top-color: var(--accent); border-radius: 50%;
       animation: spin 0.8s linear infinite;
     }
@@ -376,10 +380,10 @@
       pointer-events: auto;
     }
     .textLayer ::selection {
-      background: rgba(0, 113, 211, 0.28);
+      background: color-mix(in srgb, var(--accent) 28%, transparent);
     }
     .textLayer ::-moz-selection {
-      background: rgba(0, 113, 211, 0.28);
+      background: color-mix(in srgb, var(--accent) 28%, transparent);
     }
 
     /* Text-selection actions and the unsaved Anki card draft. */
@@ -452,7 +456,7 @@
     #creator-back { min-height: 96px; }
     #creator-deck-name { height: 34px; padding: 6px 9px; }
     .creator-textarea:focus, #creator-deck-name:focus {
-      border-color: var(--accent); box-shadow: 0 0 0 2px rgba(0,113,211,.11);
+      border-color: var(--accent); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 11%, transparent);
     }
     .creator-textarea::placeholder, #creator-deck-name::placeholder { color: var(--text-gray); }
     .creator-source-row {
@@ -580,6 +584,13 @@
       #viewer-toolbar { padding-left: 6px; padding-right: 6px; gap: 4px; }
     }
   </style>
+<style id="synapse-keyboard-focus">
+body button:focus-visible, body input:focus-visible, body select:focus-visible,
+body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-visible {
+  outline: 2px solid var(--accent, var(--primary-color, #0071d3));
+  outline-offset: 2px;
+}
+</style>
 </head>
 <body>
 
@@ -681,6 +692,15 @@
       <button class="creator-close" onclick="closeCardCreator()" data-i18n-title="close" aria-label="Close">×</button>
     </div>
     <div class="creator-scroll">
+      <div class="creator-field"><label class="creator-label" for="creator-type" data-i18n="creator_type">Card type</label>
+        <select id="creator-type" class="creator-textarea" style="min-height:34px;height:34px;padding:6px 10px" onchange="changeCreatorType()">
+          <option value="basic" data-i18n="creator_basic">Basic (Front / Back)</option><option value="reversed" data-i18n="creator_reversed">Basic + Reversed</option><option value="cloze" data-i18n="creator_cloze">Cloze</option>
+        </select>
+      </div>
+      <div id="creator-cloze-tools" hidden style="margin-bottom:12px">
+        <div style="display:flex;gap:6px;flex-wrap:wrap"><button class="creator-btn" onclick="insertCreatorCloze(false)" data-i18n="creator_new_cloze">New cloze</button><button class="creator-btn" onclick="insertCreatorCloze(true)" data-i18n="creator_same_cloze">Same card</button></div>
+        <p style="font-size:11px;line-height:1.5;opacity:.75;margin-top:6px" data-i18n="creator_cloze_hint">Select text below, then add a cloze. Different numbers create separate cards; matching numbers hide together.</p>
+      </div>
       <div class="creator-field">
         <div class="creator-field-head">
           <label class="creator-label" for="creator-front" data-i18n="draft_front">Front</label>
@@ -734,7 +754,7 @@
     </div>
   </aside>
 
-  <div id="canvas-wrap" style="position:relative">
+  <div id="canvas-wrap" tabindex="0" aria-label="PDF" title="PDF · Page Up / Page Down · Ctrl/Cmd + / −" style="position:relative">
     <div id="viewer-loading">
       <div id="viewer-loading-bar-bg"><div id="viewer-loading-bar"></div></div>
       <span id="viewer-loading-text" data-i18n="loading">Loading PDF…</span>
@@ -1286,7 +1306,7 @@ function observePages(pdf, generation) {
 async function renderPdfB64(b64, filename, path, initialPage) {
   if (!window.pdfjsLib) {
     showViewer(filename, path);
-    showViewerError('PDF.js is missing from this add-on installation. Please reinstall SynapsePro.');
+    showViewerError('PDF.js is missing from this add-on installation. Please reinstall Synapse.');
     return;
   }
 
@@ -1527,8 +1547,32 @@ async function rerenderForZoom() {
 // ── PDF text selection and multi-card creator ────────────────
 let lastPdfSelection = null;
 
+function creatorText(key,fallback){return window.__SYNAPSE_I18N__?.[key] || fallback;}
+function updateCreatorTypeUI() {
+  const cloze=document.getElementById('creator-type').value==='cloze';
+  document.getElementById('creator-cloze-tools').hidden=!cloze;
+  document.querySelector('label[for="creator-front"]').textContent=cloze?creatorText('creator_text', 'Text'):(window.__SYNAPSE_I18N__?.draft_front||'Front');
+  document.querySelector('label[for="creator-back"]').textContent=cloze?creatorText('creator_extra', 'Extra'):(window.__SYNAPSE_I18N__?.draft_back||'Back');
+}
+function changeCreatorType(){if(creatorBatchPending)return;syncCreatorFormToSession();updateCreatorTypeUI();scheduleCreatorSave();}
+function insertCreatorCloze(same) {
+  if(creatorBatchPending)return;
+  const el=document.getElementById('creator-front'), start=el.selectionStart,end=el.selectionEnd;
+  if(start===end){showStatus(creatorText('creator_select_cloze', 'Select the text you want to hide first.'));el.focus();return;}
+  const selected=el.value.slice(start,end);
+  if(/[{}]/.test(selected)){showStatus(creatorText('creator_plain_cloze', 'Select plain text outside an existing cloze.'));return;}
+  const before=el.value.slice(0,start);
+  if(before.lastIndexOf('{{')>before.lastIndexOf('}}')){showStatus(creatorText('creator_plain_cloze', 'Select plain text outside an existing cloze.'));return;}
+  const nums=[...el.value.matchAll(/\{\{c([1-9][0-9]*)::/g)].map(m=>Number(m[1]));
+  const number=same?Math.max(1,...nums):Math.max(0,...nums)+1;
+  if(number>999)return;
+  const replacement='{{c'+number+'::'+selected+'}}';
+  if(el.value.length+replacement.length-selected.length>50000)return;
+  el.setRangeText(replacement,start,end,'end');el.focus();syncCreatorFormToSession();scheduleCreatorSave();
+}
+
 function emptyCreatorDraft() {
-  return { front: '', back: '', frontPages: [], backPages: [], sourcePages: [], includeSource: false };
+  return { type: 'basic', front: '', back: '', frontPages: [], backPages: [], sourcePages: [], includeSource: false };
 }
 
 function creatorSessionHasWork(session) {
@@ -1551,6 +1595,7 @@ function sanitizeCreatorCard(raw) {
   raw = raw && typeof raw === 'object' ? raw : {};
   return {
     id: typeof raw.id === 'string' ? raw.id : uid(),
+    type: ['basic','reversed','cloze'].includes(raw.type) ? raw.type : 'basic',
     front: typeof raw.front === 'string' ? raw.front.slice(0, 50000) : '',
     back: typeof raw.back === 'string' ? raw.back.slice(0, 50000) : '',
     pages: sanitizePages(raw.pages),
@@ -1575,6 +1620,7 @@ function sanitizeCreatorSession(raw, filename, path) {
     cards,
     editingIndex,
     draft: {
+      type: ['basic','reversed','cloze'].includes(draftRaw.type) ? draftRaw.type : 'basic',
       front: typeof draftRaw.front === 'string' ? draftRaw.front.slice(0, 50000) : '',
       back: typeof draftRaw.back === 'string' ? draftRaw.back.slice(0, 50000) : '',
       frontPages: sanitizePages(draftRaw.frontPages),
@@ -1761,6 +1807,7 @@ function syncCreatorFormToSession() {
   const back = document.getElementById('creator-back');
   const source = document.getElementById('creator-include-source');
   const deck = document.getElementById('creator-deck-name');
+  session.draft.type = document.getElementById('creator-type').value;
   if (front) session.draft.front = front.value.slice(0, 50000);
   if (back) session.draft.back = back.value.slice(0, 50000);
   if (source) session.draft.includeSource = source.checked;
@@ -1776,10 +1823,15 @@ function updateCreatorBadge() {
   badge.classList.toggle('show', count > 0);
 }
 
+function creatorCardCount(card) {
+  if(card.type==='reversed')return 2;
+  if(card.type==='cloze')return new Set([...card.front.matchAll(/\{\{c([1-9][0-9]{0,2})::[^{}]+\}\}/g)].map(m=>m[1])).size;
+  return 1;
+}
 function creatorFinishLabel(session) {
   const i18n = window.__SYNAPSE_I18N__ || {};
   const draftAddsCard = session.editingIndex < 0 && Boolean(session.draft.front.trim());
-  const count = session.cards.length + (draftAddsCard ? 1 : 0);
+  const count = session.cards.reduce((n,c)=>n+creatorCardCount(c),0) + (draftAddsCard ? creatorCardCount(session.draft) : 0);
   return (i18n.finish_cards || 'Finish · Create {count} cards').replace('{count}', count);
 }
 
@@ -1787,6 +1839,8 @@ function renderCardCreator() {
   const session = ensureCreatorSession();
   const draft = session.draft;
   const i18n = window.__SYNAPSE_I18N__ || {};
+  document.getElementById('creator-type').value = draft.type || 'basic';
+  updateCreatorTypeUI();
   document.getElementById('creator-front').value = draft.front;
   document.getElementById('creator-back').value = draft.back;
   document.getElementById('creator-include-source').checked = draft.includeSource;
@@ -1801,10 +1855,10 @@ function renderCardCreator() {
   document.getElementById('creator-new-card').classList.toggle('show', editing || Boolean(draft.front || draft.back));
 
   const countTemplate = i18n.cards_ready || '{count} cards ready';
-  document.getElementById('creator-ready-label').textContent = countTemplate.replace('{count}', session.cards.length);
+  document.getElementById('creator-ready-label').textContent = countTemplate.replace('{count}', session.cards.reduce((n,c)=>n+creatorCardCount(c),0));
   const list = document.getElementById('creator-card-list');
   list.innerHTML = session.cards.map((card, index) => {
-    const meta = [];
+    const meta = [creatorText('creator_'+(card.type || 'basic'),card.type === 'cloze' ? 'Cloze' : card.type === 'reversed' ? 'Basic + Reversed' : 'Basic')];
     if (card.pages.length) meta.push(pagesLabel(card.pages));
     if (card.includeSource) meta.push(i18n.source_short || 'Source');
     return `<div class="creator-card-item">
@@ -1828,6 +1882,8 @@ function renderCardCreator() {
   document.getElementById('creator-add-card').disabled = creatorBatchPending;
   document.getElementById('creator-new-card').disabled = creatorBatchPending;
   document.getElementById('creator-discard').disabled = creatorBatchPending;
+  document.getElementById('creator-type').disabled = creatorBatchPending;
+  document.querySelectorAll('#creator-cloze-tools button').forEach(b=>b.disabled=creatorBatchPending);
   document.getElementById('creator-front').disabled = creatorBatchPending;
   document.getElementById('creator-back').disabled = creatorBatchPending;
   document.getElementById('creator-include-source').disabled = creatorBatchPending;
@@ -1871,7 +1927,9 @@ function closeCardCreator() {
 }
 
 function clearCreatorDraft(session) {
+  const type = session.draft.type || 'basic';
   session.draft = emptyCreatorDraft();
+  session.draft.type = type;
   session.editingIndex = -1;
 }
 
@@ -1888,19 +1946,23 @@ function commitCreatorCard(silent) {
     document.getElementById('creator-front').focus();
     return false;
   }
+  if (draft.type === 'cloze' && !/\{\{c[1-9][0-9]{0,2}::[^{}]+\}\}/.test(front)) {
+    showStatus(creatorText('creator_cloze_required', 'Add at least one cloze deletion, for example {{c1::answer}}.'));return false;
+  }
+  if (draft.type === 'reversed' && !back) {showStatus(creatorText('creator_reverse_required', 'Reversed cards need text on both sides.'));return false;}
   if (front.length + back.length > 50000) {
     showStatus(i18n.card_too_long || 'This card contains too much text.');
     return false;
   }
   const duplicate = session.cards.some((card, index) =>
-    index !== session.editingIndex && card.front.trim() === front && card.back.trim() === back);
+    index !== session.editingIndex && (card.type || 'basic') === draft.type && card.front.trim() === front && card.back.trim() === back);
   if (duplicate) {
     showStatus(i18n.duplicate_card || 'This card is already in the session.');
     return false;
   }
   const card = sanitizeCreatorCard({
     id: session.editingIndex >= 0 ? session.cards[session.editingIndex].id : uid(),
-    front, back,
+    front, back, type: draft.type,
     pages: [...draft.frontPages, ...draft.backPages, ...draft.sourcePages],
     includeSource: draft.includeSource,
   });
@@ -1943,7 +2005,7 @@ function editCreatorCard(index) {
   if (!card) return;
   session.editingIndex = index;
   session.draft = {
-    front: card.front, back: card.back,
+    front: card.front, back: card.back, type: card.type,
     frontPages: [], backPages: [], sourcePages: card.pages.slice(),
     includeSource: card.includeSource,
   };
@@ -2003,7 +2065,7 @@ function finishCreatorSession() {
     deckName,
     pdfId: session.pdfId || currentPdfId || '',
     cards: session.cards.map(card => ({
-      front: card.front, back: card.back,
+      front: card.front, back: card.back, type: card.type,
       pages: card.pages, includeSource: card.includeSource,
     })),
   }));
@@ -2150,6 +2212,19 @@ window.onPdfCardBatchCreated = function(success, message) {
 };
 
 const canvasWrap = document.getElementById('canvas-wrap');
+canvasWrap.addEventListener('keydown', event => {
+  if (event.isComposing || event.defaultPrevented || !currentPdfDoc ||
+      event.target.closest('input, textarea, select, button, a, [contenteditable="true"]')) return;
+  if ((event.ctrlKey || event.metaKey) && !event.altKey && ['+', '=', '-'].includes(event.key)) {
+    event.preventDefault(); event.stopPropagation();
+    changeZoom(event.key === '-' ? -0.2 : 0.2);
+  } else if (!event.ctrlKey && !event.metaKey && !event.altKey && !event.shiftKey &&
+             ['PageDown', 'PageUp'].includes(event.key)) {
+    const page = Math.max(1, Math.min(currentPdfDoc.numPages, currentAnchorPage() + (event.key === 'PageDown' ? 1 : -1)));
+    const wrapper = canvasWrap.querySelector(`.page-wrapper[data-page="${page}"]`);
+    if (wrapper) { event.preventDefault(); event.stopPropagation(); wrapper.scrollIntoView({block:'start'}); }
+  }
+});
 const selectionToolbar = document.getElementById('selection-toolbar');
 selectionToolbar.addEventListener('pointerdown', event => event.preventDefault());
 canvasWrap.addEventListener('mouseup', () => setTimeout(updateSelectionToolbar, 0));
@@ -2309,7 +2384,7 @@ if (window.__SYNAPSE_PDF_PRELOAD__ !== undefined) {
                 + 'font-size:11px;border-radius:6px;padding:8px;margin:0 0 8px 0;'
                 + (dark ? 'background:#404040;border:1px solid #555;' : 'background:#f5f5f5;border:1px solid #ccc;');
             var t = window.__SYNAPSE_I18N__ || {};
-            b.innerHTML = '<div style="font-weight:700;color:#dc3545;margin-bottom:4px;">' + (t.error_title || 'SynapsePro error') + '</div>'
+            b.innerHTML = '<div style="font-weight:700;color:#dc3545;margin-bottom:4px;">' + (t.error_title || 'Synapse error') + '</div>'
                 + '<div class="sp-eb-msg" style="margin-bottom:6px;word-break:break-word;"></div>'
                 + '<pre class="sp-eb-pre" style="' + preCss + '"></pre>'
                 + '<div><button type="button" data-spact="details" style="' + btnCss + '">' + (t.error_show || 'Show details') + '</button>'

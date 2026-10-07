@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SynapseGPT</title>
+<link rel="stylesheet" href="vendor/katex/katex.min.css">
+<script src="vendor/katex/katex.min.js"></script>
+<script src="chat_math.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
@@ -21,17 +24,18 @@
 }
 html.dark, body.dark{
   color-scheme:dark;
-  --bg:#212121;--surface:#2f2f2f;--text:#ececec;--text-muted:#8e8ea0;
-  --text-faint:#4a4a5a;--border:#3a3a3a;--user-bubble:#303030;
-  --ai-bubble:#282828;--input-bg:#2f2f2f;--btn-bg:#ececec;--btn-fg:#0d0d0d;
-  --chip-bg:#2f2f2f;--chip-border:#4a4a5a;
-  --error:#f87171;--success:#4ade80;--code-bg:#1a1a1a;--overlay:rgba(0,0,0,.65);
+  --bg:#2c2c2c;--surface:#414141;--text:#ffffff;--text-muted:#b0b0b0;
+  --text-faint:#b0b0b0;--border:#414141;--user-bubble:#414141;
+  --ai-bubble:#252525;--input-bg:#252525;--btn-bg:#ffffff;--btn-fg:#252525;
+  --chip-bg:#252525;--chip-border:#414141;--inactive:#7e7e7e;
+  --error:#f87171;--success:#4ade80;--code-bg:#252525;--overlay:rgba(0,0,0,.65);
   --shadow-start:0 4px 28px rgba(0,0,0,.40);
   /* Accent dark defaults */
   --accent:#6366f1;
   --accent-glow:rgba(99,102,241,.18);--accent-glow-2:rgba(99,102,241,.12);
 }
 
+html.dark .context-status-dot,body.dark .context-status-dot{background:var(--inactive);}
 html,body{height:100%;overflow:hidden}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
   background:var(--bg);color:var(--text);display:flex;flex-direction:column;
@@ -54,6 +58,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,san
   padding:14px;width:260px;z-index:300;box-shadow:0 6px 28px rgba(0,0,0,.15);
   max-height:calc(100vh - 80px);overflow-y:auto}
 #settings-panel.open{display:block}
+#settings-panel{width:min(300px,calc(100vw - 16px))}
+.ai-settings-tabs{display:flex;gap:3px;padding:3px;background:var(--surface);border-radius:9px;margin-bottom:16px}
+.ai-settings-tabs button{flex:1;border:0;border-radius:7px;background:transparent;color:var(--text-muted);padding:7px;font:inherit;cursor:pointer}
+.ai-settings-tabs button[aria-selected="true"]{background:var(--bg);color:var(--text);box-shadow:0 1px 3px #0001}
+.bubble .katex-display{overflow-x:auto;overflow-y:hidden;padding:4px 0;max-width:100%}
+.bubble .katex{font-size:1.12em}
+
 .s-section{border-top:1px solid var(--border);margin-top:10px;padding-top:10px}
 .s-label{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
   color:var(--text-muted);margin-bottom:5px;display:block}
@@ -121,6 +132,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,san
 #bg-anim{display:none;position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
 body.empty #bg-anim{display:block}
 .bg-orb{position:absolute;border-radius:50%;filter:blur(72px)}
+html.dark .bg-orb,body.dark .bg-orb{opacity:.18;}
 .bg-orb-1{
   width:68vw;height:62vh;left:-20vw;top:-18vh;
   background:var(--accent-glow);
@@ -282,7 +294,7 @@ body.empty #setup-banner{display:none!important}
 
 /* ── Chat area ── */
 #chat{display:none;flex:1;overflow-y:auto;padding:14px 14px 4px;
-  flex-direction:column;gap:12px;position:relative;z-index:1}
+  flex-direction:column;gap:var(--chat-message-gap,12px);position:relative;z-index:1}
 #chat::-webkit-scrollbar{width:5px}
 #chat::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 body:not(.empty) #chat{display:flex}
@@ -292,7 +304,7 @@ body:not(.empty) #chat{display:flex}
 .msg.user{align-items:flex-end}
 .msg.ai{align-items:flex-start}
 .bubble{max-width:88%;padding:9px 13px;border-radius:18px;
-  font-size:var(--chat-font-size,13px);line-height:1.6;word-break:break-word}
+  font-size:var(--chat-font-size,13px);line-height:var(--chat-line-height,1.6);word-break:break-word}
 .msg.user .bubble{background:var(--user-bubble);border-bottom-right-radius:5px}
 .msg.ai   .bubble{background:var(--ai-bubble);border-bottom-left-radius:5px;
   border:1px solid var(--accent-border,rgba(59,130,246,.18))}
@@ -306,6 +318,12 @@ body:not(.empty) #chat{display:flex}
 .bubble ul,.bubble ol{padding-left:18px;margin:4px 0}
 .bubble li{margin:2px 0}
 .bubble strong{font-weight:600}
+.message-copy{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;
+  margin:3px 0 0 5px;padding:0;border:0;border-radius:7px;background:transparent;
+  color:var(--text-muted);cursor:pointer;transition:background .12s,color .12s}
+.message-copy:hover{background:var(--surface);color:var(--text)}
+.message-copy:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.message-copy svg{width:14px;height:14px;pointer-events:none}
 .msg-error{font-size:12px;padding:7px 12px;line-height:1.5;
   background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);
   border-radius:12px;color:var(--error);max-width:88%}
@@ -359,6 +377,13 @@ body:not(.empty) #input-wrap{display:block}
       document.documentElement.classList.add('dark');
   }catch(e){}
 </script>
+<style id="synapse-keyboard-focus">
+body button:focus-visible, body input:focus-visible, body select:focus-visible,
+body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-visible {
+  outline: 2px solid var(--accent, var(--primary-color, #0071d3));
+  outline-offset: 2px;
+}
+</style>
 </head>
 <body class="empty">
 
@@ -393,12 +418,18 @@ body:not(.empty) #input-wrap{display:block}
 
   <!-- Settings panel -->
   <div id="settings-panel">
+    <div class="ai-settings-tabs" role="tablist" aria-label="Settings">
+      <button id="ai-basic-tab" role="tab" aria-selected="true" aria-controls="ai-basic-settings" onclick="setSettingsTab('basic')">Basic</button>
+      <button id="ai-layout-tab" role="tab" aria-selected="false" aria-controls="ai-layout-settings" tabindex="-1" onclick="setSettingsTab('layout')">Layout</button>
+    </div>
+    <div id="ai-basic-settings" role="tabpanel" aria-labelledby="ai-basic-tab">
     <div class="s-row">
       <label class="s-label">Provider</label>
       <select class="s-select" id="s-provider" onchange="onProviderChange()">
         <option value="openai">OpenAI</option>
         <option value="gemini">Google Gemini</option>
         <option value="openrouter">OpenRouter</option>
+        <option value="deepseek">DeepSeek</option>
         <option value="anthropic">Anthropic Claude</option>
         <option value="ollama">Ollama (Local)</option>
         <option value="llamaserver">llama.cpp Server (Local)</option>
@@ -444,6 +475,7 @@ body:not(.empty) #input-wrap{display:block}
           <option value="Japanese">Japanese</option>
           <option value="Chinese (Simplified)">Chinese (Simplified)</option>
           <option value="Korean">Korean</option>
+          <option value="Polish">Polish</option>
         </select>
       </div>
       <div class="s-row">
@@ -454,6 +486,9 @@ body:not(.empty) #input-wrap{display:block}
           <option value="Back Only">Back Only</option>
         </select>
       </div>
+    </div>
+    </div>
+    <div id="ai-layout-settings" role="tabpanel" aria-labelledby="ai-layout-tab" hidden>
       <div class="s-row">
         <label class="s-label">Chat Font Size</label>
         <select class="s-select" id="s-fontsize">
@@ -463,6 +498,12 @@ body:not(.empty) #input-wrap{display:block}
           <option value="17px">Extra Large (17px)</option>
         </select>
       </div>
+
+      <div class="s-row"><label class="s-label" for="s-lineheight">Line spacing</label>
+        <select class="s-select" id="s-lineheight"><option value="1.35">Compact</option><option value="1.6" selected>Standard</option><option value="1.85">Relaxed</option></select></div>
+      <div class="s-row"><label class="s-label" for="s-messagegap">Message spacing</label>
+        <select class="s-select" id="s-messagegap"><option value="6">Compact</option><option value="12" selected>Standard</option><option value="20">Relaxed</option></select></div>
+      <p class="s-hint" style="margin-bottom:12px">Applies to all conversations. Formulas are displayed automatically.</p>
     </div>
     <button class="s-save" onclick="saveSettings()">Save</button>
   </div>
@@ -501,7 +542,7 @@ body:not(.empty) #input-wrap{display:block}
     <div class="ip-section">
       <div class="ip-heading">Privacy &amp; Data Security</div>
       <div class="ip-body" id="help-privacy-body">
-        Your API key is stored in your local Anki profile and is never uploaded by SynapsePro. Questions go directly to the selected provider. Visible card text is included only when you use a Quick Action or enable current-card context. The chat assistant does not collect chat analytics, logs, or conversations.
+        Your API key is stored in your local Anki profile and is never uploaded by Synapse. Questions go directly to the selected provider. Visible card text is included only when you use a Quick Action or enable current-card context. The chat assistant does not collect chat analytics, logs, or conversations.
       </div>
     </div>
 
@@ -668,7 +709,7 @@ function localizeHelpBodies() {
     'help-api-body': "An API key is a password that lets SynapseGPT talk to an AI service on your behalf. You create one in the provider's dashboard, paste it here, and the add-on sends your questions directly to that service.",
     'help-provider-body': 'OpenAI (gpt-5.4-mini) is a fast all-rounder. Google Gemini offers a capable free tier. Anthropic Claude is strong at nuanced explanations. OpenRouter provides many models with one key. Ollama runs locally without a key or usage fees.',
     'help-ollama-body': 'Ollama runs open-source models directly on your computer. Nothing is sent to an online AI provider. Select Ollama, open the setup assistant, and install a model such as gemma2:2b.',
-    'help-privacy-body': 'Your API key is stored in your local Anki profile and is never uploaded by SynapsePro. Questions go directly to the selected provider. Visible card text is included only when you use a Quick Action or enable current-card context. The chat assistant does not collect chat analytics, logs, or conversations.',
+    'help-privacy-body': 'Your API key is stored in your local Anki profile and is never uploaded by Synapse. Questions go directly to the selected provider. Visible card text is included only when you use a Quick Action or enable current-card context. The chat assistant does not collect chat analytics, logs, or conversations.',
     'help-billing-body': "Chat subscriptions and API access are separate products with separate billing. Google Gemini and some OpenRouter models offer free tiers; Ollama runs locally for free. API credit is managed in the selected provider's dashboard.",
     'help-tips-body': 'Open a reviewer card before using Quick Actions. Enable current-card context for your own card questions. Manage button shortcuts in the Manage dialog. Choose Front & Back for richer context and adjust the chat font size in Settings.'
   };
@@ -685,6 +726,7 @@ function sendToPython(action, data) {
 
 // ── Model lists ───────────────────────────────────────────────────────────────
 var MODELS = {
+  deepseek:   ['deepseek-flash','deepseek-v4-pro'],
   openai:     ['gpt-5.4-mini','gpt-5.5','gpt-5.4','gpt-4o-mini','gpt-4o'],
   gemini:     ['gemini-3.6-flash','gemini-3.5-flash','gemini-3.5-flash-lite','gemini-3.1-pro-preview','gemini-2.5-flash'],
   openrouter: [
@@ -817,6 +859,9 @@ function init(cfg) {
   // Font size
   setFontSize(cfg.fontSize || '13px');
   safeSet('s-fontsize', cfg.fontSize || '13px');
+  safeSet('s-lineheight', String(cfg.lineHeight || 1.6));
+  safeSet('s-messagegap', String(cfg.messageGap || 12));
+  applyChatLayout(cfg);
 
   cardContextEnabled = !!cfg.cardContextEnabled;
   updateCardContextControls();
@@ -1179,6 +1224,18 @@ function addCustomChip() {
 
 // ── API-key help (per-provider, written for non-technical users) ─────────────
 var KEY_HELP = {
+  deepseek: {
+    name: 'DeepSeek',
+    intro: 'Create a DeepSeek API key in the DeepSeek Platform.',
+    steps: [
+      'Sign in — or create an account if you don’t have one.',
+      'Go to “API Keys” and click “Create Key”.',
+      'Come back here and paste it into the API Key field, then press Save.'
+    ],
+    note: 'API usage is billed separately and requires an available balance.',
+    url: 'https://platform.deepseek.com/api_keys',
+    urlLabel: 'Open DeepSeek Platform'
+  },
   openai: {
     name: 'OpenAI',
     intro: 'An API key is like a personal password that lets this add-on talk to ChatGPT’s technology directly. It takes about 2 minutes to create.',
@@ -1371,9 +1428,12 @@ function saveSettings() {
     ownPrompt:      '',
     ollamaEndpoint: document.getElementById('s-ollama-ep').value.trim() || 'http://localhost:11434',
     llamaEndpoint:  document.getElementById('s-llama-ep').value.trim() || 'http://localhost:8080',
-    fontSize:       document.getElementById('s-fontsize').value || '13px'
+    fontSize:       document.getElementById('s-fontsize').value || '13px',
+    lineHeight: Number(document.getElementById('s-lineheight').value),
+    messageGap: Number(document.getElementById('s-messagegap').value)
   };
   setFontSize(data.fontSize);
+  applyChatLayout(data);
   console.log('AI Assistant: save_settings provider=' + data.provider + ' model=' + data.model);
   sendToPython('save_settings', data);
   var banner    = document.getElementById('setup-banner');
@@ -1395,7 +1455,7 @@ function saveSettings() {
 function updateModelLabel() {
   var p = document.getElementById('s-provider').value;
   var m = document.getElementById('s-model').value || '';
-  var names = {openai:'OpenAI',gemini:'Gemini',openrouter:'OpenRouter',anthropic:'Anthropic',ollama:'Ollama',llamaserver:'llama.cpp'};
+  var names = {openai:'OpenAI',gemini:'Gemini',openrouter:'OpenRouter',deepseek:'DeepSeek',anthropic:'Anthropic',ollama:'Ollama',llamaserver:'llama.cpp'};
   var mn = m.split('/').pop();
   document.getElementById('model-label').textContent = (names[p] || p) + (mn ? ' · ' + mn : '');
 }
@@ -1514,6 +1574,36 @@ function initChatScrollTracking() {
   }, { passive: true });
 }
 
+var _copySequence = 0;
+var _copyIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></svg>';
+function addCopyButton(row, text) {
+  if (!text || !text.trim() || row.querySelector('.message-copy')) return;
+  var button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'message-copy';
+  button.id = 'message-copy-' + (++_copySequence);
+  button.title = tr('Copy');
+  button.setAttribute('aria-label', tr('Copy'));
+  button.innerHTML = _copyIcon;
+  button.onclick = function() {
+    sendToPython('copy_response', {text: text, buttonId: button.id});
+  };
+  row.appendChild(button);
+}
+function responseCopied(buttonId, success) {
+  var button = document.getElementById(buttonId);
+  if (!button) return;
+  clearTimeout(button._copyReset);
+  button.title = tr(success ? 'Copied!' : 'Could not copy text');
+  button.setAttribute('aria-label', button.title);
+  button.innerHTML = success ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>' : _copyIcon;
+  button._copyReset = setTimeout(function() {
+    button.innerHTML = _copyIcon;
+    button.title = tr('Copy');
+    button.setAttribute('aria-label', button.title);
+  }, 1800);
+}
+
 function addMsg(role, rawText) {
   var chat = document.getElementById('chat');
   var row  = document.createElement('div');
@@ -1522,6 +1612,7 @@ function addMsg(role, rawText) {
   bub.className = 'bubble';
   bub.innerHTML = renderMarkdown(rawText);
   row.appendChild(bub);
+  if (role !== 'user') addCopyButton(row, rawText);
   chat.appendChild(row);
   scrollChatToBottom(true);
 }
@@ -1595,6 +1686,7 @@ function finalizeResponse() {
     if (row) row.removeAttribute('id');
     _streamBubble.removeAttribute('id');
     if (_streamAnswer) _streamAnswer.innerHTML = renderMarkdown(_streamRaw);
+    if (row) addCopyButton(row, _streamRaw);
   }
   _streamBubble = null;
   _streamAnswer = null;
@@ -1655,6 +1747,7 @@ function receiveResponse(text, isError) {
   bub.className = 'bubble';
   bub.innerHTML = renderMarkdown(text);
   row.appendChild(bub);
+  addCopyButton(row, text);
   chat.appendChild(row);
   scrollChatToBottom(true);
 }
@@ -1735,21 +1828,27 @@ function esc(s) {
 }
 
 // ── Markdown renderer ─────────────────────────────────────────────────────────
-function renderMarkdown(raw) {
-  var s = esc(raw);
-  s = s.replace(/```(\w*)\n?([\s\S]*?)```/g, function(_,__,code) {
-    return '<pre><code>' + code.trim() + '</code></pre>';
-  });
-  s = s.replace(/`([^`\n]+)`/g, '<code>$1</code>');
-  s = s.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-  s = s.replace(/\*([^*\n]+)\*/g, '<em>$1</em>');
-  s = s.replace(/(?:^|\n)[-•]\s+(.+)/g, '\n<li>$1</li>');
-  s = s.replace(/(<li>[\s\S]+?<\/li>)+/g, '<ul>$&</ul>');
-  s = s.replace(/(?:^|\n)\d+\.\s+(.+)/g, '\n<li>$1</li>');
-  s = s.replace(/(?:^|\n)#{1,3}\s+(.+)/g, '\n<strong>$1</strong>');
-  s = s.replace(/\n/g, '<br>');
-  return s;
+function renderMarkdown(raw) { return window.synapseRenderMarkdown(raw); }
+function applyChatLayout(cfg) {
+  const line = [1.35,1.6,1.85].includes(Number(cfg.lineHeight)) ? Number(cfg.lineHeight) : 1.6;
+  const gap = [6,12,20].includes(Number(cfg.messageGap)) ? Number(cfg.messageGap) : 12;
+  document.documentElement.style.setProperty('--chat-line-height', line);
+  document.documentElement.style.setProperty('--chat-message-gap', gap+'px');
 }
+function setSettingsTab(name) {
+  ['basic','layout'].forEach(key=>{
+    document.getElementById('ai-'+key+'-settings').hidden=key!==name;
+    const tab=document.getElementById('ai-'+key+'-tab');
+    tab.setAttribute('aria-selected', String(key===name));tab.tabIndex=key===name?0:-1;
+  });
+}
+document.querySelector('.ai-settings-tabs').addEventListener('keydown', event=>{
+  if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;
+  event.preventDefault();
+  const name=event.key==='Home'?'basic':event.key==='End'?'layout':document.getElementById('ai-basic-settings').hidden?'basic':'layout';
+  setSettingsTab(name);document.getElementById('ai-'+name+'-tab').focus();
+});
+
 </script>
 
     <script>
@@ -1783,7 +1882,7 @@ function renderMarkdown(raw) {
             var preCss = 'display:none;max-height:140px;overflow:auto;white-space:pre-wrap;word-break:break-word;'
                 + 'font-size:11px;border-radius:6px;padding:8px;margin:0 0 8px 0;'
                 + (dark ? 'background:#404040;border:1px solid #555;' : 'background:#f5f5f5;border:1px solid #ccc;');
-            b.innerHTML = '<div style="font-weight:700;color:#dc3545;margin-bottom:4px;">' + esc(tr('SynapsePro error')) + '</div>'
+            b.innerHTML = '<div style="font-weight:700;color:#dc3545;margin-bottom:4px;">' + esc(tr('Synapse error')) + '</div>'
                 + '<div class="sp-eb-msg" style="margin-bottom:6px;word-break:break-word;"></div>'
                 + '<pre class="sp-eb-pre" style="' + preCss + '"></pre>'
                 + '<div><button type="button" data-spact="details" style="' + btnCss + '">' + esc(tr('Show details')) + '</button>'

@@ -32,19 +32,19 @@
         }
 
         body.nightMode {
-            --bg: #191919; 
-            --sidebar-bg: #202020; 
+            --bg: #2c2c2c; 
+            --sidebar-bg: #252525; 
             --header-bg: #252525; 
             --text: #ffffff;
-            --text-gray: #999999; 
-            --hover-bg: #2c2c2c; 
+            --text-gray: #b0b0b0; 
+            --hover-bg: #414141; 
             --border: rgba(255,255,255,0.1);
             --selection: #3d4c53;
             --code-bg: #2c2c2c;
             --callout-bg: #262626;
             --callout-text: #ffffff;
             --divider-color: rgba(255,255,255,0.15);
-            --table-border: #444444;
+            --table-border: #414141;
         }
         
         /* (OS-based prefers-color-scheme fallback removed — the theme is
@@ -97,7 +97,7 @@
             opacity: 0.8;
         }
         body.nightMode .top-search-input {
-            background: #2c2c2c;
+            background: #414141;
             color: #ffffff;
             box-shadow: none;
             border: 1px solid var(--border);
@@ -122,7 +122,7 @@
             flex-shrink: 0;
         }
         .toggle-btn:hover, .toggle-btn:active { 
-            background: #323232; 
+            background: var(--synapse-primary, #0071D3); 
             color: #ffffff; 
         }
 
@@ -148,7 +148,7 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             transition: background 0.2s;
         }
-        .sidebar-close-btn:hover, .sidebar-close-btn:active { background: #323232; }
+        .sidebar-close-btn:hover, .sidebar-close-btn:active { background: var(--synapse-primary, #0071D3); }
 
         .sidebar-list { overflow-y: auto; flex: 1; padding: 0 4px; display: flex; flex-direction: column; gap: 1px; margin-top: 5px; }
         .sidebar-item {
@@ -357,7 +357,7 @@
             border-radius: 6px; padding: 4px; gap: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             align-items: center;
         }
-        body.nightMode #format-toolbar { background: #eee; color: #111; }
+        body.nightMode #format-toolbar { background: #252525; color: #ffffff; border: 1px solid #414141; }
         
         .fmt-btn {
             background: transparent; border: none; color: inherit; padding: 4px 8px; cursor: pointer; 
@@ -531,7 +531,7 @@
             display: none;
             align-items: center;
         }
-        body.nightMode #block-toolbar { background: #e8e8e8; color: #111; }
+        body.nightMode #block-toolbar { background: #252525; color: #ffffff; border: 1px solid #414141; }
         .blk-btn {
             background: transparent; border: none; color: inherit;
             padding: 5px 10px; cursor: pointer; border-radius: 4px;
@@ -571,13 +571,13 @@
         /* --- DARKMODE MENU & CLOSE BUTTON OVERRIDES --- */
         body.nightMode .toggle-btn,
         body.nightMode .sidebar-close-btn {
-            background: #7F7F7F;
+            background: #414141;
         }
         body.nightMode .toggle-btn:hover,
         body.nightMode .toggle-btn:active,
         body.nightMode .sidebar-close-btn:hover,
         body.nightMode .sidebar-close-btn:active {
-            background: #4A4A4A;
+            background: var(--synapse-primary, #4a9eff);
         }
 
 
@@ -611,6 +611,13 @@
             pointer-events: none;
         }
     </style>
+<style id="synapse-keyboard-focus">
+body button:focus-visible, body input:focus-visible, body select:focus-visible,
+body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-visible {
+  outline: 2px solid var(--accent, var(--primary-color, #0071d3));
+  outline-offset: 2px;
+}
+</style>
 </head>
 <body>
 
@@ -804,7 +811,7 @@
             suppressUndoSnapshot = true;
             const data = JSON.parse(snapshot);
             const page = appState.pages.find(p => p.id === data.pageId);
-            if (!page) { suppressUndoSnapshot = false; return; }
+            if (!page || data.pageId !== appState.activePageId) { suppressUndoSnapshot = false; return; }
             page.title = data.title;
             page.icon = data.icon;
             page.blocks = Array.isArray(data.blocks) ? data.blocks : [];
@@ -886,7 +893,13 @@
         }
 
         function loadPage(pageId, saveCurrent = true) {
+            if (!appState.pages.some(p => p.id === pageId)) return;
             if (saveCurrent) saveCurrentEditorToState();
+            // A page is an undo boundary. Cancel snapshots from the previous
+            // editor before changing its identity; never replay them here.
+            clearTimeout(undoDebounceTimer);
+            undoStack = [];
+            redoStack = [];
             
             searchInput.value = '';
             clearSearchHighlights();
@@ -908,6 +921,7 @@
             renderSidebar();
             resetCoversOnLoad();
             refreshPageLinks();
+            pushUndoSnapshot(); // Initial state also covers the first short edit.
         }
 
         function saveCurrentEditorToState() {
@@ -1023,6 +1037,16 @@
                 + (page.pinned ? ' pinned' : '')
                 + (inFolder ? ' in-folder' : '');
             div.onclick = () => { if (page.id !== appState.activePageId) loadPage(page.id, true); };
+            div.tabIndex = 0;
+            div.setAttribute('role', 'button');
+            div.onkeydown = e => {
+                if (e.target !== div) return;
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault(); e.stopPropagation();
+                    div.click();
+                    editor.querySelector('[contenteditable="true"]')?.focus();
+                }
+            };
             div.oncontextmenu = (e) => showPageCtxMenu(e, page.id);
             const timeStr = formatRelativeTime(page.updatedAt);
             const pinTitle = page.pinned ? i18nGet('unpin', 'Unpin') : i18nGet('pin', 'Pin');
@@ -1911,7 +1935,10 @@
             saveRevision += 1;
             const statusEl = document.getElementById('status'); statusEl.style.opacity = 1; statusEl.innerText = (window.__SYNAPSE_I18N__?.saving || "Saving...");
             statusEl.style.color = '';
-            if (!suppressUndoSnapshot) scheduleUndoSnapshot();
+            if (!suppressUndoSnapshot) {
+                redoStack = [];
+                scheduleUndoSnapshot();
+            }
             clearTimeout(saveTimeout);
             saveTimeout = immediate ? null : setTimeout(persistNow, 800);
             if (immediate) persistNow();
@@ -2226,6 +2253,13 @@
             }, true);
         })();
         document.addEventListener('keydown', e => {
+            if (e.isComposing || e.defaultPrevented) return;
+            const key = e.key.toLowerCase();
+            if ((e.ctrlKey || e.metaKey) && !e.altKey && key === 'f') {
+                e.preventDefault(); e.stopPropagation(); searchInput.focus(); searchInput.select(); return;
+            }
+            // Search and dialog inputs keep their own native editing shortcuts.
+            if (e.target.closest?.('input, textarea, select') && !editor.contains(e.target)) return;
             if ((e.ctrlKey||e.metaKey) && e.key === 's') { e.preventDefault(); triggerSave(true); return; }
             // Link
             if ((e.ctrlKey||e.metaKey) && e.key === 'k') {
@@ -2234,17 +2268,29 @@
                 return;
             }
             // Undo
-            if ((e.ctrlKey||e.metaKey) && !e.shiftKey && e.key === 'z') {
+            if ((e.ctrlKey||e.metaKey) && !e.shiftKey && key === 'z') {
                 e.preventDefault();
+                clearTimeout(undoDebounceTimer);
                 if (undoStack.length === 0) return;
                 saveCurrentEditorToState();
                 const pg = appState.pages.find(p => p.id === appState.activePageId);
-                if (pg) redoStack.push(JSON.stringify({ pageId: pg.id, title: pg.title, icon: pg.icon, blocks: JSON.parse(JSON.stringify(pg.blocks)) }));
-                applySnapshot(undoStack.pop()); return;
+                if (!pg) return;
+                const current = JSON.stringify({ pageId: pg.id, title: pg.title, icon: pg.icon, blocks: JSON.parse(JSON.stringify(pg.blocks)) });
+                // Debounced snapshots can equal the current state. Skip those
+                // so the first undo produces a visible change.
+                let targetIndex = undoStack.length - 1;
+                while (targetIndex >= 0 && undoStack[targetIndex] === current) targetIndex--;
+                if (targetIndex < 0) return;
+                redoStack.push(current);
+                const target = undoStack[targetIndex];
+                // Keep the restored state as the baseline for subsequent edits.
+                undoStack.length = targetIndex + 1;
+                applySnapshot(target); return;
             }
             // Redo
-            if ((e.ctrlKey||e.metaKey) && (e.key === 'y' || (e.shiftKey && e.key === 'z'))) {
+            if ((e.ctrlKey||e.metaKey) && (key === 'y' || (e.shiftKey && key === 'z'))) {
                 e.preventDefault();
+                clearTimeout(undoDebounceTimer);
                 if (redoStack.length === 0) return;
                 saveCurrentEditorToState();
                 const pg = appState.pages.find(p => p.id === appState.activePageId);
@@ -2488,7 +2534,7 @@
                 + 'font-size:11px;border-radius:6px;padding:8px;margin:0 0 8px 0;'
                 + (dark ? 'background:#404040;border:1px solid #555;' : 'background:#f5f5f5;border:1px solid #ccc;');
             var t = window.__SYNAPSE_I18N__ || {};
-            b.innerHTML = '<div style="font-weight:700;color:#dc3545;margin-bottom:4px;">' + (t.error_title || 'SynapsePro error') + '</div>'
+            b.innerHTML = '<div style="font-weight:700;color:#dc3545;margin-bottom:4px;">' + (t.error_title || 'Synapse error') + '</div>'
                 + '<div class="sp-eb-msg" style="margin-bottom:6px;word-break:break-word;"></div>'
                 + '<pre class="sp-eb-pre" style="' + preCss + '"></pre>'
                 + '<div><button type="button" data-spact="details" style="' + btnCss + '">' + (t.error_show || 'Show details') + '</button>'

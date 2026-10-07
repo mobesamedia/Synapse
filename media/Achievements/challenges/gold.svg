@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Ebene_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 120 120">
+  <!-- Generator: Adobe Illustrator 30.8.1, SVG Export Plug-In . SVG Version: 2.1.4 Build 1)  -->
+  <defs>
+    <style>
+      .st0 {
+        fill: #ffac51;
+      }
+
+      .st1 {
+        fill: url(#Unbenannter_Verlauf);
+      }
+
+      .st2 {
+        stroke: #000;
+        stroke-linecap: round;
+        stroke-width: 5px;
+      }
+
+      .st3 {
+        fill: #b58225;
+      }
+
+      .st4 {
+        fill: none;
+        stroke: #fff0a4;
+        stroke-opacity: .55;
+      }
+
+      .st5 {
+        fill: #ef7350;
+      }
+
+      .st6 {
+        fill: url(#Unbenannter_Verlauf1);
+        stroke: url(#Unbenannter_Verlauf_14);
+        stroke-miterlimit: 10;
+      }
+
+      .st7 {
+        fill: #f7f7f7;
+      }
+
+      .st8 {
+        fill: #9989b7;
+      }
+
+      .st9 {
+        fill: url(#Unbenannter_Verlauf2);
+      }
+    </style>
+    <linearGradient id="Unbenannter_Verlauf" data-name="Unbenannter Verlauf" x1="-713.35" y1="4.24" x2="-712.65" y2="5.24" gradientTransform="translate(78485 -469.0006) scale(110)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff0a4"/>
+      <stop offset=".48" stop-color="#edbb45"/>
+      <stop offset="1" stop-color="#b58225"/>
+    </linearGradient>
+    <linearGradient id="Unbenannter_Verlauf1" data-name="Unbenannter Verlauf" x1="27.07" y1="59.94" x2="93.01" y2="59.94" gradientTransform="matrix(1,0,0,1,0,0)" xlink:href="#Unbenannter_Verlauf"/>
+    <linearGradient id="Unbenannter_Verlauf_14" data-name="Unbenannter Verlauf 14" x1="26.57" y1="59.94" x2="93.51" y2="59.94" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff0a4"/>
+      <stop offset=".47" stop-color="#edbb45"/>
+      <stop offset="1" stop-color="#b58225"/>
+    </linearGradient>
+    <linearGradient id="Unbenannter_Verlauf2" data-name="Unbenannter Verlauf" x1="47.14" y1="59.94" x2="72.94" y2="59.94" gradientTransform="matrix(1,0,0,1,0,0)" xlink:href="#Unbenannter_Verlauf"/>
+  </defs>
+  <g id="rim">
+    <circle class="st1" cx="60" cy="60" r="55"/>
+    <circle class="st4" cx="60" cy="60" r="53.5"/>
+  </g>
+  <g id="center">
+    <circle class="st3" cx="60" cy="60" r="44.5"/>
+    <circle class="st8" cx="60" cy="60" r="43"/>
+  </g>
+  <g id="icon">
+    <circle class="st7" cx="60.04" cy="59.94" r="43"/>
+    <circle class="st6" cx="60.04" cy="59.94" r="32.97"/>
+    <circle class="st7" cx="60.04" cy="59.94" r="22.94"/>
+    <circle class="st9" cx="60.04" cy="59.94" r="12.9"/>
+    <path class="st2" d="M60.04,59.94L103.05,15.51"/>
+    <path class="st0" d="M88.71,29.84l-.43-15.06L105.28.13l2.07,13.94,3.59,5.98-7.89,11.22-14.33-1.43h0Z"/>
+    <path class="st5" d="M88.71,29.84l18.52-17.6,12.69,4.1-16.88,14.93-14.33-1.43Z"/>
+  </g>
+</svg>

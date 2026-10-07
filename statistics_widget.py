@@ -86,7 +86,7 @@ def get_daily_review_counts(since_days=None):
 DEFAULT_CHART_DAYS = 30
 
 
-def _build_mini_chart(chart_days=DEFAULT_CHART_DAYS):
+def _build_mini_chart(chart_days=DEFAULT_CHART_DAYS, counts=None, today=None):
     """Inline-SVG sparkline: reviews per day for the selected period.
 
     The y-axis is relative to the window: the best day in the window is 100%,
@@ -95,8 +95,9 @@ def _build_mini_chart(chart_days=DEFAULT_CHART_DAYS):
     """
     if chart_days not in (7, 30, 365):
         chart_days = DEFAULT_CHART_DAYS
-    today = anki_today()
-    counts = get_daily_review_counts(since_days=chart_days + 2)
+    today = today or anki_today()
+    if counts is None:
+        counts = get_daily_review_counts(since_days=chart_days + 2)
     start = today - timedelta(days=chart_days - 1)
     days, values = [], []
     for i in range(chart_days):
@@ -151,16 +152,21 @@ def _build_mini_chart(chart_days=DEFAULT_CHART_DAYS):
         )
 
     last = pts[-1]
+    import uuid
+    gradient_id = "consistency-fill-" + uuid.uuid4().hex
     return (
         f'<svg class="spark" viewBox="0 0 {W:.0f} {H:.0f}" '
         f'preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">'
+        f'<defs><linearGradient id="{gradient_id}" x1="0" y1="{y_hi}" x2="0" y2="{y_lo}" gradientUnits="userSpaceOnUse">'
+        f'<stop offset="0" stop-color="var(--main-blue)" stop-opacity="0.24"/>'
+        f'<stop offset="1" stop-color="var(--main-blue)" stop-opacity="0"/></linearGradient></defs>'
         f'{axes}'
-        f'<path d="{area}" fill="var(--main-blue)" fill-opacity="0.12" stroke="none"/>'
+        f'<path d="{area}" fill="url(#{gradient_id})" stroke="none"/>'
         f'<path d="{line}" fill="none" stroke="var(--main-blue)" stroke-width="2" '
         f'stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>'
-        f'<circle cx="{last[0]:.1f}" cy="{last[1]:.1f}" r="3" fill="var(--main-blue)"/>'
         f'{"".join(hover)}'
-        f'</svg>'
+        f'</svg><span class="spark-today" aria-hidden="true" '
+        f'style="left:{last[0]/W*100:.6f}%;top:{last[1]/H*100:.6f}%;"></span>'
     )
 
 
@@ -390,13 +396,13 @@ def render_widget_html_internal(stats, visibility=None):
         circle_items.append(f"""
         <div class="single-circle-stat" title="{tooltip_retention}">
             <h3 class="subtle-title">{label_retention}</h3>
-            <div class="retention-circle" style="background:radial-gradient(closest-side,var(--stat-bg) 79%,transparent 80% 100%),conic-gradient({retention_color} {retention_val:.1f}%,var(--progress-bg) 0);">{retention_val:.0f}%</div>
+            <div class="retention-circle" style="--ring-color:{retention_color};--ring-percent:{retention_val:.1f}%;">{retention_val:.0f}%</div>
         </div>""")
     if show_new_cards:
         circle_items.append(f"""
         <div class="single-circle-stat" title="{tooltip_new_cards}">
             <h3 class="subtle-title">{label_new_cards}</h3>
-            <div class="retention-circle" style="background:radial-gradient(closest-side,var(--stat-bg) 79%,transparent 80% 100%),conic-gradient({MAIN_BLUE} {new_cards_val:.1f}%,var(--progress-bg) 0);">{new_cards_val:.0f}%</div>
+            <div class="retention-circle" style="--ring-color:{MAIN_BLUE};--ring-percent:{new_cards_val:.1f}%;">{new_cards_val:.0f}%</div>
         </div>""")
     if circle_items:
         blocks.append(f'<div class="stat-block circle-group">{"".join(circle_items)}</div>')
@@ -480,8 +486,13 @@ def render_widget_html_internal(stats, visibility=None):
         }}
         /* ── Mini activity sparkline: reviews/day, last 30 days ── */
         .spark-wrap {{
+            position: relative;
             width: 100%;
             line-height: 0;
+        }}
+        .spark-today {{
+            position:absolute;width:6px;height:6px;border-radius:50%;
+            background:var(--main-blue);transform:translate(-50%,-50%);pointer-events:none;
         }}
         .spark {{
             width: 100%;
@@ -518,13 +529,21 @@ def render_widget_html_internal(stats, visibility=None):
             gap: 8px;
         }}
         .retention-circle {{
+            position: relative;
+            background: transparent;
             width: 70px;
             height: 70px;
             border-radius: 50%;
             display: grid;
             place-items: center;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 600;
+        }}
+        .retention-circle::before {{
+            content: ""; position:absolute; inset:0; border-radius:50%; pointer-events:none;
+            background:conic-gradient(var(--ring-color) var(--ring-percent),var(--progress-bg) 0);
+            -webkit-mask:radial-gradient(closest-side,transparent 79%,#000 80%);
+            mask:radial-gradient(closest-side,transparent 79%,#000 80%);
         }}
         /* ── Widget controls (top right) ── */
         .stats-widget-controls {{
@@ -581,12 +600,12 @@ def render_widget_html_internal(stats, visibility=None):
     
     return css + html
 
-def render_statistics_widget_html(stats_days=7, chart_days=DEFAULT_CHART_DAYS, visibility=None):
+def render_statistics_widget_html(stats_days=7, chart_days=DEFAULT_CHART_DAYS, visibility=None, display_data=None):
     """
     Hauptfunktion, die von __init__.py aufgerufen wird.
     Akzeptiert den Zeitraum und gibt das HTML zurück.
     """
-    data = get_statistics_data(stats_days, chart_days)
+    data = display_data if display_data is not None else get_statistics_data(stats_days, chart_days)
     return render_widget_html_internal(data, visibility)
 
 
@@ -596,7 +615,7 @@ def show_statistics_info_dialog(parent=None, stats_days=7, chart_days=DEFAULT_CH
     Explains every statistic shown in the widget. Opened from the deck
     browser via pycmd ('synapsepro:stats_info'), see __init__.py.
     """
-    from aqt.qt import QDialog, QVBoxLayout, QLabel, QDialogButtonBox
+    from aqt.qt import QDialog, QVBoxLayout, QLabel, QDialogButtonBox, QScrollArea, QWidget, QFrame, Qt
 
     if not isinstance(stats_days, int) or stats_days < 1:
         stats_days = 7
@@ -631,29 +650,71 @@ def show_statistics_info_dialog(parent=None, stats_days=7, chart_days=DEFAULT_CH
            "never studied.")),
     ]
 
-    body = "".join(
-        f"<p style='margin:0 0 12px 0;'><b>{title}</b><br>{text}</p>"
-        for title, text in sections
-    )
     footer = _("Use the gear button on the statistics widget to change periods and visible insights.")
-    html_text = (
-        f"<h3 style='margin:0 0 12px 0;'>{_('Statistics')}</h3>"
-        f"{body}"
-        f"<p style='margin:0;color:#888;font-size:12px;'>{footer}</p>"
-    )
-
     dialog = QDialog(parent)
-    dialog.setWindowTitle(_("SynapsePro - Statistics"))
-    dialog.setMinimumWidth(520)
-
-    layout = QVBoxLayout()
-    label = QLabel(html_text)
-    label.setWordWrap(True)
-
+    dialog.setObjectName("synapseStatisticsInfo")
+    dialog.setWindowTitle(_("Synapse - Statistics"))
+    dialog.resize(560, 640)
+    dialog.setMinimumSize(320, 300)
+    night = bool(mw and mw.pm.night_mode())
+    colors = _palette(night)
+    dialog.setStyleSheet(f"""
+        QDialog#synapseStatisticsInfo {{ background:{colors['bg']};color:{colors['text']}; }}
+        QLabel {{ color:{colors['text']};background:transparent; }}
+        QLabel#infoHeading {{ font-size:24px;font-weight:600; }}
+        QLabel#infoSubtitle {{ color:{colors['text']}; }}
+        QScrollArea,QWidget#infoContent {{ border:0;background:transparent; }}
+        QFrame#infoSection {{ background:{colors['surface']};border:1px solid {colors['grey_light']};border-radius:12px; }}
+        QLabel#infoSectionTitle {{ font-weight:600; }}
+        QPushButton {{ background:{colors['surface']};color:{colors['text']};border:1px solid {colors['grey_light']};border-radius:8px;padding:7px 16px; }}
+        QPushButton:focus {{ border:1px solid {colors['blue']}; }}
+        QPushButton:hover {{ background:{colors['bg']}; }}
+    """)
+    layout = QVBoxLayout(dialog)
+    layout.setContentsMargins(20, 20, 20, 16)
+    layout.setSpacing(14)
+    heading = QLabel(_("Your statistics, explained"))
+    heading.setObjectName("infoHeading")
+    heading.setWordWrap(True)
+    layout.addWidget(heading)
+    subtitle = QLabel(_("Understand the insights on your dashboard."))
+    subtitle.setObjectName("infoSubtitle")
+    subtitle.setWordWrap(True)
+    layout.addWidget(subtitle)
+    scroll = QScrollArea()
+    scroll.setWidgetResizable(True)
+    scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+    content = QWidget()
+    content.setObjectName("infoContent")
+    rows = QVBoxLayout(content)
+    rows.setContentsMargins(0, 0, 6, 0)
+    rows.setSpacing(10)
+    for title, text in sections:
+        card = QFrame()
+        card.setObjectName("infoSection")
+        card_layout = QVBoxLayout(card)
+        card_layout.setContentsMargins(16, 14, 16, 14)
+        card_layout.setSpacing(6)
+        title_label = QLabel(title)
+        title_label.setObjectName("infoSectionTitle")
+        title_label.setWordWrap(True)
+        description = QLabel(text)
+        description.setTextFormat(Qt.TextFormat.PlainText)
+        description.setWordWrap(True)
+        description.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse | Qt.TextInteractionFlag.TextSelectableByKeyboard)
+        card_layout.addWidget(title_label)
+        card_layout.addWidget(description)
+        rows.addWidget(card)
+    rows.addStretch(1)
+    scroll.setWidget(content)
+    layout.addWidget(scroll, 1)
+    footer_label = QLabel(footer)
+    footer_label.setWordWrap(True)
+    layout.addWidget(footer_label)
     button_box = QDialogButtonBox(QDialogButtonBox.StandardButton.Close)
+    from .locales import translate_standard_buttons
+    translate_standard_buttons(button_box)
     button_box.rejected.connect(dialog.reject)
-
-    layout.addWidget(label)
     layout.addWidget(button_box)
-    dialog.setLayout(layout)
+    button_box.button(QDialogButtonBox.StandardButton.Close).setFocus()
     dialog.exec()

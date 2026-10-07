@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Ebene_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 120 120">
+  <!-- Generator: Adobe Illustrator 30.8.1, SVG Export Plug-In . SVG Version: 2.1.4 Build 1)  -->
+  <defs>
+    <style>
+      .st0 {
+        stroke: #76717e;
+        stroke-linecap: round;
+        stroke-width: 7px;
+      }
+
+      .st1 {
+        fill: #76717e;
+      }
+
+      .st2 {
+        fill: url(#Unbenannter_Verlauf);
+      }
+
+      .st3 {
+        fill: #d8d8d8;
+      }
+
+      .st4 {
+        fill: none;
+        stroke: #c2c0c5;
+        stroke-opacity: .55;
+      }
+
+      .st5 {
+        fill: url(#Unbenannter_Verlauf1);
+      }
+    </style>
+    <linearGradient id="Unbenannter_Verlauf" data-name="Unbenannter Verlauf" x1="-356.63" y1="356.19" x2="-355.93" y2="355.19" gradientTransform="translate(39245 39178.3131) scale(110 -110)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#c2c0c5"/>
+      <stop offset=".48" stop-color="#94909b"/>
+      <stop offset="1" stop-color="#76717e"/>
+    </linearGradient>
+    <linearGradient id="Unbenannter_Verlauf1" data-name="Unbenannter Verlauf" x1="29" y1="44" x2="91" y2="44" gradientTransform="matrix(1,0,0,1,0,0)" xlink:href="#Unbenannter_Verlauf"/>
+  </defs>
+  <g id="rim">
+    <circle class="st2" cx="60" cy="60" r="55"/>
+    <circle class="st4" cx="60" cy="60" r="53.5"/>
+  </g>
+  <g id="center">
+    <circle class="st1" cx="60" cy="60" r="44.5"/>
+    <circle class="st3" cx="60" cy="60" r="43"/>
+  </g>
+  <g id="icon">
+    <rect class="st1" x="29" y="36" width="62" height="53" rx="7" ry="7"/>
+    <path class="st5" d="M36,36h48c3.87,0,7,3.13,7,7v9H29v-9c0-3.87,3.13-7,7-7Z"/>
+    <path class="st0" d="M43,29v15M77,29v15"/>
+    <g>
+      <rect class="st3" x="40" y="60" width="9" height="9" rx="1.5" ry="1.5"/>
+      <rect class="st3" x="56" y="60" width="9" height="9" rx="1.5" ry="1.5"/>
+      <rect class="st3" x="72" y="60" width="9" height="9" rx="1.5" ry="1.5"/>
+      <rect class="st3" x="40" y="75" width="9" height="9" rx="1.5" ry="1.5"/>
+      <rect class="st3" x="56" y="75" width="9" height="9" rx="1.5" ry="1.5"/>
+    </g>
+  </g>
+</svg>

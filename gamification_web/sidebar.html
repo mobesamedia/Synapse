@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SynapsePro Gamification</title>
+<title>Synapse Gamification</title>
+
 <style>
   :root{
     color-scheme:light;
@@ -16,8 +17,8 @@
   html.dark, body.dark{
     color-scheme:dark;
     --accent-soft:rgba(10,132,255,0.16);
-    --bg:#1c1c1e; --card:#2a2a2c; --border:rgba(255,255,255,0.08);
-    --text:#f5f5f7; --muted:#9a9aa0; --track:#3a3a3c;
+    --bg:#2c2c2c; --card:#252525; --border:rgba(255,255,255,0.08);
+    --text:#ffffff; --muted:#b0b0b0; --track:#414141;
     --green:#4CC763;
   }
   *{box-sizing:border-box;}
@@ -43,6 +44,11 @@
 
   /* celebration-popup toggle */
   #popupsCard{padding:12px 16px;}
+  #popupTypes{margin:10px 0 0;padding:8px 0 0;border:0;border-top:1px solid var(--border);min-width:0;}
+  #popupTypes .popups-row{padding:7px 0;font-size:13px;}
+  #popupTypes:disabled{opacity:.55;}
+  #popupsHint{font-size:12px;line-height:1.5;color:var(--muted);margin:8px 0 0;}
+  .popups-row input:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
   .popups-row{display:flex;align-items:center;justify-content:space-between;gap:10px;
     cursor:pointer;user-select:none;}
   .popups-row input{accent-color:var(--accent);width:16px;height:16px;cursor:pointer;flex-shrink:0;}
@@ -107,6 +113,58 @@
   #challengeBtn svg{width:13px;height:13px;display:none;}
   #challengeBtn.done svg{display:block;}
 
+  #achievementGrid{display:grid;grid-template-columns:repeat(5,minmax(0,54px));justify-content:space-between;gap:6px;margin:12px 0 6px;}
+  .achievement-button{position:relative;min-width:0;padding:0;border:0;border-radius:50%;background:none;cursor:pointer;line-height:0;color:var(--muted);}
+  .achievement-button>img{width:100%;height:auto;display:block;}
+  .achievement-button.locked>img{filter:grayscale(1);opacity:.32;}
+  .achievement-button:hover{background:var(--accent-soft);}
+  .achievement-button:focus-visible,.achievement-button[aria-expanded="true"]{outline:2px solid var(--accent-bright);outline-offset:1px;}
+  .achievement-lock{position:absolute;bottom:1px;right:0;background:var(--card);border:1px solid var(--border);border-radius:50%;padding:2px;}
+  .achievement-lock svg{width:12px;height:12px;}
+  .achievement-new{position:absolute;top:-5px;right:-5px;min-width:25px;padding:3px 5px;border-radius:8px;background:var(--accent);color:#fff;font-size:8px;font-weight:750;line-height:1;letter-spacing:.02em;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.16);}
+  .achievement-favorite-mark{position:absolute;left:0;bottom:0;width:17px;height:17px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--card);border:1px solid var(--border);color:var(--accent-bright);font-size:12px;line-height:1;}
+  #achievementCount{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums;}
+  #achievementGoal{width:100%;min-height:44px;margin:8px 0 0;padding:8px 10px;border:1px solid transparent;border-radius:9px;background:var(--accent-soft);color:var(--text);font:inherit;text-align:left;cursor:pointer;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px;}
+  #achievementGoal[hidden]{display:none;}
+  #achievementGoal:hover{border-color:var(--accent);}
+  #achievementGoal:focus-visible{outline:2px solid var(--accent-bright);outline-offset:2px;}
+  .achievement-goal-copy{min-width:0;display:flex;flex-direction:column;gap:3px;}
+  #achievementGoalLabel{color:var(--accent-bright);font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;}
+  #achievementGoalTitle{font-size:12px;font-weight:650;line-height:1.3;overflow-wrap:anywhere;}
+  #achievementGoalProgress{color:var(--muted);font-size:11px;line-height:1.35;overflow-wrap:anywhere;}
+  .achievement-goal-arrow{color:var(--accent-bright);font-size:20px;line-height:1;}
+  #achievementHint{font-size:11px;color:var(--muted);line-height:1.45;margin:8px 0 0;}
+  #achievementDetail{border-top:1px solid var(--border);margin-top:14px;padding-top:12px;}
+  #achievementDetail[hidden]{display:none;}
+  .achievement-heading{display:flex;align-items:center;gap:8px;}
+  #achievementArt{width:64px;flex-shrink:0;line-height:0;}
+  #achievementArt img{width:100%;height:auto;display:block;}
+  #achievementName{font-size:14px;line-height:1.3;margin:0;overflow-wrap:anywhere;}
+  #achievementTier{font-size:11px;color:var(--muted);margin-top:3px;}
+  #achievementEarnedDate{font-size:11px;color:var(--muted);margin:3px 0 0;}
+  #achievementEarnedDate[hidden]{display:none;}
+  #achievementClose{align-self:flex-start;margin-left:auto;flex-shrink:0;background:none;border:0;color:var(--muted);font-size:21px;cursor:pointer;padding:2px 5px;border-radius:6px;}
+  #achievementClose:focus-visible{outline:2px solid var(--accent);}
+  #achievementDescription{font-size:12px;line-height:1.5;margin:10px 0;}
+  #achievementFavorite{width:100%;margin:2px 0 4px;padding:7px 9px;border:1px solid var(--border);border-radius:8px;background:transparent;color:var(--text);font:inherit;font-size:11px;font-weight:600;cursor:pointer;}
+  #achievementFavorite:hover{background:var(--accent-soft);border-color:var(--accent);}
+  #achievementFavorite:focus-visible{outline:2px solid var(--accent-bright);outline-offset:2px;}
+  #achievementFavorite[hidden]{display:none;}
+  #achievementFavorite.active{color:var(--accent-bright);background:var(--accent-soft);}
+  #achievementValue,#achievementRemaining{font-size:11px;color:var(--muted);line-height:1.45;margin:6px 0;}
+  #achievementNext{font-size:12px;font-weight:600;margin:10px 0 5px;}
+  #achievementProgress{display:block;width:100%;height:7px;border:0;border-radius:5px;overflow:hidden;appearance:none;}
+  #achievementProgress::-webkit-progress-bar{background:var(--track);border-radius:5px;}
+  #achievementProgress::-webkit-progress-value{background:var(--accent);border-radius:5px;}
+  #achievementSteps{display:flex;gap:4px;list-style:none;padding:0;margin:12px 0 0;}
+  #achievementSteps li{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;text-align:center;font-size:10px;color:var(--muted);}
+  #achievementSteps li.earned{color:var(--text);}
+  .achievement-step-badge{width:32px;height:32px;object-fit:contain;display:block;margin:0 auto 2px;}
+  #achievementSteps li:not(.earned) .achievement-step-badge{filter:grayscale(1);opacity:.28;}
+  .achievement-step-rule{width:100%;height:0;border-top:2px solid var(--track);margin:1px 0 2px;}
+  #achievementSteps li.earned .achievement-step-rule{border-color:var(--accent);}
+  #achievementSteps li span{overflow-wrap:anywhere;}
+
   /* ── Ranks grid ── */
   .ranks .card-label{display:block;text-align:center;margin-bottom:12px;}
   .rank-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;justify-items:center;}
@@ -145,21 +203,27 @@
       document.documentElement.classList.add('dark');
   }catch(e){}
 </script>
+<link rel="stylesheet" href="progress.css">
+<link rel="stylesheet" href="settings.css">
 </head>
 <body>
 <div id="wrap">
+  <div id="progressView">
   <section class="card hero">
+    <div class="hero-actions">
+      <button type="button" class="stats-control-btn" id="gamificationSettings" aria-label="Settings" title="Settings" aria-haspopup="dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06a1.7 1.7 0 0 0-1.88-.34 1.7 1.7 0 0 0-1.03 1.56V21h-4v-.08A1.7 1.7 0 0 0 8.97 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.56-1.03H3v-4h.08A1.7 1.7 0 0 0 4.6 8.97a1.7 1.7 0 0 0-.34-1.88l-.06-.06L7.03 4.2l.06.06a1.7 1.7 0 0 0 1.88.34A1.7 1.7 0 0 0 10 3.04V3h4v.08a1.7 1.7 0 0 0 1.03 1.52 1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06a1.7 1.7 0 0 0-.34 1.88A1.7 1.7 0 0 0 20.96 10H21v4h-.08A1.7 1.7 0 0 0 19.4 15z"></path></svg></button>
+      <button type="button" class="stats-control-btn" id="gamificationInfo" aria-label="How it works" title="How it works" aria-haspopup="dialog">i</button>
+    </div>
     <img id="badge" alt="">
-    <div><span class="level-chip" id="levelChip">Level ?</span></div>
-    <h1 id="rankName">&nbsp;</h1>
+    <div class="hero-content">
+    <div class="hero-heading"><h1 id="rankName">&nbsp;</h1><span class="level-chip" id="levelChip">Level ?</span></div>
     <div class="xpbar"><div class="fill" id="xpFill"></div></div>
     <div class="xp-meta">
       <span id="xpText">&nbsp;</span>
       <span class="pct" id="xpPct"></span>
     </div>
-  </section>
-
-  <section class="card stats">
+    </div>
+  <div class="stats">
     <div class="stat">
       <div class="card-label" id="streakLabel">Streak</div>
       <div class="stat-value" id="streakDays">?</div>
@@ -171,6 +235,7 @@
       <div class="stat-value goal" id="goalRank">&nbsp;</div>
       <div class="stat-sub" id="goalSub">&nbsp;</div>
     </div>
+  </div>
   </section>
 
   <section class="card" id="challengeCard">
@@ -189,18 +254,43 @@
     </button>
   </section>
 
+  <section class="card" id="achievementsCard">
+    <div class="ch-head"><span class="card-label" id="achievementsLabel">Achievements</span><span id="achievementCount"></span></div>
+    <div id="achievementGrid"></div>
+    <button type="button" id="achievementGoal" aria-controls="achievementDetail" hidden>
+      <span class="achievement-goal-copy"><span id="achievementGoalLabel"></span><span id="achievementGoalTitle"></span><span id="achievementGoalProgress"></span></span>
+      <span class="achievement-goal-arrow" aria-hidden="true">›</span>
+    </button>
+    <p id="achievementHint"></p>
+    <div id="achievementDetail" hidden>
+      <div class="achievement-heading">
+        <div id="achievementArt"></div>
+        <div><h2 id="achievementName"></h2><div id="achievementTier"></div><p id="achievementEarnedDate" hidden></p></div>
+        <button type="button" id="achievementClose" aria-label="Close">×</button>
+      </div>
+      <p id="achievementDescription"></p>
+      <button type="button" id="achievementFavorite" hidden></button>
+      <p id="achievementValue"></p>
+      <p id="achievementNext"></p>
+      <progress id="achievementProgress" max="1" value="0"></progress>
+      <p id="achievementRemaining"></p>
+      <ol id="achievementSteps"></ol>
+    </div>
+  </section>
+
   <section class="card ranks">
     <span class="card-label" id="ranksLabel">All Ranks</span>
     <div class="rank-grid" id="rankGrid"></div>
   </section>
 
-  <section class="card guide">
-    <details>
-      <summary id="guideLabel">How it works</summary>
-      <div class="guide-body" id="guideBody"></div>
-    </details>
-  </section>
-
+  </div>
+  <dialog id="gamificationInfoOverlay" class="gamification-overlay" aria-labelledby="guideLabel">
+    <div class="gami-overlay-bar"><span id="guideLabel">How it works</span><button type="button" class="gami-close" aria-label="Close">×</button></div>
+    <div class="gami-dialog-body"><section class="card guide"><div class="guide-body" id="guideBody"></div><p class="gami-hint" id="streakInfo"></p></section></div>
+  </dialog>
+  <dialog id="gamificationSettingsOverlay" class="gamification-overlay" aria-labelledby="settingsTitle">
+    <div class="gami-overlay-bar"><span id="settingsTitle">Settings</span><button type="button" class="gami-close" aria-label="Close">×</button></div>
+    <div class="gami-dialog-body">
   <section class="card" id="popupsCard">
     <label class="popups-row" for="popupsToggle" title="">
       <span>
@@ -208,9 +298,27 @@
       </span>
       <input type="checkbox" id="popupsToggle">
     </label>
+    <p id="popupsHint"></p>
+    <fieldset id="popupTypes" aria-labelledby="popupsLabel">
+      <label class="popups-row"><span id="popupRankLabel">Rank up</span><input type="checkbox" data-popup-type="rank"></label>
+      <label class="popups-row"><span id="popupLevelLabel">Level up</span><input type="checkbox" data-popup-type="level"></label>
+      <label class="popups-row"><span id="popupChallengeLabel">Daily Challenge</span><input type="checkbox" data-popup-type="challenge"></label>
+    </fieldset>
   </section>
+  <section class="card">
+    <h2 class="gami-section-title" id="streakSettingsTitle">Streak sensitivity</h2>
+    <label class="gami-input"><span id="streakReviewsLabel">Minimum reviews per day</span><input id="streakReviews" type="number" min="1" max="10000" step="1" value="1"></label>
+    <label class="popups-row"><span id="streakAllowCardsLabel">Creating cards can also count</span><input id="streakAllowCards" type="checkbox"></label>
+    <label class="gami-input"><span id="streakCardsLabel">Minimum new cards per day</span><input id="streakCards" type="number" min="1" max="10000" step="1" value="1" disabled></label>
+    <p class="gami-hint" id="streakSettingsHint"></p>
+    <p class="gami-hint" id="streakCreationHint"></p>
+  </section>
+    </div>
+  </dialog>
 </div>
 
+<script src="achievements.js"></script>
+<script src="settings.js"></script>
 <script>
   var _labels = {};
   var _prev = { level: null, completed: null };
@@ -232,6 +340,7 @@
     function set(name, val){ if(val) r.setProperty(name, val); }
     set('--accent', c.accent); set('--accent-bright', c.accentBright);
     set('--bg', c.bg); set('--card', c.card); set('--border', c.border);
+    set('--stats-control-bg', c.statsControlBg); set('--stats-control-color', c.statsControlColor);
     set('--text', c.text); set('--muted', c.muted); set('--track', c.track);
   }
 
@@ -266,7 +375,8 @@
       if(d.isDark){ document.documentElement.classList.add('dark'); document.body.classList.add('dark'); }
       else{ document.documentElement.classList.remove('dark'); document.body.classList.remove('dark'); }
       applyColors(d.colors);
-      document.title = _labels.title || 'SynapsePro Gamification';
+      initGamificationSettings(d);
+      document.title = _labels.title || 'Synapse Gamification';
 
       // static section labels
       document.getElementById('goalLabel').textContent      = _labels.nextGoal   || 'Next Goal';
@@ -282,9 +392,18 @@
         var prow = document.querySelector('.popups-row');
         if(prow) prow.title = _labels.popupsHint || '';
         document.getElementById('popupsLabel').textContent = _labels.popups || 'Celebration popups';
+        document.getElementById('popupsHint').textContent = _labels.popupsHint || '';
+        document.getElementById('popupTypes').disabled = !pt.checked;
+        ['rank','level','challenge'].forEach(function(type){
+          var input=document.querySelector('[data-popup-type="'+type+'"]');
+          var labelKey='popup'+type.charAt(0).toUpperCase()+type.slice(1);
+          document.getElementById(labelKey+'Label').textContent=_labels[labelKey] || {rank:'Rank up',level:'Level up',challenge:'Daily Challenge'}[type];
+          input.checked=d.popupTypes && type in d.popupTypes ? !!d.popupTypes[type] : type!=='level';
+          if(!input._wired){input._wired=true;input.addEventListener('change',function(){bridge('popupType:'+type+':'+(input.checked?'1':'0'));});}
+        });
         if(!pt._wired){
           pt._wired = true;
-          pt.addEventListener('change', function(){ bridge('popups:' + (pt.checked ? '1' : '0')); });
+          pt.addEventListener('change', function(){ document.getElementById('popupTypes').disabled=!pt.checked;bridge('popups:' + (pt.checked ? '1' : '0')); });
         }
       }
 
@@ -354,6 +473,8 @@
         btn.title = ch.achieved ? '' : fmt(_labels.notYet || 'Challenge not completed yet ({}/{}).', ch.cur, ch.target);
       }
 
+      renderAchievements(d.achievements, d.achievementLabels);
+
       // ranks grid
       var grid = document.getElementById('rankGrid');
       grid.innerHTML = (d.ranks || []).map(function(r){
@@ -409,7 +530,7 @@
             var preCss = 'display:none;max-height:140px;overflow:auto;white-space:pre-wrap;word-break:break-word;'
                 + 'font-size:11px;border-radius:6px;padding:8px;margin:0 0 8px 0;'
                 + (dark ? 'background:#404040;border:1px solid #555;' : 'background:#f5f5f5;border:1px solid #ccc;');
-            b.innerHTML = '<div style="font-weight:700;color:#dc3545;margin-bottom:4px;">' + etr('SynapsePro error') + '</div>'
+            b.innerHTML = '<div style="font-weight:700;color:#dc3545;margin-bottom:4px;">' + etr('Synapse error') + '</div>'
                 + '<div class="sp-eb-msg" style="margin-bottom:6px;word-break:break-word;"></div>'
                 + '<pre class="sp-eb-pre" style="' + preCss + '"></pre>'
                 + '<div><button type="button" data-spact="details" style="' + btnCss + '">' + etr('Show details') + '</button>'
