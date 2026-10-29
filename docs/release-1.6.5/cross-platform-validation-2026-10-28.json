@@ -1,0 +1,31 @@
+{
+  "date": "2026-10-28",
+  "verdict": "DO_NOT_RELEASE",
+  "native_windows_run": false,
+  "native_linux_run": false,
+  "host": "macOS ARM64",
+  "simulation_cases": 7,
+  "passed": 6,
+  "failed": 1,
+  "archive_sha256": "52601345e4545aa660d9b3c0d125de7b9420548882f847a2b0a6e2eae7f1cefb",
+  "runtime_changed": false,
+  "simulation_log": "test_archive_paths_are_portable_and_match_reviewed_sources (__main__.CrossPlatformStorageReview.test_archive_paths_are_portable_and_match_reviewed_sources) ... ok\ntest_database_and_recovery_write_failures_are_not_acknowledged (__main__.CrossPlatformStorageReview.test_database_and_recovery_write_failures_are_not_acknowledged) ... ok\ntest_exclusive_sqlite_lock_uses_recovery_and_preserves_original (__main__.CrossPlatformStorageReview.test_exclusive_sqlite_lock_uses_recovery_and_preserves_original) ... ok\ntest_locked_recovery_never_masks_a_new_acknowledged_sqlite_save (__main__.CrossPlatformStorageReview.test_locked_recovery_never_masks_a_new_acknowledged_sqlite_save) ... FAIL\ntest_preupdate_copy_failure_does_not_prune_originals (__main__.CrossPlatformStorageReview.test_preupdate_copy_failure_does_not_prune_originals) ... ok\ntest_unicode_spaces_hash_and_percent_paths_roundtrip_and_readonly_versions (__main__.CrossPlatformStorageReview.test_unicode_spaces_hash_and_percent_paths_roundtrip_and_readonly_versions) ... ok\ntest_windows_uri_encoding_without_claiming_windows_io (__main__.CrossPlatformStorageReview.test_windows_uri_encoding_without_claiming_windows_io) ... ok\n\n======================================================================\nFAIL: test_locked_recovery_never_masks_a_new_acknowledged_sqlite_save (__main__.CrossPlatformStorageReview.test_locked_recovery_never_masks_a_new_acknowledged_sqlite_save)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"<workspace>/tests/review_165_cross_platform.py\", line 120, in test_locked_recovery_never_masks_a_new_acknowledged_sqlite_save\n    self.assertFalse(acknowledged and json.loads(loaded) != json.loads(latest),\nAssertionError: True is not false : Save reported success, but restart loads stale recovery instead of the committed edit\n\n----------------------------------------------------------------------\nRan 7 tests in 0.429s\n\nFAILED (failures=1)\nNotebook notes Save Error: [Errno 13] simulated replacement failure\nNotebook notes recovery save failed: [Errno 13] simulated replacement failure\nNotebook notes Save Error: database is locked\nNotebook notes: latest snapshot stored in recovery file\nNotebook notes recovery save failed: [Errno 13] simulated Windows sharing violation\nNotebook notes Save Error: [Errno 13] simulated backup lock\nNotebook notes: latest snapshot stored in recovery file\n",
+  "existing_persistence_log": "........\n----------------------------------------------------------------------\nRan 8 tests in 0.129s\n\nOK\nNotebook notes Load Error: database is locked\nNotebook notes Load Error: Invalid stored snapshot\n",
+  "continued_use_reproduction": {
+    "simulation_only": true,
+    "real_user_data_accessed": false,
+    "save_acknowledged": true,
+    "reloaded_stale_body": true,
+    "new_body_in_sqlite_immediately_after_save": true,
+    "new_body_in_any_listed_version_after_25_more_saves": false,
+    "listed_versions": 21,
+    "archive_sha256": "52601345e4545aa660d9b3c0d125de7b9420548882f847a2b0a6e2eae7f1cefb"
+  },
+  "test_sha256": "0550caf15d8fe6344bc363cb551ad446355827f7c866f66b1e943006bf6274db",
+  "primary_sources": [
+    "https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-deletefilew",
+    "https://docs.python.org/3.13/library/os.html",
+    "https://docs.python.org/3.13/library/pathlib.html",
+    "https://www.sqlite.org/useovernet.html"
+  ]
+}

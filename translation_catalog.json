@@ -4763,7 +4763,8 @@
     "pl": "Wróć do panelu"
   },
   "Background": {
-    "pl": "Tło"
+    "pl": "Tło",
+    "de": "Hintergrund"
   },
   "Background Color:": {
     "pl": "Kolor tła:"
@@ -4805,7 +4806,8 @@
     "pl": "Fale beta"
   },
   "Blue": {
-    "pl": "Niebieski"
+    "pl": "Niebieski",
+    "de": "Blau"
   },
   "Blur": {
     "pl": "Rozmycie"
@@ -5852,7 +5854,8 @@
     "pl": "Google oferuje darmowy limit Gemini. Klucz utworzysz zwykłym kontem Google, bez danych płatniczych."
   },
   "Green": {
-    "pl": "Zielony"
+    "pl": "Zielony",
+    "de": "Grün"
   },
   "Hard Cards": {
     "pl": "Trudne karty"
@@ -6716,7 +6719,15 @@
     "pl": "Strona {page}: {error}"
   },
   "Pages": {
-    "pl": "Strony"
+    "pl": "Strony",
+    "de": "Seiten",
+    "es": "Páginas",
+    "fr": "Pages",
+    "pt": "Páginas",
+    "zh": "页面",
+    "ko": "페이지",
+    "vi": "Trang",
+    "hi": "पृष्ठ"
   },
   "Pan View: Click and drag on the empty background.": {
     "pl": "Przesuwanie widoku: kliknij i przeciągnij puste tło."
@@ -6755,7 +6766,8 @@
     "pl": "Przypnij"
   },
   "Pink": {
-    "pl": "Różowy"
+    "pl": "Różowy",
+    "de": "Rosa"
   },
   "Pinned": {
     "pl": "Przypięte"
@@ -8471,5 +8483,743 @@
     "zh": "如果未显示更改，请重启 Anki。",
     "hi": "यदि बदलाव न दिखे, तो Anki को दोबारा शुरू करें।",
     "pl": "Jeśli zmiana się nie pojawi, uruchom Anki ponownie."
+  },
+  "Heading 3": {
+    "de": "Überschrift 3",
+    "es": "Encabezado 3",
+    "ko": "제목 3",
+    "pt": "Título 3",
+    "fr": "Titre 3",
+    "vi": "Tiêu đề 3",
+    "zh": "标题 3",
+    "hi": "शीर्षक 3",
+    "pl": "Nagłówek 3"
+  },
+  "Insert block": {
+    "de": "Block einfügen",
+    "es": "Insertar bloque",
+    "ko": "블록 삽입",
+    "pt": "Inserir bloco",
+    "fr": "Insérer un bloc",
+    "vi": "Chèn khối",
+    "zh": "插入块",
+    "hi": "ब्लॉक जोड़ें",
+    "pl": "Wstaw blok"
+  },
+  "Block actions": {
+    "de": "Blockaktionen",
+    "es": "Acciones del bloque",
+    "ko": "블록 작업",
+    "pt": "Ações do bloco",
+    "fr": "Actions du bloc",
+    "vi": "Thao tác khối",
+    "zh": "块操作",
+    "hi": "ब्लॉक कार्रवाइयाँ",
+    "pl": "Działania bloku"
+  },
+  "Search actions…": {
+    "de": "Aktionen suchen…",
+    "es": "Buscar acciones…",
+    "ko": "작업 검색…",
+    "pt": "Buscar ações…",
+    "fr": "Rechercher une action…",
+    "vi": "Tìm thao tác…",
+    "zh": "搜索操作…",
+    "hi": "कार्रवाइयाँ खोजें…",
+    "pl": "Szukaj działań…"
+  },
+  "Color": {
+    "de": "Farbe"
+  },
+  "Text color": {
+    "de": "Textfarbe"
+  },
+  "Strikethrough": {
+    "de": "Durchstreichen"
+  },
+  "Inline code": {
+    "de": "Inline-Code",
+    "es": "Código en línea",
+    "ko": "인라인 코드",
+    "pt": "Código em linha",
+    "fr": "Code en ligne",
+    "vi": "Mã nội dòng",
+    "zh": "行内代码",
+    "hi": "इनलाइन कोड",
+    "pl": "Kod w tekście"
+  },
+  "Move to page": {
+    "de": "Auf Seite verschieben",
+    "es": "Mover a una página",
+    "ko": "페이지로 이동",
+    "pt": "Mover para página",
+    "fr": "Déplacer vers une page",
+    "vi": "Chuyển sang trang",
+    "zh": "移动到页面",
+    "hi": "पृष्ठ पर ले जाएँ",
+    "pl": "Przenieś na stronę"
+  },
+  "Move this block to another page?": {
+    "de": "Diesen Block auf eine andere Seite verschieben?",
+    "es": "¿Mover este bloque a otra página?",
+    "ko": "이 블록을 다른 페이지로 이동할까요?",
+    "pt": "Mover este bloco para outra página?",
+    "fr": "Déplacer ce bloc vers une autre page ?",
+    "vi": "Chuyển khối này sang trang khác?",
+    "zh": "将此块移动到其他页面？",
+    "hi": "इस ब्लॉक को दूसरे पृष्ठ पर ले जाएँ?",
+    "pl": "Przenieść ten blok na inną stronę?"
+  },
+  "Create another page first.": {
+    "de": "Erstelle zuerst eine weitere Seite.",
+    "es": "Primero crea otra página.",
+    "ko": "먼저 다른 페이지를 만드세요.",
+    "pt": "Crie outra página primeiro.",
+    "fr": "Créez d’abord une autre page.",
+    "vi": "Hãy tạo một trang khác trước.",
+    "zh": "请先创建另一个页面。",
+    "hi": "पहले एक और पृष्ठ बनाएँ।",
+    "pl": "Najpierw utwórz inną stronę."
+  },
+  "Default": {
+    "de": "Standard"
+  },
+  "Gray": {
+    "de": "Grau",
+    "es": "Gris",
+    "ko": "회색",
+    "pt": "Cinza",
+    "fr": "Gris",
+    "vi": "Xám",
+    "zh": "灰色",
+    "hi": "धूसर",
+    "pl": "Szary"
+  },
+  "Brown": {
+    "de": "Braun",
+    "es": "Marrón",
+    "ko": "갈색",
+    "pt": "Marrom",
+    "fr": "Marron",
+    "vi": "Nâu",
+    "zh": "棕色",
+    "hi": "भूरा",
+    "pl": "Brązowy"
+  },
+  "Orange": {
+    "de": "Orange",
+    "es": "Naranja",
+    "ko": "주황색",
+    "pt": "Laranja",
+    "fr": "Orange",
+    "vi": "Cam",
+    "zh": "橙色",
+    "hi": "नारंगी",
+    "pl": "Pomarańczowy"
+  },
+  "Yellow": {
+    "de": "Gelb",
+    "es": "Amarillo",
+    "ko": "노란색",
+    "pt": "Amarelo",
+    "fr": "Jaune",
+    "vi": "Vàng",
+    "zh": "黄色",
+    "hi": "पीला",
+    "pl": "Żółty"
+  },
+  "Purple": {
+    "de": "Violett",
+    "es": "Morado",
+    "ko": "보라색",
+    "pt": "Roxo",
+    "fr": "Violet",
+    "vi": "Tím",
+    "zh": "紫色",
+    "hi": "बैंगनी",
+    "pl": "Fioletowy"
+  },
+  "Red": {
+    "de": "Rot",
+    "es": "Rojo",
+    "ko": "빨간색",
+    "pt": "Vermelho",
+    "fr": "Rouge",
+    "vi": "Đỏ",
+    "zh": "红色",
+    "hi": "लाल",
+    "pl": "Czerwony"
+  },
+  "Original content preserved. This block contains content that cannot be safely edited here.": {
+    "de": "Originalinhalt erhalten. Dieser Block enthält Inhalte, die hier nicht sicher bearbeitet werden können.",
+    "es": "Contenido original conservado. Este bloque contiene contenido que no se puede editar aquí de forma segura.",
+    "ko": "원본 내용이 보존되었습니다. 이 블록에는 여기서 안전하게 편집할 수 없는 내용이 있습니다.",
+    "pt": "Conteúdo original preservado. Este bloco contém conteúdo que não pode ser editado aqui com segurança.",
+    "fr": "Contenu original conservé. Ce bloc contient du contenu qui ne peut pas être modifié ici en toute sécurité.",
+    "vi": "Nội dung gốc được giữ nguyên. Khối này có nội dung không thể chỉnh sửa an toàn tại đây.",
+    "zh": "原始内容已保留。此块包含无法在此处安全编辑的内容。",
+    "hi": "मूल सामग्री सुरक्षित रखी गई है। इस ब्लॉक में ऐसी सामग्री है जिसे यहाँ सुरक्षित रूप से संपादित नहीं किया जा सकता।",
+    "pl": "Oryginalna treść została zachowana. Ten blok zawiera treść, której nie można tutaj bezpiecznie edytować."
+  },
+  "Page navigation": {
+    "de": "Seitennavigation",
+    "es": "Navegación de páginas",
+    "ko": "페이지 탐색",
+    "pt": "Navegação de páginas",
+    "fr": "Navigation des pages",
+    "vi": "Điều hướng trang",
+    "zh": "页面导航",
+    "hi": "पृष्ठ नेविगेशन",
+    "pl": "Nawigacja stron"
+  },
+  "New subpage": {
+    "de": "Neue Unterseite",
+    "es": "Nueva subpágina",
+    "ko": "새 하위 페이지",
+    "pt": "Nova subpágina",
+    "fr": "Nouvelle sous-page",
+    "vi": "Trang con mới",
+    "zh": "新建子页面",
+    "hi": "नया उपपृष्ठ",
+    "pl": "Nowa podstrona"
+  },
+  "Subpages": {
+    "de": "Unterseiten",
+    "es": "Subpáginas",
+    "ko": "하위 페이지",
+    "pt": "Subpáginas",
+    "fr": "Sous-pages",
+    "vi": "Trang con",
+    "zh": "子页面",
+    "hi": "उपपृष्ठ",
+    "pl": "Podstrony"
+  },
+  "Move under page": {
+    "de": "Als Unterseite verschieben",
+    "es": "Mover como subpágina",
+    "ko": "하위 페이지로 이동",
+    "pt": "Mover como subpágina",
+    "fr": "Déplacer comme sous-page",
+    "vi": "Chuyển thành trang con",
+    "zh": "移动为子页面",
+    "hi": "उपपृष्ठ के रूप में ले जाएँ",
+    "pl": "Przenieś jako podstronę"
+  },
+  "Top level": {
+    "de": "Oberste Ebene",
+    "es": "Nivel superior",
+    "ko": "최상위 수준",
+    "pt": "Nível superior",
+    "fr": "Niveau supérieur",
+    "vi": "Cấp cao nhất",
+    "zh": "顶层",
+    "hi": "शीर्ष स्तर",
+    "pl": "Najwyższy poziom"
+  },
+  "New section": {
+    "de": "Neuer Abschnitt",
+    "es": "Nueva sección",
+    "ko": "새 섹션",
+    "pt": "Nova seção",
+    "fr": "Nouvelle section",
+    "vi": "Phần mới",
+    "zh": "新建分区",
+    "hi": "नया अनुभाग",
+    "pl": "Nowa sekcja"
+  },
+  "Section name:": {
+    "de": "Abschnittsname:",
+    "es": "Nombre de la sección:",
+    "ko": "섹션 이름:",
+    "pt": "Nome da seção:",
+    "fr": "Nom de la section :",
+    "vi": "Tên phần:",
+    "zh": "分区名称：",
+    "hi": "अनुभाग का नाम:",
+    "pl": "Nazwa sekcji:"
+  },
+  "Search pages…": {
+    "de": "Seiten suchen…",
+    "es": "Buscar páginas…",
+    "ko": "페이지 검색…",
+    "pt": "Buscar páginas…",
+    "fr": "Rechercher des pages…",
+    "vi": "Tìm trang…",
+    "zh": "搜索页面…",
+    "hi": "पृष्ठ खोजें…",
+    "pl": "Szukaj stron…"
+  },
+  "Breadcrumb": {
+    "de": "Seitenpfad",
+    "es": "Ruta de navegación",
+    "ko": "페이지 경로",
+    "pt": "Caminho de navegação",
+    "fr": "Fil d’Ariane",
+    "vi": "Đường dẫn trang",
+    "zh": "页面路径",
+    "hi": "पृष्ठ पथ",
+    "pl": "Ścieżka strony"
+  },
+  "Move up": {
+    "de": "Nach oben verschieben",
+    "es": "Mover arriba",
+    "ko": "위로 이동",
+    "pt": "Mover para cima",
+    "fr": "Déplacer vers le haut",
+    "vi": "Di chuyển lên",
+    "zh": "上移",
+    "hi": "ऊपर ले जाएँ",
+    "pl": "Przenieś w górę"
+  },
+  "Move down": {
+    "de": "Nach unten verschieben",
+    "es": "Mover abajo",
+    "ko": "아래로 이동",
+    "pt": "Mover para baixo",
+    "fr": "Déplacer vers le bas",
+    "vi": "Di chuyển xuống",
+    "zh": "下移",
+    "hi": "नीचे ले जाएँ",
+    "pl": "Przenieś w dół"
+  },
+  "Contents": {
+    "de": "Inhaltsverzeichnis",
+    "es": "Contenido",
+    "fr": "Sommaire",
+    "pt": "Sumário",
+    "zh": "目录",
+    "ko": "목차",
+    "vi": "Mục lục",
+    "hi": "विषय-सूची",
+    "pl": "Spis treści"
+  },
+  "No headings yet": {
+    "de": "Noch keine Überschriften",
+    "es": "Aún no hay encabezados",
+    "fr": "Aucun titre pour le moment",
+    "pt": "Ainda sem títulos",
+    "zh": "暂无标题",
+    "ko": "아직 제목이 없습니다",
+    "vi": "Chưa có tiêu đề",
+    "hi": "अभी कोई शीर्षक नहीं",
+    "pl": "Brak nagłówków"
+  },
+  "Notebook actions": {
+    "de": "Notizbuch-Aktionen",
+    "es": "Acciones del cuaderno",
+    "fr": "Actions du carnet",
+    "pt": "Ações do caderno",
+    "zh": "笔记本操作",
+    "ko": "노트북 작업",
+    "vi": "Thao tác sổ ghi chép",
+    "hi": "नोटबुक कार्रवाइयाँ",
+    "pl": "Działania notatnika"
+  },
+  "Templates": {
+    "de": "Vorlagen",
+    "es": "Plantillas",
+    "fr": "Modèles",
+    "pt": "Modelos",
+    "zh": "模板",
+    "ko": "템플릿",
+    "vi": "Mẫu",
+    "hi": "टेम्पलेट",
+    "pl": "Szablony"
+  },
+  "Save as template": {
+    "de": "Als Vorlage speichern",
+    "es": "Guardar como plantilla",
+    "fr": "Enregistrer comme modèle",
+    "pt": "Salvar como modelo",
+    "zh": "保存为模板",
+    "ko": "템플릿으로 저장",
+    "vi": "Lưu làm mẫu",
+    "hi": "टेम्पलेट के रूप में सहेजें",
+    "pl": "Zapisz jako szablon"
+  },
+  "Template name:": {
+    "de": "Name der Vorlage:",
+    "es": "Nombre de la plantilla:",
+    "fr": "Nom du modèle :",
+    "pt": "Nome do modelo:",
+    "zh": "模板名称：",
+    "ko": "템플릿 이름:",
+    "vi": "Tên mẫu:",
+    "hi": "टेम्पलेट का नाम:",
+    "pl": "Nazwa szablonu:"
+  },
+  "Use template": {
+    "de": "Vorlage verwenden",
+    "es": "Usar plantilla",
+    "fr": "Utiliser ce modèle",
+    "pt": "Usar modelo",
+    "zh": "使用模板",
+    "ko": "템플릿 사용",
+    "vi": "Dùng mẫu",
+    "hi": "टेम्पलेट का उपयोग करें",
+    "pl": "Użyj szablonu"
+  },
+  "Versions": {
+    "de": "Versionen",
+    "es": "Versiones",
+    "fr": "Versions",
+    "pt": "Versões",
+    "zh": "版本",
+    "ko": "버전",
+    "vi": "Phiên bản",
+    "hi": "संस्करण",
+    "pl": "Wersje"
+  },
+  "Restore as copy": {
+    "de": "Als Kopie wiederherstellen",
+    "es": "Restaurar como copia",
+    "fr": "Restaurer en tant que copie",
+    "pt": "Restaurar como cópia",
+    "zh": "恢复为副本",
+    "ko": "사본으로 복원",
+    "vi": "Khôi phục thành bản sao",
+    "hi": "प्रतिलिपि के रूप में पुनर्स्थापित करें",
+    "pl": "Przywróć jako kopię"
+  },
+  "No versions available": {
+    "de": "Keine Versionen verfügbar",
+    "es": "No hay versiones disponibles",
+    "fr": "Aucune version disponible",
+    "pt": "Nenhuma versão disponível",
+    "zh": "没有可用版本",
+    "ko": "사용 가능한 버전이 없습니다",
+    "vi": "Không có phiên bản nào",
+    "hi": "कोई संस्करण उपलब्ध नहीं",
+    "pl": "Brak dostępnych wersji"
+  },
+  "Loading versions…": {
+    "de": "Versionen werden geladen…",
+    "es": "Cargando versiones…",
+    "fr": "Chargement des versions…",
+    "pt": "Carregando versões…",
+    "zh": "正在加载版本…",
+    "ko": "버전 불러오는 중…",
+    "vi": "Đang tải phiên bản…",
+    "hi": "संस्करण लोड हो रहे हैं…",
+    "pl": "Ładowanie wersji…"
+  },
+  "Could not load versions. Try again.": {
+    "de": "Versionen konnten nicht geladen werden. Bitte erneut versuchen.",
+    "es": "No se pudieron cargar las versiones. Inténtalo de nuevo.",
+    "fr": "Impossible de charger les versions. Réessayez.",
+    "pt": "Não foi possível carregar as versões. Tente novamente.",
+    "zh": "无法加载版本，请重试。",
+    "ko": "버전을 불러올 수 없습니다. 다시 시도하세요.",
+    "vi": "Không thể tải phiên bản. Hãy thử lại.",
+    "hi": "संस्करण लोड नहीं हो सके। फिर से प्रयास करें।",
+    "pl": "Nie udało się wczytać wersji. Spróbuj ponownie."
+  },
+  "Copy": {
+    "de": "Kopie",
+    "es": "Copia",
+    "fr": "Copie",
+    "pt": "Cópia",
+    "zh": "副本",
+    "ko": "사본",
+    "vi": "Bản sao",
+    "hi": "प्रतिलिपि",
+    "pl": "Kopia"
+  },
+  "Pre-update backup": {
+    "de": "Sicherung vor dem Update",
+    "es": "Copia anterior a la actualización",
+    "fr": "Sauvegarde avant mise à jour",
+    "pt": "Backup anterior à atualização",
+    "zh": "更新前备份",
+    "ko": "업데이트 전 백업",
+    "vi": "Bản sao lưu trước cập nhật",
+    "hi": "अपडेट से पहले का बैकअप",
+    "pl": "Kopia sprzed aktualizacji"
+  },
+  "Recovery": {
+    "de": "Wiederherstellung",
+    "es": "Recuperación",
+    "fr": "Récupération",
+    "pt": "Recuperação",
+    "zh": "恢复",
+    "ko": "복구",
+    "vi": "Khôi phục",
+    "hi": "पुनर्प्राप्ति",
+    "pl": "Odzyskiwanie"
+  },
+  "Disease profile": {
+    "de": "Krankheitsbild",
+    "es": "Perfil de enfermedad",
+    "fr": "Fiche de maladie",
+    "pt": "Perfil de doença",
+    "zh": "疾病概述",
+    "ko": "질환 개요",
+    "vi": "Hồ sơ bệnh",
+    "hi": "रोग विवरण",
+    "pl": "Opis choroby"
+  },
+  "Definition": {
+    "de": "Definition",
+    "es": "Definición",
+    "fr": "Définition",
+    "pt": "Definição",
+    "zh": "定义",
+    "ko": "정의",
+    "vi": "Định nghĩa",
+    "hi": "परिभाषा",
+    "pl": "Definicja"
+  },
+  "Mechanism": {
+    "de": "Mechanismus",
+    "es": "Mecanismo",
+    "fr": "Mécanisme",
+    "pt": "Mecanismo",
+    "zh": "机制",
+    "ko": "기전",
+    "vi": "Cơ chế",
+    "hi": "तंत्र",
+    "pl": "Mechanizm"
+  },
+  "Symptoms": {
+    "de": "Symptome",
+    "es": "Síntomas",
+    "fr": "Symptômes",
+    "pt": "Sintomas",
+    "zh": "症状",
+    "ko": "증상",
+    "vi": "Triệu chứng",
+    "hi": "लक्षण",
+    "pl": "Objawy"
+  },
+  "Diagnosis": {
+    "de": "Diagnostik",
+    "es": "Diagnóstico",
+    "fr": "Diagnostic",
+    "pt": "Diagnóstico",
+    "zh": "诊断",
+    "ko": "진단",
+    "vi": "Chẩn đoán",
+    "hi": "निदान",
+    "pl": "Diagnostyka"
+  },
+  "Treatment": {
+    "de": "Therapie",
+    "es": "Tratamiento",
+    "fr": "Traitement",
+    "pt": "Tratamento",
+    "zh": "治疗",
+    "ko": "치료",
+    "vi": "Điều trị",
+    "hi": "उपचार",
+    "pl": "Leczenie"
+  },
+  "Resize column": {
+    "de": "Spaltenbreite ändern",
+    "es": "Cambiar ancho de columna",
+    "fr": "Redimensionner la colonne",
+    "pt": "Redimensionar coluna",
+    "zh": "调整列宽",
+    "ko": "열 너비 조절",
+    "vi": "Đổi chiều rộng cột",
+    "hi": "स्तंभ की चौड़ाई बदलें",
+    "pl": "Zmień szerokość kolumny"
+  },
+  "Header row": {
+    "de": "Kopfzeile",
+    "es": "Fila de encabezado",
+    "fr": "Ligne d’en-tête",
+    "pt": "Linha de cabeçalho",
+    "zh": "标题行",
+    "ko": "머리글 행",
+    "vi": "Hàng tiêu đề",
+    "hi": "शीर्षक पंक्ति",
+    "pl": "Wiersz nagłówka"
+  },
+  "Move row up": {
+    "de": "Zeile nach oben",
+    "es": "Mover fila arriba",
+    "fr": "Déplacer la ligne vers le haut",
+    "pt": "Mover linha para cima",
+    "zh": "上移行",
+    "ko": "행 위로 이동",
+    "vi": "Đưa hàng lên",
+    "hi": "पंक्ति ऊपर ले जाएँ",
+    "pl": "Przenieś wiersz w górę"
+  },
+  "Move row down": {
+    "de": "Zeile nach unten",
+    "es": "Mover fila abajo",
+    "fr": "Déplacer la ligne vers le bas",
+    "pt": "Mover linha para baixo",
+    "zh": "下移行",
+    "ko": "행 아래로 이동",
+    "vi": "Đưa hàng xuống",
+    "hi": "पंक्ति नीचे ले जाएँ",
+    "pl": "Przenieś wiersz w dół"
+  },
+  "Move column left": {
+    "de": "Spalte nach links",
+    "es": "Mover columna a la izquierda",
+    "fr": "Déplacer la colonne à gauche",
+    "pt": "Mover coluna para a esquerda",
+    "zh": "左移列",
+    "ko": "열 왼쪽으로 이동",
+    "vi": "Đưa cột sang trái",
+    "hi": "स्तंभ बाईं ओर ले जाएँ",
+    "pl": "Przenieś kolumnę w lewo"
+  },
+  "Move column right": {
+    "de": "Spalte nach rechts",
+    "es": "Mover columna a la derecha",
+    "fr": "Déplacer la colonne à droite",
+    "pt": "Mover coluna para a direita",
+    "zh": "右移列",
+    "ko": "열 오른쪽으로 이동",
+    "vi": "Đưa cột sang phải",
+    "hi": "स्तंभ दाईं ओर ले जाएँ",
+    "pl": "Przenieś kolumnę w prawo"
+  },
+  "Align left": {
+    "de": "Linksbündig",
+    "es": "Alinear a la izquierda",
+    "fr": "Aligner à gauche",
+    "pt": "Alinhar à esquerda",
+    "zh": "左对齐",
+    "ko": "왼쪽 정렬",
+    "vi": "Căn trái",
+    "hi": "बाएँ संरेखित करें",
+    "pl": "Wyrównaj do lewej"
+  },
+  "Align center": {
+    "de": "Zentrieren",
+    "es": "Centrar",
+    "fr": "Centrer",
+    "pt": "Centralizar",
+    "zh": "居中",
+    "ko": "가운데 정렬",
+    "vi": "Căn giữa",
+    "hi": "केंद्र में संरेखित करें",
+    "pl": "Wyśrodkuj"
+  },
+  "Align right": {
+    "de": "Rechtsbündig",
+    "es": "Alinear a la derecha",
+    "fr": "Aligner à droite",
+    "pt": "Alinhar à direita",
+    "zh": "右对齐",
+    "ko": "오른쪽 정렬",
+    "vi": "Căn phải",
+    "hi": "दाएँ संरेखित करें",
+    "pl": "Wyrównaj do prawej"
+  },
+  "Table options": {
+    "de": "Tabellenoptionen",
+    "es": "Opciones de tabla",
+    "fr": "Options du tableau",
+    "pt": "Opções da tabela",
+    "zh": "表格选项",
+    "ko": "표 옵션",
+    "vi": "Tùy chọn bảng",
+    "hi": "तालिका विकल्प",
+    "pl": "Opcje tabeli"
+  },
+  "Merged cells are preserved. Reordering and resizing are available for regular tables.": {
+    "de": "Verbundene Zellen bleiben erhalten. Umordnen und Größenänderungen sind bei regulären Tabellen verfügbar.",
+    "es": "Las celdas combinadas se conservan. Las tablas regulares permiten reordenar y cambiar el tamaño.",
+    "fr": "Les cellules fusionnées sont préservées. Les tableaux réguliers permettent de réordonner et redimensionner.",
+    "pt": "As células mescladas são preservadas. Tabelas regulares permitem reordenar e redimensionar.",
+    "zh": "合并单元格会保留。普通表格支持重新排序和调整大小。",
+    "ko": "병합된 셀은 유지됩니다. 일반 표에서 순서와 크기를 변경할 수 있습니다.",
+    "vi": "Các ô đã gộp được giữ nguyên. Bảng thông thường hỗ trợ đổi thứ tự và kích thước.",
+    "hi": "मिले हुए कक्ष सुरक्षित रहते हैं। सामान्य तालिकाओं में क्रम और आकार बदल सकते हैं।",
+    "pl": "Scalone komórki pozostają bez zmian. Zwykłe tabele umożliwiają zmianę kolejności i rozmiaru."
+  },
+  "Resize image": {
+    "de": "Bildgröße ändern",
+    "es": "Cambiar tamaño de imagen",
+    "fr": "Redimensionner l’image",
+    "pt": "Redimensionar imagem",
+    "zh": "调整图片大小",
+    "ko": "이미지 크기 조절",
+    "vi": "Đổi kích thước ảnh",
+    "hi": "चित्र का आकार बदलें",
+    "pl": "Zmień rozmiar obrazu"
+  },
+  "Upload image": {
+    "de": "Bild hochladen",
+    "es": "Subir imagen",
+    "fr": "Importer une image",
+    "pt": "Enviar imagem",
+    "zh": "上传图片",
+    "ko": "이미지 업로드",
+    "vi": "Tải ảnh lên",
+    "hi": "चित्र अपलोड करें",
+    "pl": "Prześlij obraz"
+  },
+  "Image could not be added. Please try again.": {
+    "de": "Das Bild konnte nicht eingefügt werden. Bitte erneut versuchen.",
+    "es": "No se pudo añadir la imagen. Inténtalo de nuevo.",
+    "fr": "Impossible d’ajouter l’image. Réessayez.",
+    "pt": "Não foi possível adicionar a imagem. Tente novamente.",
+    "zh": "无法添加图片，请重试。",
+    "ko": "이미지를 추가할 수 없습니다. 다시 시도하세요.",
+    "vi": "Không thể thêm ảnh. Hãy thử lại.",
+    "hi": "चित्र नहीं जोड़ा जा सका। फिर से प्रयास करें।",
+    "pl": "Nie udało się dodać obrazu. Spróbuj ponownie."
+  },
+  "Inline": {
+    "de": "In der Textzeile",
+    "es": "En línea",
+    "fr": "Dans le texte",
+    "pt": "Na linha",
+    "zh": "行内",
+    "ko": "인라인",
+    "vi": "Trong dòng",
+    "hi": "पंक्ति में",
+    "pl": "W tekście"
+  },
+  "Move image": {
+    "de": "Bild verschieben",
+    "es": "Mover imagen",
+    "fr": "Déplacer l’image",
+    "pt": "Mover imagem",
+    "zh": "移动图片",
+    "ko": "이미지 이동",
+    "vi": "Di chuyển ảnh",
+    "hi": "चित्र खिसकाएँ",
+    "pl": "Przenieś obraz"
+  },
+  "Pick Solid Color": {
+    "de": "Eigene Hintergrundfarbe",
+    "es": "Elegir color sólido",
+    "fr": "Choisir une couleur unie",
+    "pt": "Escolher cor sólida",
+    "zh": "选择纯色",
+    "ko": "단색 선택",
+    "vi": "Chọn màu nền đơn sắc",
+    "hi": "एक रंग चुनें",
+    "pl": "Wybierz jednolity kolor"
+  },
+  "Light background color": {
+    "de": "Hintergrundfarbe im hellen Modus",
+    "es": "Color de fondo del modo claro",
+    "fr": "Couleur de fond du mode clair",
+    "pt": "Cor de fundo do modo claro",
+    "zh": "浅色模式背景色",
+    "ko": "라이트 모드 배경색",
+    "vi": "Màu nền chế độ sáng",
+    "hi": "हल्के मोड का पृष्ठभूमि रंग",
+    "pl": "Kolor tła w trybie jasnym"
+  },
+  "Dark background color": {
+    "de": "Hintergrundfarbe im dunklen Modus",
+    "es": "Color de fondo del modo oscuro",
+    "fr": "Couleur de fond du mode sombre",
+    "pt": "Cor de fundo do modo escuro",
+    "zh": "深色模式背景色",
+    "ko": "다크 모드 배경색",
+    "vi": "Màu nền chế độ tối",
+    "hi": "गहरे मोड का पृष्ठभूमि रंग",
+    "pl": "Kolor tła w trybie ciemnym"
   }
 }

@@ -1,5 +1,6 @@
 
 import json
+import math
 import os
 import shutil
 import time
@@ -19,7 +20,7 @@ pyqtSlot = lambda *args: (lambda method: method)
 try:
     from aqt.qt import (QWidget, QDockWidget, QVBoxLayout, QHBoxLayout, QLabel,
                         QPushButton, QUrl, Qt, QTimer, QIcon, QColor, QCoreApplication)
-    from PyQt6.QtCore import QObject, pyqtSlot
+    from PyQt6.QtCore import QObject, pyqtSlot, QEvent
     from PyQt6.QtWebChannel import QWebChannel
     from PyQt6.QtWebEngineWidgets import QWebEngineView
     from PyQt6.QtWebEngineCore import QWebEnginePage, QWebEngineProfile, QWebEngineSettings, QWebEngineScript
@@ -342,6 +343,41 @@ class MindmapBridge(QObject):
         QTimer.singleShot(0, dispatch)
 
 
+class MapWebView(QWebEngineView):
+    """Keep native trackpad pinch gestures inside the map's canvas zoom."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.installEventFilter(self)
+        self._watch_gesture_widgets()
+
+    def _watch_gesture_widgets(self):
+        try:
+            for child in self.findChildren(QWidget):
+                child.installEventFilter(self)
+        except RuntimeError:
+            pass  # A queued child registration may arrive during teardown.
+
+    def childEvent(self, event):
+        super().childEvent(event)
+        if event.added():
+            QTimer.singleShot(0, self._watch_gesture_widgets)
+
+    def eventFilter(self, watched, event):
+        if event.type() == QEvent.Type.NativeGesture:
+            if event.gestureType() == Qt.NativeGestureType.ZoomNativeGesture:
+                value = float(event.value())
+                if math.isfinite(value):
+                    point = self.mapFromGlobal(event.globalPosition().toPoint())
+                    factor = math.exp(max(-1.0, min(1.0, value)))
+                    self.page().runJavaScript(
+                        f"if(window.__workspacePinchZoom) window.__workspacePinchZoom({factor},{point.x()},{point.y()});"
+                    )
+            event.accept()
+            return True
+        return super().eventFilter(watched, event)
+
+
 # --- Custom WebPage: intercepts mindmap://fullscreen navigation ---
 class MindmapWebPage(QWebEnginePage):
     """Intercepts mindmap:// navigation requests and routes them to the panel."""
@@ -408,7 +444,7 @@ class MindmapPanel(QWidget):
             self.web_layout.addWidget(QLabel(_("Error: QtWebEngine not available.")))
             return
 
-        self.web_view = QWebEngineView()
+        self.web_view = MapWebView()
         
         if QWebEngineProfile is not object:
             old_storage = os.path.join(constants.addon_path, "web_storage")

@@ -5,7 +5,7 @@ from unittest.mock import Mock, patch
 ROOT=Path(__file__).resolve().parents[1]
 
 def load_parts(filename, functions=(), methods=(), env=None):
-    tree=ast.parse((ROOT/filename).read_text()); nodes=[]
+    tree=ast.parse((ROOT/filename).read_text(encoding='utf-8')); nodes=[]
     for node in tree.body:
         if isinstance(node,(ast.FunctionDef,ast.ClassDef)) and node.name in functions: nodes.append(node)
         if isinstance(node,ast.ClassDef):
@@ -17,7 +17,7 @@ def load_parts(filename, functions=(), methods=(), env=None):
 
 class LaunchPersistenceTests(unittest.TestCase):
     def storage(self):
-        return load_parts('notebook_sidebar.py', functions=('SnapshotLoadError','_ensure_db_at','_load_latest_snapshot','_save_snapshot','_valid_snapshot','_snapshot_recovery_path','_load_snapshot_recovery','_clear_snapshot_recovery','_write_snapshot_recovery'))
+        return load_parts('notebook_sidebar.py', functions=('SnapshotLoadError','_ensure_db_at','_load_latest_snapshot','_save_snapshot','_valid_snapshot','_snapshot_recovery_path','_read_snapshot_recovery','_load_snapshot_recovery','_clear_snapshot_recovery','_write_snapshot_recovery'))
 
     def test_new_database_and_successful_roundtrip(self):
         ns=self.storage()

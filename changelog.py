@@ -3,6 +3,129 @@
 
 CHANGELOG = [
     {
+        "version": "1.6.5",
+        "date": "October 29, 2026",
+        "items": [
+            {
+                "tag": "Fixed",
+                "text": "Fixed a recovery issue where a locked older recovery file could hide a newer confirmed Notebook save after reopening. If the saved state cannot be checked safely, a load error is shown and the available sources remain available for recovery."
+            },
+            {
+                "tag": "Highlight",
+                "text": "The Notebook gains expanded block controls, nested pages, breadcrumbs, and drag-and-drop page organization."
+            },
+            {
+                "tag": "New",
+                "text": "Added Heading 3, block insertion, duplication, reordering, and moving blocks to another page."
+            },
+            {
+                "tag": "New",
+                "text": "Added text and background colors, strikethrough, and inline-code formatting controls."
+            },
+            {
+                "tag": "New",
+                "text": "Added a chronological undo/redo history for Notebook edits and page navigation."
+            },
+            {
+                "tag": "New",
+                "text": "Added a heading outline, reusable page templates, and a built-in disease-profile template."
+            },
+            {
+                "tag": "New",
+                "text": "Added saved-version previews, restoring a page as an independent copy, and a direct Notebook export action."
+            },
+            {
+                "tag": "New",
+                "text": "Added persistent pre-update copies of existing Notebook snapshots."
+            },
+            {
+                "tag": "New",
+                "text": "Added table header styling, row and column reordering, column alignment, and adjustable column widths."
+            },
+            {
+                "tag": "New",
+                "text": "Added image-file insertion, alignment, proportional resizing, and moving images within notes."
+            },
+            {
+                "tag": "Improved",
+                "text": "Refined typing, list and to-do editing, focus behavior, and clicks in Notebook page margins. Supported text blocks retain their formatting when split or merged."
+            },
+            {
+                "tag": "Security",
+                "text": "Improved Security in Notebook: fixed an XSS vulnerability in HTML and Markdown-link handling, verified with browser regression tests. Potentially unsafe content triggers a discreet, dismissible security notice; original stored blocks are preserved."
+            },
+            {
+                "tag": "New",
+                "text": "Added a None background option and custom solid background colors for light and dark modes."
+            },
+            {
+                "tag": "Improved",
+                "text": "Refined toolbar backgrounds when switching between the dashboard, deck overview, and reviews."
+            },
+            {
+                "tag": "Improved",
+                "text": "Restored visible, theme-matched scrollbars on the main Dashboard for long deck lists and in the Custom Deck Overview."
+            },
+            {
+                "tag": "Improved",
+                "text": "Unified review-activity charts across the dashboard and deck overview."
+            },
+            {
+                "tag": "Improved",
+                "text": "Trackpad pinch gestures zoom the MindMap and FreeMap canvases without zooming their surrounding controls. Maps recenter after fullscreen changes."
+            },
+            {
+                "tag": "New",
+                "text": "Custom AI Quick Actions can now be edited while preserving their IDs, shortcuts and other settings. Cancelling restores any unfinished new-button draft."
+            },
+            {
+                "tag": "Improved",
+                "text": "Clarified that Quick Actions send card text independently of the context switch used for manually typed questions."
+            },
+            {
+                "tag": "Improved",
+                "text": "Extended translations for the new controls across all ten existing interface languages."
+            },
+            {
+                "tag": "Fixed",
+                "text": "Protected existing Notebook pages with duplicate or missing IDs from ambiguous undo/redo and deletion operations. Newly created pages use collision-checked IDs."
+            },
+            {
+                "tag": "Fixed",
+                "text": "Backspace in an empty toggle title preserves its body, images and original metadata. Completely empty toggles can still become paragraphs and be undone."
+            },
+            {
+                "tag": "Fixed",
+                "text": "Independent Notebook backup copies can still be listed when the main database is damaged or locked. The load-error screen can export a selected readable recovery version to a new file without replacing the original."
+            },
+            {
+                "tag": "Improved",
+                "text": "Fixed SoundCloud playback in newer Qt builds and added a dedicated audio fallback for embedded browsers without AAC support. Playback controls, seeking, playlists and automatic track changes were verified with the live official widget."
+            },
+            {
+                "tag": "Improved",
+                "text": "Release packages exclude generated image drafts, prompt files, profile data, databases and recovery copies."
+            },
+            {
+                "tag": "Improved",
+                "text": "The Notebook page picker supports search. Image dragging includes a preview and can be cancelled before the move is applied."
+            },
+            {
+                "tag": "Improved",
+                "text": "Custom solid backgrounds preserve the Dashboard layout and provide separate light- and dark-mode color controls, including in the native settings fallback."
+            },
+            {
+                "tag": "Improved",
+                "text": "SoundCloud restores the selected volume after widget reloads and pauses and cleans up its additional audio process when switching to local music or closing the profile."
+            },
+            {
+                "tag": "Improved",
+                "text": "Adjusted the Map settings icon and made the AI card-context information popover scrollable in smaller windows."
+            }
+        ]
+    },
+
+    {
         "version": "1.6.0",
         "date": "October 2026",
         "items": [

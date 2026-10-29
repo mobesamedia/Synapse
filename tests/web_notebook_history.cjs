@@ -1,0 +1,24 @@
+const {chromium}=require('playwright'),assert=require('node:assert/strict'),path=require('node:path');
+(async()=>{const browser=await chromium.launch({headless:true,executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'});try{
+ const page=await browser.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));await page.addInitScript(()=>window.pycmd=()=>{});await page.goto('file://'+path.resolve(__dirname,'../web_notebook/index.html'));
+ const original={pages:[{id:'A',title:'Page A',icon:'',blocks:[{type:'text',html:'Original A',extra:'keep'}]},{id:'B',title:'Page B',icon:'',blocks:[{type:'toggle',html:'Original B',body:'Body B',open:true,extra:'keep'}]}],activePageId:'A',folders:[{id:'f',name:'Old section',kind:'section',custom:'keep'}],customRoot:'keep'};
+ const load=()=>page.evaluate(data=>loadContent(JSON.stringify(data)),original);
+ const state=()=>page.evaluate(()=>JSON.parse(__synapseSnapshotForUnload()));
+ const back=()=>page.locator('#notebook-back').click(),forward=()=>page.locator('#notebook-forward').click();
+ await load();await page.locator('#editor > :first-child').fill('Edited A');await back();assert.deepEqual((await state()).pages,original.pages);await forward();assert.equal((await state()).pages[0].blocks[0].html,'Edited A');
+ await page.evaluate(()=>loadPage('B'));await page.locator('#editor .toggle-title').fill('Edited B');
+ await back();assert.equal((await state()).activePageId,'B');assert.deepEqual((await state()).pages[1],original.pages[1]);
+ await back();assert.equal((await state()).activePageId,'A');assert.equal((await state()).pages[0].blocks[0].html,'Edited A');
+ await back();assert.deepEqual((await state()).pages,original.pages);
+ await forward();assert.equal((await state()).pages[0].blocks[0].html,'Edited A');await forward();assert.equal((await state()).activePageId,'B');await forward();assert.equal((await state()).pages[1].blocks[0].html,'Edited B');
+ await back();await page.locator('#editor .toggle-title').fill('New branch B');assert.equal(await page.locator('#notebook-forward').isDisabled(),true);
+ assert.equal((await state()).pages[0].blocks[0].html,'Edited A');assert.equal((await state()).pages[0].blocks[0].extra,'keep');assert.equal((await state()).customRoot,'keep');
+ await load();await page.evaluate(()=>{notebookActionBlock=editor.firstElementChild;notebookOpenMove();});page.once('dialog',d=>d.accept());await page.locator('#notebook-popup').getByRole('button',{name:'Page B',exact:true}).click();await back();assert.deepEqual((await state()).pages,original.pages,'Cross-page move undo restores both complete pages');await forward();assert.equal((await state()).pages[1].blocks.length,2);
+ await load();await page.evaluate(()=>addNotebookSubpage('A'));const created=await state();const id=created.activePageId;assert.notEqual(id,'A');await back();assert.deepEqual((await state()).pages,original.pages);await forward();assert.deepEqual((await state()).pages,created.pages);
+ await load();await page.evaluate(()=>setNotebookParent('B','A'));await back();assert.deepEqual((await state()).pages,original.pages);await forward();assert.equal((await state()).pages[1].parentPageId,'A');
+ page.once('dialog',d=>d.accept());await page.evaluate(()=>deletePage({stopPropagation(){}},'B'));await back();assert.equal((await state()).pages[1].parentPageId,'A');assert.deepEqual((await state()).pages[1].blocks,original.pages[1].blocks);
+ await load();assert.equal(await page.locator('#notebook-back').isDisabled(),true);assert.equal(await page.locator('[onclick="addNotebookSection()"] ').count(),0);assert.equal(await page.locator('[onclick="addNewPage()"] svg').count(),1);assert.equal(await page.locator('[onclick="addFolder()"] svg').count(),1);
+ assert.equal(await page.locator('#searchInput').evaluate(el=>getComputedStyle(el).boxShadow),'none');assert.equal(await page.locator('.sidebar-close-btn').evaluate(el=>getComputedStyle(el).boxShadow),'none');assert.equal(await page.locator('.header-bar').evaluate(el=>el.getBoundingClientRect().height),42);
+ assert.deepEqual((await state()).folders,original.folders);assert.equal((await state()).customRoot,'keep');assert.deepEqual(errors,[]);
+ console.log('PASS chronological edits/navigation, redo/branch, cross-page move, creation, hierarchy/deletion restore, unknown data and compact SVG UI');
+}finally{await browser.close();}})().catch(e=>{console.error(e);process.exitCode=1});

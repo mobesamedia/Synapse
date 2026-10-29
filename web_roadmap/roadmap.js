@@ -1291,6 +1291,7 @@
     scene.addEventListener('pointerup',()=>endGesture());
     scene.addEventListener('pointercancel',()=>endGesture(true));
     scene.addEventListener('lostpointercapture',()=>endGesture());
+    window.__workspacePinchZoom=(factor,x,y)=>{const r=workspace.getBoundingClientRect();if(Number.isFinite(x)&&Number.isFinite(y)&&!workspace.contains(document.elementFromPoint(x,y)))return;zoom(factor,Number.isFinite(x)?x-r.left:r.width/2,Number.isFinite(y)?y-r.top:r.height/2);};
     workspace.addEventListener('wheel',e=> {
         if(e.target.closest('.popover')||edit)return;
         e.preventDefault();

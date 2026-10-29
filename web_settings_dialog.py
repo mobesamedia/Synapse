@@ -722,6 +722,8 @@ if _QT_AVAILABLE:
             if not files:
                 files = ["medical_theme.css"]
             for f in files:
+                if f == "none.css":
+                    continue
                 if f == "custom_solid.css":
                     continue  # represented by the dedicated "Custom Color…" entry
                 if f.startswith("solid_"):
@@ -732,7 +734,7 @@ if _QT_AVAILABLE:
                     label = f.replace(".css", "").replace("_", " ").title()
                 items.append({"value": f, "label": label, "group": "gradient"})
             items.sort(key=lambda i: i["label"])
-            return items
+            return [{"value":"none.css", "label":_("None"), "group":"none"}, {"value":"custom_solid.css", "label":_("Pick Solid Color"), "group":"solid"}] + items
 
         def _changelog(self):
             try:

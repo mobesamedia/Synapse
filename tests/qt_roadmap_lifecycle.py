@@ -111,6 +111,24 @@ try:
         assert automatic == js(panel, '__roadmapSnapshot().data.maps[0].view')
         assert automatic['scale'] == zoom_before
     print('PASS actual embedded-window resize centers Free Map with unchanged zoom', flush=True)
+    for fullscreen in (True, False):
+        js(panel,"document.querySelector('#workspace-full').click()")
+        wait(lambda:panel.is_in_fullscreen==fullscreen)
+        spin(.85)
+        automatic=js(panel,'__roadmapSnapshot().data.maps[0].view')
+        js(panel,"document.querySelector('#center').click()")
+        assert automatic==js(panel,'__roadmapSnapshot().data.maps[0].view')
+        assert automatic['scale']==zoom_before
+    before_objects=js(panel,'__roadmapSnapshot().data.maps[0].objects')
+    center=js(panel,"(()=>{const r=document.querySelector('#workspace').getBoundingClientRect();return [r.left+r.width/2,r.top+r.height/2]})()")
+    local=QtCore.QPoint(round(center[0]),round(center[1]))
+    global_position=panel.web_view.mapToGlobal(local)
+    native=QtGui.QNativeGestureEvent(QtCore.Qt.NativeGestureType.ZoomNativeGesture,QtGui.QPointingDevice.primaryPointingDevice(),2,QtCore.QPointF(local),QtCore.QPointF(local),QtCore.QPointF(global_position),.2,QtCore.QPointF())
+    app.sendEvent(panel.web_view.focusProxy() or panel.web_view,native)
+    wait(lambda:js(panel,'__roadmapSnapshot().data.maps[0].view.scale')>zoom_before)
+    assert panel.web_view.zoomFactor()==1.0
+    assert js(panel,'__roadmapSnapshot().data.maps[0].objects')==before_objects
+    print('PASS real fullscreen enter/exit centers; native Qt trackpad pinch zooms canvas and preserves UI/object data',flush=True)
     wait(lambda: len(module.roadmap_store.load(panel._roadmap_path())['maps']) == 1)
     assert not module.roadmap_store.is_first_use(panel._roadmap_path())
     js(panel, "window.confirm=()=>true;document.querySelector('[data-doc=delete]').click()")

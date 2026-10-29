@@ -8,6 +8,7 @@
      NOT from prefers-color-scheme — that follows the OS, not Anki. */
   html.nightMode { color-scheme: dark; }
   html:has(body.nightMode) { color-scheme: dark; }
+
 </style>
 
     <meta charset="UTF-8">
@@ -56,6 +57,11 @@
         body { margin: 0; padding: 0; font-family: var(--font); color: var(--text); background: var(--bg); display: flex; height: 100vh; overflow: hidden; }
 
         #app { display: flex; width: 100%; height: 100%; }
+        #notebook-security-notice { position: fixed; right: 16px; bottom: 16px; z-index: 10000; display: flex; align-items: flex-start; gap: 12px; width: 380px; max-width: calc(100vw - 32px); padding: 12px 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--sidebar-bg); color: var(--text); box-shadow: 0 3px 16px rgba(0,0,0,.12); font-size: 12px; line-height: 1.5; }
+        #notebook-security-notice[hidden] { display: none; }
+        #notebook-security-notice button { flex-shrink: 0; min-width: 24px; min-height: 24px; padding: 0; border: 0; border-radius: 4px; background: transparent; color: var(--text-gray); cursor: pointer; font-size: 18px; }
+        #notebook-security-notice button:hover { background: var(--hover-bg); }
+        #notebook-security-notice button:focus-visible { outline: 2px solid var(--btn-blue); outline-offset: 2px; }
         
         .main { 
             flex: 1; display: flex; flex-direction: column; 
@@ -77,7 +83,8 @@
 
         .top-search-input {
             flex: 1;
-            max-width: 420px;
+            max-width: 300px;
+            min-width: 0;
             height: 36px;
             border: none;
             border-radius: 6px;
@@ -86,7 +93,7 @@
             background: #ffffff;
             color: #37352f;
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            margin-right: 15px;
+            margin-right: 10px;
             transition: box-shadow 0.2s;
         }
         .top-search-input:focus {
@@ -275,15 +282,16 @@
 
         #editor { min-height: 40px; }
         .block { min-height: 24px; line-height: 1.6; padding: 3px 0; margin-bottom: 2px; font-size: 16px; position: relative; color: var(--text); }
-        .block:empty:focus::before { content: attr(data-placeholder); color: var(--text-gray); pointer-events: none; opacity: 0.3; position: absolute; }
+        .block:not(.bullet):empty:focus::before { content: attr(data-placeholder); color: var(--text-gray); pointer-events: none; opacity: 0.3; position: absolute; }
         
         .block.h1 { font-size: 28px; font-weight: 700; margin-top: 24px; }
+        .block.h3 { font-size: 18px; font-weight: 600; margin-top: 14px; }
         .block.h2 { font-size: 22px; font-weight: 600; margin-top: 18px; }
         
-        .block.bullet { display: flex; align-items: flex-start; }
+        .block.bullet { display:block; padding-left:16px; }
         .block.bullet::before { 
             content: "•"; 
-            margin-right: 10px; 
+            position:absolute; left:0; top:3px; pointer-events:none;
             font-weight: bold; 
             flex-shrink: 0;
             color: var(--text);
@@ -299,11 +307,12 @@
 
         .block.callout {
             background: var(--callout-bg); 
-            padding: 12px; border-radius: 4px; display: flex; gap: 10px; align-items: flex-start;
+            padding: 12px; border-radius: 4px; display: flex; gap: 10px; align-items: center;
             color: var(--callout-text);
         }
-        .callout-icon { user-select: none; font-size: 20px; margin-top: -2px;}
-        .callout-content { flex: 1; outline: none; line-height: 1.5; color: var(--callout-text); }
+        .callout-icon { user-select:none; display:inline-flex; flex-shrink:0; color:#b49144; }
+        .callout-icon svg { width:20px; height:20px; }
+        .callout-content { flex: 1; min-width:0; position:relative; top:1px; outline: none; line-height: 1.5; color: var(--callout-text); }
 
         .block.divider { height: 14px; display: flex; align-items: center; user-select: none; }
         .block.divider hr { width: 100%; border: none; border-bottom: 1px solid var(--divider-color); margin: 0; }
@@ -457,18 +466,6 @@
             outline-offset: 1px;
         }
 
-        /* Subtle grey indicator shown when hovering the gap between two lines.
-           Clicking while it is visible inserts a new line at that position. */
-        #line-insert-indicator {
-            position: fixed;
-            height: 1px;
-            background: rgba(0, 0, 0, 0.13);
-            pointer-events: none;
-            z-index: 6000;
-            display: none;
-        }
-        body.nightMode #line-insert-indicator { background: rgba(255, 255, 255, 0.20); }
-
         /* ---- Global search results ---- */
         #global-search-results {
             position: fixed;
@@ -617,6 +614,111 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
   outline: 2px solid var(--accent, var(--primary-color, #0071d3));
   outline-offset: 2px;
 }
+        /* These overlays do not change note dimensions, typography or wrapping. */
+        #format-toolbar { background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,.12); }
+        #format-toolbar .fmt-btn[aria-pressed="true"] { background: var(--hover-bg); }
+        #format-toolbar .fmt-btn { min-height: 28px; min-width: 28px; font-weight: 500; }
+        #notebook-gutter { position: fixed; display: none; gap: 1px; z-index: 1100; }
+        #notebook-gutter button { width: 23px; height: 25px; border: none; border-radius: 4px; background: var(--bg); color: var(--text-gray); cursor: pointer; font-size: 18px; padding: 0; }
+        #notebook-gutter button:hover { background: var(--hover-bg); color: var(--text); }
+        .nb-popup { position: fixed; display: none; z-index: 6500; width: 240px; max-width: calc(100vw - 16px); max-height: calc(100vh - 16px); overflow-y: auto; box-sizing: border-box; padding: 5px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); box-shadow: 0 6px 24px rgba(0,0,0,.16); font-size: 14px; }
+        .nb-popup button { display: block; width: 100%; text-align: left; border: 0; border-radius: 4px; padding: 7px 9px; min-height: 30px; font: inherit; cursor: pointer; color: inherit; background: transparent; }
+        .nb-popup button[hidden] { display: none; }
+        .nb-popup button:disabled { opacity: .45; cursor: default; }
+        .nb-popup button:hover { background: var(--hover-bg); }
+        .nb-popup button:focus-visible, #notebook-gutter button:focus-visible, .fmt-btn:focus-visible { outline: 2px solid #2383e2; outline-offset: -2px; }
+        .nb-popup input { box-sizing: border-box; width: 100%; padding: 7px; border: 1px solid var(--border); border-radius: 5px; color: var(--text); background: var(--bg); font: inherit; }
+        .nb-menu-label { padding: 8px 9px 4px; color: var(--text-gray); font-size: 12px; }
+        .nb-swatches { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; padding: 4px; }
+        .nb-swatches button { border: 1px solid var(--border); text-align: center; padding: 5px; font-weight: 600; }
+
+        .header-bar { box-sizing: border-box; justify-content: flex-start; }
+        .header-bar > .toggle-btn { margin-left: auto; }
+        .notebook-navigation { display: flex; gap: 2px; flex-shrink: 0; margin-right: 10px; }
+        .notebook-navigation button { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 32px; border: 0; border-radius: 6px; color: var(--text-gray); background: transparent; cursor: pointer; }
+        .notebook-navigation button:hover:not(:disabled) { background: var(--hover-bg); color: var(--text); }
+        .notebook-navigation button:disabled { opacity: .3; cursor: default; }
+        .notebook-navigation button:focus-visible { outline: 2px solid #2383e2; outline-offset: 1px; }
+        @media (max-width: 520px) {
+            .header-bar { padding-inline: 10px; }
+            .recover-btn span { display: none; }
+            .recover-btn { flex-shrink: 0; }
+        }
+        #notebook-breadcrumbs { display:flex; align-items:center; gap:5px; max-width:480px; min-width:0; overflow:hidden; font-size:12px; color:var(--text-gray); margin-right:8px; }
+        #notebook-breadcrumbs[hidden] { display:none; }
+        #notebook-breadcrumbs span, #notebook-breadcrumbs button { white-space:nowrap; text-overflow:ellipsis; overflow:hidden; min-width:0; }
+        #notebook-breadcrumbs button { border:0; background:transparent; color:inherit; padding:4px 2px; cursor:pointer; font:inherit; }
+        #notebook-breadcrumbs button:hover { background:var(--hover-bg); border-radius:4px; }
+        .nb-tree-row { gap:6px; padding-inline:6px; }
+        .nb-tree-row .pin-btn, .nb-tree-row .del-btn { display:none; }
+        .nb-tree-row:hover .pin-btn, .nb-tree-row:hover .del-btn, .nb-tree-row:focus-within .pin-btn, .nb-tree-row:focus-within .del-btn { display:inline; }
+        .nb-tree-toggle { border:0; background:transparent; color:var(--text-gray); padding:0; width:18px; min-width:18px; height:24px; cursor:pointer; }
+        .nb-section-remove { border:0; background:transparent; color:var(--text-gray); cursor:pointer; margin-left:auto; }
+        #page-ctx-menu { max-height:calc(100vh - 16px); overflow-y:auto; max-width:calc(100vw - 16px); }
+        #page-ctx-menu button.ctx-item { border:0; background:transparent; color:inherit; width:100%; font:inherit; cursor:pointer; text-align:left; }
+        #page-ctx-menu button.ctx-item:hover { background:var(--hover-bg); }
+        #page-ctx-menu button[hidden] { display:none; }
+        #page-ctx-menu input { box-sizing:border-box; width:100%; border:1px solid var(--border); border-radius:5px; background:var(--bg); color:var(--text); padding:7px; }
+        @media(max-width:520px) { #notebook-breadcrumbs { max-width:90px; } }
+        #notebook-drop-line { display:none;position:fixed;pointer-events:none;height:2px;border-radius:2px;background:#2383e2;z-index:6500; }
+        .header-bar { height:42px; }
+        .top-search-input { height:28px; padding-inline:10px; font-size:13px; box-shadow:none; transition:none; }
+        .top-search-input:focus { box-shadow:none; outline:1px solid var(--selection); }
+        .toggle-btn { width:28px; height:28px; }
+        .sidebar { padding-top:0; }
+        .sidebar-close-btn { display:flex; align-items:center; justify-content:center; gap:7px; min-height:28px; padding:4px 8px; margin:7px 12px; font-size:13px; box-shadow:none; }
+        .sidebar-item .pin-btn, .sidebar-item .del-btn { border:0; background:transparent; width:24px; height:24px; padding:4px; flex-shrink:0; border-radius:4px; display:inline-flex; align-items:center; justify-content:center; color:var(--text-gray); filter:none; }
+        .sidebar-item .pin-btn { margin-left:auto; }
+        .sidebar-item .pin-btn:hover, .sidebar-item .del-btn:hover { background:var(--hover-bg); }
+        .sidebar-item.pinned .pin-btn { color:var(--text); }
+        .sidebar-item:focus-within .pin-btn, .sidebar-item:focus-within .del-btn { opacity:.65; }
+        .nb-tree-row:hover .pin-btn, .nb-tree-row:hover .del-btn, .nb-tree-row:focus-within .pin-btn, .nb-tree-row:focus-within .del-btn { display:inline-flex; }
+        .sidebar-section-label svg { vertical-align:middle; width:13px; height:13px; }
+        .folder-row.nb-folder-drop { background:var(--hover-bg); outline:2px solid #2383e2; outline-offset:-2px; }
+        .sidebar-item.nb-folder-drop { background:var(--hover-bg);outline:2px solid #2383e2;outline-offset:-2px; }
+        #notebook-sidebar-drop-line { position:fixed;height:2px;background:#2383e2;z-index:7000;pointer-events:none; }
+        .sidebar-item.nb-page-dragging { opacity:.5; }
+        .nb-ui-icon { display:inline-flex; align-items:center; flex-shrink:0; }
+        .folder-row .nb-ui-icon svg, .sidebar-add-btn svg, #page-ctx-menu svg { width:16px;height:16px;flex-shrink:0; }
+        .header-bar > .nb-header-control { margin-left:4px;flex-shrink:0;background:transparent;color:var(--text-gray); }
+        .header-bar > .nb-header-control:hover { background:var(--hover-bg);color:var(--text); }
+        #notebook-outline { position:fixed;z-index:6400;width:220px;max-width:calc(100vw - 16px);max-height:50vh;overflow:auto;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:6px;box-shadow:0 4px 16px rgba(0,0,0,.1); }
+        #notebook-outline button { display:block;width:100%;border:0;background:transparent;color:var(--text-gray);text-align:left;padding:7px 8px;font:13px/1.4 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer;border-radius:4px; }
+        #notebook-outline button:hover, #notebook-outline .nb-outline-current { background:var(--hover-bg);color:var(--text); }
+        #notebook-tools-menu { min-width:180px;max-width:calc(100vw - 16px); }
+        #notebook-dialog { width:760px;max-width:calc(100vw - 32px);max-height:calc(100vh - 48px);box-sizing:border-box;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:12px;padding:18px;overflow:auto; }
+        #notebook-dialog::backdrop { background:rgba(0,0,0,.3); }
+        #notebook-dialog header { display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px; }
+        #notebook-dialog h2 { margin:0;font-size:18px; }
+        #notebook-dialog button, #notebook-dialog select { font:inherit;border:1px solid var(--border);background:var(--bg);color:var(--text);border-radius:5px;padding:7px 10px;cursor:pointer; }
+        #notebook-dialog .nb-dialog-close { display:flex;align-items:center;justify-content:center;padding:5px;border:0; }
+        .nb-dialog-grid { display:grid;grid-template-columns:200px minmax(0,1fr);gap:18px; }
+        .nb-dialog-list { display:flex;flex-direction:column;gap:4px;max-height:55vh;overflow:auto; }
+        #notebook-dialog .nb-dialog-list button { border:0;text-align:left;font-size:12px; }
+        #notebook-dialog button:hover, #notebook-dialog button.active { background:var(--hover-bg); }
+        #notebook-dialog .nb-primary { background:#2383e2;color:white;border-color:#2383e2;margin:0 0 12px; }
+        #notebook-dialog select { display:block;width:100%;margin-bottom:10px; }
+        .nb-readonly-preview { padding:12px;border:1px solid var(--border);border-radius:6px;max-height:48vh;overflow:auto;overflow-wrap:anywhere; }
+        .nb-readonly-preview h3 { font-size:20px;margin:0 0 12px; }
+        .nb-readonly-preview .block { font-size:14px; }
+        .nb-readonly-preview .block.h1 { font-size:24px; }
+        .nb-readonly-preview .block.h2 { font-size:20px; }
+        .nb-readonly-preview .block.h3 { font-size:16px; }
+        .sidebar-item { min-height:34px;box-sizing:border-box;gap:7px; }
+        .sidebar-item-time { opacity:.5; }
+        @media(max-width:520px) { .nb-dialog-grid { grid-template-columns:1fr;gap:12px; } .nb-dialog-list { max-height:130px; } .nb-readonly-preview { max-height:32vh; } .header-bar > .nb-header-control { margin-left:2px; } }
+        #notebook-outline-toggle { margin-left:auto; }
+        .header-bar > .toggle-btn:last-child { margin-left:4px;flex-shrink:0; }
+
+        .simple-table.nb-table-header > :is(thead,tbody):first-child > tr:first-child > *, .simple-table.nb-table-header > tr:first-child > * { font-weight:600;background:var(--hover-bg); }
+        .simple-table.nb-table-header th { border:1px solid var(--table-border);padding:8px;vertical-align:top;min-width:40px;color:var(--text); }
+        .nb-column-resize { position:fixed;width:8px;border:0;padding:0;background:transparent;cursor:col-resize;z-index:6400; }
+        .nb-column-resize:hover,.nb-column-resize:focus-visible { background:rgba(35,131,226,.3);outline:none; }
+        #notebook-media-guide { position:fixed;background:#2383e2;pointer-events:none;z-index:6800; }
+        #notebook-image-frame { position:fixed;border:1px solid #2383e2;box-sizing:border-box;pointer-events:none;z-index:6400; }
+        .nb-image-size { position:absolute;right:-5px;bottom:-5px;width:10px;height:10px;padding:0;border:1px solid #2383e2;border-radius:2px;background:var(--bg);cursor:nwse-resize;pointer-events:auto; }
+        #image-toolbar { max-width:calc(100vw - 8px);flex-wrap:wrap; }
+        #image-toolbar .tbl-btn { white-space:nowrap; }
 </style>
 </head>
 <body>
@@ -641,6 +743,7 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
                 <div class="cmenu-item" onclick="convertSelectedBlocks('text')" data-i18n="block_text">Text</div>
                 <div class="cmenu-item" onclick="convertSelectedBlocks('h1')" data-i18n="block_h1">Heading 1</div>
                 <div class="cmenu-item" onclick="convertSelectedBlocks('h2')" data-i18n="block_h2">Heading 2</div>
+                <div class="cmenu-item" onclick="convertSelectedBlocks('h3')" data-i18n="block_h3">Heading 3</div>
                 <div class="cmenu-item" onclick="convertSelectedBlocks('bullet')" data-i18n="block_list">List</div>
                 <div class="cmenu-item" onclick="convertSelectedBlocks('todo')" data-i18n="block_todo">To-Do</div>
                 <div class="cmenu-item" onclick="convertSelectedBlocks('quote')" data-i18n="block_quote">Quote</div>
@@ -654,13 +757,18 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
         <button class="tbl-btn" onclick="resizeImg(25)">25%</button>
         <button class="tbl-btn" onclick="resizeImg(50)">50%</button>
         <button class="tbl-btn" onclick="resizeImg(100)">100%</button>
-        <button class="tbl-btn del" onclick="deleteImg()">Delete</button>
+        <button class="tbl-btn" onclick="notebookAlignImage('left')" data-i18n-title="align_left" title="Align left" aria-label="Align left" data-i18n-aria-label="align_left" data-notebook-icon="alignLeft"></button>
+        <button class="tbl-btn" onclick="notebookAlignImage('center')" data-i18n-title="align_center" title="Align center" aria-label="Align center" data-i18n-aria-label="align_center" data-notebook-icon="alignCenter"></button>
+        <button class="tbl-btn" onclick="notebookAlignImage('right')" data-i18n-title="align_right" title="Align right" aria-label="Align right" data-i18n-aria-label="align_right" data-notebook-icon="alignRight"></button>
+        <button class="tbl-btn" onclick="notebookAlignImage('inline')" data-i18n="inline_image">Inline</button>
+        <button class="tbl-btn" onpointerdown="notebookBeginImageMove(event)" data-i18n="move_image">Move image</button>
+        <button class="tbl-btn del" onclick="deleteImg()" data-i18n="delete">Delete</button>
     </div>
 
     <div id="format-toolbar">
-        <button class="fmt-btn" onmousedown="format('bold')">B</button>
-        <button class="fmt-btn" onmousedown="format('italic')" style="font-style:italic">i</button>
-        <button class="fmt-btn" onmousedown="format('underline')" style="text-decoration:underline">U</button>
+        <button class="fmt-btn" title="Bold" data-i18n-title="bold" data-command="bold" onmousedown="event.preventDefault(); format('bold')">B</button>
+        <button class="fmt-btn" title="Italic" data-i18n-title="italic" data-command="italic" onmousedown="event.preventDefault(); format('italic')" style="font-style:italic">i</button>
+        <button class="fmt-btn" title="Underline" data-i18n-title="underline" data-command="underline" onmousedown="event.preventDefault(); format('underline')" style="text-decoration:underline">U</button>
         <div style="width:1px;height:16px;background:rgba(128,128,128,0.35);margin:0 2px"></div>
         <button class="fmt-btn" onmousedown="event.preventDefault(); showLinkPopup()" title="Link (Ctrl+K)" data-i18n-title="link_title" style="display:inline-flex;align-items:center;padding:4px 7px">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
@@ -668,20 +776,22 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
         <button class="fmt-btn" onmousedown="event.preventDefault(); coverSelection()" title="Cover for learning" data-i18n-title="cover_title" style="display:inline-flex;align-items:center;padding:4px 7px">
             <svg width="16" height="14" viewBox="0 0 24 24" style="pointer-events:none"><rect x="3" y="6" width="18" height="12" rx="2" fill="#e3d4b3"/></svg>
         </button>
-        <div class="color-picker">
-            <div class="color-dot" style="background:#e03e3e" onmousedown="formatColor('#e03e3e')"></div>
-            <div class="color-dot" style="background:#d9730d" onmousedown="formatColor('#d9730d')"></div>
-            <div class="color-dot" style="background:#dfab01" onmousedown="formatColor('#dfab01')"></div>
-            <div class="color-dot" style="background:#0f7b6c" onmousedown="formatColor('#0f7b6c')"></div>
-            <div class="color-dot" style="background:#0b6e99" onmousedown="formatColor('#0b6e99')"></div>
-            <div class="color-dot" style="background:#6940a5" onmousedown="formatColor('#6940a5')"></div>
-            <div class="color-dot" style="background:var(--text); border:1px solid #777" onmousedown="formatColor('inherit')"></div>
-        </div>
+        <button class="fmt-btn" onmousedown="event.preventDefault(); openNotebookColors(this, false)" title="Color" data-i18n-title="color">A ▾</button>
+        <button class="fmt-btn" onmousedown="event.preventDefault(); notebookInline('strikeThrough')" title="Strikethrough" data-i18n-title="strikethrough"><s>S</s></button>
+        <button class="fmt-btn" onmousedown="event.preventDefault(); notebookInline('code')" title="Inline code" data-i18n-title="inline_code">&lt;/&gt;</button>
     </div>
 
     <div id="app">
         <div class="main">
             <div class="header-bar">
+                <nav class="notebook-navigation" aria-label="Page history" data-i18n-aria-label="page_history">
+                    <button id="notebook-back" type="button" onclick="navigateNotebook(-1)" disabled title="Go Back" data-i18n-title="go_back" aria-label="Go Back" data-i18n-aria-label="go_back">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m7-7-7 7 7 7"/></svg>
+                    </button>
+                    <button id="notebook-forward" type="button" onclick="navigateNotebook(1)" disabled title="Go Forward" data-i18n-title="go_forward" aria-label="Go Forward" data-i18n-aria-label="go_forward">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>
+                    </button>
+                </nav>
                 <input type="text" 
                        id="searchInput"
                        class="top-search-input" 
@@ -690,11 +800,14 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
                        oninput="handleSearchInput(this.value)"
                        onkeydown="handleSearchKey(event)">
                 
+                <nav id="notebook-breadcrumbs" hidden aria-label="Breadcrumb" data-i18n-aria-label="breadcrumb"></nav>
                 <button id="recoverBtn" class="recover-btn" onclick="recoverAllCovers()" title="Cover all revealed terms again" data-i18n-title="recover_covers_title">
                     <svg width="15" height="13" viewBox="0 0 24 24" style="flex-shrink:0"><rect x="3" y="6" width="18" height="12" rx="2" fill="currentColor"/></svg>
                     <span data-i18n="cover_title">Cover for learning</span>
                 </button>
-                <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+                <button id="notebook-outline-toggle" class="toggle-btn nb-header-control" onclick="toggleNotebookOutline()" title="Contents" data-i18n-title="contents" aria-label="Contents" data-i18n-aria-label="contents" aria-expanded="false" data-notebook-icon="contents"></button>
+                <button id="notebook-tools-toggle" class="toggle-btn nb-header-control" onclick="toggleNotebookTools()" title="Notebook actions" data-i18n-title="notebook_actions" aria-label="Notebook actions" data-i18n-aria-label="notebook_actions" data-notebook-icon="more"></button>
+                <button class="toggle-btn" onclick="toggleSidebar()" aria-label="Pages" data-notebook-icon="sidebar"></button>
             </div>
             
             <div class="scroll-wrapper" onclick="clearSearchOnInteraction()">
@@ -722,10 +835,10 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
         </div>
 
         <div class="sidebar closed" id="sidebar">
-            <button class="sidebar-close-btn" onclick="toggleSidebar()" data-i18n="close">Close</button>
+            <button class="sidebar-close-btn" onclick="toggleSidebar()"><span class="nb-ui-icon" data-notebook-icon="sidebar"></span><span data-i18n="close">Close</span></button>
             <div class="sidebar-list" id="sidebar-list"></div>
-            <div class="sidebar-add-btn" onclick="addNewPage()"><span>+</span> <span data-i18n="new_page">New Page</span></div>
-            <div class="sidebar-add-btn" style="margin-top:0; border-top:none; padding-top:4px;" onclick="addFolder()"><span>+</span> 📁 <span data-i18n="new_folder">New Folder</span></div>
+            <div class="sidebar-add-btn" onclick="addNewPage()"><span class="nb-ui-icon" data-notebook-icon="page"></span> <span data-i18n="new_page">New Page</span></div>
+            <div class="sidebar-add-btn" style="margin-top:0; border-top:none; padding-top:4px;" onclick="addFolder()"><span class="nb-ui-icon" data-notebook-icon="folder"></span> <span data-i18n="new_folder">New Folder</span></div>
         </div>
     </div>
 
@@ -733,6 +846,7 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
         <div class="menu-item" onclick="convertBlock('text')"><span data-i18n="block_text">Text</span> <span class="menu-shortcut">/text</span></div>
         <div class="menu-item" onclick="convertBlock('h1')"><span data-i18n="block_h1">Heading 1</span> <span class="menu-shortcut">/h1</span></div>
         <div class="menu-item" onclick="convertBlock('h2')"><span data-i18n="block_h2">Heading 2</span> <span class="menu-shortcut">/h2</span></div>
+        <div class="menu-item" onclick="convertBlock('h3')"><span data-i18n="block_h3">Heading 3</span> <span class="menu-shortcut">/h3</span></div>
         <div class="menu-item" onclick="convertBlock('bullet')"><span data-i18n="block_list">List</span> <span class="menu-shortcut">/list</span></div>
         <div class="menu-item" onclick="convertBlock('todo')"><span data-i18n="block_todo">To-Do</span> <span class="menu-shortcut">/todo</span></div>
         <div class="menu-item" onclick="convertBlock('quote')"><span data-i18n="block_quote">Quote</span> <span class="menu-shortcut">/quote</span></div>
@@ -752,6 +866,10 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
     </div>
 
     <div id="page-ctx-menu"></div>
+    <div id="notebook-security-notice" hidden>
+        <span role="status" data-i18n="security_notice">For your safety, potentially unsafe HTML was kept as text or removed. It could otherwise run code. Normal text and safe links still work.</span>
+        <button type="button" aria-label="Dismiss" data-i18n-aria-label="dismiss" onclick="this.parentElement.hidden = true">×</button>
+    </div>
 
     <script>
         const EMOJI_LIST = ("📚 📖 📘 📙 📗 📕 📓 📔 📒 📝 ✏️ ✒️ 🖊️ 🖋️ 🖍️ 🖌️ ✍️ 📐 📏 🔖 🏷️ 📌 📎 🖇️ 📁 📂 🗂️ 🗃️ 🗄️ 📄 📃 📑 📋 🗒️ 🧾 " +
@@ -763,6 +881,7 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
 
         let appState = { activePageId: null, sidebarOpen: true, pages: [] };
         let selectedImg = null;
+        const storedBlocks = new WeakMap();
         
         const editor = document.getElementById('editor');
         const titleEl = document.getElementById('title');
@@ -778,6 +897,75 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
         const imgToolbar = document.getElementById('image-toolbar');
         const searchInput = document.getElementById('searchInput');
         const ADDON = "notion_mini";
+        // Navigation is session-only UI state, never part of the saved notebook.
+        document.querySelectorAll('[data-i18n-aria-label]').forEach(el => el.setAttribute('aria-label', i18nGet(el.dataset.i18nAriaLabel, el.getAttribute('aria-label'))));
+        // Session-only chronological history. Entries retain changed pages and
+        // metadata, never replace unrelated page content during an undo.
+        let notebookActions = [], notebookActionIndex = 0, notebookCheckpoint = null;
+        let notebookHistoryReplay = false, notebookSeparateAction = false;
+        function notebookHistoryHasUniqueIds() {
+            const ids = new Set();
+            return appState.pages.every(page => {
+                if (!page || typeof page.id !== 'string' || !page.id || ids.has(page.id)) return false;
+                ids.add(page.id); return true;
+            });
+        }
+        function notebookResetUnsafeHistory() {
+            // Legacy IDs and page references remain untouched. Never reconstruct
+            // these pages through a Map that could silently collapse originals.
+            notebookActions = []; notebookActionIndex = 0; notebookCheckpoint = null;
+            updateNotebookNavigation();
+        }
+        function captureNotebookCheckpoint() {
+            return {pages:new Map(appState.pages.map(page=>[page.id,JSON.stringify(page)])),order:appState.pages.map(page=>page.id),root:new Map(Object.entries(appState).filter(([key])=>key!=='pages'&&key!=='sidebarOpen').map(([key,value])=>[key,JSON.stringify(value)]))};
+        }
+        function updateNotebookNavigation() {
+            document.getElementById('notebook-back').disabled = notebookActionIndex === 0;
+            document.getElementById('notebook-forward').disabled = notebookActionIndex >= notebookActions.length;
+        }
+        function recordNotebookAction() {
+            if(notebookHistoryReplay)return;
+            if(!notebookHistoryHasUniqueIds()){notebookResetUnsafeHistory();return;}
+            const next=captureNotebookCheckpoint(),previous=notebookCheckpoint;
+            if(!previous){notebookCheckpoint=next;updateNotebookNavigation();return;}
+            const pages=[],root=[];
+            for(const id of new Set([...previous.pages.keys(),...next.pages.keys()]))if(previous.pages.get(id)!==next.pages.get(id))pages.push({id,before:previous.pages.get(id),after:next.pages.get(id)});
+            for(const key of new Set([...previous.root.keys(),...next.root.keys()]))if(previous.root.get(key)!==next.root.get(key))root.push({key,before:previous.root.get(key),after:next.root.get(key)});
+            if(!pages.length&&!root.length&&JSON.stringify(previous.order)===JSON.stringify(next.order))return;
+            const now=Date.now(),last=notebookActions[notebookActionIndex-1];
+            const edit=pages.length===1&&!root.length&&JSON.stringify(previous.order)===JSON.stringify(next.order);
+            if(edit&&!notebookSeparateAction&&notebookActionIndex===notebookActions.length&&last?.edit&&last.pages[0].id===pages[0].id&&now-last.time<700){
+                last.pages[0].after=pages[0].after;last.time=now;
+            }else{
+                notebookActions.length=notebookActionIndex;
+                notebookActions.push({pages,root,beforeOrder:previous.order,afterOrder:next.order,edit,time:now});
+                if(notebookActions.length>100)notebookActions.shift();
+                notebookActionIndex=notebookActions.length;
+            }
+            notebookSeparateAction=false;notebookCheckpoint=next;updateNotebookNavigation();
+        }
+        function rememberNotebookPage() { recordNotebookAction(); }
+        function navigateNotebook(direction) {
+            if(direction!==-1&&direction!==1)return;
+            if(!notebookHistoryHasUniqueIds()){notebookResetUnsafeHistory();return;}
+            clearTimeout(undoDebounceTimer);cancelNotebookBlockDrag();saveCurrentEditorToState();recordNotebookAction();
+            const index=direction<0?notebookActionIndex-1:notebookActionIndex;
+            const action=notebookActions[index];if(!action)return;
+            const side=direction<0?'before':'after';
+            notebookHistoryReplay=true;
+            try{
+                const pages=new Map(appState.pages.map(page=>[page.id,page]));
+                action.pages.forEach(change=>{if(change[side]===undefined)pages.delete(change.id);else pages.set(change.id,JSON.parse(change[side]));});
+                appState.pages=action[side+'Order'].filter(id=>pages.has(id)).map(id=>pages.get(id));
+                action.root.forEach(change=>{if(change[side]===undefined)delete appState[change.key];else appState[change.key]=JSON.parse(change[side]);});
+                if(!appState.pages.some(page=>page.id===appState.activePageId))appState.activePageId=appState.pages[0]?.id;
+                if(appState.activePageId)loadPage(appState.activePageId,false);
+                notebookActionIndex+=direction;
+                notebookCheckpoint=captureNotebookCheckpoint();notebookSeparateAction=false;
+                saveDirty=true;saveRevision++;clearTimeout(saveTimeout);saveTimeout=setTimeout(persistNow,800);
+            }finally{notebookHistoryReplay=false;updateNotebookNavigation();}
+        }
+
         let saveTimeout = null;
         let saveDirty = false;
         let saveRevision = 0;
@@ -793,8 +981,9 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
         let undoDebounceTimer = null;
 
         function pushUndoSnapshot() {
-            if (suppressUndoSnapshot) return;
+            if (suppressUndoSnapshot || notebookHistoryReplay) return;
             saveCurrentEditorToState();
+            recordNotebookAction(); notebookSeparateAction = true;
             const page = appState.pages.find(p => p.id === appState.activePageId);
             if (!page) return;
             undoStack.push(JSON.stringify({ pageId: page.id, title: page.title, icon: page.icon, blocks: JSON.parse(JSON.stringify(page.blocks)) }));
@@ -808,6 +997,7 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
         }
 
         function applySnapshot(snapshot) {
+            cancelNotebookBlockDrag();
             suppressUndoSnapshot = true;
             const data = JSON.parse(snapshot);
             const page = appState.pages.find(p => p.id === data.pageId);
@@ -818,7 +1008,7 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
             titleEl.innerText = page.title;
             setIconDisplay(page.icon);
             editor.innerHTML = '';
-            page.blocks.forEach(b => { if (b && typeof b === 'object') editor.appendChild(createBlock(b.type, b.html, b.checked || false, b.open !== false, b.body || '')); });
+            page.blocks.forEach(b => { if (b && typeof b === 'object') editor.appendChild(createStoredBlock(b)); });
             renderSidebar();
             resetCoversOnLoad();
             refreshPageLinks();
@@ -851,13 +1041,18 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
         }
 
         function initApp(loadedData) {
+            notebookResetAuxiliaryUi();
+            clearNotebookSidebarDrag();
+            notebookActions = []; notebookActionIndex = 0; notebookCheckpoint = null; notebookHistoryReplay = false; notebookSeparateAction = false;
+            notebookCollapsedPages.clear();notebookHoverFolders.clear();
             if (Array.isArray(loadedData) || (loadedData && loadedData.blocks && !loadedData.pages)) {
                 const oldBlocks = Array.isArray(loadedData) ? loadedData : (loadedData.blocks || []);
                 const newId = Date.now().toString();
                 appState.pages = [{ id: newId, title: loadedData.title||"My Notes", icon: '📄', blocks: oldBlocks }];
                 appState.activePageId = newId;
-            } else if (loadedData && loadedData.pages && loadedData.pages.length > 0) {
+            } else if (loadedData && Array.isArray(loadedData.pages)) {
                 appState = loadedData;
+                if (!appState.pages.length) { addNewPage(false); return; }
             } else {
                 addNewPage(false); return;
             }
@@ -881,10 +1076,13 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
             sidebar.classList.add('closed');
         }
 
-        function addNewPage(doSave = true) {
+        function addNewPage(doSave = true, parentId = null) {
             if (appState.activePageId) saveCurrentEditorToState();
-            const newId = Date.now().toString();
+            let newId;
+            do { newId = window.crypto?.randomUUID?.() || ('p-' + Date.now() + '-' + Math.random().toString(36).slice(2)); }
+            while (appState.pages.some(page => page.id === newId));
             const newPage = { id: newId, title: '', icon: '📄', blocks: [{ type: 'text', html: '' }] };
+            if (parentId && appState.pages.some(page => page.id === parentId)) newPage.parentPageId = parentId;
             appState.pages.push(newPage);
             appState.activePageId = newId;
             renderSidebar();
@@ -894,7 +1092,11 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
 
         function loadPage(pageId, saveCurrent = true) {
             if (!appState.pages.some(p => p.id === pageId)) return;
-            if (saveCurrent) saveCurrentEditorToState();
+            notebookResetMediaUi();
+            clearNotebookSidebarDrag();
+            notebookEditingBlock = null; notebookHoveredBlock = null;
+            cancelNotebookBlockDrag(); notebookClosePopup(); notebookHideGutter();
+            if (saveCurrent) { saveCurrentEditorToState(); recordNotebookAction(); }
             // A page is an undo boundary. Cancel snapshots from the previous
             // editor before changing its identity; never replay them here.
             clearTimeout(undoDebounceTimer);
@@ -905,6 +1107,8 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
             clearSearchHighlights();
 
             appState.activePageId = pageId;
+            const ancestors = notebookParentMap(); let ancestor = pageId;
+            while(ancestors.has(ancestor)){ancestor=ancestors.get(ancestor);notebookCollapsedPages.delete(ancestor);}
             const page = appState.pages.find(p => p.id === pageId);
             if (!page) return;
 
@@ -912,16 +1116,20 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
             setIconDisplay(page.icon);
             editor.innerHTML = '';
             if (!page.blocks || page.blocks.length === 0) {
-                 editor.appendChild(createBlock('text'));
+                 const placeholder = createBlock('text');
+                 storedBlocks.set(placeholder, {data: {}, signature: blockSignature(placeholder), omitWhenUnchanged: true});
+                 editor.appendChild(placeholder);
             } else {
                 page.blocks.forEach(b => {
-                    editor.appendChild(createBlock(b.type, b.html, b.checked || false, b.open !== false, b.body || ''));
+                    editor.appendChild(createStoredBlock(b));
                 });
             }
             renderSidebar();
             resetCoversOnLoad();
             refreshPageLinks();
             pushUndoSnapshot(); // Initial state also covers the first short edit.
+            rememberNotebookPage(pageId);
+            if(typeof notebookUpdateOutline==='function')notebookUpdateOutline();
         }
 
         function saveCurrentEditorToState() {
@@ -930,10 +1138,17 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
 
             const page = appState.pages.find(p => p.id === appState.activePageId);
             if (!page) return;
+            const before = JSON.stringify([page.title || '', page.icon || '', page.blocks]);
             page.title = titleEl.innerText;
             page.icon = iconEl.style.display === 'none' ? '' : iconEl.innerText;
             const blocks = [];
             Array.from(editor.children).forEach(child => {
+                const stored = storedBlocks.get(child);
+                if (stored && stored.signature === blockSignature(child)) {
+                    if (!stored.omitWhenUnchanged) blocks.push(JSON.parse(JSON.stringify(stored.data)));
+                    return;
+                }
+                const start = blocks.length;
                 if (child.classList.contains('todo-wrapper')) {
                     blocks.push({
                         type: 'todo',
@@ -943,7 +1158,9 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
                 } else if (child.classList.contains('divider')) {
                     blocks.push({ type: 'divider', html: '' });
                 } else if (child.classList.contains('table-container')) {
-                    blocks.push({ type: 'table', html: sanitizeUserHtml(child.querySelector('table').innerHTML) });
+                    const table=child.querySelector('table'),baseline=notebookTableBaseline.get(child);
+                    const html=stored && baseline===table.innerHTML ? stored.data.html : sanitizeUserHtml(table.innerHTML);
+                    blocks.push({type:'table',html,...(notebookTableOptions.has(child)?{tableOptions:JSON.parse(JSON.stringify(notebookTableOptions.get(child)))}:{})});
                 } else if (child.classList.contains('callout')) {
                     blocks.push({ type: 'callout', html: sanitizeUserHtml(child.querySelector('.callout-content').innerHTML) });
                 } else if (child.classList.contains('toggle')) {
@@ -957,20 +1174,41 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
                     let type = 'text';
                     if (child.classList.contains('h1')) type = 'h1';
                     if (child.classList.contains('h2')) type = 'h2';
+                    if (child.classList.contains('h3')) type = 'h3';
                     if (child.classList.contains('bullet')) type = 'bullet';
                     if (child.classList.contains('quote')) type = 'quote';
                     if (child.classList.contains('code')) type = 'code';
-                    blocks.push({ type: type, html: sanitizeUserHtml(child.innerHTML) });
+                    blocks.push({ type: stored?.data.type || type, html: sanitizeUserHtml(child.innerHTML) });
                 }
+                if (stored && blocks.length > start) {
+                    for (const key of ['html', 'body']) {
+                        if (typeof stored.data[key] === 'string' && blocks[start][key] === sanitizeUserHtml(stored.data[key])) blocks[start][key] = stored.data[key];
+                    }
+                    blocks[start] = { ...stored.data, ...blocks[start] };
+                }
+                if (blocks.length > start) {storedBlocks.set(child, { data: blocks[start], signature: blockSignature(child) });if(child.classList.contains('table-container'))notebookTableBaseline.set(child,child.querySelector('table').innerHTML);}
             });
             page.blocks = blocks;
-            page.updatedAt = Date.now();
+            if (before !== JSON.stringify([page.title || '', page.icon || '', page.blocks])) page.updatedAt = Date.now();
         }
 
         function deletePage(e, id) {
             e.stopPropagation();
+            // A legacy collision must never turn one delete click into the
+            // deletion of several original pages with the same stored ID.
+            if (appState.pages.filter(page => page.id === id).length !== 1) return;
             if(!confirm(window.__SYNAPSE_I18N__?.delete_page_confirm || "Delete this page?")) return;
+            // Delete only the chosen page. Its direct children keep all content
+            // and become siblings in the nearest surviving container.
+            const removed = appState.pages.find(page => page.id === id);
+            const parent = notebookParentMap().get(id);
+            appState.pages.forEach(page => {
+                if (page.parentPageId !== id) return;
+                if (parent) page.parentPageId = parent; else delete page.parentPageId;
+                if (!page.folderId && removed?.folderId) page.folderId = removed.folderId;
+            });
             appState.pages = appState.pages.filter(p => p.id !== id);
+            updateNotebookNavigation();
             if (appState.pages.length === 0) addNewPage(true);
             else {
                 if (appState.activePageId === id) loadPage(appState.pages[0].id, false);
@@ -1026,12 +1264,18 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
                               .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
         }
 
+        function notebookUiIcon(type) {
+            const paths={folder:'<path d="M3 7V5a2 2 0 0 1 2-2h5l2 3h7a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"/>',page:'<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9Z"/><path d="M14 3v6h6M8 14h8M8 17h5"/>',pin:'<path d="m16 3 5 5-4 2-2 5-2 2-6-6 2-2 5-2Z"/><path d="m7 17-4 4"/>',close:'<path d="m6 6 12 12M18 6 6 18"/>',trash:'<path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7"/>',bulb:'<path d="M9 18h6M10 21h4M8 14a6 6 0 1 1 8 0c-1 1-1 2-1 4H9c0-2 0-3-1-4Z"/>',alignLeft:'<path d="M4 5h16M4 10h10M4 15h16M4 20h10"/>',alignCenter:'<path d="M4 5h16M7 10h10M4 15h16M7 20h10"/>',alignRight:'<path d="M4 5h16M10 10h10M4 15h16M10 20h10"/>',contents:'<path d="M9 6h12M9 12h12M9 18h12M3 6h1M3 12h1M3 18h1"/>',more:'<circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/>',sidebar:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M15 4v16"/>'};
+            return '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+paths[type]+'</svg>';
+        }
+        document.querySelectorAll('[data-notebook-icon]').forEach(el=>el.innerHTML=notebookUiIcon(el.dataset.notebookIcon));
         function ensureFolders() {
             if (!Array.isArray(appState.folders)) appState.folders = [];
         }
 
         function buildSidebarItem(page, inFolder) {
             const div = document.createElement('div');
+            div.dataset.pageId = page.id;
             div.className = 'sidebar-item'
                 + (page.id === appState.activePageId ? ' active' : '')
                 + (page.pinned ? ' pinned' : '')
@@ -1056,16 +1300,20 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
                     <span class="page-name">${escHtml(page.title || i18nGet('untitled', 'Untitled'))}</span>
                     ${timeStr ? `<span class="sidebar-item-time">${timeStr}</span>` : ''}
                 </div>
-                <span class="pin-btn" title="${escHtml(pinTitle)}" onclick="togglePin(event, '${page.id}')">📌</span>
-                <span class="del-btn" onclick="deletePage(event, '${page.id}')">×</span>
+                <button type="button" class="pin-btn" title="${escHtml(pinTitle)}" aria-label="${escHtml(pinTitle)}" aria-pressed="${!!page.pinned}" onclick="togglePin(event, '${page.id}')">${notebookUiIcon('pin')}</button>
+                <button type="button" class="del-btn" title="${i18nGet('delete','Delete')}" aria-label="${i18nGet('delete','Delete')}" onclick="deletePage(event, '${page.id}')">${notebookUiIcon('close')}</button>
             `;
+            enableNotebookPageDrag(div, page.id);
             return div;
         }
 
         function renderSidebar() {
             ensureFolders();
             sidebarList.innerHTML = '';
-            const byUpdated = (a, b) => (b.updatedAt || 0) - (a.updatedAt || 0);
+            renderNotebookBreadcrumbs();
+            const parents = notebookParentMap();
+            if (parents.size) { renderHierarchicalSidebar(parents); return; }
+            const byUpdated = notebookSidebarCompare;
             const folderIds = new Set(appState.folders.map(f => f.id));
             const pinned = appState.pages.filter(p => p.pinned).sort(byUpdated);
             const loose  = appState.pages.filter(p =>
@@ -1075,7 +1323,7 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
             if (pinned.length) {
                 const label = document.createElement('div');
                 label.className = 'sidebar-section-label';
-                label.textContent = '📌 ' + i18nGet('pinned', 'Pinned');
+                label.innerHTML = notebookUiIcon('pin') + ' ' + escHtml(i18nGet('pinned', 'Pinned'));
                 sidebarList.appendChild(label);
                 pinned.forEach(p => sidebarList.appendChild(buildSidebarItem(p, false)));
             }
@@ -1083,13 +1331,13 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
             // ── Folders ──
             appState.folders.forEach(folder => {
                 const kids = appState.pages.filter(p =>
-                    !p.pinned && p.folderId === folder.id).sort(byUpdated);
-                const isOpen = folder.open !== false;
+                    p.folderId === folder.id).sort(byUpdated);
+                const isOpen = folder.open !== false || notebookHoverFolders.has(folder.id);
                 const row = document.createElement('div');
                 row.className = 'folder-row';
                 row.innerHTML = `
                     <span class="folder-arrow ${isOpen ? 'open' : ''}">▶</span>
-                    <span>${isOpen ? '📂' : '📁'}</span>
+                    <span class="nb-ui-icon">${notebookUiIcon('folder')}</span>
                     <span class="folder-name">${escHtml(folder.name)}</span>
                     <span class="folder-count">${kids.length}</span>
                     <span class="del-btn" title="${i18nGet('delete', 'Delete')}"
@@ -1097,13 +1345,14 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
                 `;
                 row.onclick = (e) => {
                     if (e.target.classList.contains('del-btn')) return;
-                    folder.open = folder.open === false;
+                    const open=folder.open!==false||notebookHoverFolders.has(folder.id);notebookHoverFolders.delete(folder.id);folder.open = !open;
                     renderSidebar(); triggerSave();
                 };
                 row.ondblclick = (e) => {
                     if (e.target.classList.contains('del-btn')) return;
                     e.preventDefault(); renameFolder(folder.id);
                 };
+                enableNotebookFolderDrop(row, folder.id);
                 sidebarList.appendChild(row);
                 if (isOpen) kids.forEach(p => sidebarList.appendChild(buildSidebarItem(p, true)));
             });
@@ -1147,13 +1396,99 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
             renderSidebar(); triggerSave();
         }
 
-        function movePageToFolder(pageId, folderId) {
+        function movePageToFolder(pageId, folderId, revealFolder = false) {
             const page = appState.pages.find(p => p.id === pageId);
-            if (!page) return;
+            if (!page || (folderId && !appState.folders?.some(folder=>folder.id===folderId))) return;
+            const folder=appState.folders?.find(item=>item.id===folderId);
+            if (!page.parentPageId && (page.folderId || null) === (folderId || null) && (!revealFolder || folder?.open!==false)) return;
+            pushUndoSnapshot();
+            if (revealFolder && folder) folder.open=true;
+            delete page.parentPageId;
             if (folderId) { page.folderId = folderId; }
             else { delete page.folderId; }
             renderSidebar(); triggerSave();
         }
+
+        const notebookSidebarRanks=new WeakMap();
+        function notebookSidebarCompare(a,b) {
+            if(!Array.isArray(appState.sidebarOrder))return (b.updatedAt||0)-(a.updatedAt||0);
+            const order=appState.sidebarOrder;
+            let ranks=notebookSidebarRanks.get(order);
+            if(!ranks){ranks=new Map(order.map((id,index)=>[id,index]));notebookSidebarRanks.set(order,ranks);}
+            const ra=ranks.get(a.id),rb=ranks.get(b.id);
+            if(ra!==undefined || rb!==undefined)return (ra??order.length)-(rb??order.length);
+            return (b.updatedAt||0)-(a.updatedAt||0);
+        }
+        function notebookPlacePage(pageId,targetId,mode) {
+            const page=appState.pages.find(item=>item.id===pageId),target=appState.pages.find(item=>item.id===targetId);
+            if(!page||!target||page===target||notebookDescendants(pageId).has(targetId)||!['inside','before','after'].includes(mode))return false;
+            pushUndoSnapshot();
+            if(mode==='inside'){page.parentPageId=target.id;delete page.folderId;notebookCollapsedPages.delete(target.id);}
+            else{
+                if(target.parentPageId)page.parentPageId=target.parentPageId;else delete page.parentPageId;
+                if(target.folderId)page.folderId=target.folderId;else delete page.folderId;
+                const order=appState.pages.slice().sort(notebookSidebarCompare).map(item=>item.id).filter(id=>id!==pageId);
+                order.splice(order.indexOf(target.id)+(mode==='after'?1:0),0,pageId);appState.sidebarOrder=order;
+            }
+            renderSidebar();triggerSave();return true;
+        }
+        const notebookHoverFolders=new Set();
+        let notebookSidebarDrag=null,notebookSuppressSidebarClick=false,notebookSidebarHoverTimer=null;
+        const notebookSidebarDropLine=document.createElement('div');notebookSidebarDropLine.id='notebook-sidebar-drop-line';document.body.appendChild(notebookSidebarDropLine);
+        function clearNotebookSidebarDrag() {
+            clearTimeout(notebookSidebarHoverTimer);notebookSidebarHoverTimer=null;notebookSidebarDrag=null;notebookSidebarDropLine.hidden=true;
+            sidebarList.querySelectorAll('.nb-folder-drop, .nb-page-dragging').forEach(row=>row.classList.remove('nb-folder-drop','nb-page-dragging'));
+        }
+        function enableNotebookPageDrag(row,pageId) {
+            row.draggable=false;
+            row.addEventListener('pointerdown',event=>{
+                if(event.button!==0||event.target.closest('button'))return;
+                notebookSidebarDrag={pageId,row,pointerId:event.pointerId,x:event.clientX,y:event.clientY,started:false,hover:null};
+            });
+        }
+        function enableNotebookFolderDrop(row,folderId){row.dataset.folderId=folderId;}
+        function notebookSidebarDropAt(event,drag) {
+            const row=document.elementFromPoint(event.clientX,event.clientY)?.closest('.folder-row, .sidebar-item');
+            if(!row||!sidebarList.contains(row))return null;
+            if(row.dataset.folderId)return {row,id:row.dataset.folderId,mode:'folder'};
+            const id=row.dataset.pageId;if(id===drag.pageId||notebookDescendants(drag.pageId).has(id))return null;
+            const rect=row.getBoundingClientRect(),ratio=(event.clientY-rect.top)/rect.height;
+            return {row,id,mode:ratio<.25?'before':ratio>.75?'after':'inside'};
+        }
+        sidebarList.addEventListener('click',event=>{
+            if(notebookSuppressSidebarClick){event.preventDefault();event.stopImmediatePropagation();notebookSuppressSidebarClick=false;}
+        },true);
+        document.addEventListener('pointermove',event=>{
+            const drag=notebookSidebarDrag;if(!drag||drag.pointerId!==event.pointerId)return;
+            if(!drag.started&&Math.hypot(event.clientX-drag.x,event.clientY-drag.y)<6)return;
+            drag.started=true;event.preventDefault();drag.row.classList.add('nb-page-dragging');
+            sidebarList.querySelectorAll('.nb-folder-drop').forEach(row=>row.classList.remove('nb-folder-drop'));notebookSidebarDropLine.hidden=true;
+            const drop=notebookSidebarDropAt(event,drag),hover=drop?drop.mode+':'+drop.id:null;
+            if(hover!==drag.hover){
+                clearTimeout(notebookSidebarHoverTimer);drag.hover=hover;
+                if(drop&&(drop.mode==='inside'||drop.mode==='folder'))notebookSidebarHoverTimer=setTimeout(()=>{
+                    if(notebookSidebarDrag!==drag)return;
+                    if(drop.mode==='folder')notebookHoverFolders.add(drop.id);else notebookCollapsedPages.delete(drop.id);
+                    renderSidebar();
+                },650);
+            }
+            if(drop){
+                if(drop.mode==='folder'||drop.mode==='inside')drop.row.classList.add('nb-folder-drop');
+                else{const r=drop.row.getBoundingClientRect();notebookSidebarDropLine.hidden=false;notebookSidebarDropLine.style.cssText=`left:${r.left}px;top:${drop.mode==='before'?r.top:r.bottom}px;width:${r.width}px`;}
+            }
+            const rect=sidebarList.getBoundingClientRect();
+            if(event.clientX>=rect.left&&event.clientX<=rect.right){if(event.clientY<rect.top+24)sidebarList.scrollTop-=12;else if(event.clientY>rect.bottom-24)sidebarList.scrollTop+=12;}
+        },{passive:false});
+        document.addEventListener('pointerup',event=>{
+            const drag=notebookSidebarDrag;if(!drag||drag.pointerId!==event.pointerId)return;
+            const drop=notebookSidebarDropAt(event,drag);clearNotebookSidebarDrag();if(!drag.started)return;
+            notebookSuppressSidebarClick=true;setTimeout(()=>notebookSuppressSidebarClick=false,0);
+            if(!drop)return;
+            if(drop.mode==='folder')movePageToFolder(drag.pageId,drop.id,true);else notebookPlacePage(drag.pageId,drop.id,drop.mode);
+        });
+        document.addEventListener('pointercancel',clearNotebookSidebarDrag);
+        document.addEventListener('keydown',event=>{if(event.key==='Escape')clearNotebookSidebarDrag();});
+        window.addEventListener('blur',clearNotebookSidebarDrag);
 
         // ── Page context menu (right-click on a sidebar item) ──
         const pageCtxMenu = document.getElementById('page-ctx-menu');
@@ -1168,7 +1503,7 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
 
             let html = `
                 <div class="ctx-item" onclick="togglePin(event, '${pageId}'); hidePageCtxMenu();">
-                    📌 ${page.pinned ? i18nGet('unpin', 'Unpin') : i18nGet('pin', 'Pin')}
+                    ${notebookUiIcon('pin')} ${page.pinned ? i18nGet('unpin', 'Unpin') : i18nGet('pin', 'Pin')}
                 </div>`;
             if (appState.folders.length) {
                 html += `<div class="ctx-sep"></div>
@@ -1177,7 +1512,7 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
                     const isIn = page.folderId === f.id;
                     html += `
                         <div class="ctx-item" onclick="movePageToFolder('${pageId}', '${f.id}'); hidePageCtxMenu();">
-                            📁 <span class="folder-name">${escHtml(f.name)}</span>
+                            ${notebookUiIcon('folder')} <span class="folder-name">${escHtml(f.name)}</span>
                             ${isIn ? '<span class="ctx-check">✓</span>' : ''}
                         </div>`;
                 });
@@ -1190,9 +1525,13 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
             }
             html += `<div class="ctx-sep"></div>
                      <div class="ctx-item danger" onclick="deletePage(event, '${pageId}'); hidePageCtxMenu();">
-                         🗑️ ${i18nGet('delete', 'Delete')}
+                         ${notebookUiIcon('trash')} ${i18nGet('delete', 'Delete')}
                      </div>`;
             pageCtxMenu.innerHTML = html;
+            const subpage = notebookButton(i18nGet('new_subpage','New subpage'), () => { hidePageCtxMenu(); addNotebookSubpage(pageId); });
+            subpage.className = 'ctx-item';
+            const move = notebookButton(i18nGet('move_under_page','Move under page'), () => notebookChooseParent(pageId));move.className='ctx-item';
+            pageCtxMenu.prepend(subpage, move);
             pageCtxMenu.style.display = 'block';
             // Position, clamped to the viewport
             const mw2 = pageCtxMenu.offsetWidth, mh = pageCtxMenu.offsetHeight;
@@ -1227,15 +1566,13 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
             e.stopPropagation(); // keep editor shortcuts out of the input
         });
 
-        document.addEventListener('click', (e) => {
-            if (e.target.tagName === 'IMG' && editor.contains(e.target)) {
-                selectedImg = e.target;
-                const rect = selectedImg.getBoundingClientRect();
-                imgToolbar.style.display = 'flex'; imgToolbar.style.top = (rect.top + window.scrollY + 10) + 'px'; imgToolbar.style.left = (rect.left + 10) + 'px';
-            } else if (!imgToolbar.contains(e.target)) { imgToolbar.style.display = 'none'; selectedImg = null; }
+        document.addEventListener('click',event=>{
+            if(notebookMediaSkipClick){notebookMediaSkipClick=false;return;}
+            if(event.target.tagName==='IMG'&&editor.contains(event.target))notebookSelectImage(event.target);
+            else if(!event.target.closest('#image-toolbar,#notebook-image-frame')){selectedImg=null;notebookRefreshImageFrame();}
         });
-        function resizeImg(percent) { if(selectedImg) { selectedImg.style.width = percent + '%'; triggerSave(); } }
-        function deleteImg() { if(selectedImg) { selectedImg.remove(); imgToolbar.style.display = 'none'; triggerSave(); } }
+        function resizeImg(percent){if(!notebookImageEditable(selectedImg))return;const r=selectedImg.getBoundingClientRect();if(!r.width||!r.height)return;pushUndoSnapshot();selectedImg.style.aspectRatio=String(r.width/r.height);selectedImg.style.width=percent+'%';selectedImg.style.height='auto';triggerSave();notebookRefreshImageFrame();}
+        function deleteImg(){if(notebookImageEditable(selectedImg)){pushUndoSnapshot();selectedImg.remove();selectedImg=null;triggerSave();notebookRefreshImageFrame();}}
 
         document.addEventListener('selectionchange', () => {
             const sel = window.getSelection();
@@ -1243,12 +1580,13 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
             const range = sel.getRangeAt(0);
             const rect = range.getBoundingClientRect();
             formatToolbar.style.display = 'flex';
-            formatToolbar.style.top = (rect.top - 40) + 'px';
-            let left = rect.left + (rect.width / 2) - 100;
+            formatToolbar.style.top = Math.max(8, rect.top - formatToolbar.offsetHeight - 8) + 'px';
+            let left = Math.min(window.innerWidth - formatToolbar.offsetWidth - 8, rect.left + (rect.width / 2) - formatToolbar.offsetWidth / 2);
             if (left < 10) left = 10;
             formatToolbar.style.left = left + 'px';
         });
         function format(cmd) { 
+            pushUndoSnapshot();
             document.execCommand(cmd, false, null); 
             const sel = window.getSelection();
             if (sel.anchorNode) sel.anchorNode.parentElement.focus();
@@ -1532,26 +1870,93 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
             return tpl.innerHTML;
         }
 
+        function blockSignature(block) {
+            const copy = block.cloneNode(true);
+            copy.classList.remove('block-selected', 'nb-hover');
+            copy.querySelectorAll('mark.search-highlight').forEach(mark => mark.replaceWith(...mark.childNodes));
+            copy.querySelectorAll('.cloze-cover').forEach(el => el.classList.remove('revealed'));
+            return copy.outerHTML + '|' + Array.from(block.querySelectorAll('input')).map(el => el.checked).join(',');
+        }
+
+        function userHtmlWasFiltered(raw) {
+            const template = document.createElement('template'); template.innerHTML = raw;
+            return template.innerHTML !== sanitizeUserHtml(raw);
+        }
+
+        function createStoredBlock(data) {
+            const block = createBlock(data.type, data.html, data.checked || false, data.open !== false, data.body || '');
+            // Content removed for safe display remains stored verbatim. Prevent
+            // editing a partially rendered field from silently overwriting its original.
+            for (const key of ['html', 'body']) {
+                if (typeof data[key] !== 'string' || !userHtmlWasFiltered(data[key])) continue;
+                const field = key === 'body' ? block.querySelector('.toggle-body') :
+                    block.querySelector('.todo-content, .callout-content, .toggle-title') || block;
+                if (field) {
+                    field.contentEditable = false;
+                    field.querySelectorAll('[contenteditable]').forEach(el => el.contentEditable = false);
+                    field.title = i18nGet('protected_content', 'Original content preserved. This block contains content that cannot be safely edited here.');
+                }
+            }
+            if(block.classList.contains('table-container')){notebookApplyTableOptions(block,data.tableOptions);notebookTableBaseline.set(block,block.querySelector('table').innerHTML);}
+            // Record the DOM after applying the read-only protection.
+            storedBlocks.set(block, { data: JSON.parse(JSON.stringify(data)), signature: blockSignature(block) });
+            return block;
+        }
+
+        function blockHtml(block) {
+            if (block.classList.contains('toggle')) {
+                const title = block.querySelector('.toggle-title').innerHTML;
+                const body = block.querySelector('.toggle-body').innerHTML;
+                return title + (body ? '<div>' + body + '</div>' : '');
+            }
+            if (block.classList.contains('table-container')) return block.querySelector('table').outerHTML;
+            if (block.classList.contains('divider')) return '';
+            return (block.querySelector('.todo-content, .callout-content') || block).innerHTML;
+        }
+
+        function convertedBlock(block, type, html = blockHtml(block)) {
+            // Never turn nonempty content into a structural block with no text slot.
+            if ((type === 'divider' || type === 'table') && html.trim()) return null;
+            const previous = storedBlocks.get(block)?.data || {};
+            if (['html', 'body'].some(key => typeof previous[key] === 'string' && userHtmlWasFiltered(previous[key]))) return null;
+            if (previous.type && !['text','h1','h2','h3','bullet','todo','quote','callout','code','toggle','table','divider'].includes(previous.type)) return null;
+            if (type === 'toggle' && block.classList.contains('toggle')) return createStoredBlock(previous);
+            return createStoredBlock({ ...previous, type, html, ...(type === 'toggle' ? {body: '', open: true} : {}) });
+        }
+
+        function stripCommandPrefix(html) {
+            const holder = document.createElement('div'); holder.innerHTML = html;
+            const match = holder.textContent.match(/^(?:### |## |# |- |\[\] |> |\/[a-z]+ ?)/i);
+            if (!match) return html;
+            let remaining = match[0].length;
+            const walker = document.createTreeWalker(holder, NodeFilter.SHOW_TEXT);
+            while (remaining > 0 && walker.nextNode()) {
+                const node = walker.currentNode, count = Math.min(remaining, node.textContent.length);
+                node.textContent = node.textContent.slice(count); remaining -= count;
+            }
+            return holder.innerHTML;
+        }
+
         function createBlock(type = 'text', content = '', checked = false, open = true, body = '') {
             content = sanitizeUserHtml(content);
             body = sanitizeUserHtml(body);
             if (type === 'divider') {
-                const div = document.createElement('div'); div.className = 'block divider'; div.contentEditable = false; div.innerHTML = '<hr>'; div.onclick = () => div.remove(); return div;
+                const div = document.createElement('div'); div.className = 'block divider'; div.contentEditable = false; div.innerHTML = '<hr>'; div.onclick = null; return div;
             }
             if (type === 'table') {
                 const container = document.createElement('div'); container.className = 'block table-container'; container.contentEditable = false; 
                 const controls = document.createElement('div'); controls.className = 'table-controls';
-                controls.innerHTML = `<button class="tbl-btn" onclick="addTableRow(this)">${window.__SYNAPSE_I18N__?.table_add_row || '+ Row'}</button><button class="tbl-btn" onclick="addTableCol(this)">${window.__SYNAPSE_I18N__?.table_add_col || '+ Col'}</button><button class="tbl-btn del" onclick="deleteTable(this)">${window.__SYNAPSE_I18N__?.delete || 'Delete'}</button>`;
+                controls.innerHTML = `<button class="tbl-btn" onclick="addTableRow(this)">${window.__SYNAPSE_I18N__?.table_add_row || '+ Row'}</button><button class="tbl-btn" onclick="addTableCol(this)">${window.__SYNAPSE_I18N__?.table_add_col || '+ Col'}</button><button class="tbl-btn" onclick="notebookOpenTableOptions(this)">${i18nGet('table_options','Table options')}</button><button class="tbl-btn del" onclick="deleteTable(this)">${window.__SYNAPSE_I18N__?.delete || 'Delete'}</button>`;
                 container.appendChild(controls);
                 const scroller = document.createElement('div'); scroller.className = 'table-scroller';
                 const tableHTML = content || `<tbody><tr><td contenteditable="true"></td><td contenteditable="true"></td></tr><tr><td contenteditable="true"></td><td contenteditable="true"></td></tr></tbody>`;
                 const table = document.createElement('table'); table.className = 'simple-table'; table.innerHTML = tableHTML;
-                table.querySelectorAll('td').forEach(td => td.oninput = triggerSave);
+                table.querySelectorAll('td,th').forEach(td => td.oninput = triggerSave);
                 scroller.appendChild(table); container.appendChild(scroller); return container;
             }
             if (type === 'callout') {
                 const div = document.createElement('div'); div.className = 'block callout';
-                div.innerHTML = `<span class="callout-icon">💡</span><div class="callout-content" contenteditable="true">${content}</div>`;
+                div.innerHTML = `<span class="callout-icon" contenteditable="false">${notebookUiIcon('bulb')}</span><div class="callout-content" contenteditable="true">${content}</div>`;
                 const contentEl = div.querySelector('.callout-content');
                 contentEl.oninput = triggerSave;
                 contentEl.setAttribute('data-placeholder', window.__SYNAPSE_I18N__?.placeholder_callout || 'Type something...');
@@ -1621,7 +2026,15 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
                     }
                     if (e.key === 'Backspace' && title.innerText.trim() === '') {
                         e.preventDefault();
-                        const tb = createBlock('text'); wrapper.replaceWith(tb); tb.focus(); triggerSave();
+                        // A blank title does not imply an empty toggle. Retain
+                        // images, whitespace/markup and protected original HTML.
+                        const original = storedBlocks.get(wrapper)?.data;
+                        if (title.querySelector('*:not(br)') || bodyDiv.innerHTML.replace(/<br\s*\/?\s*>/gi, '').length
+                            || (original?.body != null && original.body !== '')) return;
+                        pushUndoSnapshot();
+                        const tb = convertedBlock(wrapper, 'text');
+                        if (!tb) return;
+                        wrapper.replaceWith(tb); tb.focus(); triggerSave();
                     }
                 };
 
@@ -1653,20 +2066,65 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
             return div;
         }
 
-        window.addTableRow = (btn) => { const table = btn.closest('.table-container').querySelector('table'); const cols = table.rows[0].cells.length; const row = table.insertRow(); for(let i=0; i<cols; i++) { const cell = row.insertCell(); cell.contentEditable = true; cell.oninput = triggerSave; } triggerSave(); };
-        window.addTableCol = (btn) => { const table = btn.closest('.table-container').querySelector('table'); for(let i=0; i<table.rows.length; i++) { const cell = table.rows[i].insertCell(); cell.contentEditable = true; cell.oninput = triggerSave; } triggerSave(); };
-        window.deleteTable = (btn) => { if(confirm(window.__SYNAPSE_I18N__?.delete_table_confirm || 'Delete table?')) { btn.closest('.table-container').remove(); triggerSave(); } };
+        window.addTableRow=button=>{
+            const table=button.closest('.table-container').querySelector('table');if(!notebookSimpleTable(table))return;
+            notebookTableMutate(table,()=>{const section=table.tBodies[table.tBodies.length-1]||table.createTBody(),row=section.insertRow();for(let i=0;i<table.rows[0].cells.length;i++){const cell=row.insertCell();cell.contentEditable=true;cell.oninput=triggerSave;}});
+        };
+        window.addTableCol=button=>{
+            const table=button.closest('.table-container').querySelector('table');if(!notebookSimpleTable(table))return;
+            notebookTableMutate(table,()=>{Array.from(table.rows).forEach(row=>{const cell=document.createElement(row.cells[0]?.tagName==='TH'?'th':'td');cell.contentEditable=true;cell.oninput=triggerSave;row.appendChild(cell);});const group=table.querySelector(':scope > colgroup');if(group)group.appendChild(document.createElement('col'));});
+        };
+        window.deleteTable=button=>{if(confirm(i18nGet('delete_table_confirm','Delete table?'))){pushUndoSnapshot();button.closest('.table-container').remove();triggerSave();notebookTableSelected=null;notebookRefreshTableHandles();}};
+
+        const notebookSecurityNotices = new Set();
+        function showNotebookSecurityNotice(content) {
+            if (notebookSecurityNotices.has(content)) return;
+            notebookSecurityNotices.add(content);
+            document.getElementById('notebook-security-notice').hidden = false;
+        }
+
+        function convertMarkdownLinks(root) {
+            const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+            const nodes = [];
+            while (walker.nextNode()) {
+                if (!walker.currentNode.parentElement.closest('a, code, pre, .code')) nodes.push(walker.currentNode);
+            }
+            let converted = false;
+            for (const node of nodes) {
+                const pattern = /\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g;
+                const text = node.textContent;
+                const fragment = document.createDocumentFragment();
+                let offset = 0;
+                let match;
+                while ((match = pattern.exec(text)) !== null) {
+                    if (/["<>\u0000-\u0020]/.test(match[2])) {
+                        showNotebookSecurityNotice(match[0]);
+                        continue;
+                    }
+                    if (/<\/?[a-z][^>]*>/i.test(match[1])) showNotebookSecurityNotice(match[0]);
+                    fragment.appendChild(document.createTextNode(text.slice(offset, match.index)));
+                    const link = document.createElement('a');
+                    link.setAttribute('href', match[2]);
+                    link.textContent = match[1];
+                    link.target = '_blank';
+                    link.rel = 'noopener';
+                    fragment.appendChild(link);
+                    offset = pattern.lastIndex;
+                }
+                if (offset === 0) continue;
+                fragment.appendChild(document.createTextNode(text.slice(offset)));
+                node.replaceWith(fragment);
+                converted = true;
+            }
+            return converted;
+        }
 
         function handleInput(e) {
+            if(e.isComposing)return;
             const el = e.target; const text = el.innerText;
 
             // Markdown link: [text](url) → <a href>
-            const mdLink = /\[([^\]]+)\]\((https?:\/\/[^)]+)\)/;
-            if (mdLink.test(text)) {
-                el.innerHTML = el.innerHTML.replace(
-                    /\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g,
-                    '<a href="$2" target="_blank" rel="noopener">$1</a>'
-                );
+            if (convertMarkdownLinks(el)) {
                 setCaretEnd(el);
                 triggerSave(); return;
             }
@@ -1675,7 +2133,8 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
             if (text === '/table' || text === '/table ') { el.innerText = ''; replaceWithType(el, 'table'); return;}
             if (text === '/code' || text === '/code ') { el.innerText = ''; replaceWithType(el, 'code'); return;}
             if (text === '/callout' || text === '/callout ') { el.innerText = ''; replaceWithType(el, 'callout'); return;}
-            if (text.startsWith('# ')) replaceWithType(el, 'h1');
+            if (text.startsWith('### ')) replaceWithType(el, 'h3');
+            else if (text.startsWith('# ')) replaceWithType(el, 'h1');
             else if (text.startsWith('## ')) replaceWithType(el, 'h2');
             else if (text.startsWith('- ') || text === '/list' || text === '/list ') replaceWithType(el, 'bullet');
             else if (text.startsWith('[] ') || text === '/todo' || text === '/todo ') replaceWithType(el, 'todo');
@@ -1698,7 +2157,62 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
             triggerSave();
         }
 
+        function notebookEditable(block) {
+            return block?.querySelector('.todo-content, .callout-content, .toggle-title') || (block?.contentEditable === 'true' ? block : null);
+        }
+        function notebookCaretBoundary(field, atEnd) {
+            const selection=window.getSelection();
+            if(!field || !selection.rangeCount || !selection.isCollapsed || !field.contains(selection.anchorNode))return false;
+            const range=selection.getRangeAt(0).cloneRange(),probe=document.createRange();probe.selectNodeContents(field);
+            if(atEnd)probe.setStart(range.endContainer,range.endOffset);else probe.setEnd(range.startContainer,range.startOffset);
+            const fragment=probe.cloneContents();
+            return !fragment.textContent && !fragment.querySelector('img,svg,video,audio,iframe,object,table,input,.page-link');
+        }
+        function notebookSplitBlock(block, type) {
+            const field=notebookEditable(block),selection=window.getSelection();
+            if(!field || field.contentEditable!=='true')return false;
+            pushUndoSnapshot();
+            const trailing=document.createElement('div');
+            if(selection.rangeCount){
+                const range=selection.getRangeAt(0);
+                if(field.contains(range.startContainer) && field.contains(range.endContainer)){
+                    range.deleteContents();const tail=range.cloneRange();tail.setEnd(field,field.childNodes.length);
+                    trailing.appendChild(tail.extractContents());
+                }
+            }
+            const next=createBlock(type,trailing.innerHTML);block.after(next);
+            const target=notebookEditable(next);target.focus();const caret=document.createRange();caret.selectNodeContents(target);caret.collapse(true);selection.removeAllRanges();selection.addRange(caret);
+            triggerSave();return true;
+        }
+        function notebookMergePrevious(block) {
+            const previous=block.previousElementSibling,field=notebookEditable(block),target=notebookEditable(previous);
+            if(!previous || !target || target.contentEditable!=='true' || !notebookCaretBoundary(field,false))return false;
+            const supported=el=>el?.matches('.block:not(.toggle):not(.callout):not(.code):not(.divider):not(.table-container)') && ['text','h1','h2','h3','bullet','quote'].includes(storedBlocks.get(el)?.data.type||'text');
+            const saved=storedBlocks.get(block)?.data;
+            // Structural/unknown metadata stays attached to its block. Never discard it in a merge.
+            if(!supported(block)||!supported(previous)||(saved&&Object.keys(saved).some(key=>!['type','html'].includes(key)))){
+                setCaretEnd(target);return true;
+            }
+            pushUndoSnapshot();
+            const anchor=document.createRange();anchor.selectNodeContents(target);anchor.collapse(false);
+            while(field.firstChild)target.appendChild(field.firstChild);
+            block.remove();target.focus();const selection=window.getSelection();selection.removeAllRanges();selection.addRange(anchor);
+            triggerSave();return true;
+        }
         function handleKeydown(e, currentEl) {
+            if(e.isComposing || e.defaultPrevented)return;
+            if((e.key==='ArrowUp'||e.key==='ArrowDown')&&!e.shiftKey&&!e.ctrlKey&&!e.metaKey&&!e.altKey){
+                const end=e.key==='ArrowDown',field=notebookEditable(currentEl);
+                if(notebookCaretBoundary(field,end)){
+                    const sibling=end?currentEl.nextElementSibling:currentEl.previousElementSibling,target=notebookEditable(sibling);
+                    if(target&&target.contentEditable==='true'){
+                        e.preventDefault();if(end){target.focus();const r=document.createRange();r.selectNodeContents(target);r.collapse(true);const sel=window.getSelection();sel.removeAllRanges();sel.addRange(r);}else setCaretEnd(target);
+                        return;
+                    }
+                }
+            }
+            if(e.key==='Backspace' && notebookCaretBoundary(notebookEditable(currentEl),false) && notebookEditable(currentEl)?.innerText.trim() && notebookMergePrevious(currentEl)){e.preventDefault();return;}
+
             if (e.key === 'Escape') {
                 e.preventDefault();
                 const nb = createBlock('text');
@@ -1708,21 +2222,24 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
                 return;
             }
             if (e.key === 'Enter') {
+                if(e.shiftKey || currentEl.classList.contains('code'))return;
                 if (menu.style.display === 'block') { e.preventDefault(); const visible = Array.from(menu.children).find(c => c.style.display !== 'none' && !c.classList.contains('menu-footer')); if(visible) visible.click(); return; }
                 e.preventDefault();
                 let nextType = 'text';
                 if(currentEl.classList.contains('bullet')) nextType = 'bullet';
                 if(currentEl.classList.contains('todo-wrapper')) nextType = 'todo';
                 
-                const newBlock = createBlock(nextType);
-                currentEl.after(newBlock);
-                if(newBlock.classList.contains('todo-wrapper')) newBlock.querySelector('.todo-content').focus();
-                else newBlock.focus();
-                triggerSave();
+                const listContent = currentEl.querySelector('.todo-content') || currentEl;
+                if (nextType !== 'text' && !listContent.innerText.trim() && !listContent.querySelector('img,svg,video,audio,iframe,object,table,input')) {
+                    pushUndoSnapshot();
+                    const textBlock = createBlock('text'); currentEl.replaceWith(textBlock);
+                    textBlock.focus(); triggerSave(); return;
+                }
+                notebookSplitBlock(currentEl,nextType);
             }
             if (e.key === 'Backspace') {
                 const contentEl = currentEl.querySelector('.todo-content') || currentEl.querySelector('.callout-content') || currentEl;
-                if (contentEl.innerText === '' || contentEl.innerText === '\n') {
+                if ((contentEl.innerText === '' || contentEl.innerText === '\n') && !contentEl.querySelector('img,svg,video,audio,iframe,object,table,input')) {
                      if (currentEl.classList.contains('bullet') || currentEl.classList.contains('todo-wrapper')) {
                          e.preventDefault();
                          pushUndoSnapshot();
@@ -1761,8 +2278,9 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
         function replaceWithType(el, type) {
             pushUndoSnapshot();
             let parent = el.closest('.block') || el.closest('.todo-wrapper');
-            let content = el.innerText.replace(/^# |^## |^- |^\[\] |^> |\/[a-z]+ ?/g, '');
-            const newBlock = createBlock(type, content);
+            const content = stripCommandPrefix(blockHtml(parent));
+            const newBlock = convertedBlock(parent, type, content);
+            if (!newBlock) return;
             parent.replaceWith(newBlock);
             if(type==='todo') newBlock.querySelector('.todo-content').focus();
             else if(type==='callout') {
@@ -1780,9 +2298,9 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
         function convertBlock(type) {
             if(!activeBlockForMenu) return;
             pushUndoSnapshot();
-            const contentEl = activeBlockForMenu.querySelector('.todo-content') || activeBlockForMenu;
-            let text = contentEl.innerHTML.replace(/\/[a-z]*/i,'');
-            const newBlock = createBlock(type, text);
+            const text = stripCommandPrefix(blockHtml(activeBlockForMenu));
+            const newBlock = convertedBlock(activeBlockForMenu, type, text);
+            if (!newBlock) return;
             activeBlockForMenu.replaceWith(newBlock);
             menu.style.display = 'none';
             if(type==='todo') newBlock.querySelector('.todo-content').focus();
@@ -1882,7 +2400,9 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
         function choosePageLink(pageId) { insertPageLink(pageId); hidePagePicker(); }
         function createAndLinkPage(title) {
             if (appState.activePageId) saveCurrentEditorToState();
-            const newId = Date.now().toString();
+            let newId;
+            do { newId = window.crypto?.randomUUID?.() || ('p-' + Date.now() + '-' + Math.random().toString(36).slice(2)); }
+            while (appState.pages.some(page => page.id === newId));
             appState.pages.push({ id: newId, title: title || '', icon: '📄', blocks: [{ type: 'text', html: '' }], updatedAt: Date.now() });
             insertPageLink(newId);
             renderSidebar();
@@ -1931,6 +2451,7 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
 
         function triggerSave(immediate = false) {
             saveCurrentEditorToState();
+            recordNotebookAction();
             saveDirty = true;
             saveRevision += 1;
             const statusEl = document.getElementById('status'); statusEl.style.opacity = 1; statusEl.innerText = (window.__SYNAPSE_I18N__?.saving || "Saving...");
@@ -1945,6 +2466,7 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
         }
 
         window.__synapseSnapshotForUnload = () => {
+            cancelNotebookBlockDrag();
             clearTimeout(saveTimeout);
             saveTimeout = null;
             saveCurrentEditorToState();
@@ -1968,9 +2490,11 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
         titleEl.addEventListener('input', () => { const p = appState.pages.find(p => p.id === appState.activePageId); if(p) p.title = titleEl.innerText; renderSidebar(); triggerSave(); });
         window.loadContent = (jsonString) => { let data = null; try { if(jsonString) data = JSON.parse(jsonString); } catch(e){} initApp(data); };
         editor.addEventListener('paste', (e) => {
+            pushUndoSnapshot();
             const pastedHtml = e.clipboardData && e.clipboardData.getData('text/html');
             if (pastedHtml) {
                 e.preventDefault();
+                if (userHtmlWasFiltered(pastedHtml)) showNotebookSecurityNotice(pastedHtml);
                 document.execCommand('insertHTML', false, sanitizeUserHtml(pastedHtml));
             }
             setTimeout(triggerSave, 100);
@@ -2019,239 +2543,6 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
             }
         });
 
-        // ──────────────────────────────────────────────
-        // Between-line insertion: hovering a gap between two lines shows a
-        // subtle grey indicator; clicking it adds a new line right there. Works
-        // between blocks, between the visual lines of one block (e.g. a big
-        // pasted text), and above the very first line. Anywhere else, editing
-        // behaves exactly as before.
-        // ──────────────────────────────────────────────
-        (function setupLineInsert() {
-            const HOVER_THRESHOLD = 6; // px around a gap that counts as "between lines"
-            let pendingInsert = null;  // current insertion candidate (set on hover)
-
-            const indicator = document.createElement('div');
-            indicator.id = 'line-insert-indicator';
-            document.body.appendChild(indicator);
-
-            function showIndicator(y, left, width) {
-                indicator.style.top = y + 'px';
-                indicator.style.left = left + 'px';
-                indicator.style.width = Math.max(width, 0) + 'px';
-                indicator.style.display = 'block';
-            }
-            function hideIndicator() {
-                if (indicator.style.display !== 'none') indicator.style.display = 'none';
-                pendingInsert = null;
-            }
-
-            function caretRangeFromPoint(x, y) {
-                if (document.caretRangeFromPoint) return document.caretRangeFromPoint(x, y);
-                if (document.caretPositionFromPoint) {
-                    const pos = document.caretPositionFromPoint(x, y);
-                    if (!pos) return null;
-                    const r = document.createRange();
-                    r.setStart(pos.offsetNode, pos.offset); r.collapse(true);
-                    return r;
-                }
-                return null;
-            }
-
-            function blockType(blk) {
-                const c = blk.classList;
-                if (c.contains('h1')) return 'h1';
-                if (c.contains('h2')) return 'h2';
-                if (c.contains('quote')) return 'quote';
-                if (c.contains('bullet')) return 'bullet';
-                if (c.contains('code')) return 'code';
-                return 'text';
-            }
-
-            // A block whose visual lines we are allowed to split between.
-            function isSplittable(blk) {
-                if (!blk.classList || !blk.classList.contains('block')) return false;
-                if (blk.classList.contains('divider') || blk.classList.contains('table-container') ||
-                    blk.classList.contains('toggle') || blk.classList.contains('callout')) return false;
-                return blk.isContentEditable;
-            }
-
-            // Visual line rectangles inside a block (fragments merged per line).
-            function lineRectsOf(blk) {
-                const range = document.createRange();
-                range.selectNodeContents(blk);
-                const lines = [];
-                for (const r of Array.from(range.getClientRects())) {
-                    if (r.height === 0 && r.width === 0) continue;
-                    const last = lines[lines.length - 1];
-                    if (last && Math.abs(r.top - last.top) < 4) {
-                        last.top = Math.min(last.top, r.top); last.bottom = Math.max(last.bottom, r.bottom);
-                        last.left = Math.min(last.left, r.left); last.right = Math.max(last.right, r.right);
-                    } else {
-                        lines.push({ top: r.top, bottom: r.bottom, left: r.left, right: r.right });
-                    }
-                }
-                return lines;
-            }
-
-            function findCandidate(clientX, clientY) {
-                const T = HOVER_THRESHOLD;
-                const blocks = Array.from(editor.children).filter(c => c.id !== 'line-insert-indicator');
-                if (blocks.length === 0) return null;
-
-                // 1) Above the very first line (between title and first block).
-                const fr = blocks[0].getBoundingClientRect();
-                if (clientX >= fr.left && clientX <= fr.right &&
-                    clientY >= fr.top - T && clientY <= fr.top + T) {
-                    return { mode: 'top', first: blocks[0], y: fr.top, left: fr.left, width: fr.width };
-                }
-
-                // 2) Between the visual lines inside a single (e.g. pasted) block.
-                for (const blk of blocks) {
-                    if (!isSplittable(blk)) continue;
-                    const br = blk.getBoundingClientRect();
-                    if (clientX < br.left || clientX > br.right) continue;
-                    if (clientY < br.top - T || clientY > br.bottom + T) continue;
-                    const lines = lineRectsOf(blk);
-                    for (let i = 0; i < lines.length - 1; i++) {
-                        const mid = (lines[i].bottom + lines[i + 1].top) / 2;
-                        if (clientY >= mid - T && clientY <= mid + T) {
-                            return { mode: 'within', block: blk, nextLine: lines[i + 1],
-                                     y: mid, left: br.left, width: br.width };
-                        }
-                    }
-                }
-
-                // 3) Between two adjacent blocks.
-                for (let i = 0; i < blocks.length - 1; i++) {
-                    const a = blocks[i].getBoundingClientRect();
-                    const b = blocks[i + 1].getBoundingClientRect();
-                    const mid = (a.bottom + b.top) / 2;
-                    if (clientY >= mid - T && clientY <= mid + T &&
-                        clientX >= a.left && clientX <= a.right) {
-                        return { mode: 'between', after: blocks[i], y: mid, left: a.left, width: a.width };
-                    }
-                }
-                return null;
-            }
-
-            // Focus a block at its start without letting the browser scroll the
-            // page (the cause of the "jump to the bottom" on a top insert).
-            function focusStart(el) {
-                try { el.focus({ preventScroll: true }); } catch (_) { try { el.focus(); } catch (_e) {} }
-                try {
-                    const sel = window.getSelection(); const rr = document.createRange();
-                    rr.selectNodeContents(el); rr.collapse(true);
-                    sel.removeAllRanges(); sel.addRange(rr);
-                } catch (_) {}
-            }
-
-            // DOM caret position at the visual start of the line whose top is `lineTop`.
-            // Skips text nodes that sit entirely above the line, then binary-searches
-            // inside the node that straddles the boundary. This stays exact even for a
-            // big soft-wrapped paste, unlike pixel hit-testing (which drifted 1–2 lines).
-            function rangeAtLineStart(blk, lineTop) {
-                const tol = 3;
-                const r = document.createRange();
-                const walker = document.createTreeWalker(blk, NodeFilter.SHOW_TEXT, null);
-                let node;
-                while ((node = walker.nextNode())) {
-                    const len = node.nodeValue.length;
-                    if (len === 0) continue;
-                    r.selectNodeContents(node);
-                    const nb = r.getBoundingClientRect();
-                    if (nb.bottom < lineTop - tol) continue;      // node entirely above the line
-                    if (nb.top >= lineTop - tol) {                // node begins on/after the line
-                        r.setStart(node, 0); r.collapse(true); return r.cloneRange();
-                    }
-                    let lo = 0, hi = len;                         // node straddles the boundary
-                    while (lo < hi) {
-                        const mid = (lo + hi) >> 1, o = Math.min(mid, len - 1);
-                        r.setStart(node, o); r.setEnd(node, o + 1);
-                        if (r.getBoundingClientRect().top >= lineTop - tol) hi = mid; else lo = mid + 1;
-                    }
-                    r.setStart(node, lo); r.collapse(true); return r.cloneRange();
-                }
-                return null;
-            }
-
-            function performInsert(cand) {
-                const scroller = document.querySelector('.scroll-wrapper');
-                const keepTop = scroller ? scroller.scrollTop : null;
-                pushUndoSnapshot();
-                if (cand.mode === 'top') {
-                    if (editor.contains(cand.first)) {
-                        const nb = createBlock('text'); cand.first.before(nb); focusStart(nb);
-                    }
-                } else if (cand.mode === 'between') {
-                    if (editor.contains(cand.after)) {
-                        const nb = createBlock('text'); cand.after.after(nb); focusStart(nb);
-                    }
-                } else if (cand.mode === 'within') {
-                    const blk = cand.block, line = cand.nextLine;
-                    if (editor.contains(blk)) {
-                        let r = rangeAtLineStart(blk, line.top);
-                        if (!r || !blk.contains(r.startContainer)) {
-                            r = caretRangeFromPoint(line.left + 1, (line.top + line.bottom) / 2);
-                        }
-                        if (r && blk.contains(r.startContainer)) {
-                            // Split: head keeps the lines above, tail gets the lines below,
-                            // a new empty line goes in between and receives the caret.
-                            const tailRange = document.createRange();
-                            tailRange.setStart(r.startContainer, r.startOffset);
-                            tailRange.setEnd(blk, blk.childNodes.length);
-                            const frag = tailRange.extractContents();
-                            const tailBlock = createBlock(blockType(blk));
-                            tailBlock.innerHTML = ''; tailBlock.appendChild(frag);
-                            const emptyBlock = createBlock('text');
-                            blk.after(tailBlock); blk.after(emptyBlock);
-                            focusStart(emptyBlock);
-                        } else {
-                            const nb = createBlock('text'); blk.after(nb); focusStart(nb);
-                        }
-                    }
-                }
-                if (scroller && keepTop !== null) scroller.scrollTop = keepTop;
-                triggerSave();
-            }
-
-            editor.addEventListener('mousemove', (e) => {
-                // Don't interfere while the slash command menu is open.
-                if (menu && menu.style.display === 'block') { hideIndicator(); return; }
-                const cand = findCandidate(e.clientX, e.clientY);
-                if (cand) { showIndicator(cand.y, cand.left, cand.width); pendingInsert = cand; }
-                else { hideIndicator(); }
-            });
-
-            editor.addEventListener('mouseleave', hideIndicator);
-            const scrollWrapper = document.querySelector('.scroll-wrapper');
-            if (scrollWrapper) scrollWrapper.addEventListener('scroll', hideIndicator);
-
-            // After our insertion, the click that follows would otherwise reach the
-            // editor's "clicked empty area → put caret in the last block" handler and
-            // yank the caret to the bottom. Swallow exactly that one click (capture
-            // phase, so it never reaches that bubble-phase handler).
-            let swallowNextClick = false;
-            document.addEventListener('click', (e) => {
-                if (swallowNextClick) {
-                    swallowNextClick = false;
-                    e.preventDefault();
-                    e.stopPropagation();
-                }
-            }, true);
-
-            // Capture phase so we beat the default caret placement / focus change.
-            editor.addEventListener('mousedown', (e) => {
-                if (e.button !== 0) return;
-                if (!pendingInsert || indicator.style.display === 'none') return;
-                const cand = pendingInsert;
-                e.preventDefault();
-                e.stopPropagation();
-                hideIndicator();
-                performInsert(cand);
-                swallowNextClick = true;
-                setTimeout(() => { swallowNextClick = false; }, 350); // self-clear if no click follows
-            }, true);
-        })();
         document.addEventListener('keydown', e => {
             if (e.isComposing || e.defaultPrevented) return;
             const key = e.key.toLowerCase();
@@ -2267,35 +2558,11 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
                 if (sel && !sel.isCollapsed && editor.contains(sel.anchorNode)) { e.preventDefault(); showLinkPopup(); }
                 return;
             }
-            // Undo
-            if ((e.ctrlKey||e.metaKey) && !e.shiftKey && key === 'z') {
-                e.preventDefault();
-                clearTimeout(undoDebounceTimer);
-                if (undoStack.length === 0) return;
-                saveCurrentEditorToState();
-                const pg = appState.pages.find(p => p.id === appState.activePageId);
-                if (!pg) return;
-                const current = JSON.stringify({ pageId: pg.id, title: pg.title, icon: pg.icon, blocks: JSON.parse(JSON.stringify(pg.blocks)) });
-                // Debounced snapshots can equal the current state. Skip those
-                // so the first undo produces a visible change.
-                let targetIndex = undoStack.length - 1;
-                while (targetIndex >= 0 && undoStack[targetIndex] === current) targetIndex--;
-                if (targetIndex < 0) return;
-                redoStack.push(current);
-                const target = undoStack[targetIndex];
-                // Keep the restored state as the baseline for subsequent edits.
-                undoStack.length = targetIndex + 1;
-                applySnapshot(target); return;
+            if ((e.ctrlKey||e.metaKey) && !e.altKey && key === 'z' && !e.shiftKey) {
+                e.preventDefault(); navigateNotebook(-1); return;
             }
-            // Redo
-            if ((e.ctrlKey||e.metaKey) && (key === 'y' || (e.shiftKey && key === 'z'))) {
-                e.preventDefault();
-                clearTimeout(undoDebounceTimer);
-                if (redoStack.length === 0) return;
-                saveCurrentEditorToState();
-                const pg = appState.pages.find(p => p.id === appState.activePageId);
-                if (pg) undoStack.push(JSON.stringify({ pageId: pg.id, title: pg.title, icon: pg.icon, blocks: JSON.parse(JSON.stringify(pg.blocks)) }));
-                applySnapshot(redoStack.pop()); return;
+            if ((e.ctrlKey||e.metaKey) && !e.altKey && (key === 'y' || (e.shiftKey && key === 'z'))) {
+                e.preventDefault(); navigateNotebook(1); return;
             }
             if (e.key === 'Escape' && selectedBlocks.size > 0) { e.preventDefault(); clearBlockSelection(); return; }
             if ((e.key === 'Backspace' || e.key === 'Delete') && selectedBlocks.size > 0) { e.preventDefault(); deleteSelectedBlocks(); return; }
@@ -2394,7 +2661,7 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
             indices.forEach(i => {
                 const bd = page.blocks[i];
                 if (!bd) return;
-                const newBlock = createBlock(bd.type, bd.html, bd.checked || false, bd.open !== false, bd.body || '');
+                const newBlock = createStoredBlock(bd);
                 insertAfter.after(newBlock);
                 insertAfter = newBlock;
             });
@@ -2410,10 +2677,8 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
             indices.forEach(i => {
                 const b = blocks[i];
                 if (!b) return;
-                const editable = b.querySelector('[contenteditable="true"]') || (b.contentEditable === 'true' ? b : null);
-                const html = editable ? editable.innerHTML : '';
-                const newBlock = createBlock(type, html);
-                b.replaceWith(newBlock);
+                const newBlock = convertedBlock(b, type);
+                if (newBlock) b.replaceWith(newBlock);
             });
             clearBlockSelection();
             document.getElementById('convert-menu').style.display = 'none';
@@ -2454,30 +2719,821 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
             }
         };
 
-        document.querySelector('.scroll-wrapper').addEventListener('click', (e) => {
-            if (e.target.classList.contains('scroll-wrapper') || e.target.classList.contains('content-container') || e.target.id === 'editor') {
-                const blocks = editor.children;
-                if (blocks.length > 0) {
-                    const lastBlock = blocks[blocks.length - 1];
-                    const isNonEditable = lastBlock.classList.contains('toggle') ||
-                                         lastBlock.classList.contains('table-container') ||
-                                         lastBlock.classList.contains('divider');
-                    if (isNonEditable) {
-                        const nb = createBlock('text'); editor.appendChild(nb); nb.focus();
-                    } else {
-                        const editableEl = lastBlock.querySelector('.todo-content') ||
-                                           lastBlock.querySelector('.callout-content') ||
-                                           lastBlock;
-                        setCaretEnd(editableEl);
-                    }
-                } else {
-                    const b = createBlock('text');
-                    editor.appendChild(b);
-                    b.focus();
+        function notebookFocusAtPoint(field, x, y) {
+            const rect=field.getBoundingClientRect(),style=getComputedStyle(field);
+            const left=rect.left+(parseFloat(style.paddingLeft)||0)+1,right=Math.max(left,rect.right-(parseFloat(style.paddingRight)||0)-1);
+            const px=Math.max(left,Math.min(x,right)),py=Math.max(rect.top+1,Math.min(y,rect.bottom-1));
+            field.focus({preventScroll:true});
+            let range=document.caretRangeFromPoint?.(px,py);
+            if(!range && document.caretPositionFromPoint){const position=document.caretPositionFromPoint(px,py);if(position){range=document.createRange();range.setStart(position.offsetNode,position.offset);range.collapse(true);}}
+            if(!range || !field.contains(range.startContainer)){
+                range=document.createRange();range.selectNodeContents(field);range.collapse(x<rect.left+rect.width/2);
+            }
+            const selection=window.getSelection();selection.removeAllRanges();selection.addRange(range);
+        }
+        document.querySelector('.scroll-wrapper').addEventListener('click',event=>{
+            if(event.button!==0 || !event.target.matches('.scroll-wrapper,.content-container,#editor'))return;
+            const blocks=Array.from(editor.children),last=blocks.at(-1);
+            // A deliberate click below a structural last block may start a new paragraph.
+            // Side margins at an existing line never append content or jump to the bottom.
+            if(last && event.clientY>last.getBoundingClientRect().bottom+4 && last.matches('.toggle,.table-container,.divider')){
+                pushUndoSnapshot();const paragraph=createBlock('text');editor.appendChild(paragraph);paragraph.focus({preventScroll:true});triggerSave();return;
+            }
+            const candidates=[titleEl,...blocks].filter(block=>block.getClientRects().length);
+            const distance=el=>{const r=el.getBoundingClientRect();return Math.max(r.top-event.clientY,event.clientY-r.bottom,0);};
+            const block=candidates.reduce((nearest,item)=>!nearest||distance(item)<distance(nearest)?item:nearest,null);
+            if(!block)return;
+            const fields=(block.contentEditable==='true'?[block]:Array.from(block.querySelectorAll('[contenteditable="true"]'))).filter(field=>field.getClientRects().length && getComputedStyle(field).visibility!=='hidden');
+            const field=fields.reduce((nearest,item)=>!nearest||distance(item)<distance(nearest)?item:nearest,null);
+            if(!field)return; // Protected content and dividers remain untouched.
+            event.preventDefault();notebookFocusAtPoint(field,event.clientX,event.clientY);
+        });
+            // Relationships are opt-in metadata. Invalid/orphaned relationships are
+        // interpreted for display only; original stored pages are never repaired.
+        const notebookCollapsedPages = new Set();
+        function notebookParentMap() {
+            const pages = new Map(appState.pages.map(page => [page.id, page]));
+            const parents = new Map();
+            appState.pages.forEach(page => {
+                if (pages.has(page.parentPageId) && page.parentPageId !== page.id) parents.set(page.id, page.parentPageId);
+            });
+            const cyclic = new Set(), checked = new Set();
+            for (const id of parents.keys()) {
+                if (checked.has(id)) continue;
+                const path = [], seen = new Map(); let next = id;
+                while (parents.has(next) && !checked.has(next)) {
+                    if (seen.has(next)) { path.slice(seen.get(next)).forEach(item => cyclic.add(item)); break; }
+                    seen.set(next, path.length); path.push(next); next = parents.get(next);
+                }
+                path.forEach(id => checked.add(id));
+            }
+            cyclic.forEach(id => parents.delete(id));
+            return parents;
+        }
+        function notebookDescendants(pageId, parents = notebookParentMap()) {
+            const result = new Set(), pending = [pageId], children = new Map();
+            for (const [child,parent] of parents) { if(!children.has(parent))children.set(parent,[]);children.get(parent).push(child); }
+            while (pending.length) {
+                const id = pending.pop();
+                for (const child of children.get(id)||[]) if (!result.has(child)) { result.add(child); pending.push(child); }
+            }
+            return result;
+        }
+        function setNotebookParent(pageId, parentId) {
+            const page = appState.pages.find(page => page.id === pageId);
+            if (!page || (parentId && (!appState.pages.some(page => page.id === parentId) || parentId === pageId || notebookDescendants(pageId).has(parentId)))) return false;
+            if (parentId) { page.parentPageId = parentId; notebookCollapsedPages.delete(parentId); }
+            else delete page.parentPageId;
+            renderSidebar(); renderNotebookBreadcrumbs(); triggerSave(); return true;
+        }
+        function addNotebookSubpage(pageId) {
+            if (!appState.pages.some(page => page.id === pageId)) return;
+            notebookCollapsedPages.delete(pageId); addNewPage(true, pageId);
+        }
+        function addNotebookSection() {
+            const name = prompt(i18nGet('section_name', 'Section name:'), '');
+            if (!name || !name.trim()) return;
+            ensureFolders();
+            appState.folders.push({id:'s-' + Date.now() + '-' + Math.random().toString(36).slice(2), name:name.trim(), open:true, kind:'section'});
+            renderSidebar(); triggerSave();
+        }
+        function renderHierarchicalSidebar(parents) {
+            const byUpdated = notebookSidebarCompare;
+            const children = new Map(), pageById = new Map(appState.pages.map(page=>[page.id,page]));
+            for (const [child,parent] of parents) {
+                if (!children.has(parent)) children.set(parent, []);
+                children.get(parent).push(pageById.get(child));
+            }
+            const roots = appState.pages.filter(page => !parents.has(page.id) && (!page.pinned || children.has(page.id) || page.folderId)).sort(byUpdated);
+            const render = (page, depth, inFolder) => {
+                const row = buildSidebarItem(page, inFolder);
+                row.dataset.pageId = page.id; row.classList.add('nb-tree-row');
+                row.style.marginLeft = (inFolder ? 12 : 8) + Math.min(depth, 12) * 12 + 'px';
+                const kids = (children.get(page.id) || []).sort(byUpdated);
+                if (kids.length) {
+                    const button = document.createElement('button'); button.type='button'; button.className='nb-tree-toggle';
+                    const open = !notebookCollapsedPages.has(page.id); button.textContent=open ? '▾' : '▸';
+                    button.setAttribute('aria-expanded', String(open)); button.setAttribute('aria-label', i18nGet('subpages', 'Subpages'));
+                    button.onclick = event => {event.stopPropagation();open ? notebookCollapsedPages.add(page.id) : notebookCollapsedPages.delete(page.id);renderSidebar();};
+                    row.prepend(button);
+                }
+                sidebarList.appendChild(row);
+                if (!notebookCollapsedPages.has(page.id)) kids.forEach(child => render(child,depth+1,inFolder));
+            };
+            const pinned = appState.pages.filter(page => page.pinned).sort(byUpdated);
+            if (pinned.length) {
+                const label=document.createElement('div');label.className='sidebar-section-label';label.innerHTML=notebookUiIcon('pin')+' '+escHtml(i18nGet('pinned','Pinned'));sidebarList.appendChild(label);
+                pinned.forEach(page => sidebarList.appendChild(buildSidebarItem(page,false)));
+            }
+            const subtreeCounts = new Map();
+            for (const root of roots) {
+                const pending = [root]; let count = 0;
+                while(pending.length){const page=pending.pop();count++;pending.push(...(children.get(page.id)||[]));}
+                subtreeCounts.set(root.id,count);
+            }
+            const folderIds = new Set(appState.folders.map(folder=>folder.id));
+            appState.folders.forEach(folder => {
+                const pages=roots.filter(page=>page.folderId===folder.id);
+                const row=document.createElement('div');row.className='folder-row';row.tabIndex=0;row.setAttribute('role','button');row.setAttribute('aria-expanded',String(folder.open!==false||notebookHoverFolders.has(folder.id)));
+                const arrow=document.createElement('span');arrow.className='folder-arrow'+(folder.open!==false||notebookHoverFolders.has(folder.id)?' open':'');arrow.textContent='▶';row.appendChild(arrow);
+                const name=document.createElement('span');name.className='folder-name';name.textContent=folder.name;const icon=document.createElement('span');icon.className='nb-ui-icon';icon.innerHTML=notebookUiIcon('folder');row.appendChild(icon);row.appendChild(name);
+                const count=document.createElement('span');count.className='folder-count';count.textContent=pages.reduce((count,page)=>count+(subtreeCounts.get(page.id)||1),0);row.appendChild(count);
+                const remove=document.createElement('button');remove.className='nb-section-remove';remove.type='button';remove.textContent='×';remove.setAttribute('aria-label',i18nGet('delete','Delete'));remove.onclick=event=>deleteFolder(event,folder.id);row.appendChild(remove);
+                row.onclick=()=>{const open=folder.open!==false||notebookHoverFolders.has(folder.id);notebookHoverFolders.delete(folder.id);folder.open=!open;renderSidebar();triggerSave();};
+                row.onkeydown=event=>{if(event.target===row&&(event.key==='Enter'||event.key===' ')){event.preventDefault();row.click();}};
+                row.oncontextmenu=event=>{event.preventDefault();renameFolder(folder.id);};
+                enableNotebookFolderDrop(row, folder.id);
+                sidebarList.appendChild(row);
+                if(folder.open!==false||notebookHoverFolders.has(folder.id))pages.forEach(page=>render(page,0,true));
+            });
+            roots.filter(page=>!page.folderId||!folderIds.has(page.folderId)).forEach(page=>render(page,0,false));
+        }
+        function renderNotebookBreadcrumbs() {
+            const nav=document.getElementById('notebook-breadcrumbs');nav.replaceChildren();
+            const parents=notebookParentMap(),pageMap=new Map(appState.pages.map(page=>[page.id,page]));
+            let page=pageMap.get(appState.activePageId);if(!page){nav.hidden=true;return;}
+            const chain=[page];while(parents.has(page.id)){page=pageMap.get(parents.get(page.id));chain.unshift(page);}
+            const folder=appState.folders?.find(folder=>folder.id===chain[0].folderId);
+            nav.hidden=chain.length<2 && !folder;if(nav.hidden)return;
+            const labels=[];
+            if(folder){const label=document.createElement('span');label.textContent=folder.name;nav.appendChild(label);labels.push(folder.name);}
+            chain.forEach((item,index)=>{
+                if(nav.children.length){const separator=document.createElement('span');separator.textContent='/';separator.setAttribute('aria-hidden','true');nav.appendChild(separator);}
+                const label=item.title||i18nGet('untitled','Untitled');labels.push(label);
+                if(index===chain.length-1){const current=document.createElement('span');current.textContent=label;current.setAttribute('aria-current','page');nav.appendChild(current);}
+                else{const button=document.createElement('button');button.type='button';button.textContent=label;button.onclick=()=>loadPage(item.id);nav.appendChild(button);}
+            });nav.title=labels.join(' / ');
+        }
+        function notebookChooseParent(pageId) {
+            const invalid=notebookDescendants(pageId);invalid.add(pageId);
+            pageCtxMenu.replaceChildren();
+            const search=document.createElement('input');search.type='search';search.placeholder=i18nGet('search_pages','Search pages…');search.setAttribute('aria-label',search.placeholder);pageCtxMenu.appendChild(search);
+            const top=notebookButton(i18nGet('top_level','Top level'),()=>{setNotebookParent(pageId,null);hidePageCtxMenu();});top.className='ctx-item';pageCtxMenu.appendChild(top);
+            appState.pages.filter(page=>!invalid.has(page.id)).forEach(page=>{
+                const button=notebookButton(page.title||i18nGet('untitled','Untitled'),()=>{setNotebookParent(pageId,page.id);hidePageCtxMenu();});button.className='ctx-item';pageCtxMenu.appendChild(button);
+            });
+            search.oninput=()=>pageCtxMenu.querySelectorAll('button').forEach(button=>button.hidden=!button.textContent.toLocaleLowerCase().includes(search.value.toLocaleLowerCase()));
+            pageCtxMenu.style.top=Math.max(8,Math.min(parseFloat(pageCtxMenu.style.top)||8,innerHeight-pageCtxMenu.offsetHeight-8))+'px';
+            search.focus();
+        }
+
+        const notebookTableOptions=new WeakMap(),notebookTableBaseline=new WeakMap();
+        let notebookTableCell=null,notebookTableSelected=null,notebookMediaGesture=null,notebookMediaSkipClick=false;
+        const notebookTableHandles=document.createElement('div');notebookTableHandles.id='notebook-table-handles';document.body.appendChild(notebookTableHandles);
+        const notebookMediaGuide=document.createElement('div');notebookMediaGuide.id='notebook-media-guide';notebookMediaGuide.hidden=true;document.body.appendChild(notebookMediaGuide);
+        function notebookTableEditable(table){
+            const block=table?.closest('#editor > .table-container'),data=storedBlocks.get(block)?.data;
+            return !!block && !(typeof data?.html==='string'&&userHtmlWasFiltered(data.html));
+        }
+        function notebookSimpleTable(table){
+            const rows=Array.from(table?.rows||[]),count=rows[0]?.cells.length;
+            return !!count && table.querySelectorAll(':scope > colgroup').length<=1 && Array.from(table.querySelectorAll(':scope > colgroup > col')).every(col=>col.span===1) && rows.every(row=>row.cells.length===count&&Array.from(row.cells).every(cell=>cell.rowSpan===1&&cell.colSpan===1));
+        }
+        function notebookApplyTableOptions(block,options){
+            if(!options||typeof options!=='object'||Array.isArray(options))return;
+            notebookTableOptions.set(block,JSON.parse(JSON.stringify(options)));
+            const table=block.querySelector('table');table.classList.toggle('nb-table-header',options.headerRow===true);
+            if(options.fixedLayout===true)table.style.tableLayout='fixed';
+        }
+        function notebookTableMutate(table,action){
+            if(!notebookTableEditable(table))return false;
+            pushUndoSnapshot();action();triggerSave();notebookRefreshTableHandles();return true;
+        }
+        function notebookTableHeader(table){
+            return notebookTableMutate(table,()=>{const block=table.closest('.table-container'),options={...(notebookTableOptions.get(block)||{}),headerRow:!notebookTableOptions.get(block)?.headerRow};notebookApplyTableOptions(block,options);});
+        }
+        function notebookTableMoveRow(cell,direction){
+            const table=cell?.closest('table'),row=cell?.parentElement,sibling=direction<0?row?.previousElementSibling:row?.nextElementSibling;
+            if(!notebookSimpleTable(table)||!sibling||sibling.tagName!=='TR')return false;
+            return notebookTableMutate(table,()=>{if(direction<0)sibling.before(row);else sibling.after(row);});
+        }
+        function notebookTableMoveColumn(cell,direction){
+            const table=cell?.closest('table'),index=cell?.cellIndex,next=index+direction;
+            if(!notebookSimpleTable(table)||next<0||next>=table.rows[0].cells.length)return false;
+            const columns=Array.from(table.querySelectorAll(':scope > colgroup > col'));
+            if(columns.length && (columns.length!==table.rows[0].cells.length||columns.some(col=>col.span!==1)))return false;
+            return notebookTableMutate(table,()=>{
+                Array.from(table.rows).forEach(row=>{const source=row.cells[index],target=row.cells[next];if(direction<0)target.before(source);else target.after(source);});
+                if(columns.length){if(direction<0)columns[next].before(columns[index]);else columns[next].after(columns[index]);}
+            });
+        }
+        function notebookTableAlign(cell,alignment){
+            const table=cell?.closest('table');if(!notebookSimpleTable(table))return false;
+            return notebookTableMutate(table,()=>Array.from(table.rows).forEach(row=>row.cells[cell.cellIndex].style.textAlign=alignment));
+        }
+        function notebookTableWidths(table,widths){
+            if(!notebookSimpleTable(table)||!notebookTableEditable(table))return false;
+            let columns=Array.from(table.querySelectorAll(':scope > colgroup > col'));
+            if(columns.length&&(columns.length!==widths.length||columns.some(col=>col.span!==1)))return false;
+            return notebookTableMutate(table,()=>{
+                if(!columns.length){const group=document.createElement('colgroup');columns=widths.map(()=>{const col=document.createElement('col');group.appendChild(col);return col;});table.insertBefore(group,table.querySelector(':scope > thead,:scope > tbody,:scope > tfoot,:scope > tr'));}
+                columns.forEach((col,index)=>col.style.width=widths[index]+'px');
+                const block=table.closest('.table-container');notebookApplyTableOptions(block,{...(notebookTableOptions.get(block)||{}),fixedLayout:true});
+            });
+        }
+        function notebookRefreshTableHandles(){
+            notebookTableHandles.replaceChildren();const table=notebookTableSelected;
+            if(!table||!editor.contains(table)||!notebookTableEditable(table)||!notebookSimpleTable(table))return;
+            const columns=Array.from(table.querySelectorAll(':scope > colgroup > col'));if(columns.length&&(columns.length!==table.rows[0].cells.length||columns.some(col=>col.span!==1)))return;
+            const view=table.closest('.table-scroller').getBoundingClientRect(),rect=table.getBoundingClientRect(),scroller=document.querySelector('.scroll-wrapper').getBoundingClientRect();
+            Array.from(table.rows[0].cells).slice(0,-1).forEach((cell,index)=>{
+                const x=cell.getBoundingClientRect().right;if(x<view.left||x>view.right||rect.bottom<scroller.top||rect.top>scroller.bottom)return;
+                const handle=document.createElement('button');handle.type='button';handle.className='nb-column-resize';handle.setAttribute('aria-label',i18nGet('resize_column','Resize column')+' '+(index+1));handle.style.cssText=`left:${x-4}px;top:${Math.max(rect.top,scroller.top)}px;height:${Math.max(0,Math.min(rect.bottom,scroller.bottom)-Math.max(rect.top,scroller.top))}px`;
+                handle.onpointerdown=event=>{
+                    if(event.button!==0)return;event.preventDefault();event.stopPropagation();
+                    const widths=Array.from(table.rows[0].cells).map(item=>item.getBoundingClientRect().width);
+                    notebookMediaGesture={kind:'column',table,index,widths,x:event.clientX,pageId:appState.activePageId,pointerId:event.pointerId};
+                };
+                handle.onkeydown=event=>{
+                    if(!['ArrowLeft','ArrowRight'].includes(event.key))return;event.preventDefault();event.stopPropagation();
+                    const widths=Array.from(table.rows[0].cells).map(item=>item.getBoundingClientRect().width),delta=event.key==='ArrowRight'?10:-10;
+                    if(widths[index]+delta>=40&&widths[index+1]-delta>=40){widths[index]+=delta;widths[index+1]-=delta;notebookTableWidths(table,widths);}
+                };notebookTableHandles.appendChild(handle);
+            });
+        }
+        function notebookOpenTableOptions(button){
+            const table=button.closest('.table-container').querySelector('table');if(!notebookTableEditable(table))return;
+            notebookTableSelected=table;const cell=notebookTableCell?.closest('table')===table?notebookTableCell:table.rows[0]?.cells[0];if(!cell)return;
+            notebookPopup.replaceChildren();
+            const options=notebookTableOptions.get(table.closest('.table-container'))||{};
+            [[(options.headerRow?'✓ ':'')+i18nGet('header_row','Header row'),()=>notebookTableHeader(table)],
+             [i18nGet('row_up','Move row up'),()=>notebookTableMoveRow(cell,-1)],
+             [i18nGet('row_down','Move row down'),()=>notebookTableMoveRow(cell,1)],
+             [i18nGet('column_left','Move column left'),()=>notebookTableMoveColumn(cell,-1)],
+             [i18nGet('column_right','Move column right'),()=>notebookTableMoveColumn(cell,1)],
+             [i18nGet('align_left','Align left'),()=>notebookTableAlign(cell,'left')],
+             [i18nGet('align_center','Align center'),()=>notebookTableAlign(cell,'center')],
+             [i18nGet('align_right','Align right'),()=>notebookTableAlign(cell,'right')]].forEach(([label,action],index)=>{
+                const item=notebookButton(label,()=>{notebookClosePopup();action();});
+                if(index===1&&!cell.parentElement.previousElementSibling||index===2&&!cell.parentElement.nextElementSibling||index===3&&cell.cellIndex===0||index===4&&cell.cellIndex===table.rows[0].cells.length-1)item.disabled=true;
+                if(index>0&&!notebookSimpleTable(table)){item.disabled=true;item.title=i18nGet('merged_table','Merged cells are preserved. Reordering and resizing are available for regular tables.');}
+                notebookPopup.appendChild(item);
+            });notebookPlacePopup(button.getBoundingClientRect());notebookRefreshTableHandles();
+        }
+        editor.addEventListener('focusin',event=>{
+            const cell=event.target.closest('td,th');if(!cell||!editor.contains(cell))return;
+            notebookTableCell=cell;notebookTableSelected=cell.closest('table');notebookRefreshTableHandles();
+        });
+        editor.addEventListener('click',event=>{const cell=event.target.closest('td,th');if(cell){notebookTableCell=cell;notebookTableSelected=cell.closest('table');notebookRefreshTableHandles();}});
+
+        const notebookImageFrame=document.createElement('div');notebookImageFrame.id='notebook-image-frame';notebookImageFrame.hidden=true;
+        const notebookImageSize=document.createElement('button');notebookImageSize.type='button';notebookImageSize.className='nb-image-size';notebookImageSize.setAttribute('aria-label',i18nGet('resize_image','Resize image'));notebookImageFrame.appendChild(notebookImageSize);document.body.appendChild(notebookImageFrame);
+        const notebookImageInput=document.createElement('input');notebookImageInput.type='file';notebookImageInput.accept='image/*';notebookImageInput.multiple=true;notebookImageInput.hidden=true;document.body.appendChild(notebookImageInput);
+        let notebookImageUploadContext=null;
+        function notebookImageEditable(image){
+            if(!image||!editor.contains(image))return false;
+            const block=blockOf(image),data=storedBlocks.get(block)?.data,field=image.closest('[contenteditable]');
+            return field?.contentEditable==='true' && !(typeof data?.html==='string'&&userHtmlWasFiltered(data.html)) && !(typeof data?.body==='string'&&userHtmlWasFiltered(data.body));
+        }
+        function notebookRefreshImageFrame(){
+            if(notebookMediaGesture?.kind!=='image-size')notebookImageFrame.querySelector('.nb-image-preview')?.remove();
+            if(!notebookImageEditable(selectedImg)){notebookImageFrame.hidden=true;imgToolbar.style.display='none';return;}
+            const r=selectedImg.getBoundingClientRect(),view=document.querySelector('.scroll-wrapper').getBoundingClientRect();
+            if(r.bottom<view.top||r.top>view.bottom){notebookImageFrame.hidden=true;imgToolbar.style.display='none';return;}
+            notebookImageFrame.hidden=false;notebookImageFrame.style.cssText=`left:${r.left}px;top:${r.top}px;width:${r.width}px;height:${r.height}px`;
+            imgToolbar.style.display='flex';const top=Math.max(view.top+4,r.top-imgToolbar.offsetHeight-6);imgToolbar.style.top=top+'px';imgToolbar.style.left=Math.max(4,Math.min(r.left,innerWidth-imgToolbar.offsetWidth-4))+'px';
+        }
+        function notebookSelectImage(image){if(!notebookImageEditable(image)){selectedImg=null;notebookRefreshImageFrame();return;}selectedImg=image;const field=image.closest('[contenteditable="true"]');field.focus({preventScroll:true});const range=document.createRange();range.setStartAfter(image);range.collapse(true);const selection=window.getSelection();selection.removeAllRanges();selection.addRange(range);notebookTableSelected=null;notebookTableHandles.replaceChildren();notebookRefreshImageFrame();}
+        function notebookResizeImage(image,width){
+            if(!notebookImageEditable(image)||!Number.isFinite(width)||width<24)return false;
+            const rect=image.getBoundingClientRect();if(!rect.width||!rect.height)return false;
+            pushUndoSnapshot();image.style.aspectRatio=String(rect.width/rect.height);image.style.width=width+'px';image.style.height='auto';triggerSave();notebookRefreshImageFrame();return true;
+        }
+        function notebookAlignImage(alignment){
+            if(!notebookImageEditable(selectedImg))return;
+            pushUndoSnapshot();const image=selectedImg;image.style.float='none';image.style.position='static';
+            if(alignment==='inline'){image.style.display='inline-block';image.style.marginLeft='0';image.style.marginRight='0';}
+            else{image.style.display='block';image.style.marginLeft=alignment==='left'?'0':'auto';image.style.marginRight=alignment==='right'?'0':'auto';}
+            triggerSave();notebookRefreshImageFrame();
+        }
+        function notebookRequestImageUpload(anchor=notebookActionBlock){
+            if(anchor?.parentElement!==editor)return;
+            saveCurrentEditorToState();notebookImageUploadContext={state:appState,pageId:appState.activePageId,anchor};notebookImageInput.value='';notebookClosePopup();notebookImageInput.click();
+        }
+        async function notebookReadImage(file){
+            const url=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=reject;reader.readAsDataURL(file);});
+            if(typeof url!=='string'||!/^data:image\//i.test(url))throw new Error('image');
+            await new Promise((resolve,reject)=>{const image=new Image();image.onload=()=>image.naturalWidth&&image.naturalHeight?resolve():reject();image.onerror=reject;image.src=url;});
+            return {url,name:file.name};
+        }
+        async function notebookInsertImageFiles(files,context=notebookImageUploadContext){
+            if(!files.length)return false;
+            try{
+                const images=await Promise.all(Array.from(files).map(notebookReadImage));
+                if(!context||context.state!==appState||context.pageId!==appState.activePageId||context.anchor?.parentElement!==editor)throw new Error('context');
+                pushUndoSnapshot();let anchor=context.anchor;
+                images.forEach(data=>{const image=document.createElement('img');image.src=data.url;image.alt=data.name;const holder=document.createElement('div');holder.appendChild(image);const block=createBlock('text',holder.innerHTML);anchor.after(block);anchor=block;});
+                triggerSave();notebookSelectImage(anchor.querySelector('img'));return true;
+            }catch(error){alert(i18nGet('image_upload_error','Image could not be added. Please try again.'));return false;}
+        }
+        notebookImageInput.addEventListener('change',()=>notebookInsertImageFiles(notebookImageInput.files));
+        notebookImageSize.onpointerdown=event=>{
+            if(event.button!==0||!notebookImageEditable(selectedImg))return;event.preventDefault();event.stopPropagation();const r=selectedImg.getBoundingClientRect();
+            notebookMediaGesture={kind:'image-size',image:selectedImg,x:event.clientX,width:r.width,height:r.height,rect:r,pageId:appState.activePageId,pointerId:event.pointerId};
+            const preview=selectedImg.cloneNode();preview.className='nb-image-preview';preview.style.cssText='position:absolute;inset:0;width:100%;height:100%;max-width:none;pointer-events:none';notebookImageFrame.prepend(preview);
+        };
+        notebookImageSize.onkeydown=event=>{
+            if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(event.key)||!selectedImg)return;
+            event.preventDefault();event.stopPropagation();const width=selectedImg.getBoundingClientRect().width+(['ArrowRight','ArrowUp'].includes(event.key)?10:-10);notebookResizeImage(selectedImg,width);
+        };
+        function notebookBeginImageMove(event){
+            if(event.button!==0||!notebookImageEditable(selectedImg))return;event.preventDefault();event.stopPropagation();
+            notebookMediaGesture={kind:'image-move',image:selectedImg,pageId:appState.activePageId,pointerId:event.pointerId,x:event.clientX,y:event.clientY,started:false};
+        }
+        editor.addEventListener('pointerdown',event=>{
+            if(event.target.tagName==='IMG'&&notebookImageEditable(event.target)){selectedImg=event.target;notebookBeginImageMove(event);}
+        });
+        editor.addEventListener('dragstart',event=>{if(event.target.tagName==='IMG')event.preventDefault();});
+        function notebookImageDropAt(event,image){
+            const view=document.querySelector('.scroll-wrapper').getBoundingClientRect();if(event.clientX<view.left||event.clientX>view.right||event.clientY<view.top||event.clientY>view.bottom)return null;
+            const blocks=Array.from(editor.children);let target=null,minimum=Infinity;
+            blocks.forEach(block=>{const r=block.getBoundingClientRect(),distance=Math.max(r.top-event.clientY,event.clientY-r.bottom,0);if(distance<minimum){minimum=distance;target=block;}});if(!target)return null;
+            const r=target.getBoundingClientRect(),field=document.elementFromPoint(event.clientX,event.clientY)?.closest('[contenteditable="true"]');
+            if(field&&editor.contains(field) && !(field.contains(image)&&field.textContent.trim()===''&&field.querySelectorAll('img').length===1)){
+                const data=storedBlocks.get(blockOf(field))?.data;
+                if(!data||!['html','body'].some(key=>typeof data[key]==='string'&&userHtmlWasFiltered(data[key]))){
+                    const range=document.caretRangeFromPoint?.(event.clientX,event.clientY);if(range&&field.contains(range.startContainer)&&!image.contains(range.startContainer))return {mode:'inline',field,range,top:event.clientY,left:event.clientX,width:2};
                 }
             }
+            if(target===blockOf(image)&&target.textContent.trim()===''&&target.querySelectorAll('img').length===1)return null;
+            const before=event.clientY<r.top+r.height/2;return {mode:'block',target,before,top:before?r.top:r.bottom,left:r.left,width:r.width};
+        }
+        function notebookMoveImage(image,drop){
+            if(!notebookImageEditable(image)||!drop)return false;
+            pushUndoSnapshot();
+            if(drop.mode==='inline'){drop.range.insertNode(image);}
+            else{const block=createBlock('text');block.appendChild(image);if(drop.before)drop.target.before(block);else drop.target.after(block);}
+            triggerSave();notebookSelectImage(image);return true;
+        }
+        function notebookCancelMedia(){
+            notebookMediaGesture=null;notebookMediaGuide.hidden=true;notebookRefreshImageFrame();
+        }
+        function notebookResetMediaUi(){
+            notebookMediaGesture=null;notebookImageFrame.querySelector('.nb-image-preview')?.remove();notebookImageUploadContext=null;notebookMediaGuide.hidden=true;selectedImg=null;imgToolbar.style.display='none';notebookImageFrame.hidden=true;notebookTableCell=null;notebookTableSelected=null;notebookTableHandles.replaceChildren();
+        }
+        document.addEventListener('pointermove',event=>{
+            const gesture=notebookMediaGesture;if(!gesture||gesture.pointerId!==event.pointerId)return;
+            event.preventDefault();
+            if(gesture.kind==='column'){
+                const delta=Math.max(40-gesture.widths[gesture.index],Math.min(event.clientX-gesture.x,gesture.widths[gesture.index+1]-40));gesture.delta=delta;
+                const r=gesture.table.getBoundingClientRect(),boundary=gesture.table.rows[0].cells[gesture.index].getBoundingClientRect().right+delta;notebookMediaGuide.hidden=false;notebookMediaGuide.style.cssText=`left:${boundary}px;top:${r.top}px;width:2px;height:${r.height}px`;
+            }else if(gesture.kind==='image-size'){
+                const max=gesture.image.parentElement.getBoundingClientRect().width,width=Math.max(24,Math.min(gesture.width+event.clientX-gesture.x,max));gesture.newWidth=width;
+                notebookImageFrame.style.width=width+'px';notebookImageFrame.style.height=(width*gesture.height/gesture.width)+'px';
+            }else{
+                if(Math.hypot(event.clientX-gesture.x,event.clientY-gesture.y)<6&&!gesture.started)return;gesture.started=true;
+                gesture.drop=notebookImageDropAt(event,gesture.image);notebookMediaGuide.hidden=!gesture.drop;
+                if(gesture.drop){const drop=gesture.drop;notebookMediaGuide.style.cssText=`left:${drop.left}px;top:${drop.top}px;width:${drop.width}px;height:${drop.mode==='inline'?20:2}px`;}
+            }
+        },{passive:false});
+        document.addEventListener('pointerup',event=>{
+            const gesture=notebookMediaGesture;if(!gesture||gesture.pointerId!==event.pointerId)return;notebookMediaGesture=null;notebookMediaGuide.hidden=true;
+            if(gesture.pageId!==appState.activePageId){notebookRefreshImageFrame();return;}
+            if(gesture.kind==='image-move'&&!gesture.started)return;
+            if(gesture.kind==='column'&&gesture.delta){const widths=gesture.widths.slice();widths[gesture.index]+=gesture.delta;widths[gesture.index+1]-=gesture.delta;notebookTableWidths(gesture.table,widths);}
+            else if(gesture.kind==='image-size'&&gesture.newWidth)notebookResizeImage(gesture.image,gesture.newWidth);
+            else if(gesture.kind==='image-move'&&gesture.started){notebookMoveImage(gesture.image,notebookImageDropAt(event,gesture.image));notebookMediaSkipClick=true;setTimeout(()=>notebookMediaSkipClick=false,0);}
+            notebookRefreshImageFrame();
         });
-    </script>
+        document.addEventListener('pointercancel',notebookCancelMedia);
+        document.addEventListener('keydown',event=>{if(event.key==='Escape'&&notebookMediaGesture){event.preventDefault();event.stopImmediatePropagation();notebookCancelMedia();}},true);
+        window.addEventListener('blur',()=>{if(notebookMediaGesture)notebookCancelMedia();});
+        document.querySelector('.scroll-wrapper').addEventListener('scroll',()=>{if(notebookMediaGesture)notebookCancelMedia();notebookRefreshImageFrame();notebookRefreshTableHandles();},{passive:true});
+        editor.addEventListener('scroll',notebookRefreshTableHandles,true);
+        window.addEventListener('resize',()=>{notebookCancelMedia();notebookRefreshImageFrame();notebookRefreshTableHandles();});
+
+        // Read-only navigation chrome and additive page copies. None modifies legacy content on load.
+        const notebookOutline=document.createElement('nav');notebookOutline.id='notebook-outline';notebookOutline.hidden=true;document.body.appendChild(notebookOutline);
+        const notebookToolsMenu=document.createElement('div');notebookToolsMenu.id='notebook-tools-menu';notebookToolsMenu.className='nb-popup';notebookToolsMenu.setAttribute('role','menu');document.body.appendChild(notebookToolsMenu);
+        const notebookDialog=document.createElement('dialog');notebookDialog.id='notebook-dialog';document.body.appendChild(notebookDialog);
+        let notebookDialogFocus=null,notebookVersionsTimer=null,notebookDialogMode=null;
+        function notebookText(key,fallback){return i18nGet(key,fallback);}
+        function notebookResetAuxiliaryUi(){
+            clearTimeout(notebookVersionsTimer);notebookDialog.close();notebookDialogMode=null;notebookOutline.hidden=true;notebookToolsMenu.style.display='none';document.getElementById('notebook-outline-toggle').setAttribute('aria-expanded','false');
+        }
+        function notebookCloseDialog(){clearTimeout(notebookVersionsTimer);notebookDialog.close();notebookDialogMode=null;notebookDialogFocus?.focus();}
+        function notebookDialogOpen(title,mode){
+            notebookToolsMenu.style.display='none';notebookDialogFocus=document.activeElement;notebookDialogMode=mode;notebookOutline.hidden=true;document.getElementById('notebook-outline-toggle').setAttribute('aria-expanded','false');notebookDialog.replaceChildren();
+            const header=document.createElement('header'),heading=document.createElement('h2');heading.textContent=title;heading.id='notebook-dialog-title';notebookDialog.setAttribute('aria-labelledby',heading.id);header.appendChild(heading);
+            const close=notebookButton(notebookText('close','Close'),notebookCloseDialog);close.innerHTML=notebookUiIcon('close');close.className='nb-dialog-close';close.setAttribute('aria-label',notebookText('close','Close'));header.appendChild(close);notebookDialog.appendChild(header);
+            if(!notebookDialog.open)notebookDialog.showModal();return notebookDialog;
+        }
+        notebookDialog.addEventListener('cancel',event=>{event.preventDefault();notebookCloseDialog();});
+        notebookDialog.addEventListener('click',event=>{if(event.target===notebookDialog){const r=notebookDialog.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)notebookCloseDialog();}});
+        document.addEventListener('keydown',event=>{if(notebookDialog.open&&event.key==='Escape'){event.preventDefault();event.stopImmediatePropagation();notebookCloseDialog();}},true);
+        function notebookPositionPanel(panel,anchor){
+            const r=anchor.getBoundingClientRect();panel.style.top=(r.bottom+6)+'px';panel.style.right=Math.max(8,innerWidth-r.right)+'px';
+        }
+        function notebookUpdateOutline(){
+            const headings=Array.from(editor.children).filter(block=>block.matches('.h1,.h2,.h3'));
+            notebookOutline.replaceChildren();notebookOutline.setAttribute('aria-label',notebookText('contents','Contents'));
+            if(!headings.length){const empty=document.createElement('div');empty.className='nb-menu-label';empty.textContent=notebookText('no_headings','No headings yet');notebookOutline.appendChild(empty);}
+            headings.forEach(block=>{
+                const button=notebookButton(block.textContent.trim()||notebookText('untitled','Untitled'),()=>{const scroller=document.querySelector('.scroll-wrapper'),a=scroller.getBoundingClientRect(),b=block.getBoundingClientRect();scroller.scrollTo({top:scroller.scrollTop+b.top-a.top-16,behavior:'smooth'});});
+                button.style.paddingLeft= (block.matches('.h3')?30:block.matches('.h2')?18:8)+'px';button.className='nb-outline-item';button._notebookHeading=block;notebookOutline.appendChild(button);
+            });notebookMarkOutline();
+        }
+        function notebookMarkOutline(){
+            const top=document.querySelector('.scroll-wrapper').getBoundingClientRect().top+36,buttons=Array.from(notebookOutline.querySelectorAll('button'));
+            let active=buttons[0];buttons.forEach(button=>{if(button._notebookHeading.getBoundingClientRect().top<=top)active=button;});
+            buttons.forEach(button=>{button.classList.toggle('nb-outline-current',button===active);if(button===active)button.setAttribute('aria-current','location');else button.removeAttribute('aria-current');});
+        }
+        function toggleNotebookOutline(){
+            notebookOutline.hidden=!notebookOutline.hidden;document.getElementById('notebook-outline-toggle').setAttribute('aria-expanded',String(!notebookOutline.hidden));
+            if(!notebookOutline.hidden){notebookUpdateOutline();notebookPositionPanel(notebookOutline,document.getElementById('notebook-outline-toggle'));}
+        }
+        let notebookOutlineTimer=null;
+        new MutationObserver(()=>{clearTimeout(notebookOutlineTimer);notebookOutlineTimer=setTimeout(notebookUpdateOutline,100);}).observe(editor,{childList:true,subtree:true,characterData:true});
+        document.querySelector('.scroll-wrapper').addEventListener('scroll',notebookMarkOutline,{passive:true});
+        function notebookCopyPage(source,title){
+            if(!source||typeof source!=='object'||!Array.isArray(source.blocks))return null;
+            pushUndoSnapshot();const copy=JSON.parse(JSON.stringify(source));
+            do { copy.id=window.crypto?.randomUUID?.()||('p-'+Date.now()+'-'+Math.random().toString(36).slice(2)); }
+            while(appState.pages.some(page=>page.id===copy.id));
+            copy.title=title||source.title||notebookText('untitled','Untitled');
+            delete copy.parentPageId;delete copy.folderId;delete copy.pinned;copy.updatedAt=Date.now();
+            appState.pages.push(copy);loadPage(copy.id,false);triggerSave();return copy;
+        }
+        function notebookBuiltinTemplates(){
+            return [{id:'builtin-disease',name:notebookText('disease_profile','Disease profile'),page:{title:notebookText('disease_profile','Disease profile'),icon:'',blocks:['definition','mechanism','symptoms','diagnosis','treatment'].flatMap(key=>[{type:'h2',html:escHtml(notebookText('template_'+key,{definition:'Definition',mechanism:'Mechanism',symptoms:'Symptoms',diagnosis:'Diagnosis',treatment:'Treatment'}[key]))},{type:'text',html:''}])}}];
+        }
+        function notebookSaveTemplate(){
+            saveCurrentEditorToState();const page=appState.pages.find(item=>item.id===appState.activePageId);if(!page)return;
+            const name=prompt(notebookText('template_name','Template name:'),page.title||'');if(!name?.trim())return;
+            pushUndoSnapshot();if(!Array.isArray(appState.notebookTemplates))appState.notebookTemplates=[];
+            appState.notebookTemplates.push({id:'t-'+Date.now()+'-'+Math.random().toString(36).slice(2),name:name.trim(),page:JSON.parse(JSON.stringify(page))});triggerSave();notebookShowTemplates();
+        }
+        function notebookPreviewPage(container,page){
+            container.replaceChildren();const title=document.createElement('h3');title.textContent=page.title||notebookText('untitled','Untitled');container.appendChild(title);
+            (page.blocks||[]).forEach(data=>{
+                if(!data||typeof data!=='object')return;
+                const block=createStoredBlock(data);block.contentEditable=false;block.querySelectorAll('[contenteditable]').forEach(el=>el.contentEditable=false);
+                block.querySelectorAll('input,button').forEach(el=>el.disabled=true);block.querySelectorAll('.table-controls').forEach(el=>el.remove());block.querySelectorAll('a').forEach(el=>el.onclick=event=>event.preventDefault());
+                block.style.pointerEvents='none';container.appendChild(block);
+            });
+        }
+        function notebookShowTemplates(){
+            const dialog=notebookDialogOpen(notebookText('templates','Templates'),'templates'),layout=document.createElement('div');layout.className='nb-dialog-grid';dialog.appendChild(layout);
+            const list=document.createElement('div');list.className='nb-dialog-list';const detail=document.createElement('div');detail.className='nb-dialog-detail';layout.append(list,detail);
+            const templates=[...notebookBuiltinTemplates(),...(Array.isArray(appState.notebookTemplates)?appState.notebookTemplates.filter(template=>template?.page&&Array.isArray(template.page.blocks)):[])];
+            const choose=template=>{
+                detail.replaceChildren();const preview=document.createElement('div');preview.className='nb-readonly-preview';notebookPreviewPage(preview,template.page);
+                const use=notebookButton(notebookText('use_template','Use template'),()=>{notebookCloseDialog();notebookCopyPage(template.page,template.name);});use.className='nb-primary';detail.append(use,preview);
+                if(!String(template.id||'').startsWith('builtin-')){const remove=notebookButton(notebookText('delete','Delete'),()=>{pushUndoSnapshot();appState.notebookTemplates=appState.notebookTemplates.filter(item=>item.id!==template.id);triggerSave();notebookShowTemplates();});remove.className='nb-secondary';detail.appendChild(remove);}
+                list.querySelectorAll('button').forEach(button=>button.classList.toggle('active',button.dataset.templateId===template.id));
+            };
+            templates.forEach(template=>{const button=notebookButton(template.name,()=>choose(template));button.dataset.templateId=template.id;list.appendChild(button);});choose(templates[0]);
+        }
+        function notebookVersionPages(body){
+            try{const data=JSON.parse(body);if(Array.isArray(data))return [{id:'legacy',title:notebookText('untitled','Untitled'),blocks:data}];if(data&&Array.isArray(data.pages))return data.pages.filter(page=>page&&Array.isArray(page.blocks));if(data&&Array.isArray(data.blocks))return [data];}catch(error){}return [];
+        }
+        function notebookShowVersions(){
+            const dialog=notebookDialogOpen(notebookText('versions','Versions'),'versions'),message=document.createElement('p');message.textContent=notebookText('loading_versions','Loading versions…');dialog.appendChild(message);
+            send(ADDON+':versions');clearTimeout(notebookVersionsTimer);notebookVersionsTimer=setTimeout(()=>window.onNotebookVersions({error:true,versions:[]}),15000);
+        }
+        window.onNotebookVersions=result=>{
+            if(!notebookDialog.open||notebookDialogMode!=='versions')return;clearTimeout(notebookVersionsTimer);
+            while(notebookDialog.children.length>1)notebookDialog.lastElementChild.remove();
+            const versions=(result.versions||[]).map(version=>({...version,pages:notebookVersionPages(version.body)})).filter(version=>version.pages.length);
+            if(result.error||!versions.length){const message=document.createElement('p');message.textContent=notebookText(result.error?'versions_error':'no_versions',result.error?'Could not load versions. Try again.':'No versions available');notebookDialog.appendChild(message);const retry=notebookButton(notebookText('retry','Retry'),notebookShowVersions);notebookDialog.appendChild(retry);return;}
+            const layout=document.createElement('div');layout.className='nb-dialog-grid';const list=document.createElement('div');list.className='nb-dialog-list';const detail=document.createElement('div');detail.className='nb-dialog-detail';layout.append(list,detail);notebookDialog.appendChild(layout);
+            const choose=version=>{
+                detail.replaceChildren();const select=document.createElement('select');select.setAttribute('aria-label',notebookText('pages','Pages'));
+                version.pages.forEach((page,index)=>{const option=document.createElement('option');option.value=index;option.textContent=page.title||notebookText('untitled','Untitled');select.appendChild(option);});
+                const active=version.pages.findIndex(page=>page.id===appState.activePageId);if(active>=0)select.value=active;
+                const restore=notebookButton(notebookText('restore_copy','Restore as copy'),()=>{const page=version.pages[Number(select.value)];notebookCloseDialog();notebookCopyPage(page,(page.title||notebookText('untitled','Untitled'))+' — '+notebookText('copy','Copy'));});restore.className='nb-primary';
+                const preview=document.createElement('div');preview.className='nb-readonly-preview';select.onchange=()=>notebookPreviewPage(preview,version.pages[Number(select.value)]);detail.append(select,restore,preview);select.onchange();
+            };
+            versions.forEach(version=>{
+                const date=version.timestamp?new Date(version.timestamp*1000).toLocaleString():notebookText('recovery','Recovery');
+                const button=notebookButton(date+(version.source==='pre-update'?' · '+notebookText('pre_update','Pre-update backup'):''),()=>{choose(version);list.querySelectorAll('button').forEach(item=>item.classList.toggle('active',item===button));});list.appendChild(button);
+            });list.firstElementChild.click();
+        };
+        function toggleNotebookTools(){
+            if(notebookToolsMenu.style.display==='block'){notebookToolsMenu.style.display='none';return;}
+            notebookToolsMenu.replaceChildren();
+            [[notebookText('templates','Templates'),notebookShowTemplates],[notebookText('save_template','Save as template'),notebookSaveTemplate],[notebookText('versions','Versions'),notebookShowVersions],[notebookText('export_notebook','Export Notebook'),()=>send(ADDON+':export')]].forEach(([label,action])=>{const button=notebookButton(label,()=>{notebookToolsMenu.style.display='none';action();});button.setAttribute('role','menuitem');notebookToolsMenu.appendChild(button);});
+            notebookToolsMenu.style.display='block';notebookPositionPanel(notebookToolsMenu,document.getElementById('notebook-tools-toggle'));notebookToolsMenu.querySelector('button').focus();
+        }
+        notebookToolsMenu.addEventListener('keydown',event=>{
+            if(!['ArrowDown','ArrowUp','Home','End','Escape'].includes(event.key))return;
+            event.preventDefault();event.stopPropagation();const buttons=Array.from(notebookToolsMenu.querySelectorAll('button')),index=buttons.indexOf(document.activeElement);
+            if(event.key==='Escape'){notebookToolsMenu.style.display='none';document.getElementById('notebook-tools-toggle').focus();return;}
+            const next=event.key==='Home'?0:event.key==='End'?buttons.length-1:(index+(event.key==='ArrowDown'?1:-1)+buttons.length)%buttons.length;buttons[next]?.focus();
+        });
+        document.addEventListener('pointerdown',event=>{if(!event.target.closest('#notebook-tools-menu,#notebook-tools-toggle'))notebookToolsMenu.style.display='none';});
+        document.addEventListener('keydown',event=>{if(event.key==='Escape'){notebookToolsMenu.style.display='none';notebookOutline.hidden=true;document.getElementById('notebook-outline-toggle').setAttribute('aria-expanded','false');}});
+
+        // UI chrome stays outside #editor: it cannot be serialized as note content.
+        const notebookGutter = document.createElement('div');
+        notebookGutter.id = 'notebook-gutter';
+        notebookGutter.innerHTML = '<button type="button" data-action="add">+</button><button type="button" data-action="menu">⠿</button>';
+        notebookGutter.querySelector('[data-action="add"]').title = i18nGet('insert_block', 'Insert block');
+        notebookGutter.querySelector('[data-action="menu"]').title = i18nGet('block_actions', 'Block actions');
+        notebookGutter.querySelectorAll('button').forEach(button => button.setAttribute('aria-label', button.title));
+        document.body.appendChild(notebookGutter);
+        const notebookPopup = document.createElement('div');
+        notebookPopup.id = 'notebook-popup'; notebookPopup.className = 'nb-popup';
+        notebookPopup.setAttribute('role', 'dialog');
+        document.body.appendChild(notebookPopup);
+        let notebookHoveredBlock = null, notebookEditingBlock = null, notebookActionBlock = null, notebookRange = null;
+        const notebookTypes = ['text', 'h1', 'h2', 'h3', 'bullet', 'todo', 'quote', 'callout', 'code', 'toggle'];
+        const notebookTypeLabel = type => i18nGet('block_' + (type === 'bullet' ? 'list' : type), ({text:'Text',h1:'Heading 1',h2:'Heading 2',h3:'Heading 3',bullet:'List',todo:'To-Do',quote:'Quote',callout:'Callout',code:'Code',toggle:'Toggle'})[type] || type);
+
+        function notebookPlacePopup(anchor) {
+            notebookPopup.style.display = 'block';
+            notebookPopup.style.left = Math.max(8, Math.min(anchor.left, innerWidth - notebookPopup.offsetWidth - 8)) + 'px';
+            notebookPopup.style.top = Math.max(8, Math.min(anchor.bottom + 5, innerHeight - notebookPopup.offsetHeight - 8)) + 'px';
+        }
+        function notebookClosePopup() { notebookPopup.style.display = 'none'; notebookPopup.replaceChildren(); }
+        function notebookButton(label, callback) {
+            const button = document.createElement('button'); button.type = 'button'; button.textContent = label;
+            button.addEventListener('click', callback); return button;
+        }
+        function notebookShowGutter(block) {
+            if (!block || block.parentElement !== editor) return;
+            notebookHoveredBlock = block;
+            const rect = block.getBoundingClientRect();
+            const bounds = document.querySelector('.scroll-wrapper').getBoundingClientRect();
+            if (rect.top < bounds.top || rect.top > bounds.bottom - 24) { notebookHideGutter(); return; }
+            notebookGutter.style.left = Math.max(0, rect.left - 49) + 'px';
+            notebookGutter.style.top = (rect.top + 5) + 'px';
+            notebookGutter.style.display = 'flex';
+        }
+        function notebookHideGutter() {
+            notebookGutter.style.display = 'none';
+        }
+        function notebookRestoreEditingGutter() {
+            if (notebookEditingBlock?.parentElement === editor) notebookShowGutter(notebookEditingBlock);
+            else notebookHideGutter();
+        }
+        // Include the left gutter and the gap leading to it in the hover area.
+        // This keeps the controls reachable without changing any note dimensions.
+        document.addEventListener('mousemove', event => {
+            if (event.buttons || notebookBlockDrag) return;
+            if (notebookGutter.contains(event.target) || notebookPopup.contains(event.target)) return;
+            const block = blockOf(event.target);
+            if (block) { notebookShowGutter(block); return; }
+            if (notebookHoveredBlock?.parentElement === editor) {
+                const rect = notebookHoveredBlock.getBoundingClientRect();
+                const view = document.querySelector('.scroll-wrapper').getBoundingClientRect();
+                if (event.clientX >= rect.left - 52 && event.clientX <= rect.right &&
+                    event.clientY >= Math.max(rect.top, view.top) && event.clientY <= Math.min(rect.bottom + 3, view.bottom)) return;
+            }
+            notebookRestoreEditingGutter();
+        });
+        editor.addEventListener('focusin', event => {
+            notebookEditingBlock = blockOf(event.target);
+            notebookRestoreEditingGutter();
+        });
+        document.addEventListener('mousedown', event => {
+            if (event.target.closest('#editor, #notebook-gutter, #notebook-popup, #format-toolbar')) return;
+            notebookEditingBlock = null; notebookHideGutter();
+        });
+        notebookGutter.addEventListener('mousedown', event => event.preventDefault());
+        notebookGutter.addEventListener('click', event => {
+            if (notebookSuppressGripClick) return;
+            if (!editor.contains(notebookHoveredBlock)) return;
+            notebookActionBlock = notebookHoveredBlock;
+            if (event.target.dataset.action === 'add') notebookOpenTypes(true, notebookGutter.getBoundingClientRect());
+            if (event.target.dataset.action === 'menu') notebookOpenActions();
+        });
+        let notebookBlockDrag = null, notebookSuppressGripClick = false;
+        const notebookDropLine = document.createElement('div');
+        notebookDropLine.id='notebook-drop-line';document.body.appendChild(notebookDropLine);
+        const notebookGrip=notebookGutter.querySelector('[data-action="menu"]');
+        notebookGrip.style.touchAction='none';
+        function cancelNotebookBlockDrag() {
+            const drag=notebookBlockDrag;notebookBlockDrag=null;notebookDropLine.style.display='none';notebookGrip.style.cursor='grab';
+            if(drag && notebookGrip.hasPointerCapture?.(drag.pointerId)) notebookGrip.releasePointerCapture(drag.pointerId);
+        }
+        function reorderNotebookBlock(block,before,pageId=appState.activePageId) {
+            if(pageId!==appState.activePageId || block?.parentElement!==editor || (before && before.parentElement!==editor)) return false;
+            if(before===block || before===block.nextElementSibling || (!before && block===editor.lastElementChild))return false;
+            pushUndoSnapshot();
+            editor.insertBefore(block,before||null);
+            clearBlockSelection();notebookHideGutter();triggerSave();return true;
+        }
+        notebookGrip.style.cursor='grab';
+        notebookGrip.addEventListener('pointerdown',event=>{
+            if(event.button!==0 || notebookHoveredBlock?.parentElement!==editor)return;
+            notebookBlockDrag={block:notebookHoveredBlock,pageId:appState.activePageId,pointerId:event.pointerId,x:event.clientX,y:event.clientY,started:false,before:null,valid:false};
+            notebookGrip.setPointerCapture(event.pointerId);
+        });
+        document.addEventListener('pointermove',event=>{
+            const drag=notebookBlockDrag;if(!drag || event.pointerId!==drag.pointerId)return;
+            if(drag.pageId!==appState.activePageId || drag.block.parentElement!==editor){cancelNotebookBlockDrag();return;}
+            if(!drag.started && Math.hypot(event.clientX-drag.x,event.clientY-drag.y)<6)return;
+            drag.started=true;event.preventDefault();notebookGrip.style.cursor='grabbing';notebookClosePopup();
+            const bounds=editor.getBoundingClientRect(),scroller=document.querySelector('.scroll-wrapper'),view=scroller.getBoundingClientRect();
+            drag.valid=event.clientX>=bounds.left-55 && event.clientX<=bounds.right+25 && event.clientY>=view.top && event.clientY<=view.bottom;
+            if(!drag.valid){notebookDropLine.style.display='none';return;}
+            if(event.clientY<view.top+32)scroller.scrollTop-=12;
+            if(event.clientY>view.bottom-32)scroller.scrollTop+=12;
+            const blocks=Array.from(editor.children).filter(block=>block!==drag.block);
+            drag.before=blocks.find(block=>{const rect=block.getBoundingClientRect();return event.clientY<rect.top+rect.height/2;})||null;
+            const rect=(drag.before||blocks[blocks.length-1]||drag.block).getBoundingClientRect();
+            const top=drag.before?rect.top:rect.bottom;
+            notebookDropLine.style.cssText=`display:block;top:${Math.max(view.top,Math.min(top,view.bottom))}px;left:${bounds.left}px;width:${bounds.width}px`;
+        },{passive:false});
+        document.addEventListener('pointerup',event=>{
+            const drag=notebookBlockDrag;if(!drag||event.pointerId!==drag.pointerId)return;
+            if(drag.started){notebookSuppressGripClick=true;setTimeout(()=>notebookSuppressGripClick=false,0);if(drag.valid)reorderNotebookBlock(drag.block,drag.before,drag.pageId);}
+            cancelNotebookBlockDrag();
+        });
+        document.addEventListener('pointercancel',cancelNotebookBlockDrag);
+        notebookGrip.addEventListener('lostpointercapture',()=>{if(notebookBlockDrag)cancelNotebookBlockDrag();});
+        document.addEventListener('keydown',event=>{
+            if(event.key==='Escape'&&notebookBlockDrag){event.preventDefault();event.stopImmediatePropagation();cancelNotebookBlockDrag();}
+        },true);
+        notebookGrip.addEventListener('keydown',event=>{
+            if(!event.altKey||!['ArrowUp','ArrowDown'].includes(event.key))return;
+            const block=notebookHoveredBlock;if(block?.parentElement!==editor)return;
+            event.preventDefault();event.stopPropagation();
+            if(event.key==='ArrowUp'&&block.previousElementSibling)reorderNotebookBlock(block,block.previousElementSibling);
+            if(event.key==='ArrowDown'&&block.nextElementSibling)reorderNotebookBlock(block,block.nextElementSibling.nextElementSibling);
+        });
+
+        function notebookOpenTypes(insert, anchor = notebookPopup.getBoundingClientRect()) {
+            notebookPopup.replaceChildren();
+            notebookTypes.forEach(type => {
+                const button = notebookButton(notebookTypeLabel(type), () => {
+                if (!editor.contains(notebookActionBlock)) { notebookClosePopup(); return; }
+                pushUndoSnapshot();
+                const block = insert ? createBlock(type) : convertedBlock(notebookActionBlock, type);
+                if (!block) return;
+                if (insert) notebookActionBlock.after(block); else notebookActionBlock.replaceWith(block);
+                notebookClosePopup(); notebookHideGutter();
+                const editable = block.querySelector('[contenteditable="true"]') || block;
+                setCaretEnd(editable); triggerSave();
+            });
+                if (!insert && !convertedBlock(notebookActionBlock, type)) {
+                    button.disabled = true;
+                    button.title = i18nGet('protected_content', 'Original content preserved. This block contains content that cannot be safely edited here.');
+                }
+                notebookPopup.appendChild(button);
+            });
+            if(insert)notebookPopup.appendChild(notebookButton(i18nGet('upload_image','Upload image'),()=>notebookRequestImageUpload(notebookActionBlock)));
+            notebookPlacePopup(anchor); notebookPopup.querySelector('button:not(:disabled)')?.focus();
+        }
+        function notebookOpenActions() {
+            notebookPopup.replaceChildren();
+            const search = document.createElement('input'); search.type = 'search';
+            search.placeholder = i18nGet('search_actions', 'Search actions…');
+            search.setAttribute('aria-label', search.placeholder); notebookPopup.appendChild(search);
+            const label = document.createElement('div'); label.className = 'nb-menu-label';
+            const data = storedBlocks.get(notebookActionBlock)?.data;
+            label.textContent = notebookTypeLabel(data?.type || 'text'); notebookPopup.appendChild(label);
+            const actions = [
+                [i18nGet('convert', 'Convert') + ' ›', () => notebookOpenTypes(false)],
+                [i18nGet('color', 'Color') + ' ›', () => openNotebookColors(notebookPopup, true)],
+                [i18nGet('move_up','Move up'), () => { if(notebookActionBlock?.previousElementSibling)reorderNotebookBlock(notebookActionBlock,notebookActionBlock.previousElementSibling);notebookClosePopup(); }],
+                [i18nGet('move_down','Move down'), () => { if(notebookActionBlock?.nextElementSibling)reorderNotebookBlock(notebookActionBlock,notebookActionBlock.nextElementSibling.nextElementSibling);notebookClosePopup(); }],
+                [i18nGet('duplicate', 'Duplicate'), () => {
+                    if (!editor.contains(notebookActionBlock)) return;
+                    pushUndoSnapshot(); saveCurrentEditorToState();
+                    const page = appState.pages.find(p => p.id === appState.activePageId);
+                    const index = Array.from(editor.children).indexOf(notebookActionBlock);
+                    const data = JSON.parse(JSON.stringify(page.blocks[index]));
+                    // Duplicates must not share an existing stable block identity.
+                    if (data.id) data.id = 'b-' + Date.now() + '-' + Math.random().toString(36).slice(2);
+                    notebookActionBlock.after(createStoredBlock(data)); notebookClosePopup(); triggerSave();
+                }],
+                [i18nGet('move_block', 'Move to page') + ' ›', notebookOpenMove],
+                [i18nGet('delete', 'Delete'), () => {
+                    if (!editor.contains(notebookActionBlock)) return;
+                    pushUndoSnapshot(); notebookActionBlock.remove();
+                    if (!editor.children.length) editor.appendChild(createBlock());
+                    notebookClosePopup(); notebookHideGutter(); triggerSave();
+                }]
+            ];
+            actions.forEach(([label, action]) => notebookPopup.appendChild(notebookButton(label, action)));
+            search.oninput = () => notebookPopup.querySelectorAll('button').forEach(button => {
+                button.hidden = !button.textContent.toLocaleLowerCase().includes(search.value.toLocaleLowerCase());
+            });
+            notebookPlacePopup(notebookGutter.getBoundingClientRect()); search.focus();
+        }
+        function notebookOpenMove() {
+            const anchor = notebookPopup.getBoundingClientRect(); notebookPopup.replaceChildren();
+            appState.pages.filter(page => page.id !== appState.activePageId).forEach(page => {
+                notebookPopup.appendChild(notebookButton(page.title || i18nGet('untitled', 'Untitled'), () => {
+                    if (!editor.contains(notebookActionBlock)) return;
+                    saveCurrentEditorToState();
+                    const source = appState.pages.find(p => p.id === appState.activePageId);
+                    const index = Array.from(editor.children).indexOf(notebookActionBlock);
+                    const original = JSON.parse(JSON.stringify(source.blocks[index]));
+                    // Both affected pages are captured together by the shared action history.
+                    if (!confirm(i18nGet('move_block_confirm', 'Move this block to another page?') + '\n' + (page.title || i18nGet('untitled', 'Untitled')))) return;
+                    if (!Array.isArray(page.blocks)) return;
+                    page.blocks.push(original); page.updatedAt = Date.now();
+                    notebookActionBlock.remove(); if (!editor.children.length) editor.appendChild(createBlock());
+                    clearTimeout(undoDebounceTimer); undoStack = []; redoStack = [];
+                    notebookClosePopup(); notebookHideGutter(); triggerSave(); pushUndoSnapshot();
+                }));
+            });
+            if (!notebookPopup.children.length) {
+                const label = document.createElement('div'); label.className = 'nb-menu-label';
+                label.textContent = i18nGet('no_other_pages', 'Create another page first.'); notebookPopup.appendChild(label);
+            }
+            notebookPlacePopup(anchor);
+        }
+        function openNotebookColors(anchorElement, wholeBlock) {
+            const anchor = anchorElement.getBoundingClientRect();
+            const selection = window.getSelection();
+            if (!wholeBlock) {
+                if (!selection.rangeCount || selection.isCollapsed || !editor.contains(selection.anchorNode)) return;
+                notebookRange = selection.getRangeAt(0).cloneRange();
+            }
+            notebookPopup.replaceChildren();
+            const colors = [
+                ['default_color','Default','inherit','transparent'], ['gray','Gray','#787774','#e9e9e7'],
+                ['brown','Brown','#9f6b53','#eee0da'], ['orange','Orange','#d9730d','#fae3cb'],
+                ['yellow','Yellow','#b58a00','#fff0b3'], ['green','Green','#0f7b6c','#d9eee4'],
+                ['blue','Blue','#0b6e99','#d9eafa'], ['purple','Purple','#6940a5','#e9dff4'],
+                ['pink','Pink','#ad3973','#f5ddeb'], ['red','Red','#c53d3d','#f9dcdc']
+            ];
+            for (const [key, fallback, command, column] of [
+                ['text_color','Text color','foreColor',2], ['background_color','Background','hiliteColor',3]
+            ]) {
+                const label = document.createElement('div'); label.className = 'nb-menu-label';
+                label.textContent = i18nGet(key, fallback); notebookPopup.appendChild(label);
+                const row = document.createElement('div'); row.className = 'nb-swatches';
+                colors.forEach(color => {
+                    const button = notebookButton(column === 2 ? 'A' : '■', () => {
+                        if (wholeBlock && !editor.contains(notebookActionBlock)) return;
+                        if (!wholeBlock && (!notebookRange || !editor.contains(notebookRange.commonAncestorContainer))) return;
+                        pushUndoSnapshot();
+                        const ranges = [];
+                        if (wholeBlock) {
+                            const editables = notebookActionBlock.contentEditable === 'true' ? [notebookActionBlock] : Array.from(notebookActionBlock.querySelectorAll('[contenteditable="true"]'));
+                            editables.forEach(el => { const range = document.createRange(); range.selectNodeContents(el); ranges.push(range); });
+                        } else ranges.push(notebookRange);
+                        ranges.forEach(range => {
+                            selection.removeAllRanges(); selection.addRange(range);
+                            document.execCommand('styleWithCSS', false, true);
+                            document.execCommand(command, false, color[column]);
+                        });
+                        notebookClosePopup(); triggerSave();
+                    });
+                    button.title = i18nGet(color[0], color[1]); button.setAttribute('aria-label', label.textContent + ': ' + button.title);
+                    button.style.color = column === 2 ? color[2] : 'var(--text)';
+                    button.style.backgroundColor = column === 3 ? color[3] : 'transparent'; row.appendChild(button);
+                });
+                notebookPopup.appendChild(row);
+            }
+            notebookPlacePopup(anchor); notebookPopup.querySelector('button')?.focus();
+        }
+        function notebookInline(command) {
+            const selection = window.getSelection();
+            if (!selection.rangeCount || selection.isCollapsed || !editor.contains(selection.anchorNode)) return;
+            if (command !== 'code') { format(command); return; }
+            const range = selection.getRangeAt(0);
+            const start = range.startContainer.parentElement?.closest('[contenteditable="true"]');
+            const end = range.endContainer.parentElement?.closest('[contenteditable="true"]');
+            if (!start || start !== end) return;
+            pushUndoSnapshot();
+            const parent = range.commonAncestorContainer.nodeType === 1 ? range.commonAncestorContainer : range.commonAncestorContainer.parentElement;
+            const existing = parent.closest('code');
+            if (existing && start.contains(existing)) existing.replaceWith(...existing.childNodes);
+            else { const code = document.createElement('code'); code.style.cssText = 'font-family:monospace;background:rgba(128,128,128,.12);border-radius:3px;padding:1px 3px'; code.appendChild(range.extractContents()); range.insertNode(code); range.selectNodeContents(code); selection.removeAllRanges(); selection.addRange(range); }
+            triggerSave();
+        }
+        document.addEventListener('mousedown', event => {
+            if (!event.target.closest('#notebook-popup, #notebook-gutter, #format-toolbar')) notebookClosePopup();
+        });
+        notebookPopup.addEventListener('keydown', event => {
+            if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); notebookClosePopup(); notebookGutter.querySelector('[data-action="menu"]').focus(); }
+            if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+                const buttons = Array.from(notebookPopup.querySelectorAll('button:not([hidden]):not(:disabled)'));
+                const index = buttons.indexOf(document.activeElement);
+                if (buttons.length) { event.preventDefault(); event.stopPropagation(); buttons[(index + (event.key === 'ArrowDown' ? 1 : -1) + buttons.length) % buttons.length].focus(); }
+            }
+        });
+        document.querySelector('.scroll-wrapper').addEventListener('scroll', () => { notebookClosePopup(); notebookRestoreEditingGutter(); });
+        window.addEventListener('resize', () => { notebookClosePopup(); notebookRestoreEditingGutter(); });
+        document.addEventListener('selectionchange', () => {
+            const block = blockOf(window.getSelection().anchorNode);
+            if (block && block.contains(document.activeElement)) { notebookEditingBlock = block; notebookRestoreEditingGutter(); }
+        });
+        // Text style is a block action, separate from inline formatting.
+        const notebookStyleButton = notebookButton(i18nGet('block_text', 'Text') + ' ▾', () => {
+            const selection = window.getSelection(); notebookActionBlock = blockOf(selection.anchorNode);
+            if (notebookActionBlock) notebookOpenTypes(false, notebookStyleButton.getBoundingClientRect());
+        });
+        notebookStyleButton.className = 'fmt-btn';
+        notebookStyleButton.addEventListener('mousedown', event => event.preventDefault());
+        formatToolbar.prepend(notebookStyleButton);
+        document.addEventListener('selectionchange', () => {
+            const block = blockOf(window.getSelection().anchorNode);
+            if (!block) return;
+            const type = storedBlocks.get(block)?.data.type || 'text';
+            notebookStyleButton.textContent = notebookTypeLabel(type) + ' ▾';
+            for (const [command, label] of [['bold','Bold'], ['italic','Italic'], ['underline','Underline']]) {
+                const button = formatToolbar.querySelector('[data-command="' + command + '"]');
+                button?.setAttribute('aria-pressed', String(document.queryCommandState(command)));
+            }
+        });
+</script>
     <script>
     // ── SynapsePro i18n: apply data-i18n / data-i18n-placeholder attributes ──
     (function applyI18n() {

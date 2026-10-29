@@ -1,0 +1,40 @@
+:is(html:has(body.deckbrowser), html:has(#custom-dashboard), body.deckbrowser, body:has(#custom-dashboard)) {
+    --synapse-scrollbar-thumb: rgba(92, 104, 117, 0.55);
+    --synapse-scrollbar-hover: rgba(70, 82, 95, 0.75);
+    --synapse-scrollbar-track: #f2f3f5;
+    scrollbar-width: auto;
+    scrollbar-color: auto;
+}
+
+:is(html:has(body.nightMode.deckbrowser), html:has(body.nightMode #custom-dashboard), body.nightMode.deckbrowser, body.nightMode:has(#custom-dashboard)) {
+    --synapse-scrollbar-thumb: rgba(183, 193, 204, 0.55);
+    --synapse-scrollbar-hover: rgba(203, 213, 224, 0.8);
+    --synapse-scrollbar-track: #2c2c2c;
+}
+
+html:has(body.deckbrowser), html:has(#custom-dashboard) {
+    overflow-y: auto;
+}
+
+:is(html:has(body.deckbrowser), html:has(#custom-dashboard), body.deckbrowser, body:has(#custom-dashboard))::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+    display: block;
+    background: var(--synapse-scrollbar-track);
+}
+
+:is(html:has(body.deckbrowser), html:has(#custom-dashboard), body.deckbrowser, body:has(#custom-dashboard))::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+:is(html:has(body.deckbrowser), html:has(#custom-dashboard), body.deckbrowser, body:has(#custom-dashboard))::-webkit-scrollbar-thumb {
+    min-height: 36px;
+    border: 3px solid transparent;
+    border-radius: 12px;
+    background: var(--synapse-scrollbar-thumb);
+    background-clip: padding-box;
+}
+
+:is(html:has(body.deckbrowser), html:has(#custom-dashboard), body.deckbrowser, body:has(#custom-dashboard))::-webkit-scrollbar-thumb:hover {
+    background-color: var(--synapse-scrollbar-hover);
+}

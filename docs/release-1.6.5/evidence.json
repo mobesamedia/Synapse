@@ -1,0 +1,413 @@
+{
+  "date": "2026-10-27",
+  "verdict": "DO_NOT_RELEASE",
+  "existing_python": {
+    "total": 155,
+    "passed": 155
+  },
+  "existing_browser": [
+    {
+      "test": "web_achievements.cjs",
+      "code": 0,
+      "seconds": 4.37,
+      "output": "PASS badge assets and sizing, keyboard, light/dark, goal selection, developer scenarios and popup settings\n"
+    },
+    {
+      "test": "web_ai_workspace_settings.cjs",
+      "code": 0,
+      "seconds": 3.11,
+      "output": "PASS local formulas, code isolation, HTML safety, layout tabs/save, embedded workspace menus, validation and errors in both themes\n"
+    },
+    {
+      "test": "web_appearance_maps_chips.cjs",
+      "code": 0,
+      "seconds": 7.44,
+      "output": "PASS None setting/save/color and empty theme; custom button edit/cancel/validation preserves IDs, shortcuts and extras; map pinch without UI zoom/content changes; fullscreen enter/exit centers both maps\n"
+    },
+    {
+      "test": "web_background_styles.cjs",
+      "code": 0,
+      "seconds": 1.63,
+      "output": "PASS None replaces only gradient while retaining exact deck geometry/surface/style in both modes; solid picker, independent colors, save and switch-away preservation\n"
+    },
+    {
+      "test": "web_background_toolbars.cjs",
+      "code": 0,
+      "seconds": 1.59,
+      "output": "PASS solid top/bottom background on deckBrowser/overview, native Anki gray during review, return transitions and unchanged button surfaces in both modes\n"
+    },
+    {
+      "test": "web_celebration_preview.cjs",
+      "code": 0,
+      "seconds": 15.11,
+      "output": "PASS preview modes, narrow layouts, close during animation, keyboard focus, reduced motion, seven-click unlock\n"
+    },
+    {
+      "test": "web_dashboard_glass.cjs",
+      "code": 0,
+      "seconds": 2.21,
+      "output": "PASS warning confirm/cancel/Escape, off switch, strength persistence, narrow modal and outer-only blur\n"
+    },
+    {
+      "test": "web_dashboard_opacity.cjs",
+      "code": 0,
+      "seconds": 1.31,
+      "output": "PASS all dashboard surfaces, deck list, light/dark, 0/50/100%, opaque controls and settings roundtrip\n"
+    },
+    {
+      "test": "web_deck_overview.cjs",
+      "code": 0,
+      "seconds": 16.56,
+      "output": "PASS three layouts, light/dark, 400/1000 px, stats details, actions, cloud, simplified settings and master disable, threshold validation and save payload\n"
+    },
+    {
+      "test": "web_deck_scrollbar.cjs",
+      "code": 0,
+      "seconds": 5.24,
+      "output": "PASS all themes light/dark: visible scrollbar for long decks/subdecks, wheel up/down, mouse dragging, no scrollbar for short lists, overview scrolling\n"
+    },
+    {
+      "test": "web_deepseek.cjs",
+      "code": 0,
+      "seconds": 1.28,
+      "output": "PASS DeepSeek provider, models, key help link, save/reload and answer streaming in both themes\n"
+    },
+    {
+      "test": "web_free_map_icons.cjs",
+      "code": 0,
+      "seconds": 2.72,
+      "output": "PASS 208 local SVGs, English category/synonym/typo search, modal light/dark, recolor/undo, copy across maps, deduplicated export, import without catalog, unsafe SVG rejection, no network\n"
+    },
+    {
+      "test": "web_free_map_polish.cjs",
+      "code": 0,
+      "seconds": 11.86,
+      "output": "PASS Free Map selection preserved through bold/size/alignment/color, persisted formatting, compact menus light/dark, center + zoom preserved both resize directions for both maps\n"
+    },
+    {
+      "test": "web_gamification_settings.cjs",
+      "code": 0,
+      "seconds": 3.01,
+      "output": "PASS dialogs, focus, Escape, bridge, validation, popup toggles, widths 300/360/900, light/dark\n"
+    },
+    {
+      "test": "web_glass_backdrop.cjs",
+      "code": 1,
+      "seconds": 1.98,
+      "output": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ 'none'\n- 'blur(16px)'\n\n    at <workspace>/tests/web_glass_backdrop.cjs:8:1535\n    at runNextTicks (node:internal/process/task_queues:65:5)\n    at process.processImmediate (node:internal/timers:541:9) {\n  generatedMessage: true,\n  code: 'ERR_ASSERTION',\n  actual: 'none',\n  expected: 'blur(16px)',\n  operator: 'strictEqual',\n  diff: 'simple'\n}\n"
+    },
+    {
+      "test": "web_keyboard.cjs",
+      "code": 0,
+      "seconds": 1.71,
+      "output": "PASS ToDo Space toggles and retains focus; Enter filters tags\nPASS Notebook search shortcut, input undo isolation, keyboard page selection\nPASS Mindmap input Delete is safe, Escape exits editing, structural undo/redo\nPASS PDF keyboard page/zoom navigation scoped to reading pane\n"
+    },
+    {
+      "test": "web_mindmap_tutorial.cjs",
+      "code": 0,
+      "seconds": 12.76,
+      "output": "PASS Fit-all, real guided edit/drag/zoom/fit/learning, completion, parent storage isolation\nPASS repeat starts fresh, early exit and declined invitation\nPASS narrow viewport, translated practice labels and dark theme\n"
+    },
+    {
+      "test": "web_notebook_blocks.cjs",
+      "code": 0,
+      "seconds": 2.52,
+      "output": "PASS unchanged raw notes, unknown fields/types, sanitization protection, conversion and Undo\nPASS selection color dropdown, duplicate/move, explicit insertion and H3\nPASS history back/forward, branching, deletion, reset; removed insertion indicator and hover borders\n"
+    },
+    {
+      "test": "web_notebook_gutter.cjs",
+      "code": 0,
+      "seconds": 2.27,
+      "output": "PASS hover corridor, clickable grip, persistent editing controls, block switch, selection, outside focus and page reset; note data unchanged\n"
+    },
+    {
+      "test": "web_notebook_hierarchy.cjs",
+      "code": 0,
+      "seconds": 2.9,
+      "output": "PASS legacy hierarchy unchanged, nested pages, section, breadcrumbs, reload, cycles/orphans, parent/section deletion\nPASS actual drag/drop, complete block data, undo/redo, Escape/outside/page-switch cancellation and keyboard reorder\n"
+    },
+    {
+      "test": "web_notebook_history.cjs",
+      "code": 0,
+      "seconds": 1.82,
+      "output": "PASS chronological edits/navigation, redo/branch, cross-page move, creation, hierarchy/deletion restore, unknown data and compact SVG UI\n"
+    },
+    {
+      "test": "web_notebook_margin_click.cjs",
+      "code": 0,
+      "seconds": 1.85,
+      "output": "PASS left/right margins select the clicked wrapped line, nested editors, no scroll jump, protected raw content, explicit below-divider insertion and undo\n"
+    },
+    {
+      "test": "web_notebook_security.cjs",
+      "code": 0,
+      "seconds": 1.82,
+      "output": "PASS Markdown clipboard/input XSS, bridge isolation, literal labels, formatting and ordinary links\n"
+    },
+    {
+      "test": "web_notebook_sidebar_drag.cjs",
+      "code": 0,
+      "seconds": 3.36,
+      "output": "PASS actual sidebar drag/drop and cancel, nested pages, undo/redo, external-drop protection, raw content preservation, SVG chrome and immediate list/todo markers with empty Enter exit\n"
+    },
+    {
+      "test": "web_notebook_tables_images.cjs",
+      "code": 0,
+      "seconds": 2.82,
+      "output": "PASS unchanged legacy layout/HTML light/dark narrow/wide; opt-in table options, rich row/column reorder and resize/cancel; image upload bytes, proportional resize/cancel, alignment, inline move, protected content and page-switch safety\n"
+    },
+    {
+      "test": "web_notebook_upgrade.cjs",
+      "code": 0,
+      "seconds": 5.13,
+      "output": "PASS read-only outline/versions, rich split and merge/undo, metadata protection, independent template/version copies, legacy versions, export, nested/reordered pointer drops and narrow layout\n"
+    },
+    {
+      "test": "web_pdf_card_types.cjs",
+      "code": 0,
+      "seconds": 2.57,
+      "output": "PASS cloze selection, shared deletion number, validation, mixed types, edit/persistence and batch payload\n"
+    },
+    {
+      "test": "web_polish_onboarding.cjs",
+      "code": 0,
+      "seconds": 25.25,
+      "output": "PASS Polish onboarding full flow at 860×540 in both modes, terms, 10-language Settings and AI response language\n"
+    },
+    {
+      "test": "web_review_background.cjs",
+      "code": 0,
+      "seconds": 2.0,
+      "output": "PASS card CSS compatibility, unchanged content, inline restoration, enable/cancel/disable, defaults and settings\n"
+    },
+    {
+      "test": "web_roadmap.cjs",
+      "code": 0,
+      "seconds": 2.7,
+      "output": "PASS: creation, live text/autosave, undo/redo, clipboard, docked arrows, all routes, shape replacement, rotation, resize, multiple maps, narrow layout, dark mode\n"
+    },
+    {
+      "test": "web_roadmap_ports.cjs",
+      "code": 0,
+      "seconds": 2.11,
+      "output": "PASS 3 arrows from the same selected source port, old endpoints unchanged, separate end grips, right-facing tips after routing around the source box\n"
+    },
+    {
+      "test": "web_roadmap_scale.cjs",
+      "code": 0,
+      "seconds": 4.0,
+      "output": "SCALE [{\"shapes\":100,\"arrows\":99,\"loadMs\":239,\"zoomMs\":12,\"jsonBytes\":36097},{\"shapes\":500,\"arrows\":499,\"loadMs\":341,\"zoomMs\":12,\"jsonBytes\":183484},{\"shapes\":1000,\"arrows\":999,\"loadMs\":620,\"zoomMs\":13,\"jsonBytes\":367844}]\nPASS: synthetic 100/500/1000-shape scenes, rich text formatting, sanitized import, invalid IDs\n"
+    },
+    {
+      "test": "web_roadmap_tutorial.cjs",
+      "code": 0,
+      "seconds": 5.05,
+      "output": "PASS translated first-use map, arrows, editing/undo, deletion/reload, manual recreation, existing-map preservation, read-only barrier, narrow/wide light/dark\n"
+    },
+    {
+      "test": "web_safe_changes.cjs",
+      "code": 0,
+      "seconds": 4.92,
+      "output": "PASS Notebook first-edit undo, delayed undo, redo, page isolation and saved data\nPASS ToDo edit, both cancellation/blank cases, IDs and unknown fields preserved\nPASS Mindmap empty\nPASS Mindmap orphan-time\nPASS Mindmap newer-local\nPASS Mindmap fresh\n"
+    },
+    {
+      "test": "web_soundcloud_audio.cjs",
+      "code": 0,
+      "seconds": 1.76,
+      "output": "PASS native HLS bridge events, play/pause, seek, volume, errors, stale sessions, source disposal; supported browsers and host page unchanged\n"
+    },
+    {
+      "test": "web_task_recurrence.cjs",
+      "code": 0,
+      "seconds": 2.17,
+      "output": "PASS create/edit repeat, actual checkboxes, rollover, weekday validation, opt-in cleanup, narrow dialog\n"
+    },
+    {
+      "test": "web_timer.cjs",
+      "code": 0,
+      "seconds": 5.79,
+      "output": "PASS Timer tabs, responsive content heights, lazy analytics, hierarchy, escaped names, settings preservation, keyboard, retry, light/dark at 360/430/700px\n"
+    },
+    {
+      "test": "web_translation_coverage.cjs",
+      "code": 0,
+      "seconds": 16.78,
+      "output": "PASS 10 languages: actual AI, settings/About and PDF Cloze translations, no JS errors, user filename preserved\n"
+    },
+    {
+      "test": "web_workspace_features.cjs",
+      "code": 0,
+      "seconds": 16.7,
+      "output": "PASS all 10 languages, tab visibility, explicit light/dark, Mindmap typography/fill/zoom, image callbacks and reference-only undo, native export command\n"
+    },
+    {
+      "test": "web_workspace_links.cjs",
+      "code": 0,
+      "seconds": 9.82,
+      "output": "PASS both editors: links, badges, open command, undo/redo, cancellation, export/import; direct arrow label + double click\n"
+    },
+    {
+      "test": "web_workspace_polish.cjs",
+      "code": 0,
+      "seconds": 8.54,
+      "output": "PASS compact menu controls, persistent formatting, narrow/light/dark layouts, T-button keyboard, Escape/Enter, label undo/redo; no native JS prompt\n"
+    },
+    {
+      "test": "web_workspace_regressions.cjs",
+      "code": 0,
+      "seconds": 8.44,
+      "output": "PASS window/fullscreen label objects, image scaling, live dark theme, error write fence, bounded undo/redo\n"
+    },
+    {
+      "test": "web_workspace_ui.cjs",
+      "code": 0,
+      "seconds": 13.1,
+      "output": "PASS shared geometry at 1100/390px, identical grid light/dark, auto pan/object drag, manual overrides, default reset, listboxes, truthful save status\n"
+    }
+  ],
+  "adversarial_current_and_baseline": [
+    {
+      "root": "<workspace>",
+      "case": "empty_toggle_backspace",
+      "bodySurvived": false,
+      "after": {
+        "pages": [
+          {
+            "id": "A",
+            "title": "Toggle note",
+            "icon": "",
+            "blocks": [
+              {
+                "type": "text",
+                "html": ""
+              }
+            ],
+            "updatedAt": 1793128011202
+          }
+        ],
+        "activePageId": "A",
+        "folders": [],
+        "sidebarOpen": false
+      }
+    },
+    {
+      "root": "<workspace>",
+      "case": "duplicate_ids_undo",
+      "firstSurvived": false,
+      "secondSurvived": true,
+      "after": {
+        "pages": [
+          {
+            "id": "same",
+            "title": "Second original",
+            "icon": "",
+            "blocks": [
+              {
+                "type": "text",
+                "html": "SECOND UNIQUE CONTENT"
+              }
+            ]
+          },
+          {
+            "id": "same",
+            "title": "Second original",
+            "icon": "",
+            "blocks": [
+              {
+                "type": "text",
+                "html": "SECOND UNIQUE CONTENT"
+              }
+            ]
+          }
+        ],
+        "activePageId": "same",
+        "folders": [],
+        "sidebarOpen": false
+      }
+    },
+    {
+      "root": "/private/tmp/synapse-165-baseline",
+      "case": "empty_toggle_backspace",
+      "bodySurvived": false,
+      "after": {
+        "pages": [
+          {
+            "id": "A",
+            "title": "Toggle note",
+            "icon": "",
+            "blocks": [
+              {
+                "type": "text",
+                "html": ""
+              }
+            ],
+            "updatedAt": 1793128011259
+          }
+        ],
+        "activePageId": "A",
+        "folders": [],
+        "sidebarOpen": false
+      }
+    },
+    {
+      "root": "/private/tmp/synapse-165-baseline",
+      "case": "duplicate_ids_undo",
+      "firstSurvived": true,
+      "secondSurvived": true,
+      "after": {
+        "pages": [
+          {
+            "id": "same",
+            "title": "First original",
+            "icon": "",
+            "blocks": [
+              {
+                "type": "text",
+                "html": "FIRST UNIQUE CONTENT"
+              }
+            ],
+            "updatedAt": 1793128011262
+          },
+          {
+            "id": "same",
+            "title": "Second original",
+            "icon": "",
+            "blocks": [
+              {
+                "type": "text",
+                "html": "SECOND UNIQUE CONTENT"
+              }
+            ]
+          },
+          {
+            "id": "1793128011262",
+            "title": "",
+            "icon": "📄",
+            "blocks": [
+              {
+                "type": "text",
+                "html": ""
+              }
+            ],
+            "updatedAt": 1793128011266
+          }
+        ],
+        "activePageId": "1793128011262",
+        "folders": [],
+        "sidebarOpen": false
+      }
+    }
+  ],
+  "logs": {
+    "python": "...........................................................................................................................................................\n----------------------------------------------------------------------\nRan 155 tests in 3.763s\n\nOK\ntest: Loaded gamification data from JSON backup.\ntest: Could not write JSON backup: simulated interruption\ntest: Loaded gamification data from JSON backup.\nAI Assistant: streaming OpenAI-compat url=example.com, model=model\nAI Assistant: settings saved — provider=deepseek, model=deepseek-flash, endpoint=n/a, key=(set)\nAI Assistant: streaming OpenAI-compat url=api.deepseek.com, model=deepseek-flash\nAI Assistant: streaming done [deepseek] (11 chars)\nNotebook notes Load Error: database is locked\nNotebook notes Load Error: Invalid stored snapshot\nMindmap tutorial invitation could not be recorded: synthetic failure\nNotebook notes Save Error: invalid JSON snapshot rejected\nAI Assistant: secret file write error: synthetic write failure\nWS Warn: Could not save local website state: synthetic write failure\nSynapsePro: custom solid background written (#123456/#654321).\nSynapsePro: custom solid background written (#f5f5f7/#1f1f21).\nSynapsePro: Study XP not credited; will retry: synthetic database failure\nSynapsePro: Study XP not credited; will retry: synthetic config failure\n",
+    "qt_notebook": "Notebook notes Load Error: locked\nPASS actual Qt notebook: read error, blocked empty save, retry button, restored notes, edit/save, tab roundtrip and close\n",
+    "qt_roadmap": "PASS actual embedded-window resize centers Free Map with unchanged zoom\nPASS real fullscreen enter/exit centers; native Qt trackpad pinch zooms canvas and preserves UI/object data\nPASS first-use tutorial saved by real Qt bridge and deletable without resurrection\nPASS real Qt tab clicks without failed navigations\nPASS Qt channel autosave without navigation/user gesture\nPASS 10 rapid hide/show cycles preserve the open page\nPASS close/reopen retains data; page is destroyed before profile\nPASS repeated clicks during a pending switch\nPASS native icon insertion, recolor and self-contained SVG export/import\nPASS native image selection, actual Qt image rendering, both file export/import paths, deduplication and Mindmap formatting round trip\nPASS disabling and re-enabling a tab preserves documents and switches away from the disabled tool\nPASS live Anki dark/light changes without reloading the editor\nPASS repeated visible-dock cleanup without premature profile destruction\n",
+    "qt_background": "PASS default off, cached blur, intensity limits, disabling, local image\n",
+    "qt_soundcloud_bridge": "PASS native process bounds, token/session validation, allowed streams, event delivery, controls, cleanup, isolated Windows pipes, unchanged Anki mpv defaults\nRelease of profile requested but WebEnginePage still not deleted. Expect troubles !\n",
+    "qt_soundcloud_live": "qt.multimedia.ffmpeg: Using Qt multimedia with FFmpeg version 7.1.5 LGPL version 2.1 or later\nTraceback (most recent call last):\n  File \"<workspace>/tests/qt_soundcloud.py\", line 96, in <module>\n    wait(playing, 'upper Play starts real native audio')\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<workspace>/tests/qt_soundcloud.py\", line 43, in wait\n    raise AssertionError('Timed out: ' + description)\nAssertionError: Timed out: upper Play starts real native audio\n\n",
+    "baseline_glass": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ 'none'\n- 'blur(16px)'\n\n    at /private/tmp/synapse-165-baseline/tests/web_glass_backdrop.cjs:8:1535\n    at runNextTicks (node:internal/process/task_queues:65:5)\n    at process.processImmediate (node:internal/timers:541:9) {\n  generatedMessage: true,\n  code: 'ERR_ASSERTION',\n  actual: 'none',\n  expected: 'blur(16px)',\n  operator: 'strictEqual',\n  diff: 'simple'\n}\n",
+    "review_notebook": "FAIL Backspace in an empty title must preserve the nonempty toggle body\nFAIL Undoing page creation must preserve both originals when legacy page IDs collide\n",
+    "review_versions": "E\n======================================================================\nERROR: test_valid_preupdate_copy_remains_readable_when_database_is_corrupt (__main__.Review165Versions.test_valid_preupdate_copy_remains_readable_when_database_is_corrupt)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"<workspace>/tests/review_165_versions.py\", line 25, in test_valid_preupdate_copy_remains_readable_when_database_is_corrupt\n    versions = ns['_list_notebook_versions'](database)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"notebook_sidebar.py\", line 1250, in _list_notebook_versions\n    for body, timestamp in con.execute(\"SELECT body, updated_at FROM notes ORDER BY updated_at DESC, id DESC LIMIT 20\"):\n                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nsqlite3.DatabaseError: file is not a database\n\n----------------------------------------------------------------------\nRan 1 test in 0.038s\n\nFAILED (errors=1)\n",
+    "qt_soundcloud_exact_codec_diagnostic": "qt.multimedia.ffmpeg: Using Qt multimedia with FFmpeg version 7.1.5 LGPL version 2.1 or later\nAUDIT BEFORE PLAY {\"ready\":true}\nAUDIT FRAME CODECS [('w.soundcloud.com', '{\"aac\":\"\",\"sessionApi\":\"function\",\"ua\":\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) QtWebEngine/6.11.2 Chrome/140.0.0.0 Safari/537.36\",\"media\":[]}')]\nAUDIT upper Play starts real native audio native [] session False uiPlaying False\nTraceback (most recent call last):\n  File \"/private/tmp/synapse-review-soundcloud-exact-codec.py\", line 96, in <module>\n    print('AUDIT BEFORE PLAY',js(window._sc_page,'JSON.stringify({ready:window._widgetReady,boot:window._bootDone})'),flush=True); wait(playing, 'upper Play starts real native audio', 10)\n                                                                                                                                   ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/tmp/synapse-review-soundcloud-exact-codec.py\", line 43, in wait\n    print('AUDIT FRAME CODECS',[(f.url().host(),js(f,'JSON.stringify({aac:document.createElement(\"audio\").canPlayType(\"audio/mp4; codecs=\"+String.fromCharCode(34)+\"mp4a.40.2\"+String.fromCharCode(34)),sessionApi:typeof crypto.randomUUID,ua:navigator.userAgent,media:Array.from(document.querySelectorAll(\"audio\")).map(a=>({paused:a.paused,time:a.currentTime,error:a.error&&a.error.code}))})')) for f in window._sc_page.mainFrame().children()],flush=True);print('AUDIT',description,'native',[(k,dict(failed=v.failed,playing=v.playing,position=v.position,duration=v.duration)) for k,v in native.elements.items()],'session',bool(native.session),'uiPlaying',window._sc_playing,flush=True); raise AssertionError('Timed out: ' + description)\n                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: Timed out: upper Play starts real native audio\n\n"
+  }
+}

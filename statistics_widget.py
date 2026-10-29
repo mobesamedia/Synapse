@@ -104,70 +104,8 @@ def _build_mini_chart(chart_days=DEFAULT_CHART_DAYS, counts=None, today=None):
         d = start + timedelta(days=i)
         days.append(d)
         values.append(counts.get(d.isoformat(), 0))
-    vmax = max(values) or 1
-
-    W, H, PAD = 300.0, 62.0, 4.0
-    PAD_R = 5.0  # right inset so the "today" dot isn't clipped at the edge
-    step = (W - PAD_R) / (chart_days - 1)
-    y_lo, y_hi = H - PAD, PAD  # baseline / peak
-    pts = [(i * step, y_lo - (v / vmax) * (y_lo - y_hi)) for i, v in enumerate(values)]
-
-    def _clamp_y(y):
-        return max(y_hi, min(y_lo, y))
-
-    def _smooth_path(p):
-        """Catmull-Rom → cubic Bézier, control-y clamped so zero-runs never
-        dip below the baseline."""
-        if len(p) < 3:
-            return "M" + " L".join(f"{x:.1f},{y:.1f}" for x, y in p)
-        d = f"M{p[0][0]:.1f},{p[0][1]:.1f}"
-        for i in range(len(p) - 1):
-            p0 = p[i - 1] if i > 0 else p[i]
-            p1, p2 = p[i], p[i + 1]
-            p3 = p[i + 2] if i + 2 < len(p) else p2
-            c1y = _clamp_y(p1[1] + (p2[1] - p0[1]) / 6.0)
-            c2y = _clamp_y(p2[1] - (p3[1] - p1[1]) / 6.0)
-            d += (f" C{p1[0] + (p2[0] - p0[0]) / 6.0:.1f},{c1y:.1f}"
-                  f" {p2[0] - (p3[0] - p1[0]) / 6.0:.1f},{c2y:.1f}"
-                  f" {p2[0]:.1f},{p2[1]:.1f}")
-        return d
-
-    line = _smooth_path(pts)
-    # Close the area on the baseline (the x-axis), ending at the last point.
-    area = line + f" L{pts[-1][0]:.1f},{y_lo:.1f} L0,{y_lo:.1f} Z"
-    # Subtle x/y axes as hairlines in the neutral grey.
-    axes = (
-        f'<line x1="0.5" y1="{y_hi:.1f}" x2="0.5" y2="{y_lo:.1f}" '
-        f'stroke="var(--gray)" stroke-width="1" vector-effect="non-scaling-stroke"/>'
-        f'<line x1="0" y1="{y_lo:.1f}" x2="{W:.1f}" y2="{y_lo:.1f}" '
-        f'stroke="var(--gray)" stroke-width="1" vector-effect="non-scaling-stroke"/>'
-    )
-
-    hover = []
-    for i, (d, v) in enumerate(zip(days, values)):
-        hover.append(
-            f'<rect x="{i * step - step / 2:.1f}" y="0" width="{step:.1f}" '
-            f'height="{H:.0f}" fill="transparent">'
-            f'<title>{d.strftime("%d.%m.%Y")}: {v}</title></rect>'
-        )
-
-    last = pts[-1]
-    import uuid
-    gradient_id = "consistency-fill-" + uuid.uuid4().hex
-    return (
-        f'<svg class="spark" viewBox="0 0 {W:.0f} {H:.0f}" '
-        f'preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">'
-        f'<defs><linearGradient id="{gradient_id}" x1="0" y1="{y_hi}" x2="0" y2="{y_lo}" gradientUnits="userSpaceOnUse">'
-        f'<stop offset="0" stop-color="var(--main-blue)" stop-opacity="0.24"/>'
-        f'<stop offset="1" stop-color="var(--main-blue)" stop-opacity="0"/></linearGradient></defs>'
-        f'{axes}'
-        f'<path d="{area}" fill="url(#{gradient_id})" stroke="none"/>'
-        f'<path d="{line}" fill="none" stroke="var(--main-blue)" stroke-width="2" '
-        f'stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>'
-        f'{"".join(hover)}'
-        f'</svg><span class="spark-today" aria-hidden="true" '
-        f'style="left:{last[0]/W*100:.6f}%;top:{last[1]/H*100:.6f}%;"></span>'
-    )
+    from .activity_chart import render_activity_chart
+    return render_activity_chart([day.strftime("%d.%m.%Y") for day in days],values)
 
 
 def get_statistics_data(stats_days=7, chart_days=DEFAULT_CHART_DAYS):

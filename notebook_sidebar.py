@@ -107,7 +107,62 @@ def _build_i18n_script(tool_name: str) -> str:
     STRINGS: dict = {
         "notebook": {
             "document_title":    _("Notebook"),
+            "resize_column": _("Resize column"),
+            "header_row": _("Header row"),
+            "row_up": _("Move row up"),
+            "row_down": _("Move row down"),
+            "column_left": _("Move column left"),
+            "column_right": _("Move column right"),
+            "align_left": _("Align left"),
+            "align_center": _("Align center"),
+            "align_right": _("Align right"),
+            "table_options": _("Table options"),
+            "merged_table": _("Merged cells are preserved. Reordering and resizing are available for regular tables."),
+            "resize_image": _("Resize image"),
+            "upload_image": _("Upload image"),
+            "image_upload_error": _("Image could not be added. Please try again."),
+            "inline_image": _("Inline"),
+            "move_image": _("Move image"),
+
+            "contents": _("Contents"),
+            "no_headings": _("No headings yet"),
+            "notebook_actions": _("Notebook actions"),
+            "templates": _("Templates"),
+            "save_template": _("Save as template"),
+            "template_name": _("Template name:"),
+            "use_template": _("Use template"),
+            "versions": _("Versions"),
+            "restore_copy": _("Restore as copy"),
+            "no_versions": _("No versions available"),
+            "loading_versions": _("Loading versions…"),
+            "versions_error": _("Could not load versions. Try again."),
+            "copy": _("Copy"),
+            "pre_update": _("Pre-update backup"),
+            "recovery": _("Recovery"),
+            "pages": _("Pages"),
+            "disease_profile": _("Disease profile"),
+            "template_definition": _("Definition"),
+            "template_mechanism": _("Mechanism"),
+            "template_symptoms": _("Symptoms"),
+            "template_diagnosis": _("Diagnosis"),
+            "template_treatment": _("Treatment"),
+            "export_notebook": _("Export Notebook"),
+            "retry": _("Retry"),
+
             "search_placeholder": _("Search in this page..."),
+            "go_back": _("Go Back"),
+            "go_forward": _("Go Forward"),
+            "page_history": _("Page navigation"),
+            "new_subpage": _("New subpage"),
+            "subpages": _("Subpages"),
+            "move_under_page": _("Move under page"),
+            "top_level": _("Top level"),
+            "new_section": _("New section"),
+            "section_name": _("Section name:"),
+            "search_pages": _("Search pages…"),
+            "breadcrumb": _("Breadcrumb"),
+            "move_up": _("Move up"),
+            "move_down": _("Move down"),
             "close":              _("Close"),
             "new_page":           _("New Page"),
             "apply":              _("Apply"),
@@ -121,6 +176,32 @@ def _build_i18n_script(tool_name: str) -> str:
             "block_text":         _("Text"),
             "block_h1":           _("Heading 1"),
             "block_h2":           _("Heading 2"),
+            "block_h3": _("Heading 3"),
+            "protected_content": _("Original content preserved. This block contains content that cannot be safely edited here."),
+            "insert_block": _("Insert block"),
+            "block_actions": _("Block actions"),
+            "search_actions": _("Search actions…"),
+            "color": _("Color"),
+            "text_color": _("Text color"),
+            "background_color": _("Background"),
+            "strikethrough": _("Strikethrough"),
+            "bold": _("Bold"),
+            "italic": _("Italic"),
+            "underline": _("Underline"),
+            "inline_code": _("Inline code"),
+            "move_block": _("Move to page"),
+            "move_block_confirm": _("Move this block to another page?"),
+            "no_other_pages": _("Create another page first."),
+            "default_color": _("Default"),
+            "gray": _("Gray"),
+            "brown": _("Brown"),
+            "orange": _("Orange"),
+            "yellow": _("Yellow"),
+            "green": _("Green"),
+            "blue": _("Blue"),
+            "purple": _("Purple"),
+            "pink": _("Pink"),
+            "red": _("Red"),
             "block_list":         _("List"),
             "block_todo":         _("To-Do"),
             "block_quote":        _("Quote"),
@@ -131,6 +212,8 @@ def _build_i18n_script(tool_name: str) -> str:
             "block_table":        _("Table"),
             "block_pagelink":     _("Link to page"),
             "paste_tip":          _("Tip: Paste images (Ctrl+V) supported"),
+            "security_notice": _("For your safety, potentially unsafe HTML was kept as text or removed. It could otherwise run code. Normal text and safe links still work."),
+            "dismiss": _("Dismiss"),
             "saved":              _("Saved"),
             "saving":             _("Saving..."),
             "save_failed":        _("Save failed — your changes are still open."),
@@ -444,6 +527,7 @@ _NAV_STYLE = """
   }
   .snav-fs-btn:hover { background: var(--hover-bg, #efefef); }
   .snav-fs-btn svg { width: 15px; height: 15px; opacity: 0.65; }
+  .snav-settings-btn svg { width: 16px; height: 16px; opacity: 0.75; }
   body.nightMode .snav-btn { color:#7e7e7e; }
   body.nightMode .snav-btn.snav-active,
   body.nightMode .snav-btn:hover { color:#ffffff; }
@@ -525,11 +609,11 @@ def _build_nav_html(active_tool: str, fs_active: bool = False,
     fs_title  = _("Exit Fullscreen") if fs_active else _("Fullscreen")
     win_icon  = _WIN_ICON_CLOSE if win_active else _WIN_ICON
     fs_icon   = _FS_ICON_EXIT if fs_active else _FS_ICON
-    settings_icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6l.7 2.4 2 .9L20 6l3 5-1.8 1.7.1 2.2 1.7 1.6-3 5-2.4-.6-1.9 1L15 24H9l-.7-3.1-1.9-1L4 21l-3-5 1.8-1.7-.1-2.2L1 10l3-5 2.4.6 1.9-1L9 3Z" transform="translate(2 0) scale(.83)"/><circle cx="12" cy="11" r="3"/></svg>'
+    settings_icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6l.7 2.4 2 .9L20 6l3 5-1.8 1.7.1 2.2 1.7 1.6-3 5-2.4-.6-1.9 1L15 24H9l-.7-3.1-1.9-1L4 21l-3-5 1.8-1.7-.1-2.2L1 10l3-5 2.4.6 1.9-1L9 3Z" transform="translate(1.2 -1) scale(.9)"/><circle cx="12" cy="11.5" r="3"/></svg>'
     settings_title = _("Settings")
     fs_btn = (
         f'<span class="snav-spacer"></span>'
-        f'<button class="snav-fs-btn" title="{settings_title}" aria-label="{settings_title}" '
+        f'<button class="snav-fs-btn snav-settings-btn" title="{settings_title}" aria-label="{settings_title}" '
         f'onclick="pycmd(\'{ADDON_NAME_FOR_BRIDGE}:settings\')">{settings_icon}</button>'
         f'<button id="snav-win-btn" class="snav-fs-btn" title="{win_title}" '
         f'onclick="pycmd(\'{ADDON_NAME_FOR_BRIDGE}:window\')">'
@@ -763,7 +847,10 @@ def _write_snapshot_recovery(
     tmp_path = f"{path}.tmp"
     try:
         data = json.loads(body)
-        payload = {"version": 1, "table": table, "body": data}
+        # A new recovery of identical content is still a new save attempt. Its
+        # identity must never match a previously superseded recovery file.
+        payload = {"version": 1, "table": table, "body": data,
+                   "recovery_id": os.urandom(16).hex()}
         with open(tmp_path, "w", encoding="utf-8") as handle:
             json.dump(payload, handle, ensure_ascii=False, separators=(",", ":"))
             handle.flush()
@@ -780,9 +867,10 @@ def _write_snapshot_recovery(
         return False
 
 
-def _load_snapshot_recovery(
+def _read_snapshot_recovery(
     table: str, database_path: Optional[str] = None
-) -> Optional[str]:
+) -> Optional[tuple[str, str]]:
+    """Read original recovery content and identity without consulting SQLite."""
     try:
         with open(
             _snapshot_recovery_path(table, database_path), "r", encoding="utf-8"
@@ -794,26 +882,81 @@ def _load_snapshot_recovery(
             and payload.get("table") == table
         ):
             body = json.dumps(payload.get("body"), ensure_ascii=False, separators=(",", ":"))
-            return body if _valid_snapshot(table, body) else None
+            if _valid_snapshot(table, body):
+                import hashlib
+                identity = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+                return body, hashlib.sha256(identity.encode("utf-8")).hexdigest()
     except FileNotFoundError:
         pass
+    except OSError as exc:
+        # An unreadable file may contain the newest edit. Do not silently treat
+        # it as absent and load an older SQLite version instead.
+        raise SnapshotLoadError(table) from exc
     except Exception as exc:
         print(f"Notebook {table} recovery load failed: {exc}")
     return None
 
 
+def _load_snapshot_recovery(
+    table: str, database_path: Optional[str] = None
+) -> Optional[str]:
+    """Use a recovery only if no committed transaction superseded its identity."""
+    database_path = database_path or db_path()
+    record = _read_snapshot_recovery(table, database_path)
+    if record is None:
+        return None
+    try:
+        os.stat(database_path)
+    except FileNotFoundError:
+        return record[0]
+    except OSError as exc:
+        raise SnapshotLoadError(table) from exc
+    from pathlib import Path
+    for mode in ("ro", "rw"):
+        con = None
+        try:
+            con = sqlite3.connect(Path(database_path).resolve().as_uri() + "?mode=" + mode, uri=True, timeout=1)
+            con.execute("BEGIN")
+            exists = con.execute(
+                "SELECT 1 FROM sqlite_master WHERE type='table' AND name='snapshot_recovery_retired'"
+            ).fetchone()
+            if exists and con.execute(
+                "SELECT 1 FROM snapshot_recovery_retired WHERE snapshot_table=? AND recovery_hash=?",
+                (table, record[1]),
+            ).fetchone():
+                return None
+            return record[0]
+        except (sqlite3.Error, OSError, ValueError) as exc:
+            if mode == "ro" and (getattr(exc, "sqlite_errorcode", 0) & 255) == sqlite3.SQLITE_READONLY:
+                # A crash may leave a hot rollback journal. Let SQLite itself
+                # recover it on an existing-file rw connection; never remove a
+                # journal or manually rewrite data. Normal reads remain ro.
+                continue
+            # With an inaccessible ledger we cannot distinguish a pending new
+            # edit from a stale recovery. Keep both sources and fail closed.
+            raise SnapshotLoadError(table) from exc
+        finally:
+            if con is not None:
+                con.close()
+
+
 def _clear_snapshot_recovery(
-    table: str, committed_body: str, database_path: Optional[str] = None
+    table: str, committed_body: str, database_path: Optional[str] = None,
+    expected_identity: Optional[str] = None,
 ) -> None:
+    """Best-effort removal of only the exact recovery retired by the commit."""
+    if expected_identity is None:
+        return
     path = _snapshot_recovery_path(table, database_path)
     try:
+        current = _read_snapshot_recovery(table, database_path)
+        if current is None or current[1] != expected_identity:
+            return  # Never clear a newer, independent recovery save.
         os.remove(path)
-    except FileNotFoundError:
+    except (OSError, SnapshotLoadError):
+        # The transaction already retired this identity. Its original bytes
+        # may stay locked on disk; no post-commit rewrite is needed or allowed.
         pass
-    except OSError:
-        # A locked recovery file must never remain stale. Refreshing it with the
-        # just-committed body keeps either source safe to load next time.
-        _write_snapshot_recovery(table, committed_body, database_path)
 
 class SnapshotLoadError(RuntimeError):
     """Existing snapshots could not be read; never replace them with defaults."""
@@ -885,17 +1028,47 @@ def _save_snapshot(
         _ensure_db_at(database_path, timeout=sqlite_timeout)
         con = sqlite3.connect(database_path, timeout=sqlite_timeout)
         with con:
+            con.execute("BEGIN IMMEDIATE")
+            recovery_record = _read_snapshot_recovery(table, database_path)
+            if table == "notes":
+                # Non-rotating pre-update copies, before the normal 20-row pruning.
+                # This is additive: no schema changes and no rewriting existing rows.
+                for backup_name in ("pre-block-ui-v1", "pre-hierarchy-v1"):
+                    backup_path = database_path + f".{backup_name}.json"
+                    if not os.path.exists(backup_path):
+                        rows = con.execute("SELECT id, body, updated_at FROM notes ORDER BY id").fetchall()
+                        recovery = recovery_record[0] if recovery_record else None
+                        if rows or recovery is not None:
+                            tmp_backup = backup_path + ".tmp"
+                            with open(tmp_backup, "w", encoding="utf-8") as handle:
+                                json.dump({"version": 1, "table": "notes", "snapshots": rows, "recovery": recovery}, handle, ensure_ascii=False)
+                                handle.flush()
+                                os.fsync(handle.fileno())
+                            os.replace(tmp_backup, backup_path)
             con.execute(
                 f"INSERT INTO {table}(body, updated_at) "
                 "VALUES(?, strftime('%s','now'))",
                 (body,),
             )
+            if recovery_record is not None:
+                # Additive metadata only; never rewrite notebook content. The
+                # retirement and new snapshot commit or roll back together.
+                con.execute("""CREATE TABLE IF NOT EXISTS snapshot_recovery_retired (
+                    snapshot_table TEXT NOT NULL,
+                    recovery_hash TEXT NOT NULL,
+                    PRIMARY KEY (snapshot_table, recovery_hash)
+                )""")
+                con.execute(
+                    "INSERT OR IGNORE INTO snapshot_recovery_retired(snapshot_table,recovery_hash) VALUES (?,?)",
+                    (table, recovery_record[1]),
+                )
             con.execute(
                 f"DELETE FROM {table} WHERE id NOT IN "
                 f"(SELECT id FROM {table} "
                 "ORDER BY updated_at DESC, id DESC LIMIT 20)"
             )
-        _clear_snapshot_recovery(table, body, database_path)
+        if recovery_record is not None:
+            _clear_snapshot_recovery(table, body, database_path, recovery_record[1])
         return True
     except Exception as e:
         print(f"Notebook {table} Save Error: {e}")
@@ -1132,6 +1305,56 @@ _background_writer = _NotebookBackgroundWriter()
 
 
 # ── Misc ──────────────────────────────────────
+
+def _list_notebook_versions(database_path: str) -> list[dict]:
+    """Read existing versions and immutable pre-update copies without modifying storage."""
+    versions: list[dict] = []
+    seen: set[str] = set()
+
+    def add(body, timestamp, source):
+        if isinstance(body, str) and body not in seen and _valid_snapshot("notes", body):
+            seen.add(body)
+            versions.append({"body": body, "timestamp": timestamp, "source": source})
+
+    if os.path.isfile(database_path):
+        # A read-only connection must never create a missing database or migrate it.
+        from pathlib import Path
+        con = None
+        try:
+            con = sqlite3.connect(Path(database_path).resolve().as_uri() + "?mode=ro", uri=True, timeout=2)
+            for body, timestamp in con.execute("SELECT body, updated_at FROM notes ORDER BY updated_at DESC, id DESC LIMIT 20"):
+                add(body, timestamp, "saved")
+        except sqlite3.Error:
+            # Independent recovery copies must remain available even when the
+            # database is damaged, locked or missing its notes table.
+            pass
+        finally:
+            if con is not None:
+                con.close()
+    for suffix in ("pre-block-ui-v1", "pre-hierarchy-v1"):
+        path = database_path + "." + suffix + ".json"
+        if not os.path.isfile(path):
+            continue
+        try:
+            with open(path, encoding="utf-8") as handle:
+                backup = json.load(handle)
+            for row in backup.get("snapshots", [])[:20]:
+                if isinstance(row, list) and len(row) >= 3:
+                    add(row[1], row[2], "pre-update")
+            add(backup.get("recovery"), 0, "pre-update")
+        except (OSError, ValueError, TypeError, AttributeError):
+            # One damaged backup must not hide other valid historical versions.
+            continue
+    # History/export includes superseded copies too. A broken database must not
+    # prevent independent recovery export, and an unreadable side file must not
+    # hide the database versions already collected above.
+    try:
+        recovery = _read_snapshot_recovery("notes", database_path)
+        add(recovery[0] if recovery else None, 0, "recovery")
+    except SnapshotLoadError:
+        pass
+    return versions
+
 
 def export_data():
     try:
@@ -1638,6 +1861,11 @@ class NotebookPanel(QWidget):
             self._page_ready = False
             message = html.escape(_("Could not load your data. Nothing has been overwritten. Please try again."))
             retry = html.escape(_("Try again"))
+            recovery_action = (
+                f'<p><button onclick="pycmd(\'{ADDON_NAME_FOR_BRIDGE}:export-recovery\')">'
+                + html.escape(_("Export Notebook")) + '</button></p>'
+                if self.current_tool == 'notebook' else ''
+            )
             error_page = (
                 '<html><head><style>body{margin:0;background:#fff;color:#252525}'
                 'html.nightMode body{background:#2c2c2c;color:#fff}'
@@ -1645,6 +1873,7 @@ class NotebookPanel(QWidget):
                 'html.nightMode button{background:#414141;color:#fff}</style></head>'
                 '<body><main style="padding:24px;font:14px system-ui">'
                 f'<p>{message}</p><button onclick="pycmd(\'{ADDON_NAME_FOR_BRIDGE}:retry-load\')">{retry}</button>'
+                + recovery_action +
                 '</main></body></html>'
             )
             self.web.setHtml(_inject_nav(_apply_night_mode(_inject_body_column(error_page)), self.current_tool,
@@ -1796,6 +2025,46 @@ class NotebookPanel(QWidget):
         json_str = json.dumps(body)
         self.web.eval(f"if(window.loadPdfs) window.loadPdfs({json_str});")
 
+    def _export_notebook_recovery(self) -> None:
+        """Export a chosen valid version without loading or replacing the notebook."""
+        from aqt.qt import QInputDialog
+        database_path = self._database_path
+
+        def completed(future):
+            if db_path() != database_path:
+                return
+            try:
+                versions = future.result()
+                if not versions:
+                    tooltip(_("No versions available"))
+                    return
+                choices = [f'{index + 1} · ' + _({
+                    'saved': 'Versions', 'pre-update': 'Pre-update backup',
+                    'recovery': 'Recovery',
+                }[version['source']]) for index, version in enumerate(versions)]
+                choice, accepted = QInputDialog.getItem(
+                    mw, _("Export Notebook"), _("Versions"), choices, 0, False
+                )
+                if not accepted or choice not in choices or db_path() != database_path:
+                    return
+                body = versions[choices.index(choice)]['body']
+                path, _filter = QFileDialog.getSaveFileName(
+                    mw, _("Export Notebook"), "notebook_recovery_export.json", "JSON (*.json)"
+                )
+                if not path or db_path() != database_path:
+                    return
+                # Exclusive creation also prevents overwriting a database,
+                # recovery source or any other existing user file by mistake.
+                with open(path, 'x', encoding='utf-8') as handle:
+                    handle.write(body)
+                    handle.flush()
+                    os.fsync(handle.fileno())
+                tooltip(_("Notebook exported successfully!"))
+            except Exception as exc:
+                showInfo(_("Export failed: {}").format(exc))
+
+        mw.taskman.run_in_background(lambda: _list_notebook_versions(database_path), completed)
+
     # ── Bridge command handler ────────────────
 
     def _on_bridge_cmd(self, cmd: str) -> None:
@@ -1808,6 +2077,9 @@ class NotebookPanel(QWidget):
         if payload == "retry-load":
             if self._load_failed:
                 self._load_tool(self.current_tool)
+            return
+        if payload == "export-recovery" and self._load_failed and self.current_tool == "notebook":
+            self._export_notebook_recovery()
             return
         if self._load_failed and not payload.startswith("switch:") and payload not in ("window", "fullscreen"):
             return
@@ -1857,6 +2129,23 @@ class NotebookPanel(QWidget):
                 self.exit_window()
             elif not self.is_in_fullscreen:
                 self.enter_window()
+            return
+
+        if payload == "versions" and self.current_tool == "notebook":
+            web_ref = self.web
+            database_path = self._database_path
+
+            def completed(future):
+                if self.web is not web_ref or self.current_tool != "notebook" or db_path() != database_path:
+                    return
+                try:
+                    result = {"versions": future.result()}
+                except Exception as exc:
+                    print(f"Notebook version read failed: {exc}")
+                    result = {"error": True, "versions": []}
+                web_ref.eval("if(window.onNotebookVersions) window.onNotebookVersions(" + json.dumps(result) + ");")
+
+            mw.taskman.run_in_background(lambda: _list_notebook_versions(database_path), completed)
             return
 
         # ── Notebook commands ──────────────────

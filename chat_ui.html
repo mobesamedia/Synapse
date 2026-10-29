@@ -192,7 +192,7 @@ body.empty #start-center{display:flex}
   font-size:11px;font-weight:700;cursor:pointer;transition:color .12s,background .12s}
 .context-info-btn:hover,.context-info-btn[aria-expanded="true"]{color:var(--accent);background:var(--accent-glow)}
 .context-info-popover{display:none;position:absolute;right:0;bottom:calc(100% + 7px);
-  width:236px;max-width:calc(100vw - 28px);padding:10px 11px;background:var(--bg);
+  width:280px;max-width:calc(100vw - 28px);max-height:calc(100vh - 80px);overflow-y:auto;padding:10px 11px;background:var(--bg);
   border:1px solid var(--border);border-radius:10px;box-shadow:0 7px 25px rgba(0,0,0,.14);
   color:var(--text-muted);font-size:10.5px;font-weight:400;line-height:1.5;text-align:left;z-index:40}
 .context-info-popover.open{display:block}
@@ -590,7 +590,7 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
     </button>
     <div class="context-info-wrap">
       <button class="context-info-btn" data-card-context-info type="button" aria-label="About current card context" aria-expanded="false" onclick="toggleCardContextInfo(this,event)">i</button>
-      <div class="context-info-popover" role="tooltip"><b>Current card context</b><br>When enabled, the text of the card currently open in Anki is sent in the background with each question and used by the AI. It stays hidden from the chat and is read fresh when you press Send. Your selected AI provider receives this text; with Ollama it stays on your computer.</div>
+      <div class="context-info-popover" role="tooltip"><b>Current card context</b><br>When enabled, the text of the card currently open in Anki is sent in the background with each question and used by the AI. It stays hidden from the chat and is read fresh when you press Send. Your selected AI provider receives this text; with Ollama it stays on your computer.<br><br><span>Quick Actions always send the selected card text to your AI provider, even when this switch is off: they need it to explain the card or create a quiz. This switch only controls card context for questions you type yourself.</span></div>
     </div>
   </div>
   <div class="start-hint">Type a question, or open an Anki card and use the quick action buttons above.</div>
@@ -624,7 +624,7 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
       </button>
       <div class="context-info-wrap">
         <button class="context-info-btn" data-card-context-info type="button" aria-label="About current card context" aria-expanded="false" onclick="toggleCardContextInfo(this,event)">i</button>
-        <div class="context-info-popover" role="tooltip"><b>Current card context</b><br>When enabled, the text of the card currently open in Anki is sent in the background with each question and used by the AI. It stays hidden from the chat and is read fresh when you press Send. Your selected AI provider receives this text; with Ollama it stays on your computer.</div>
+        <div class="context-info-popover" role="tooltip"><b>Current card context</b><br>When enabled, the text of the card currently open in Anki is sent in the background with each question and used by the AI. It stays hidden from the chat and is read fresh when you press Send. Your selected AI provider receives this text; with Ollama it stays on your computer.<br><br><span>Quick Actions always send the selected card text to your AI provider, even when this switch is off: they need it to explain the card or create a quiz. This switch only controls card context for questions you type yourself.</span></div>
       </div>
     </div>
   </div>
@@ -655,14 +655,15 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
     <div id="cm-builtin-list"></div>
     <div class="cm-section-label">Your Custom Buttons</div>
     <div id="cm-custom-list"></div>
-    <div class="cm-section-label">Add New Button</div>
+    <div class="cm-section-label" id="cm-form-title">Add New Button</div>
     <div class="cm-add-form">
       <input class="cm-add-input" id="cm-new-label" placeholder="Button name (e.g. Simplify)" maxlength="30"/>
       <textarea class="cm-add-textarea" id="cm-new-prompt"
         placeholder="Your prompt. Use {content} where the card text should go.&#10;Example: Explain {content} as if I were a beginner."></textarea>
       <div class="cm-hint" id="custom-prompt-hint">Use <code style="font-size:10px">{content}</code> where the card text should appear.</div>
       <div class="cm-error" id="cm-error"></div>
-      <button class="cm-add-btn" onclick="addCustomChip()">Add Button</button>
+      <button class="cm-add-btn" id="cm-submit" onclick="addCustomChip()">Add Button</button>
+      <button class="cm-delete-btn" id="cm-cancel-edit" onclick="cancelCustomChipEdit()" hidden>Cancel</button>
     </div>
   </div>
 </div>
@@ -1103,6 +1104,7 @@ function openChipManager() {
   _renderChipManager();
 }
 function closeChipManager() {
+  if(editingCustomChipId!==null)cancelCustomChipEdit();
   document.getElementById('chip-modal').classList.remove('open');
 }
 
@@ -1178,13 +1180,14 @@ function _renderChipManager() {
         c.shortcut = k;
         sendToPython('save_chips', { config: chipConfig });
       });
+      var edit = document.createElement('button');edit.className='cm-delete-btn';edit.textContent=tr('Edit');edit.addEventListener('click',function(){editCustomChip(c.id);});
       var del = document.createElement('button');
       del.className   = 'cm-delete-btn';
       del.textContent = tr('Delete');
       del.addEventListener('click', function() { deleteCustomChip(c.id); });
       row.appendChild(info);
       row.appendChild(scLbl); row.appendChild(scInp);
-      row.appendChild(del);
+      row.appendChild(edit);row.appendChild(del);
       cl.appendChild(row);
     });
   }
@@ -1198,12 +1201,24 @@ function toggleBuiltin(id) {
 }
 
 function deleteCustomChip(id) {
+  if(editingCustomChipId===id)cancelCustomChipEdit();
   chipConfig.custom = chipConfig.custom.filter(function(c) { return c.id !== id; });
   sendToPython('save_chips', { config: chipConfig });
   renderChips();
   _renderChipManager();
 }
 
+var editingCustomChipId=null,customChipAddDraft=null;
+function editCustomChip(id){
+  var chip=chipConfig.custom.find(function(item){return item.id===id;});if(!chip)return;
+  if(editingCustomChipId===null)customChipAddDraft={label:document.getElementById('cm-new-label').value,prompt:document.getElementById('cm-new-prompt').value};
+  editingCustomChipId=id;document.getElementById('cm-new-label').value=chip.label;document.getElementById('cm-new-prompt').value=chip.prompt;
+  document.getElementById('cm-form-title').textContent=tr('Edit');document.getElementById('cm-submit').textContent=tr('Save');document.getElementById('cm-cancel-edit').hidden=false;document.getElementById('cm-error').textContent='';
+  document.getElementById('cm-new-label').focus();document.getElementById('cm-new-label').scrollIntoView({block:'nearest'});
+}
+function cancelCustomChipEdit(){
+  editingCustomChipId=null;document.getElementById('cm-new-label').value=customChipAddDraft?.label||'';document.getElementById('cm-new-prompt').value=customChipAddDraft?.prompt||'';customChipAddDraft=null;document.getElementById('cm-form-title').textContent=tr('Add New Button');document.getElementById('cm-submit').textContent=tr('Add Button');document.getElementById('cm-cancel-edit').hidden=true;document.getElementById('cm-error').textContent='';
+}
 function addCustomChip() {
   var label  = document.getElementById('cm-new-label').value.trim();
   var prompt = document.getElementById('cm-new-prompt').value.trim();
@@ -1214,9 +1229,11 @@ function addCustomChip() {
     errEl.textContent = tr('Add {content} to your prompt (where the card text goes).'); return;
   }
   errEl.textContent = '';
-  chipConfig.custom.push({ id: String(Date.now()), label: label, prompt: prompt });
-  document.getElementById('cm-new-label').value  = '';
-  document.getElementById('cm-new-prompt').value = '';
+  if(editingCustomChipId!==null){
+    var index=chipConfig.custom.findIndex(function(item){return item.id===editingCustomChipId;});if(index<0){cancelCustomChipEdit();return;}
+    chipConfig.custom[index]=Object.assign({},chipConfig.custom[index],{label:label,prompt:document.getElementById('cm-new-prompt').value});
+  }else chipConfig.custom.push({ id: String(Date.now()), label: label, prompt: prompt });
+  cancelCustomChipEdit();
   sendToPython('save_chips', { config: chipConfig });
   renderChips();
   _renderChipManager();

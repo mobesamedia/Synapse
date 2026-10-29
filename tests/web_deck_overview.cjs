@@ -28,6 +28,13 @@ const {chromium}=require('playwright');const assert=require('node:assert/strict'
      await page.locator('[data-info="hard"]').click();assert.ok((await page.locator('#info-content').textContent()).includes('8'));
      await page.locator('[data-info="hard"]').click();
     }
+    if(path.basename(file).startsWith('overview-')){
+      assert.equal(await page.locator('.history-line linearGradient').count(),1);
+      assert.equal(await page.locator('.history-line path[vector-effect="non-scaling-stroke"]').count(),1);
+      assert.equal(await page.locator('.history-line title').count(),14);
+      assert.equal(await page.locator('.history-line circle').count(),0);
+      const dot=await page.locator('.history-today').boundingBox();assert.ok(Math.abs(dot.width-dot.height)<.01);assert.equal(dot.width,5);
+    }
     assert.equal(await page.locator('.white-box .deck-controls').count(),1);
     await page.screenshot({path:'/tmp/deck-'+path.basename(file,'.html')+'-'+width+'.png',fullPage:true});
    }

@@ -186,7 +186,7 @@ def _is_valid_hex(color: str) -> bool:
 def write_custom_solid_css() -> None:
     """(Re)generate theme/user_files/custom_solid.css from the user's colours.
 
-    Uses solid_light.css as a template and swaps its two placeholder colours.
+    Uses the layout-preserving flat background template and changes only background colours.
     Safe no-op if the template is missing or the colours are invalid.
     """
     try:
@@ -195,13 +195,13 @@ def write_custom_solid_css() -> None:
         if not _is_valid_hex(light): light = "#f5f5f7"
         if not _is_valid_hex(dark):  dark = "#1f1f21"
         base_dir = os.path.join(addon_path, "theme", "user_files")
-        template_path = os.path.join(base_dir, "solid_light.css")
+        template_path = os.path.join(base_dir, "none.css")
         if not os.path.exists(template_path):
             print("SynapsePro: custom solid template missing, skipping generation.")
             return
         with open(template_path, "r", encoding="utf-8") as f:
             css = f.read()
-        css = css.replace("#f5f5f7", light).replace("#1f1f21", dark)
+        css = css.replace("#f5f5f5", light).replace("#2c2c2c", dark)
         css = "/* custom_solid.css — auto-generated, edits will be overwritten */\n" + css
         with open(os.path.join(base_dir, "custom_solid.css"), "w", encoding="utf-8") as f:
             f.write(css)
@@ -248,7 +248,13 @@ def _sync_toolbar_review_class(new_state: str):
     """
     try:
         flag = "true" if new_state == "review" else "false"
-        js = f"document.body && document.body.classList.toggle('reviewing', {flag});"
+        none_flag = "true" if addon_settings.get("active_theme") == "none.css" else "false"
+        main_flag = "true" if new_state in ("deckBrowser", "overview") else "false"
+        js = (
+            f"if(document.body){{document.body.classList.toggle('reviewing', {flag});"
+            f"document.body.classList.toggle('synapse-main-background', {main_flag});"
+            f"document.body.classList.toggle('synapse-background-none', {none_flag});}}"
+        )
         if mw and getattr(mw, "toolbar", None) and getattr(mw.toolbar, "web", None):
             mw.toolbar.web.eval(js)
         if mw and getattr(mw, "bottomWeb", None):
@@ -812,7 +818,12 @@ def _sync_webview_bg_colors():
         ):
             try:
                 if wv is not None and wv.page() is not None:
-                    wv.page().setBackgroundColor(qc)
+                    page_color = qc
+                    if (getattr(mw,"state","")=="review"
+                            and addon_settings.get("active_theme")=="none.css"
+                            and wv is getattr(getattr(mw,"toolbar",None),"web",None)):
+                        page_color=QColor("#303030" if night else "#ffffff")
+                    wv.page().setBackgroundColor(page_color)
             except Exception:
                 pass
         try:
@@ -1650,7 +1661,15 @@ def inject_theme_assets(web_content: WebContent, context: Optional[Any]):
                 "b.classList.add('top-toolbar');"
                 "if(document.getElementById('outer')&&!b.classList.contains('deckbrowser')"
                 "&&!b.classList.contains('overview'))b.classList.add('bottom-toolbar');"
-                "}catch(e){}})();</script>"
+                + "if(b.classList.contains('top-toolbar')||b.classList.contains('bottom-toolbar')){"
+                + "b.classList.toggle('synapse-main-background',"
+                + ("true" if not isinstance(context, ReviewerBottomBar) and getattr(mw,"state","") in ("deckBrowser","overview") else "false")
+                + ");b.classList.toggle('synapse-background-none',"
+                + ("true" if css_file=="none.css" else "false")
+                + ");b.classList.toggle('reviewing',"
+                + ("true" if isinstance(context, ReviewerBottomBar) or getattr(mw,"state","")=="review" else "false")
+                + ");}"
+                + "}catch(e){}})();</script>"
             )
             try:
                 custom_background.inject_style(

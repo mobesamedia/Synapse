@@ -565,6 +565,25 @@ class SettingsDialog(QDialog):
         self.visual_theme_combo.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.populate_themes()
         layout.addWidget(self.visual_theme_combo)
+        self._custom_bg_light=self.current_config.get("custom_bg_light", "#f5f5f7")
+        self._custom_bg_dark=self.current_config.get("custom_bg_dark", "#1f1f21")
+        self.solid_background_panel=QWidget()
+        colors_layout=QVBoxLayout(self.solid_background_panel)
+        for key,label in (("custom_bg_light",_("Light background color")),("custom_bg_dark",_("Dark background color"))):
+            button=QPushButton();colors_layout.addWidget(button)
+            def update_color(button=button,key=key,label=label):
+                color=QColor(getattr(self,"_"+key))
+                if not color.isValid():color=QColor("#f5f5f7" if key.endswith("light") else "#1f1f21")
+                setattr(self,"_"+key,color.name())
+                button.setText(label+": "+color.name())
+                button.setStyleSheet("background:"+color.name()+";color:"+("#fff" if color.lightness()<128 else "#222")+";padding:8px;border-radius:6px;")
+            def choose_color(_checked=False,button=button,key=key,update_color=update_color):
+                color=QColorDialog.getColor(QColor(getattr(self,"_"+key)),self)
+                if color.isValid():setattr(self,"_"+key,color.name());update_color()
+            update_color();button.clicked.connect(choose_color)
+        self.solid_background_panel.setVisible(self.visual_theme_combo.currentData()=="custom_solid.css")
+        self.visual_theme_combo.currentIndexChanged.connect(lambda _index:self.solid_background_panel.setVisible(self.visual_theme_combo.currentData()=="custom_solid.css"))
+        layout.addWidget(self.solid_background_panel)
 
         return card
 
@@ -979,10 +998,15 @@ class SettingsDialog(QDialog):
         except Exception:
             pass
 
+        self.visual_theme_combo.addItem(_("None"), "none.css")
+        self.visual_theme_combo.setItemData(0, QColor("#d94c4c"), Qt.ItemDataRole.ForegroundRole)
+        self.visual_theme_combo.addItem(_("Pick Solid Color"), "custom_solid.css")
         if not found_themes:
             self.visual_theme_combo.addItem(_("Default"), "medical_theme.css")
         else:
             for filename in found_themes:
+                if filename in ("none.css", "custom_solid.css"):
+                    continue
                 display_name = (
                     _("Default") if filename == "medical_theme.css"
                     else filename.replace(".css", "").replace("_", " ").title()
@@ -991,7 +1015,7 @@ class SettingsDialog(QDialog):
 
         current_css = self.current_config.get("active_theme", "medical_theme.css")
         idx = self.visual_theme_combo.findData(current_css)
-        self.visual_theme_combo.setCurrentIndex(idx if idx != -1 else 0)
+        self.visual_theme_combo.setCurrentIndex(idx if idx != -1 else max(0, self.visual_theme_combo.findData("medical_theme.css")))
 
     def open_ankiweb_link(self):
         QDesktopServices.openUrl(QUrl("https://ankiweb.net/shared/review/236979321"))
@@ -1008,6 +1032,8 @@ class SettingsDialog(QDialog):
             # regardless of the displayed translation.
             "fact_theme": self.fact_theme_combo.currentData() or "Medical",
             "active_theme": self.visual_theme_combo.currentData() or "medical_theme.css",
+            "custom_bg_light": getattr(self,"_custom_bg_light",self.current_config.get("custom_bg_light","#f5f5f7")),
+            "custom_bg_dark": getattr(self,"_custom_bg_dark",self.current_config.get("custom_bg_dark","#1f1f21")),
             "active_color_theme":  getattr(self, "_color_theme_value", "blue"),
             "custom_theme_colors": getattr(self, "_custom_theme_colors", {}),
             "stats_time_range": int(self.stats_range_combo.currentData() or 7),

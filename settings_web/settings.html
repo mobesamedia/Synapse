@@ -193,6 +193,9 @@
   /* select — the native <select> stays in the DOM as the value store, but is
      hidden: QtWebEngine renders the native popup mis-scaled (and it grows a
      bit more each time it opens). We draw our own dropdown in HTML instead. */
+  #solidBackgroundControls .rc{gap:10px;}
+  #solidBackgroundControls input[type=color]{width:44px;height:30px;padding:2px;border:1px solid var(--group-border);border-radius:6px;cursor:pointer;}
+  #solidBackgroundControls output{font-size:12px;color:var(--muted);min-width:65px;}
   select.field{display:none;}
   .dd-btn{appearance:none;-webkit-appearance:none;background:var(--field-bg);color:var(--text);
     border:1px solid transparent;border-radius:8px;padding:7px 30px 7px 12px;font-size:13.5px;font-weight:500;cursor:pointer;
@@ -478,6 +481,10 @@
               <div class="rl"><div class="rt">Background Style</div><div class="rd">Overall background of the add-on screens.</div></div>
               <div class="rc"><select class="field" id="background_style"></select></div>
             </div>
+          </div>
+          <div class="group" id="solidBackgroundControls" hidden>
+            <div class="row"><div class="rl"><label class="rt" for="custom_bg_light">Light background color</label></div><div class="rc"><input type="color" id="custom_bg_light" aria-label="Light background color" value="#f5f5f7"><output id="custom_bg_light_value" for="custom_bg_light">#f5f5f7</output></div></div>
+            <div class="row"><div class="rl"><label class="rt" for="custom_bg_dark">Dark background color</label></div><div class="rc"><input type="color" id="custom_bg_dark" aria-label="Dark background color" value="#1f1f21"><output id="custom_bg_dark_value" for="custom_bg_dark">#1f1f21</output></div></div>
           </div>
           <div class="group-label">Dashboard Surfaces</div>
           <div class="group">
@@ -975,7 +982,7 @@
   function ddItem(sel, btn, o){
     var d = document.createElement('div');
     d.className = 'dd-item' + (o.selected ? ' sel' : '');
-    d.textContent = o.textContent;
+    d.textContent = o.textContent;d.style.color=o.style.color;
     d.addEventListener('click', function(){
       sel.value = o.value;
       btn.textContent = o.textContent;
@@ -1012,7 +1019,7 @@
     var left = Math.min(r.left, window.innerWidth - menu.offsetWidth - 10);
     menu.style.left = Math.max(8, left) + 'px';
     var s = menu.querySelector('.dd-item.sel');
-    if(s && s.scrollIntoView) s.scrollIntoView({block:'nearest'});
+    if(s) menu.scrollTop=Math.max(0,s.offsetTop-menu.clientHeight/2+s.offsetHeight/2);
     _ddOpen = {menu:menu, sel:sel};
   }
   function enhanceSelects(){
@@ -1065,13 +1072,15 @@
       _shortcutDisplays = (data.shortcutDisplays && typeof data.shortcutDisplays === 'object') ? Object.assign({}, data.shortcutDisplays) : {};
       applyAccent(data.accent || '#0071D3', data.accentPress || '#004990');
 
-      // background style options (gradients only)
+      // Background styles include Anki's unmodified default background.
       var bg = document.getElementById('background_style');
       var themes = data.backgroundThemes || [];
       bg.innerHTML = themes.map(function(t){
-        return '<option value="'+esc(t.value)+'">'+esc(t.label)+'</option>';
+        return '<option value="'+esc(t.value)+'"'+(t.value==='none.css'?' style="color:#d94c4c"':'')+'>'+esc(t.label)+'</option>';
       }).join('');
 
+      function updateBackgroundChoiceColor(){var color=bg.value==='none.css'?'#d94c4c':'';bg.style.color=color;if(bg._ddBtn)bg._ddBtn.style.color=color;document.getElementById('solidBackgroundControls').hidden=bg.value!=='custom_solid.css';}
+      bg.addEventListener('change',updateBackgroundChoiceColor);
       let materialStyle=document.getElementById('surfaceMaterialStyle');
       if(!materialStyle){materialStyle=document.createElement('style');materialStyle.id='surfaceMaterialStyle';document.head.append(materialStyle);}
       materialStyle.textContent=cfg.surface_effects_css||'';
@@ -1099,7 +1108,11 @@
       contentSelect.onchange=updateTopic;updateTopic();
       setSelect('stats_time_range', cfg.stats_time_range != null ? cfg.stats_time_range : 7);
       setSelect('sidebar_visibility', cfg.sidebar_visibility_mode || 'always_show');
-      setSelect('background_style', cfg.active_theme || 'medical_theme.css');
+      var configuredBackground=cfg.active_theme||'medical_theme.css';
+      if(!Array.from(bg.options).some(function(option){return option.value===configuredBackground;}))configuredBackground=Array.from(bg.options).find(function(option){return option.value!=='none.css';})?.value||configuredBackground;
+      setSelect('background_style', configuredBackground);
+      updateBackgroundChoiceColor();
+      ['custom_bg_light','custom_bg_dark'].forEach(function(id){var input=document.getElementById(id),value=cfg[id];input.value=/^#[0-9a-f]{6}$/i.test(value||'')?value:(id==='custom_bg_light'?'#f5f5f7':'#1f1f21');input.oninput=function(){document.getElementById(id+'_value').textContent=input.value;};input.oninput();});
       var customEnabled = document.getElementById('custom_background_enabled');
       customEnabled.checked = !!cfg.custom_background_enabled;
       document.getElementById('custom_background_review_enabled').checked=cfg.custom_background_review_enabled===true;
@@ -1237,8 +1250,8 @@
       sidebar_visibility_mode: val('sidebar_visibility'),
       active_theme: val('background_style'),
       active_color_theme: _activeTheme || 'ocean',
-      custom_bg_light: '#f5f5f7',
-      custom_bg_dark: '#1f1f21',
+      custom_bg_light: val('custom_bg_light'),
+      custom_bg_dark: val('custom_bg_dark'),
       custom_background_enabled: !!document.getElementById('custom_background_enabled').checked,
       custom_background_review_enabled: document.getElementById('custom_background_review_enabled').checked,
       custom_background_review_intensity: Number(val('custom_background_review_intensity')),
@@ -1292,7 +1305,7 @@
     syncReviewBackgroundControls();
     var enabled=!!document.getElementById('custom_background_enabled').checked;
     document.getElementById('customBackgroundPanel').classList.toggle('open',enabled);
-    document.getElementById('backgroundStyleRow').classList.toggle('setting-locked',enabled);
+    document.getElementById('backgroundStyleRow').classList.toggle('setting-locked',enabled);document.getElementById('solidBackgroundControls').classList.toggle('setting-locked',enabled);
     var blur=Number(val('custom_background_blur'))||0,overlay=Number(val('custom_background_overlay'))||0;
     document.getElementById('customBackgroundBlurValue').textContent=blur+' px';
     document.getElementById('customBackgroundOverlayValue').textContent=overlay+'%';

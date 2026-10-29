@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-29",
+  "scope": "Changelog text and date only; all other 395 packaged files unchanged from recovery-tested package.",
+  "previous_sha256": "4d97a19787d3998b20b5cdee29bf11ecbab35cd768cb40e401a03a58ab1f95ae",
+  "sha256": "7038284cf20beb165c6b26fb3cca52189c2125d046e735408886845dc9a6d2ea",
+  "bytes": 35168604,
+  "files": 396,
+  "changed_packaged_files": [
+    "changelog.py"
+  ],
+  "version": "1.6.5",
+  "changelog_items": 29,
+  "checks": [
+    "ZIP CRC",
+    "complete source byte comparison",
+    "same archive file list",
+    "all previous release changelog entries unchanged",
+    "manifest/constants/changelog version agreement",
+    "changelog tags and text",
+    "unchanged product code outside changelog.py"
+  ],
+  "runtime_test_evidence": "recovery-fix-validation-2026-10-28.json",
+  "security_changelog_note": "Notebook XSS fix, browser regression verification and discreet dismissible notice explicitly documented; Quick Actions explanation remains included.",
+  "previous_changelog_package_sha256": "49c52e0404be93ac3afeffd45a83c5fdc6d387c27d7b0b2da1cbecfea503a111"
+}

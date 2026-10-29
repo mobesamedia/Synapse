@@ -5,9 +5,9 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 EXCLUDED_DIRS = {'archived_features', '.git', '.agents', '.codex', '__pycache__',
-                 'tests', 'docs', 'scripts', 'node_modules', '.pytest_cache',
+                 'tests', 'docs', 'scripts', 'output', 'node_modules', '.pytest_cache',
                  'ai_v2_profile', 'website_web_profile', 'music_web_profile',
-                 'mindmap_web_data', '__MACOSX'}
+                 'mindmap_web_data', 'SynapsePro_Data', '__MACOSX'}
 EXCLUDED_FILES = {'_secrets.py', 'addon_settings.json', 'study_plan_config.json',
                   'ai_secrets.json', 'meta.json', 'Icon\r'}
 
@@ -18,7 +18,11 @@ def release_files(root=ROOT):
             continue
         if path.is_symlink() or not path.is_file():
             continue
-        if path.name in EXCLUDED_FILES or path.name.endswith(('_backup.json', '_recovery.json')):
+        if path.name in EXCLUDED_FILES or path.name.endswith(('_backup.json', '_recovery.json', '_backup.json.tmp', '_recovery.json.tmp')):
+            continue
+        if '.pre-block-ui-v1.json' in path.name or '.pre-hierarchy-v1.json' in path.name:
+            continue
+        if path.suffix in {'.sqlite', '.sqlite3', '.db'} or path.name.endswith(('-wal', '-shm', '-journal')):
             continue
         if path.suffix in {'.pyc', '.pyo', '.ankiaddon', '.zip'}:
             continue
