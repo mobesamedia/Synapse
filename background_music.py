@@ -326,6 +326,13 @@ if _has_webengine and QWebEnginePage is not object:
 
         def javaScriptConsoleMessage(self, level, message, line, source):  # type: ignore[override]
             msg = str(message or "")
+            native_audio = getattr(self, "_native_sc_audio", None)
+            if native_audio is not None and msg.startswith("SCNATIVE:"):
+                try:
+                    native_audio.handle_message(json.loads(msg[len("SCNATIVE:"):]))
+                except Exception:
+                    traceback.print_exc()
+                return
             if msg.startswith(self._prefix):
                 try:
                     data = json.loads(msg[len(self._prefix):])
@@ -744,6 +751,12 @@ class MiniMusicPlayer(QDialog):
             self._sc_page = _ConsoleBridgePage(prof, self.sc_view,
                                                "SCBRIDGE:", self._on_sc_message)
             self.sc_view.setPage(self._sc_page)
+            if _has_multimedia:
+                try:
+                    from .soundcloud_audio import SoundCloudNativeAudio
+                    self._sc_page._native_sc_audio = SoundCloudNativeAudio(self._sc_page)
+                except Exception:
+                    traceback.print_exc()
             self.sc_view.loadFinished.connect(self._on_sc_load_finished)
             s = self._sc_page.settings()
             _set_web_attr(s, "LocalContentCanAccessRemoteUrls", True)
@@ -1130,6 +1143,9 @@ class MiniMusicPlayer(QDialog):
             self._sc_js(f"scVolume({self._sc_vol});")
         else:
             self._sc_js("scPause();")
+            native_audio = getattr(self._sc_page, "_native_sc_audio", None)
+            if native_audio is not None:
+                native_audio.pause_all()
             self._sc_playing = False
             self._push_sc_state(playing=False)
             self._enter_local_layout()
@@ -1586,6 +1602,9 @@ def cleanup_music_player():
                 pass
         try:
             _music_window._sc_js("scPause();")
+            native_audio = getattr(_music_window._sc_page, "_native_sc_audio", None)
+            if native_audio is not None:
+                native_audio.reset()
         except Exception:
             pass
         for attr in ("sc_view", "ui_view"):

@@ -1,3 +1,5 @@
+@import url("shared/scrollbars.css");
+
 /* --- solid_beige.css — solid background variant (auto-generated from blue.css) --- */
 /* Medical Theme Anki - v35 (Standard + Custom Dashboard Support) */
 
@@ -199,18 +201,6 @@ html:has(body.reviewing) .header:has(a#decks) .toolbar {
     border-radius: 0 !important;
 }
 
-/* === Dashboard: hide the page scrollbar (scrolling itself still works) ====
-   The overlay scrollbar looks out of place on the widget dashboard; wheel,
-   trackpad and keyboard scrolling are unaffected. Scoped to the deck browser
-   and the custom deck-overview dashboard only. */
-body.deckbrowser::-webkit-scrollbar,
-body:has(#custom-dashboard)::-webkit-scrollbar,
-html:has(body.deckbrowser)::-webkit-scrollbar,
-html:has(#custom-dashboard)::-webkit-scrollbar {
-    width: 0 !important;
-    height: 0 !important;
-    display: none !important;
-}
 
 /* Keep SynapsePro’s wide deck list only in the regular dashboard mode. */
 body.deckbrowser:not(.synapse-minimal-dashboard) .decks-container,

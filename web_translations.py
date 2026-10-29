@@ -8,6 +8,28 @@ from typing import Dict
 
 
 WEB_TRANSLATIONS: Dict[str, Dict[str, str]] = {
+    "For your safety, potentially unsafe HTML was kept as text or removed. It could otherwise run code. Normal text and safe links still work.": {
+        "de": "Zu deiner Sicherheit wurde potenziell unsicheres HTML als Text beibehalten oder entfernt. Es könnte sonst Code ausführen. Normaler Text und sichere Links funktionieren weiterhin.",
+        "es": "Por tu seguridad, el HTML potencialmente peligroso se ha conservado como texto o eliminado. De lo contrario, podría ejecutar código. El texto normal y los enlaces seguros siguen funcionando.",
+        "ko": "안전을 위해 위험할 수 있는 HTML을 텍스트로 유지하거나 제거했습니다. 그렇지 않으면 코드가 실행될 수 있습니다. 일반 텍스트와 안전한 링크는 계속 사용할 수 있습니다.",
+        "pt": "Para sua segurança, o HTML potencialmente perigoso foi mantido como texto ou removido. Caso contrário, poderia executar código. Texto normal e links seguros continuam funcionando.",
+        "fr": "Pour votre sécurité, le HTML potentiellement dangereux a été conservé comme texte ou supprimé. Il pourrait sinon exécuter du code. Le texte normal et les liens sûrs fonctionnent toujours.",
+        "vi": "Để bảo vệ bạn, HTML có thể không an toàn đã được giữ dưới dạng văn bản hoặc bị xóa. Nếu không, nội dung đó có thể chạy mã. Văn bản thông thường và liên kết an toàn vẫn hoạt động.",
+        "zh": "为保障安全，可能不安全的 HTML 已保留为文本或被移除，否则可能执行代码。普通文本和安全链接仍可正常使用。",
+        "hi": "आपकी सुरक्षा के लिए, संभावित असुरक्षित HTML को पाठ के रूप में रखा गया या हटा दिया गया है। अन्यथा यह कोड चला सकता था। सामान्य पाठ और सुरक्षित लिंक अब भी काम करते हैं।",
+        "pl": "Dla Twojego bezpieczeństwa potencjalnie niebezpieczny HTML zachowano jako tekst lub usunięto. W przeciwnym razie mógłby uruchomić kod. Zwykły tekst i bezpieczne linki nadal działają.",
+    },
+    "Quick Actions always send the selected card text to your AI provider, even when this switch is off: they need it to explain the card or create a quiz. This switch only controls card context for questions you type yourself.": {
+        "de": "Schnellaktionen senden den ausgewählten Kartentext auch bei ausgeschaltetem Schalter an deinen KI-Anbieter: Sie brauchen ihn, um die Karte zu erklären oder ein Quiz zu erstellen. Dieser Schalter steuert nur den Kartenkontext für Fragen, die du selbst eingibst.",
+        "es": "Las acciones rápidas siempre envían el texto seleccionado de la tarjeta a tu proveedor de IA, incluso con este interruptor desactivado: lo necesitan para explicar la tarjeta o crear un cuestionario. Este interruptor solo controla el contexto de las preguntas que escribes.",
+        "ko": "빠른 작업은 이 스위치가 꺼져 있어도 선택된 카드 텍스트를 AI 제공업체에 보냅니다. 카드를 설명하거나 퀴즈를 만들려면 이 텍스트가 필요합니다. 이 스위치는 직접 입력한 질문의 카드 컨텍스트만 제어합니다.",
+        "pt": "As ações rápidas sempre enviam o texto selecionado do cartão ao seu provedor de IA, mesmo com esta opção desativada: elas precisam dele para explicar o cartão ou criar um quiz. Esta opção só controla o contexto das perguntas que você digita.",
+        "fr": "Les actions rapides envoient toujours le texte sélectionné de la carte à votre fournisseur d’IA, même si cette option est désactivée : elles en ont besoin pour expliquer la carte ou créer un quiz. Cette option ne contrôle que le contexte des questions que vous saisissez.",
+        "vi": "Tác vụ nhanh luôn gửi văn bản thẻ đã chọn đến nhà cung cấp AI, kể cả khi công tắc này tắt: tác vụ cần văn bản để giải thích thẻ hoặc tạo câu đố. Công tắc này chỉ điều khiển ngữ cảnh thẻ cho câu hỏi bạn tự nhập.",
+        "zh": "即使此开关已关闭，快捷操作仍会将所选卡片文本发送给你的 AI 服务商，因为解释卡片或生成测验需要这些文本。此开关仅控制你自行输入问题时的卡片上下文。",
+        "hi": "यह स्विच बंद होने पर भी त्वरित कार्रवाइयाँ चुना हुआ कार्ड पाठ आपके AI प्रदाता को भेजती हैं: कार्ड समझाने या क्विज़ बनाने के लिए इसकी आवश्यकता होती है। यह स्विच केवल आपके द्वारा लिखे गए प्रश्नों के कार्ड संदर्भ को नियंत्रित करता है।",
+        "pl": "Szybkie akcje zawsze wysyłają wybrany tekst karty do dostawcy AI, nawet gdy ten przełącznik jest wyłączony: potrzebują go do wyjaśnienia karty lub utworzenia quizu. Przełącznik kontroluje tylko kontekst karty w pytaniach wpisywanych samodzielnie.",
+    },
     "Synapse Settings": {
         "de": "Synapse-Einstellungen", "es": "Ajustes de Synapse", "ko": "Synapse 설정", "pt": "Configurações do Synapse",
         "fr": "Paramètres de Synapse", "vi": "Cài đặt Synapse", "zh": "Synapse 设置", "hi": "Synapse सेटिंग्स",

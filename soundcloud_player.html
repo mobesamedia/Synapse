@@ -61,6 +61,7 @@
   var _loadingUrl = "";
   var _pendingLoad = null;
   var _pendingVolume = null;
+  var _desiredVolume = null;
   var _playAfterLoad = false;
 
   function bridge(obj) {
@@ -155,6 +156,7 @@
 
   function scVolume(v) {
     var vol = Math.max(0, Math.min(100, v));
+    _desiredVolume = vol;
     _pendingVolume = vol;
     if (_widgetReady && widget) {
       try { widget.setVolume(vol); _pendingVolume = null; } catch (e) {}
@@ -180,6 +182,9 @@
     if (!widget || !url) return;
     if (autoplay) _playAfterLoad = true;
     _loadingUrl = url;
+    // Widget.load creates a new iframe/audio element. Restore the chosen
+    // volume there instead of allowing the new element's default volume.
+    _pendingVolume = _desiredVolume;
     _widgetReady = false;
     _st().ready = false;
     _st().playing = false;

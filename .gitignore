@@ -36,3 +36,35 @@ Icon[[:cntrl:]]
 # IDE folders
 .idea/
 .vscode/
+
+# Local build artifacts and generated design drafts
+/output/
+
+# Add-on user data, SQLite sidecars and fixed pre-update copies
+SynapsePro_Data/
+*.sqlite
+*.sqlite3
+*.db
+*-wal
+*-shm
+*-journal
+*.pre-block-ui-v1.json*
+*.pre-hierarchy-v1.json*
+*_backup.json.tmp
+*_recovery.json.tmp
+
+# Local environment credentials and private key files
+.env
+.env.*
+!.env.example
+!.env.sample
+*.pem
+*.p12
+*.pfx
+*.key
+
+# Local tooling state and dependencies
+.agents/
+.codex/
+node_modules/
+.pytest_cache/

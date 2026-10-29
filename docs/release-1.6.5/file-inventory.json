@@ -1,0 +1,494 @@
+{
+  "date": "2026-10-27",
+  "github_commit": "c01f68144b3f53b6978e57d63b74fc1399b67caa",
+  "local_base": "6afe28a3aa73aa94a5ca5466621d7c0f57f99b28",
+  "shared_tree": "c0802aa009f00fb83233b8c6195f6c87e133b554",
+  "files": [
+    {
+      "path": "__init__.py",
+      "status": " M",
+      "bytes": 77428,
+      "sha256": "bc5027afc57a850a67a92ff115170577477b00bf5744d07e15a11771b50e480d"
+    },
+    {
+      "path": "background_music.py",
+      "status": " M",
+      "bytes": 60910,
+      "sha256": "79098a7a9eac43bc619be70acf85bca18c2bd7042783ff33dac1af3e563258c8"
+    },
+    {
+      "path": "chat_ui.html",
+      "status": " M",
+      "bytes": 95387,
+      "sha256": "5914c97f0831ad1c04f432245aac4b16f3da101e9c966976aa41020ca3b76da6"
+    },
+    {
+      "path": "deck_overview_view.py",
+      "status": " M",
+      "bytes": 14434,
+      "sha256": "e80753e9f05e93a9b43a6f0436b003c3529c87296f1fa9968a592551b62691ff"
+    },
+    {
+      "path": "index.html",
+      "status": " M",
+      "bytes": 168914,
+      "sha256": "4a6e0b8a5fa55476b020f3257ee9d91867c87757d287cce9bc60d60b743ed5b0"
+    },
+    {
+      "path": "mindmap_sidebar.py",
+      "status": " M",
+      "bytes": 50733,
+      "sha256": "8f33d326e262bce320acd2fc1ca133d1eb5ee2acfbd0cd1a545c6ada4a971134"
+    },
+    {
+      "path": "notebook_sidebar.py",
+      "status": " M",
+      "bytes": 117273,
+      "sha256": "84e9bea676c6f82d540d0ef585c5c68859072acea5b8f0299b988d4d620cb70d"
+    },
+    {
+      "path": "settings_dialog.py",
+      "status": " M",
+      "bytes": 48638,
+      "sha256": "2018cb3c99fb0872aad562ee99ea3aaa697c0c1c56e4d8b12395d346c7597934"
+    },
+    {
+      "path": "settings_web/settings.html",
+      "status": " M",
+      "bytes": 102400,
+      "sha256": "6276c05a15c7be8a4072b6b05b47f5ce97b85b6e5bee08228c4bb6ea3d34320b"
+    },
+    {
+      "path": "soundcloud_player.html",
+      "status": " M",
+      "bytes": 14570,
+      "sha256": "c552f2a6664a0fc8e399f83f94637413f64cdfd38bbbe0a23f2aa5ae32624b5d"
+    },
+    {
+      "path": "statistics_widget.py",
+      "status": " M",
+      "bytes": 26625,
+      "sha256": "5530e0b62973a1da59688652ab393c2c7990d97073ab29cd5c6cf3e164e6cd44"
+    },
+    {
+      "path": "tests/qt_notebook_launch.py",
+      "status": " M",
+      "bytes": 12266,
+      "sha256": "2cb3a6ad292f956589cf2960a6e22bfcd471e29eac0ce6d11aa955b8ddb5d6c4"
+    },
+    {
+      "path": "tests/qt_roadmap_lifecycle.py",
+      "status": " M",
+      "bytes": 14562,
+      "sha256": "0f8a86f1f40035d474e1fa39644a44a303ab984fbdee40d130cfaca38cb46db7"
+    },
+    {
+      "path": "tests/test_deck_overview.py",
+      "status": " M",
+      "bytes": 5434,
+      "sha256": "1800cf9ef08c59eda91206e1a55681471f2b4ac76b1dd1ce3f35dfb9a3986dea"
+    },
+    {
+      "path": "tests/web_deck_overview.cjs",
+      "status": " M",
+      "bytes": 7640,
+      "sha256": "dc1e7833f3a308d9acea5792ac1a1678e08f27bf6bf1cabd9d93e2793e019bce"
+    },
+    {
+      "path": "tests/web_safe_changes.cjs",
+      "status": " M",
+      "bytes": 4871,
+      "sha256": "a272ddd97f30b0dc3fada7f92bae1f4432aa277c461ac01d512fca2f8c8c6896"
+    },
+    {
+      "path": "theme/user_files/blue.css",
+      "status": " M",
+      "bytes": 5444,
+      "sha256": "cc4de4536d5737ce40efd38f1b92b564af44e8e30f35b65ea463867a59763238"
+    },
+    {
+      "path": "theme/user_files/green.css",
+      "status": " M",
+      "bytes": 5444,
+      "sha256": "422fb0facf17a8dcccdfcd8b1cbeb8e70ec221e415a374d71967d4d228731972"
+    },
+    {
+      "path": "theme/user_files/medical_theme.css",
+      "status": " M",
+      "bytes": 5707,
+      "sha256": "899d522e286e16e130627966980dc9a77a9787f02512ab412b1efe4daae4cc8d"
+    },
+    {
+      "path": "theme/user_files/orange.css",
+      "status": " M",
+      "bytes": 5441,
+      "sha256": "e5d6e7579c4707105018b359996bf1cdae28c14325e0553c0bdb923dee756e16"
+    },
+    {
+      "path": "theme/user_files/pink.css",
+      "status": " M",
+      "bytes": 5444,
+      "sha256": "efef1fbee9769e0a1d412ba54b26b297a0d696cad591d23552ad0eefed84af5f"
+    },
+    {
+      "path": "theme/user_files/purple.css",
+      "status": " M",
+      "bytes": 5444,
+      "sha256": "96b5dd42dac657f6aa3f8b9988f039975e49b075296708d118818045e46bc69a"
+    },
+    {
+      "path": "theme/user_files/red.css",
+      "status": " M",
+      "bytes": 5444,
+      "sha256": "e98972b2ecffa0ee37ff3057a338c38e65e9f61ca46f03796c9f93b3a318b020"
+    },
+    {
+      "path": "theme/user_files/solid_beige.css",
+      "status": " M",
+      "bytes": 8109,
+      "sha256": "00364f017f0429e8ea1448ff2d73fecd8729527b31f95b90426b01ccb3d44749"
+    },
+    {
+      "path": "theme/user_files/solid_blue.css",
+      "status": " M",
+      "bytes": 8108,
+      "sha256": "6449ba0b6c904d3ab1dd2ef5838fcbc2c3eb90c3e041fa9159894b4c1d4159be"
+    },
+    {
+      "path": "theme/user_files/solid_green.css",
+      "status": " M",
+      "bytes": 8109,
+      "sha256": "9afaf5c88d271e3031df0a5c17370154c1a7b18c2580fc4bae11332bbe98517b"
+    },
+    {
+      "path": "theme/user_files/solid_lavender.css",
+      "status": " M",
+      "bytes": 8112,
+      "sha256": "1c1bdce37031df403b2927e4784379ecd6e349e80d700222b975d98d414628c2"
+    },
+    {
+      "path": "theme/user_files/solid_light.css",
+      "status": " M",
+      "bytes": 8109,
+      "sha256": "9bdc56f88f53cb6bfe3c29fee5538d7867b25e4d180586f5e272f3017fb98cca"
+    },
+    {
+      "path": "theme/user_files/solid_rose.css",
+      "status": " M",
+      "bytes": 8108,
+      "sha256": "1ad9fe9c10b67ee1f7e642eb4e250f5e854acb4156c3b38ade667e48021b9bb6"
+    },
+    {
+      "path": "theme/user_files/turquoise.css",
+      "status": " M",
+      "bytes": 5443,
+      "sha256": "53baca3fff6f45a1ec58d269439aeb098627568e6731537289ffb09e0b3dd408"
+    },
+    {
+      "path": "theme/user_files/yellow.css",
+      "status": " M",
+      "bytes": 5441,
+      "sha256": "0253ea53b02c0f4bfda6e041e6bd33d5697c917c5e88145cdb174bf4cf185796"
+    },
+    {
+      "path": "translation_catalog.json",
+      "status": " M",
+      "bytes": 411894,
+      "sha256": "c93506b52453e45126e970c99dc9f3393597b0812559c18f45d184c9354db518"
+    },
+    {
+      "path": "web_i18n.py",
+      "status": " M",
+      "bytes": 18858,
+      "sha256": "ec6a4156bfffd14c63f7cfe0537fcee9428f98e9e7ab19c358083fc1c940af4a"
+    },
+    {
+      "path": "web_notebook/index.html",
+      "status": " M",
+      "bytes": 238617,
+      "sha256": "c26a1fcd04d8fab30a4bad8998234c14ce31a468e3e102910506456e2b128edf"
+    },
+    {
+      "path": "web_roadmap/roadmap.js",
+      "status": " M",
+      "bytes": 70640,
+      "sha256": "42ab78e4c7d3f16026c668507f9c8f0f3fc4eea480f2673c3491a0f29fe60ee3"
+    },
+    {
+      "path": "web_roadmap/tool_nav.css",
+      "status": " M",
+      "bytes": 1212,
+      "sha256": "3e8022dacdef9c2ac0a057a255e119bd527239ada76872505cf5154305ef507e"
+    },
+    {
+      "path": "web_roadmap/tool_nav.js",
+      "status": " M",
+      "bytes": 5496,
+      "sha256": "2081edab6ecc65ecedc69b4b1b86571090940270ff210196cc4eab6767cb7c3c"
+    },
+    {
+      "path": "web_settings_dialog.py",
+      "status": " M",
+      "bytes": 40213,
+      "sha256": "ce828db9c06a443443db4de14390dec63ba06c5554bca06a57da19fa9a7b5cf2"
+    },
+    {
+      "path": "web_translations.py",
+      "status": " M",
+      "bytes": 192615,
+      "sha256": "fb3f8334a9625294d02a7003ce781346a58002372a4cd45f9b077f59209d19d2"
+    },
+    {
+      "path": "activity_chart.py",
+      "status": "??",
+      "bytes": 2767,
+      "sha256": "706757d9ba663f3e5b27630e9bcfcdf606892c623aef3ee16de46cb37f83cdc1"
+    },
+    {
+      "path": "docs/SOUNDCLOUD_PLAYBACK.md",
+      "status": "??",
+      "bytes": 2856,
+      "sha256": "ba555a6ec32fb19d96a15b8d15b525e0f92b39eeb3883abf75136f6dcc5cf413"
+    },
+    {
+      "path": "output/imagegen/glass-themes/deluge.png",
+      "status": "??",
+      "bytes": 1541111,
+      "sha256": "6b2c3c9622d3bd9afe4d9e0635e9b2d4465c12c1da73f7915ff5d0d29c9d6bca"
+    },
+    {
+      "path": "output/imagegen/glass-themes/dusty.png",
+      "status": "??",
+      "bytes": 1563993,
+      "sha256": "ccb17836dd7d9eb605bb403ffe208750113a2165898c1782085d36f8c0d0d29e"
+    },
+    {
+      "path": "output/imagegen/glass-themes/forest.png",
+      "status": "??",
+      "bytes": 1509228,
+      "sha256": "c691c96760ac71416075c8fd054e931c2f77a82b4436ae79a855c989a2d670db"
+    },
+    {
+      "path": "output/imagegen/glass-themes/horizon.png",
+      "status": "??",
+      "bytes": 1587937,
+      "sha256": "0ade3d5d2ef79d9d6c640af991a54728bb05d63985251b61e5806ba12e5db9d6"
+    },
+    {
+      "path": "output/imagegen/glass-themes/ocean.png",
+      "status": "??",
+      "bytes": 1507219,
+      "sha256": "cba2e316c8f83a735a087a596c297cb108c00fae5f0b5058332efbf07647e00c"
+    },
+    {
+      "path": "output/imagegen/glass-themes/orchid.png",
+      "status": "??",
+      "bytes": 1482648,
+      "sha256": "af42789e4fe507ea72199c747347687b5e6eec1ae0e5d535d559ea0e1ba41802"
+    },
+    {
+      "path": "output/imagegen/glass-themes/prompts.txt",
+      "status": "??",
+      "bytes": 5968,
+      "sha256": "361d1dea3abb84d5655bfc592c8bac34df43a2268ebc549c9f2c2d7e1a366d24"
+    },
+    {
+      "path": "output/imagegen/light-mode/deluge-light-v2.png",
+      "status": "??",
+      "bytes": 1330310,
+      "sha256": "69e1214fff2ba3a0458a87076d5260e82ba58632bc007239d36d0423c8da83b0"
+    },
+    {
+      "path": "output/imagegen/light-mode/deluge-light.png",
+      "status": "??",
+      "bytes": 1994511,
+      "sha256": "260a006079603553f1e6be614751f6660dec7dea302bc43eba21d2aae1405847"
+    },
+    {
+      "path": "output/imagegen/light-mode/dusty-light.png",
+      "status": "??",
+      "bytes": 1517065,
+      "sha256": "a1d55e13e2181b394a15ee7cc836bb561031cc3b65c9934029eff3dba1bcb945"
+    },
+    {
+      "path": "output/imagegen/light-mode/forest-light.png",
+      "status": "??",
+      "bytes": 1565787,
+      "sha256": "00a7ab0c32706098545b798eebba0b47b1aee31ba26131d69e25ef1c3106805f"
+    },
+    {
+      "path": "output/imagegen/light-mode/horizon-light.png",
+      "status": "??",
+      "bytes": 1506288,
+      "sha256": "b281dc9faabb193b344e18b725aff65473f8f4389855cc545fab205f849cd029"
+    },
+    {
+      "path": "output/imagegen/light-mode/ocean-light.png",
+      "status": "??",
+      "bytes": 1545568,
+      "sha256": "de369e5287e68d389fbd7f73df40758dee08ed314e33223c319d6bdea145d7c6"
+    },
+    {
+      "path": "output/imagegen/light-mode/orchid-light-v2.png",
+      "status": "??",
+      "bytes": 1446703,
+      "sha256": "886d1ccd504db63c2b7e5e14c2daf1f0f26071cdb0959e8099a2f268fa30155a"
+    },
+    {
+      "path": "output/imagegen/light-mode/orchid-light.png",
+      "status": "??",
+      "bytes": 1508270,
+      "sha256": "4494583480858c8905077a008637478b8af89658947e0b8e8b22487fc1fc84b9"
+    },
+    {
+      "path": "output/imagegen/light-mode/prompts-v2.txt",
+      "status": "??",
+      "bytes": 2243,
+      "sha256": "1f926c523c8a28013485029df554f78a65cfca1618bd066c5f30230226b5ddde"
+    },
+    {
+      "path": "output/imagegen/light-mode/prompts.txt",
+      "status": "??",
+      "bytes": 6589,
+      "sha256": "447b905beab274ebd04237381d80d91f5015e57cd3d3aa163e0c69f68b23a3b3"
+    },
+    {
+      "path": "soundcloud_audio.py",
+      "status": "??",
+      "bytes": 11084,
+      "sha256": "13240233ebdcad85aaf17524511a19fce24dfe921e79f6249424eebf7a1ab767"
+    },
+    {
+      "path": "soundcloud_native_audio.js",
+      "status": "??",
+      "bytes": 8128,
+      "sha256": "b4d8f178b80fbd334a7fcbb2d9fc7da0cb9f70dbc75de18a1f5285dab7327cab"
+    },
+    {
+      "path": "tests/qt_soundcloud.py",
+      "status": "??",
+      "bytes": 8819,
+      "sha256": "607c84b9ba30816370000fd45dfa24f753dde655fe24366cdc6183b0e84ab21f"
+    },
+    {
+      "path": "tests/qt_soundcloud_bridge.py",
+      "status": "??",
+      "bytes": 3736,
+      "sha256": "539948c27e6f8b6fa1ff417154c8394c8a64f00b69977da8ced3eedf8ddffb7c"
+    },
+    {
+      "path": "tests/test_notebook_backup.py",
+      "status": "??",
+      "bytes": 4480,
+      "sha256": "b9ecf33866685b1b74346ca8365075d56b01913c8021bd3cc9860330946458bd"
+    },
+    {
+      "path": "tests/test_solid_background.py",
+      "status": "??",
+      "bytes": 2123,
+      "sha256": "cffee4e13cbc6bcd2b8e4d7bbd2958df9e24f1afe39abec22b213b54ea2c488a"
+    },
+    {
+      "path": "tests/test_soundcloud_audio.py",
+      "status": "??",
+      "bytes": 1938,
+      "sha256": "32839bd4e869ad6268e77c7d31bef130b91c2034639f65bc0cae81b1240f6638"
+    },
+    {
+      "path": "tests/web_appearance_maps_chips.cjs",
+      "status": "??",
+      "bytes": 6657,
+      "sha256": "7469ace71473b4fb5660ade1b3c59ecb12482d4c7ff9fcac12e47c8d27f29d4b"
+    },
+    {
+      "path": "tests/web_background_styles.cjs",
+      "status": "??",
+      "bytes": 4036,
+      "sha256": "501fe02e944089b860d99f79899e9610be495b622d514537d1fb68e932de4a71"
+    },
+    {
+      "path": "tests/web_background_toolbars.cjs",
+      "status": "??",
+      "bytes": 3961,
+      "sha256": "7e6484ac89a0ef3be32952e7a0da065a5b70ec45b29b0bc70d95f95538b702c0"
+    },
+    {
+      "path": "tests/web_deck_scrollbar.cjs",
+      "status": "??",
+      "bytes": 4671,
+      "sha256": "3d7d6402fdbb8167633cd136a8c664ba31820b1ce5a5aa43716cdf097deac64e"
+    },
+    {
+      "path": "tests/web_notebook_blocks.cjs",
+      "status": "??",
+      "bytes": 10819,
+      "sha256": "7047d056b99f6b7b67e753a607cbcb3c855bd9fbab6ec57f7bb49fdf20a2aca1"
+    },
+    {
+      "path": "tests/web_notebook_gutter.cjs",
+      "status": "??",
+      "bytes": 3069,
+      "sha256": "21a61b387f018176022d45706d44cf2b6123f8b7876597e829fd34c11a4fcb2c"
+    },
+    {
+      "path": "tests/web_notebook_hierarchy.cjs",
+      "status": "??",
+      "bytes": 8556,
+      "sha256": "0f228a4e60d3ed899a461fc5b329465abb9f205cc42976a7267d168a355e29a1"
+    },
+    {
+      "path": "tests/web_notebook_history.cjs",
+      "status": "??",
+      "bytes": 4432,
+      "sha256": "202d12cbe6d6e9add51f54a371fb2f1c31655ffe3452d9d7394cf28563bb9a5a"
+    },
+    {
+      "path": "tests/web_notebook_margin_click.cjs",
+      "status": "??",
+      "bytes": 5032,
+      "sha256": "26a66427cc7e69361bad3cb46dfae7010670cf97cbb9b679454ecfa8cc15d352"
+    },
+    {
+      "path": "tests/web_notebook_security.cjs",
+      "status": "??",
+      "bytes": 5906,
+      "sha256": "68c5c685d96318b9529fb17b0acdca00f669a53fdf17c6686852387276b6a258"
+    },
+    {
+      "path": "tests/web_notebook_sidebar_drag.cjs",
+      "status": "??",
+      "bytes": 4684,
+      "sha256": "5d8ccfda4c1d130561bd9b958d6d77401a59d3c5eae0a1638554007f06267e99"
+    },
+    {
+      "path": "tests/web_notebook_tables_images.cjs",
+      "status": "??",
+      "bytes": 10160,
+      "sha256": "cf14d31abfa7c05dbc841f937a2be1b045bb4eb495558d731e2f2a45b4778e76"
+    },
+    {
+      "path": "tests/web_notebook_upgrade.cjs",
+      "status": "??",
+      "bytes": 9793,
+      "sha256": "0a33ddf6d2e0625094cb7529be718ff54c38822984039e9a1bcb88cb04ce7da8"
+    },
+    {
+      "path": "tests/web_soundcloud_audio.cjs",
+      "status": "??",
+      "bytes": 4473,
+      "sha256": "85916a7a9096cf86c481da2732fbbd32a63ecf9ca00cba3cb5f2bbf09c32aa58"
+    },
+    {
+      "path": "theme/user_files/none.css",
+      "status": "??",
+      "bytes": 3338,
+      "sha256": "8da9a28783275b036ac4c9bd9a76dddd30b28b1731e339e5c27f9f5f16800b79"
+    },
+    {
+      "path": "theme/user_files/shared/scrollbars.css",
+      "status": "??",
+      "bytes": 1616,
+      "sha256": "dd9dc107cd4d2bd8cd9eed4c0126a313735962e30dedb4cc324718d6af9f3561"
+    }
+  ]
+}

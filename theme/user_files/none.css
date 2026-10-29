@@ -1,0 +1,66 @@
+/* Keep the complete deck-browser theme; replace only the background gradient. */
+@import url("medical_theme.css");
+html:has(body.deckbrowser), html:has(body.overview), html:has(body.review),
+html:has(#custom-dashboard), body.deckbrowser, body.overview, body.review,
+body:has(#custom-dashboard) {
+    background: #f5f5f5 !important;
+}
+html:has(body.nightMode.deckbrowser), html:has(body.nightMode.overview),
+html:has(body.nightMode.review), html:has(body.nightMode):has(#custom-dashboard),
+body.nightMode.deckbrowser, body.nightMode.overview, body.nightMode.review,
+body.nightMode:has(#custom-dashboard) {
+    background: #2c2c2c !important;
+}
+
+/* Persistent toolbar views receive this class only on deckBrowser/overview. */
+body.synapse-main-background.top-toolbar:not(.nightMode),
+body.synapse-main-background.bottom-toolbar:not(.nightMode),
+html:has(body.synapse-main-background.top-toolbar:not(.nightMode)),
+html:has(body.synapse-main-background.bottom-toolbar:not(.nightMode)) {
+    background: #f5f5f5 !important;
+}
+body.nightMode.synapse-main-background.top-toolbar,
+body.nightMode.synapse-main-background.bottom-toolbar,
+html:has(body.nightMode.synapse-main-background.top-toolbar),
+html:has(body.nightMode.synapse-main-background.bottom-toolbar) {
+    background: #2c2c2c !important;
+}
+body.synapse-main-background.top-toolbar .header,
+body.synapse-main-background.top-toolbar #header,
+body.synapse-main-background.top-toolbar .left-tray,
+body.synapse-main-background.top-toolbar .right-tray,
+body.synapse-main-background.bottom-toolbar #outer,
+body.synapse-main-background.bottom-toolbar #header,
+body.synapse-main-background.bottom-toolbar table {
+    background: transparent !important;
+}
+
+/* Use Anki's canvas color while reviewing, including the entire html surface.
+   These values deliberately do not use the replaceable solid-color literals. */
+body.reviewing.top-toolbar, body.reviewing.bottom-toolbar,
+html:has(body.reviewing.top-toolbar), html:has(body.reviewing.bottom-toolbar) {
+    background: var(--canvas, rgb(245, 245, 245)) !important;
+}
+body.nightMode.reviewing.top-toolbar, body.nightMode.reviewing.bottom-toolbar,
+html:has(body.nightMode.reviewing.top-toolbar), html:has(body.nightMode.reviewing.bottom-toolbar) {
+    background: var(--canvas, rgb(44, 44, 44)) !important;
+}
+
+/* None keeps the review's upper bar a clean surface; the lower bar stays gray.
+   The marker keeps custom solid colors' review behavior independent. */
+body.synapse-background-none.reviewing.top-toolbar,
+html:has(body.synapse-background-none.reviewing.top-toolbar),
+body.synapse-background-none.reviewing.top-toolbar .header,
+body.synapse-background-none.reviewing.top-toolbar #header,
+body.synapse-background-none.reviewing.top-toolbar .left-tray,
+body.synapse-background-none.reviewing.top-toolbar .right-tray {
+    background: rgb(255, 255, 255) !important;
+}
+body.nightMode.synapse-background-none.reviewing.top-toolbar,
+html:has(body.nightMode.synapse-background-none.reviewing.top-toolbar),
+body.nightMode.synapse-background-none.reviewing.top-toolbar .header,
+body.nightMode.synapse-background-none.reviewing.top-toolbar #header,
+body.nightMode.synapse-background-none.reviewing.top-toolbar .left-tray,
+body.nightMode.synapse-background-none.reviewing.top-toolbar .right-tray {
+    background: rgb(48, 48, 48) !important;
+}

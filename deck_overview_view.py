@@ -1,4 +1,5 @@
 """Original Deck Overview presentation with three fixed layouts."""
+from .activity_chart import render_activity_chart
 from html import escape
 import re
 
@@ -43,6 +44,8 @@ EXTRA_CSS = '''<style>html:has(#overview-wrapper),body:has(#overview-wrapper){ma
 #custom-dashboard.layout-overview .button-container {margin-top:18px;}
 #custom-dashboard .history-panel {margin:14px 0 0;width:100%;text-align:left;}
 #custom-dashboard .history-panel h2 {font-size:13px;font-weight:500;color:var(--text-sub);margin:0 0 8px;}
+#custom-dashboard .history-plot {position:relative;height:76px;}
+#custom-dashboard .history-today {position:absolute;width:5px;height:5px;transform:translate(-50%,-50%);border-radius:50%;background:var(--accent-color);pointer-events:none;}
 #custom-dashboard .history-line {width:100%;height:76px;display:block;overflow:visible;}
 #custom-dashboard .history-empty {font-size:12px;color:var(--text-sub);margin:8px 0 0;}
 #custom-dashboard .history-caption {display:flex;justify-content:space-between;color:var(--text-sub);font-size:11px;margin-top:8px;}
@@ -121,15 +124,10 @@ def render_dashboard(title, s, options, t, media):
         content += f'<div id="hint-text" class="hint-text">{label("Click for details")}</div><div id="info-panel" class="info-panel" role="status"><span id="info-content"></span></div>'
         if layout == 'overview' and s['history']:
             history = s['history']
-            maximum = max(1, max(n for _,n in history))
-            points = [(24+i*592/max(1,len(history)-1),72-n/maximum*48,day,n) for i,(day,n) in enumerate(history)]
-            path = ' '.join(('M' if i==0 else 'L')+f'{x:.2f},{y:.2f}' for i,(x,y,_,_) in enumerate(points))
-            dots = ''.join(f'<circle cx="{x:.2f}" cy="{y:.2f}" r="3" fill="var(--surface-color)" stroke="var(--accent-color)" stroke-width="1.5"><title>{day}: {n}</title></circle>' for x,y,day,n in points)
-            description = '; '.join(f'{day}: {n}' for day,n in history)
-            grid = ''.join(f'<line x1="24" x2="616" y1="{y}" y2="{y}" stroke="var(--border-color)" stroke-dasharray="3 5"/>' for y in (24,48,72))
-            scale = f'<text x="18" y="20" fill="var(--text-sub)" font-size="10">{maximum if any(n for _,n in history) else 0}</text>'
+            description = '; '.join(f'{day}: {count}' for day,count in history)
+            chart=render_activity_chart([day for day,_ in history],[count for _,count in history],width=640,height=88,padding=8,color='--accent-color',axis_color='--border-color',css_class='history-line',dot_class='history-today',description=description)
             empty = '<p class="history-empty">'+label('No reviews in the last 14 days')+'</p>' if not any(n for _,n in history) else ''
-            content += f'<section class="history-panel"><h2>{label("Reviews · last 14 days")}</h2><svg class="history-line" viewBox="0 0 640 88" preserveAspectRatio="none" role="img" aria-label="{text(description)}">{grid}{scale}<path d="{path}" fill="none" stroke="var(--accent-color)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>{dots}</svg><div class="history-caption"><span>{history[0][0]}</span><span>{history[-1][0]}</span></div>{empty}</section>'
+            content += f'<section class="history-panel"><h2>{label("Reviews · last 14 days")}</h2><div class="history-plot">{chart}</div><div class="history-caption"><span>{history[0][0]}</span><span>{history[-1][0]}</span></div>{empty}</section>'
     cloud_html=''
     if cloud:
         cloud_html=f'<div id="wordcloud-container"><div id="cloud-overlay"><div class="spinner"></div><div id="cloud-loading-text">{label("Generating Brainstorm Cloud...")}</div></div><canvas id="cloud-canvas"></canvas><div class="cloud-description">{label("Displays the most frequent bold, underlined, or cloze terms in this deck.")}</div></div>'

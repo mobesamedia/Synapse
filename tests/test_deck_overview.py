@@ -1,10 +1,11 @@
 """Read-only overview metrics, threshold validation and optional content."""
 import importlib.util
 from pathlib import Path
-import sqlite3,types,unittest
+import sqlite3,types,unittest,sys
 ROOT=Path(__file__).resolve().parents[1]
+pkg=types.ModuleType('overview_unit_fixture');pkg.__path__=[str(ROOT)];sys.modules[pkg.__name__]=pkg
 def load(name):
- spec=importlib.util.spec_from_file_location(name,ROOT/(name+'.py'));mod=importlib.util.module_from_spec(spec);spec.loader.exec_module(mod);return mod
+ spec=importlib.util.spec_from_file_location(pkg.__name__+'.'+name,ROOT/(name+'.py'));mod=importlib.util.module_from_spec(spec);spec.loader.exec_module(mod);return mod
 options=load('deck_overview_options');view=load('deck_overview_view')
 class OverviewTests(unittest.TestCase):
  def setUp(self):

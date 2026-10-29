@@ -17,9 +17,11 @@ const fileUrl=p=>require('node:url').pathToFileURL(root+p).href;
  assert.equal(await page.locator('#editor').innerText(),'Original A');
  await page.keyboard.press('Control+Shift+Z');
  assert.equal(await page.locator('#editor').innerText(),'Edited A');
- // Pending snapshot from A must never appear in B.
+ // Undo the page switch without mixing the content of either page.
  await page.evaluate(()=>loadPage('B'));
  await page.keyboard.press('Control+z');
+ assert.equal(await page.locator('#editor').innerText(),'Edited A');
+ await page.keyboard.press('Control+Shift+Z');
  assert.equal(await page.locator('#editor').innerText(),'Original B');
  await page.locator('#editor .block').first().fill('Edited B');
  await page.waitForTimeout(1400);await page.keyboard.press('Control+z');
