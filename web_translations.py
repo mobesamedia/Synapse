@@ -776,3 +776,43 @@ WEB_TRANSLATIONS.update({
         "pl": "Intensywność cienia widżetów i listy talii. Ustaw 0, aby wyłączyć.",
     },
 })
+
+
+# MindMap: automatic node arrangement.
+WEB_TRANSLATIONS.update({
+    "Arrange Nodes": {
+        "de": "Knoten anordnen", "es": "Organizar nodos", "ko": "노드 정렬",
+        "pt": "Organizar nós", "fr": "Organiser les nœuds", "vi": "Sắp xếp các nút",
+        "zh": "排列节点", "hi": "नोड व्यवस्थित करें", "pl": "Rozmieść węzły",
+    },
+    "Arrange": {
+        "de": "Anordnen", "es": "Organizar", "ko": "정렬",
+        "pt": "Organizar", "fr": "Organiser", "vi": "Sắp xếp",
+        "zh": "排列", "hi": "व्यवस्थित करें", "pl": "Rozmieść",
+    },
+    "Vertical": {
+        "de": "Vertikal", "es": "Vertical", "ko": "세로",
+        "pt": "Vertical", "fr": "Vertical", "vi": "Dọc",
+        "zh": "纵向", "hi": "लंबवत", "pl": "Pionowo",
+    },
+    "Horizontal": {
+        "de": "Horizontal", "es": "Horizontal", "ko": "가로",
+        "pt": "Horizontal", "fr": "Horizontal", "vi": "Ngang",
+        "zh": "横向", "hi": "क्षैतिज", "pl": "Poziomo",
+    },
+    "Radial": {
+        "de": "Radial", "es": "Radial", "ko": "방사형",
+        "pt": "Radial", "fr": "Radial", "vi": "Toả tròn",
+        "zh": "放射", "hi": "वृत्ताकार", "pl": "Promieniście",
+    },
+    "Normal": {
+        "de": "Normal", "es": "Normal", "ko": "보통",
+        "pt": "Normal", "fr": "Normal", "vi": "Thường",
+        "zh": "标准", "hi": "सामान्य", "pl": "Zwykłe",
+    },
+    "Wide": {
+        "de": "Weit", "es": "Amplio", "ko": "넓게",
+        "pt": "Amplo", "fr": "Large", "vi": "Rộng",
+        "zh": "宽松", "hi": "विस्तृत", "pl": "Szerokie",
+    },
+})

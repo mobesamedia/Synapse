@@ -504,13 +504,13 @@
         .node.learning-current { box-shadow: 0 0 0 4px #ffc107, var(--node-shadow); cursor: default; z-index: 90; }
         .node.learning-target { box-shadow: 0 0 0 6px var(--primary-color), var(--node-shadow); z-index: 91; transform: scale(1.05); }
 
-        /* Learning Options Overlay */
-        #learning-options-overlay {
+        /* Learning Options + Arrange Options Overlay */
+        #learning-options-overlay, #arrange-options-overlay {
             position: fixed; inset: 0; background: rgba(0,0,0,0.45);
             z-index: 2000; display: none; align-items: center; justify-content: center;
             backdrop-filter: blur(2px);
         }
-        #learning-options-overlay.visible { display: flex; }
+        #learning-options-overlay.visible, #arrange-options-overlay.visible { display: flex; }
         .learning-options-modal {
             background: var(--modal-bg); border-radius: 16px;
             padding: 28px 32px; max-width: 400px; width: 90%;
@@ -701,6 +701,9 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
                     <button class="dropdown-item item-hint" id="edit-hints-btn">
                         <span class="dropdown-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></span> <span data-i18n="edit_hints">Edit Hints</span>
                     </button>
+                    <button class="dropdown-item" id="arrange-btn">
+                        <span class="dropdown-icon" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="5" rx="1"></rect><rect x="2" y="17" width="6" height="5" rx="1"></rect><rect x="16" y="17" width="6" height="5" rx="1"></rect><path d="M12 7v4"></path><path d="M5 17v-2a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v2"></path></svg></span> <span data-i18n="arrange_nodes">Arrange Nodes</span>
+                    </button>
                     <button class="dropdown-item item-ai" id="ai-helper-btn">
                         <span class="dropdown-icon">✦</span> <span data-i18n="create_with_ai">Create with AI</span>
                     </button>
@@ -809,6 +812,32 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
             <div class="learning-options-footer">
                 <button class="button" id="learn-options-cancel-btn" data-i18n="cancel">Cancel</button>
                 <button class="button primary" id="learn-options-start-btn" data-i18n="start">Start</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="arrange-options-overlay">
+        <div class="learning-options-modal">
+            <h2 data-i18n="arrange_nodes">Arrange Nodes</h2>
+            <div class="learn-option-group">
+                <label class="group-label" data-i18n="layout">Layout</label>
+                <div class="learn-option-row" id="arrange-style-options">
+                    <button class="learn-option-btn active" data-value="vertical" data-i18n="vertical">Vertical</button>
+                    <button class="learn-option-btn" data-value="horizontal" data-i18n="horizontal">Horizontal</button>
+                    <button class="learn-option-btn" data-value="radial" data-i18n="radial">Radial</button>
+                </div>
+            </div>
+            <div class="learn-option-group">
+                <label class="group-label" data-i18n="spacing">Spacing</label>
+                <div class="learn-option-row" id="arrange-spacing-options">
+                    <button class="learn-option-btn" data-value="compact" data-i18n="compact">Compact</button>
+                    <button class="learn-option-btn active" data-value="normal" data-i18n="normal">Normal</button>
+                    <button class="learn-option-btn" data-value="wide" data-i18n="wide">Wide</button>
+                </div>
+            </div>
+            <div class="learning-options-footer">
+                <button class="button" id="arrange-cancel-btn" data-i18n="cancel">Cancel</button>
+                <button class="button primary" id="arrange-apply-btn" data-i18n="arrange">Arrange</button>
             </div>
         </div>
     </div>
@@ -969,6 +998,7 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
             const mindmapSelect = document.getElementById('mindmap-select');
             const newMapBtn = document.getElementById('new-map-btn');
             const aiHelperBtn = document.getElementById('ai-helper-btn'); 
+            const arrangeBtn = document.getElementById('arrange-btn');
             const deleteMapBtn = document.getElementById('delete-map-btn');
             const importBtn = document.getElementById('import-btn');
             const exportBtn = document.getElementById('export-btn');
@@ -1285,7 +1315,8 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
 
             function init() {
                 if (tutorialPractice) {
-                    setupEventListeners(); setupLearningOptionButtons();
+                    setupEventListeners(); setupLearningOptionButtons(); setupArrangeOptionButtons();
+                    loadArrangeOptions();
                     initializePractice();
                     return;
                 }
@@ -1316,6 +1347,8 @@ body textarea:focus-visible, body a[href]:focus-visible, body [tabindex]:focus-v
                 }
                 setupEventListeners();
                 setupLearningOptionButtons();
+                setupArrangeOptionButtons();
+                loadArrangeOptions();
                 updateLineColors();
                 if (window.__SYNAPSE_MM_HOSTED__) {
                     setTimeout(() => { window.__synapseMindmapCommand('tutorial-init:' + (existingMaps ? '1' : '0')); }, 0);
@@ -1417,31 +1450,259 @@ ${mm('ai_prompt_generate', 'Generate the mind map JSON now.')}`;
                 modal.overlay.classList.add('visible');
             }
 
-            function autoLayoutNodes(nodes) {
-                const root = nodes.find(n => n.parent === null);
-                if (!root) return;
-                const childrenMap = new Map();
-                nodes.forEach(node => {
-                    if (node.parent !== null) {
-                        if (!childrenMap.has(node.parent)) childrenMap.set(node.parent, []);
-                        childrenMap.get(node.parent).push(node);
-                    }
+            /* ── Automatic node arrangement ──────────────────────────────────
+               Tidy-tree placement: every node reserves room for its whole
+               subtree instead of spacing only the direct children, so sibling
+               branches of different sizes can never overlap. Measured node
+               sizes are used where available, because node width depends on
+               the text and on manual resizing. */
+            const ARRANGE_STYLES = ['vertical', 'horizontal', 'radial'];
+            const ARRANGE_SPACINGS = ['compact', 'normal', 'wide'];
+            // along = between siblings, between = between depth levels.
+            const ARRANGE_GAPS = {
+                compact: { along: 24, between: 60 },
+                normal:  { along: 48, between: 96 },
+                wide:    { along: 90, between: 150 },
+            };
+            const ARRANGE_FALLBACK_W = 154, ARRANGE_FALLBACK_H = 60;
+
+            /* Breadth-first spanning tree from the root. Unreachable nodes and
+               cyclic parent references are skipped instead of hanging, exactly
+               like the storage sanitiser does. */
+            function arrangeSpanningTree(list) {
+                const root = list.find(n => n.parent === null);
+                if (!root) return null;
+                const byParent = new Map();
+                list.forEach(n => {
+                    if (n.parent === null) return;
+                    if (!byParent.has(n.parent)) byParent.set(n.parent, []);
+                    byParent.get(n.parent).push(n);
                 });
-                const containerRect = container.getBoundingClientRect();
-                const vSpacing = 100; const hSpacing = 180;
-                const visited = new Set(); // guard against cycles → infinite recursion
-                function positionNodes(node, x, y, level) {
-                    if (visited.has(node.id)) return;
-                    visited.add(node.id);
-                    node.x = x; node.y = y;
-                    const children = childrenMap.get(node.id) || [];
-                    const totalWidth = (children.length - 1) * hSpacing;
-                    let startX = x - totalWidth / 2;
-                    children.forEach((child, index) => {
-                        positionNodes(child, startX + index * hSpacing, y + vSpacing, level + 1);
+                const order = [], childrenOf = new Map(), depth = new Map([[root.id, 0]]);
+                const seen = new Set([root.id]);
+                for (let queue = [root], i = 0; i < queue.length; i++) {
+                    const node = queue[i];
+                    order.push(node);
+                    const children = (byParent.get(node.id) || []).filter(c => !seen.has(c.id));
+                    children.forEach(c => { seen.add(c.id); depth.set(c.id, depth.get(node.id) + 1); });
+                    childrenOf.set(node.id, children);
+                    queue.push(...children);
+                }
+                return { root, order, childrenOf, depth };
+            }
+
+            /* Place `list` in-place. `anchor` keeps a chosen point fixed (by
+               default the root stays where it is, so the view does not jump).
+               Returns false when there is nothing to arrange. */
+            function arrangeNodes(list, style, spacing, anchor) {
+                const tree = arrangeSpanningTree(list);
+                if (!tree || tree.order.length < 2) return false;
+                const { root, order, childrenOf, depth } = tree;
+                const gaps = ARRANGE_GAPS[spacing] || ARRANGE_GAPS.normal;
+                const w = n => n.width || ARRANGE_FALLBACK_W;
+                const h = n => n.height || ARRANGE_FALLBACK_H;
+                const reverse = [...order].reverse();   // children before parents
+                const pos = new Map();
+
+                if (style === 'radial') {
+                    // Each subtree gets an angular wedge proportional to its leaf
+                    // count; rings grow until the nodes on them stop crowding.
+                    const leaves = new Map();
+                    reverse.forEach(n => {
+                        const children = childrenOf.get(n.id);
+                        leaves.set(n.id, children.length
+                            ? children.reduce((sum, c) => sum + leaves.get(c.id), 0) : 1);
+                    });
+                    const wedge = new Map([[root.id, [0, Math.PI * 2]]]);
+                    order.forEach(n => {
+                        const children = childrenOf.get(n.id);
+                        if (!children.length) return;
+                        const [start, end] = wedge.get(n.id);
+                        const total = leaves.get(n.id) || 1;
+                        let angle = start;
+                        children.forEach(c => {
+                            const share = (end - start) * leaves.get(c.id) / total;
+                            wedge.set(c.id, [angle, angle + share]);
+                            angle += share;
+                        });
+                    });
+                    // Rings are separated by how much room each node really needs
+                    // along its own radius, and pushed out until the arc of its
+                    // wedge is long enough. Both are far tighter than reserving a
+                    // full node width and the whole circumference per level.
+                    const angleOf = n => {
+                        const [start, end] = wedge.get(n.id);
+                        return (start + end) / 2 - Math.PI / 2;   // first branch points up
+                    };
+                    const extent = [0], fit = [];
+                    order.slice(1).forEach(n => {
+                        const d = depth.get(n.id), angle = angleOf(n);
+                        const along = Math.abs(Math.cos(angle)) * w(n) + Math.abs(Math.sin(angle)) * h(n);
+                        const across = Math.abs(Math.sin(angle)) * w(n) + Math.abs(Math.cos(angle)) * h(n);
+                        extent[d] = Math.max(extent[d] || 0, along);
+                        const [start, end] = wedge.get(n.id);
+                        fit[d] = Math.max(fit[d] || 0, (across + gaps.along) / Math.max(end - start, 1e-6));
+                    });
+                    extent[0] = Math.max(w(root), h(root));
+                    const radius = [0];
+                    for (let d = 1; d < extent.length; d++) {
+                        radius[d] = Math.max(
+                            radius[d - 1] + (extent[d - 1] + extent[d]) / 2 + gaps.between * 0.7,
+                            fit[d] || 0);
+                    }
+                    pos.set(root.id, { x: -w(root) / 2, y: -h(root) / 2 });
+                    order.slice(1).forEach(n => {
+                        const [start, end] = wedge.get(n.id);
+                        const angle = (start + end) / 2 - Math.PI / 2;   // first branch points up
+                        const r = radius[depth.get(n.id)];
+                        pos.set(n.id, {
+                            x: Math.cos(angle) * r - w(n) / 2,
+                            y: Math.sin(angle) * r - h(n) / 2,
+                        });
+                    });
+                } else {
+                    // One implementation for both axes: `main` runs along a level,
+                    // `cross` steps from one level to the next.
+                    const horizontal = style === 'horizontal';
+                    const main = horizontal ? h : w, cross = horizontal ? w : h;
+                    const span = new Map();
+                    reverse.forEach(n => {
+                        const children = childrenOf.get(n.id);
+                        if (!children.length) { span.set(n.id, main(n)); return; }
+                        const total = children.reduce((sum, c) => sum + span.get(c.id), 0)
+                            + gaps.along * (children.length - 1);
+                        span.set(n.id, Math.max(main(n), total));
+                    });
+                    const levelSize = [];
+                    order.forEach(n => {
+                        const d = depth.get(n.id);
+                        levelSize[d] = Math.max(levelSize[d] || 0, cross(n));
+                    });
+                    const levelOffset = [];
+                    levelSize.reduce((offset, size, d) => {
+                        levelOffset[d] = offset;
+                        return offset + size + gaps.between;
+                    }, 0);
+                    // Pass 1 (parents first): the start of each subtree's slot.
+                    const start = new Map([[root.id, 0]]);
+                    order.forEach(n => {
+                        const children = childrenOf.get(n.id);
+                        if (!children.length) return;
+                        const total = children.reduce((sum, c) => sum + span.get(c.id), 0)
+                            + gaps.along * (children.length - 1);
+                        // Centre a narrow row of children under a wider parent.
+                        let cursor = start.get(n.id) + Math.max(0, (span.get(n.id) - total) / 2);
+                        children.forEach(c => {
+                            start.set(c.id, cursor);
+                            cursor += span.get(c.id) + gaps.along;
+                        });
+                    });
+                    // Pass 2 (children first): centre every parent on its children.
+                    const centre = new Map();
+                    reverse.forEach(n => {
+                        const children = childrenOf.get(n.id);
+                        centre.set(n.id, children.length
+                            ? (centre.get(children[0].id) + centre.get(children[children.length - 1].id)) / 2
+                            : start.get(n.id) + span.get(n.id) / 2);
+                    });
+                    order.forEach(n => {
+                        const along = centre.get(n.id) - main(n) / 2;
+                        const across = levelOffset[depth.get(n.id)];
+                        pos.set(n.id, horizontal ? { x: across, y: along } : { x: along, y: across });
                     });
                 }
-                positionNodes(root, containerRect.width / 2 - 75, 50, 0);
+
+                const origin = pos.get(root.id);
+                const target = anchor || (Number.isFinite(root.x) && Number.isFinite(root.y)
+                    ? { x: root.x, y: root.y } : { x: 0, y: 0 });
+                const dx = target.x - origin.x, dy = target.y - origin.y;
+                list.forEach(n => {
+                    const p = pos.get(n.id);
+                    if (!p) return;                      // unreachable node: left untouched
+                    n.x = Math.round(p.x + dx);
+                    n.y = Math.round(p.y + dy);
+                });
+                return true;
+            }
+
+            /* Undoable, persisted arrangement of the open map. */
+            function applyArrangement(style, spacing) {
+                if (isLearningMode || nodes.length < 2) return false;
+                nodes.forEach(updateNodeDimensions);     // real sizes, not CSS guesses
+                const before = JSON.stringify(nodes.map(n => [n.id, n.x, n.y]));
+                pushState();
+                let changed = false;
+                try {
+                    changed = arrangeNodes(nodes, style, spacing)
+                        && JSON.stringify(nodes.map(n => [n.id, n.x, n.y])) !== before;
+                } catch (e) {
+                    window.__mmReportError(e, mm('arrange_nodes', 'Arrange Nodes'));
+                }
+                if (!changed) { historyStack.pop(); return false; }
+                nodes.forEach(node => {
+                    const el = document.getElementById(`node-${node.id}`);
+                    if (el) { el.style.left = `${node.x}px`; el.style.top = `${node.y}px`; }
+                });
+                drawLines();
+                saveCurrentMindmap();
+                fitEntireMap();
+                return true;
+            }
+
+            let arrangeOptions = { style: 'vertical', spacing: 'normal' };
+            function loadArrangeOptions() {
+                try {
+                    const stored = JSON.parse(mindmapStorage.getItem('mindmap_arrange_options') || '{}');
+                    if (ARRANGE_STYLES.includes(stored.style)) arrangeOptions.style = stored.style;
+                    if (ARRANGE_SPACINGS.includes(stored.spacing)) arrangeOptions.spacing = stored.spacing;
+                } catch (e) {}
+            }
+            function showArrangeOptionsModal() {
+                if (nodes.length < 2) return;
+                document.querySelectorAll('#arrange-style-options .learn-option-btn').forEach(
+                    b => b.classList.toggle('active', b.dataset.value === arrangeOptions.style));
+                document.querySelectorAll('#arrange-spacing-options .learn-option-btn').forEach(
+                    b => b.classList.toggle('active', b.dataset.value === arrangeOptions.spacing));
+                document.getElementById('arrange-options-overlay').classList.add('visible');
+            }
+            function hideArrangeOptionsModal() {
+                document.getElementById('arrange-options-overlay').classList.remove('visible');
+            }
+            function setupArrangeOptionButtons() {
+                [['arrange-style-options', 'style'], ['arrange-spacing-options', 'spacing']].forEach(([groupId, key]) => {
+                    document.getElementById(groupId).querySelectorAll('.learn-option-btn').forEach(btn => {
+                        btn.onclick = () => {
+                            btn.closest('.learn-option-row').querySelectorAll('.learn-option-btn')
+                                .forEach(b => b.classList.remove('active'));
+                            btn.classList.add('active');
+                            arrangeOptions[key] = btn.dataset.value;
+                        };
+                    });
+                });
+                document.getElementById('arrange-cancel-btn').onclick = hideArrangeOptionsModal;
+                document.getElementById('arrange-apply-btn').onclick = () => {
+                    hideArrangeOptionsModal();
+                    try { mindmapStorage.setItem('mindmap_arrange_options', JSON.stringify(arrangeOptions)); } catch (e) {}
+                    applyArrangement(arrangeOptions.style, arrangeOptions.spacing);
+                };
+                document.getElementById('arrange-options-overlay').onclick = e => {
+                    if (e.target.id === 'arrange-options-overlay') hideArrangeOptionsModal();
+                };
+            }
+
+            // Test hook: arrange without going through the dropdown and modal.
+            window.__synapseArrangeNodes = (style, spacing) =>
+                applyArrangement(ARRANGE_STYLES.includes(style) ? style : 'vertical',
+                    ARRANGE_SPACINGS.includes(spacing) ? spacing : 'normal');
+
+            /* Imported maps without coordinates reuse the same engine, so AI
+               output no longer arrives with branches stacked on top of
+               each other. Node elements do not exist yet at this point, so the
+               fallback sizes apply. */
+            function autoLayoutNodes(nodes) {
+                const containerRect = container.getBoundingClientRect();
+                arrangeNodes(nodes, 'vertical', 'normal',
+                    { x: containerRect.width / 2 - 75, y: 50 });
             }
 
             /* Shared, safe import path: parse → validate/heal → save → load.
@@ -1639,6 +1900,7 @@ ${mm('ai_prompt_generate', 'Generate the mind map JSON now.')}`;
                 incorrectBtn.onclick = () => handleAnswer(false);
                 infoBtn.onclick = showInfoModal;
                 aiHelperBtn.onclick = showAiHelperModal;
+                arrangeBtn.onclick = showArrangeOptionsModal;
 
                 // Hamburger menu
                 const hamburgerBtn = document.getElementById('hamburger-btn');
@@ -1966,7 +2228,8 @@ ${mm('ai_prompt_generate', 'Generate the mind map JSON now.')}`;
             
             function handleKeyDown(e) {
                 if (e.isComposing || e.defaultPrevented || practiceDialog?.open || document.querySelector('.tour-invitation[open]') || modal.overlay.classList.contains('visible') ||
-                    document.querySelector('#learning-options-overlay.visible') || isLearningMode) return;
+                    document.querySelector('#learning-options-overlay.visible') ||
+                    document.querySelector('#arrange-options-overlay.visible') || isLearningMode) return;
                 if (e.target.closest?.('input, textarea, select, [contenteditable="true"]')) {
                     if (e.key === 'Escape' && e.target.classList.contains('node-textarea')) {
                         e.preventDefault(); e.stopPropagation();
@@ -2423,6 +2686,7 @@ ${mm('ai_prompt_generate', 'Generate the mind map JSON now.')}`;
                 window.__mmReportError(e, mm('initialization', 'Initialization'));
                 try { setupEventListeners(); } catch (e2) { console.error('[MindMap]', e2); }
                 try { setupLearningOptionButtons(); } catch (e2) { console.error('[MindMap]', e2); }
+                try { setupArrangeOptionButtons(); } catch (e2) { console.error('[MindMap]', e2); }
                 if (window.__synapseMarkMindmapLayoutReady) {
                     window.__synapseMarkMindmapLayoutReady();
                 }
